@@ -49,11 +49,17 @@ export interface FamilyTask {
  */
 export interface DiaryEntry {
   id: string;
-  content: string;
   date: string;
+  content: string;
+  mood: number | null;
   mood_label: string | null;
-  tags?: string;
-  is_locked?: boolean;
+  title: string | null;
+  subtitle: string | null;
+  tags: string | null;
+  weather: string | null;
+  location: string | null;
+  is_locked: number;
+  created_at?: string;
 }
 
 /** 

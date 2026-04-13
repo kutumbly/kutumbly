@@ -31,7 +31,7 @@
  */
 
 /** Bump this whenever you add new tables or ALTER existing ones */
-export const CURRENT_SCHEMA_VERSION = 3;
+export const CURRENT_SCHEMA_VERSION = 4;
 
 /** What changed in each version — shown in the migration modal */
 export const MIGRATION_CHANGELOGS: Record<number, string[]> = {
@@ -48,6 +48,10 @@ export const MIGRATION_CHANGELOGS: Record<number, string[]> = {
   3: [
     "Task manager category field support added.",
     "Investment transactions tracking added for robust ledger.",
+  ],
+  4: [
+    "Advanced Diary features added: Title, Subtitle, Tags, Weather, Location.",
+    "Diary entry locking mechanism added for privacy.",
   ],
 };
 
@@ -187,6 +191,24 @@ const MIGRATIONS: Record<number, (db: any) => void> = {
       created_at TEXT,
       FOREIGN KEY (investment_id) REFERENCES investments(id)
     )`);
+  },
+
+  // ── V4: Advanced Diary (Memoir) ──────────
+  4: (db) => {
+    // --- diary columns ---
+    const addCol = (colDef: string) => {
+      try {
+        db.run(`ALTER TABLE diary_entries ADD COLUMN ${colDef}`);
+      } catch {
+        // column exists
+      }
+    };
+    addCol('title TEXT');
+    addCol('subtitle TEXT');
+    addCol('tags TEXT');
+    addCol('weather TEXT');
+    addCol('location TEXT');
+    addCol('is_locked INTEGER DEFAULT 0');
   },
 };
 

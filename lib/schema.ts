@@ -22,7 +22,9 @@ CREATE TABLE IF NOT EXISTS family_members (
 );
 CREATE TABLE IF NOT EXISTS diary_entries (
   id TEXT PRIMARY KEY, date TEXT, content TEXT,
-  mood INTEGER, mood_label TEXT, created_at TEXT
+  mood INTEGER, mood_label TEXT,
+  title TEXT, subtitle TEXT, tags TEXT, weather TEXT, location TEXT, is_locked INTEGER DEFAULT 0,
+  created_at TEXT
 );
 CREATE TABLE IF NOT EXISTS tasks (
   id TEXT PRIMARY KEY, title TEXT, description TEXT,

@@ -27,18 +27,31 @@ export function useDiary() {
   const [tick, setTick] = useState(0);
 
   const entries = useMemo<DiaryEntry[]>(() => {
-    return runQuery<DiaryEntry>(db, "SELECT * FROM diary_entries ORDER BY date DESC");
+    return runQuery<DiaryEntry>(db, "SELECT * FROM diary_entries ORDER BY date DESC, created_at DESC");
   }, [db, tick]);
 
-  const addEntry = useCallback((content: string, mood_label?: string) => {
-    if (!db || !content.trim()) return;
-    const id = crypto.randomUUID();
+  const addEntry = useCallback((payload: Pick<DiaryEntry, 'title'|'subtitle'|'content'|'tags'|'weather'|'location'> & { mood_label?: string, is_locked?: boolean }) => {
+    if (!db || !payload.content.trim()) return;
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     const date = new Date().toISOString().split('T')[0];
     const created_at = new Date().toISOString();
 
     db.run(
-      "INSERT INTO diary_entries (id, date, content, mood_label, created_at) VALUES (?, ?, ?, ?, ?)",
-      [id, date, content.trim(), mood_label || null, created_at]
+      "INSERT INTO diary_entries (id, date, content, mood, mood_label, title, subtitle, tags, weather, location, is_locked, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        id, 
+        date, 
+        payload.content.trim(), 
+        null, // Optional numeric mood could be added later
+        payload.mood_label || null, 
+        payload.title || null, 
+        payload.subtitle || null, 
+        payload.tags || null, 
+        payload.weather || null, 
+        payload.location || null, 
+        payload.is_locked ? 1 : 0, 
+        created_at
+      ]
     );
 
     if (fileHandle && currentPin) {
