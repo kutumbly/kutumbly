@@ -17,22 +17,21 @@
 "use client";
 
 import React from 'react';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Star, Code } from 'lucide-react';
 
-export default function LandingFooter() {
+export default function LandingFounders() {
   return (
-    <footer className="pt-24 pb-12 border-t border-border-light bg-bg-primary">
-       <div className="max-w-6xl mx-auto px-6 mb-20" id="founders">
+    <section className="py-24 bg-bg-primary px-6" id="founders">
+      <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-black text-text-primary tracking-tighter mb-4">The Visionaries Behind Kutumbly</h2>
-          <p className="text-text-secondary font-medium text-base max-w-2xl mx-auto">
+          <p className="text-text-secondary font-medium text-base md:text-lg max-w-2xl mx-auto">
             Bridging raw business intuition with elite, heavy-duty enterprise technology.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 text-left">
+        <div className="grid md:grid-cols-2 gap-8">
           {/* Pushpa D Card */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -47,12 +46,12 @@ export default function LandingFooter() {
             </div>
             
             <div className="mb-8 flex items-center gap-6">
-              <div className="w-20 h-20 bg-bg-primary border-2 border-border-light rounded-full flex items-center justify-center shadow-inner shrink-0 text-2xl font-black text-text-primary">
+              <div className="w-24 h-24 bg-bg-primary border-2 border-border-light rounded-full flex items-center justify-center shadow-inner shrink-0 text-3xl font-black text-text-primary">
                 PD
               </div>
               <div>
-                <h4 className="text-2xl font-black tracking-tight text-text-primary mb-1">Pushpa D.</h4>
-                <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-[0.2em]">Head of Sales & Vision</p>
+                <h4 className="text-3xl font-black tracking-tight text-text-primary mb-1">Pushpa D.</h4>
+                <p className="text-[11px] font-bold text-text-tertiary uppercase tracking-[0.2em]">Head of Sales & Vision · Gorakhpur</p>
               </div>
             </div>
 
@@ -61,10 +60,10 @@ export default function LandingFooter() {
                 "Real wisdom isn't inherited in a classroom; it’s forged in the village and tempered by raw experience."
               </p>
               <p>
-                Pushpa formally attended school only up to the 1st standard, yet possesses a profound, intuitive understanding of complex operational processes. 
+                Hailing from a small village in Gorakhpur, Pushpa formally attended school only up to the 1st standard. Yet, she possesses a profound, intuitive understanding of complex operational and financial processes that drive global corporations.
               </p>
               <p>
-                As the Founder and primary financier, she is deeply involved in guiding the flow of every module to ensure it genuinely serves Indian families.
+                As the Founder and primary financier, she provided the backbone for Kutumbly. She is deeply involved in guiding the "real-world" flow of every single module to ensure it genuinely serves Indian families.
               </p>
             </div>
           </motion.div>
@@ -84,12 +83,12 @@ export default function LandingFooter() {
             </div>
             
             <div className="mb-8 flex items-center gap-6">
-              <div className="w-20 h-20 bg-bg-primary border-2 border-border-light rounded-full flex items-center justify-center shadow-inner shrink-0 text-2xl font-black text-text-primary">
+              <div className="w-24 h-24 bg-bg-primary border-2 border-border-light rounded-full flex items-center justify-center shadow-inner shrink-0 text-3xl font-black text-text-primary">
                 JM
               </div>
               <div>
-                <h4 className="text-2xl font-black tracking-tight text-text-primary mb-1">Jawahar R. Mallah</h4>
-                <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-[0.2em]">Lead Engineer · 19+ Years Exp</p>
+                <h4 className="text-3xl font-black tracking-tight text-text-primary mb-1">Jawahar R. Mallah</h4>
+                <p className="text-[11px] font-bold text-text-tertiary uppercase tracking-[0.2em]">Lead Engineer · 19+ Years Exp</p>
               </div>
             </div>
 
@@ -98,27 +97,15 @@ export default function LandingFooter() {
                 "Bridging elite enterprise technology with uncompromising family software sovereignty."
               </p>
               <p>
-                With 19+ years in SaaS, Jawahar has delivered critical solutions for <strong>Tally Solutions, Aditya Birla, Raymond, Adidas</strong>, and <strong>Nike</strong>.
+                With 19+ years in SaaS engineering, Jawahar has delivered critical solutions for massive conglomerates like <strong>Tally Solutions, Aditya Birla Group, Raymond, Adidas</strong>, and <strong>Nike</strong>.
               </p>
               <p>
-                He architected infrastructure for the <strong>Siddhivinayak Trust</strong> and <strong>GVK</strong>, now dedicated to protecting your family's data.
+                He has architected Pan-India tech infrastructure for the <strong>Siddhivinayak Trust</strong> and <strong>GVK</strong>. At Kutumbly, he pours this master-level experience into protecting the sovereign data of families.
               </p>
             </div>
           </motion.div>
         </div>
       </div>
-
-       <div className="text-[10px] font-bold text-text-tertiary uppercase tracking-[0.2em] flex flex-col items-center gap-4 text-center">
-          <span>Built with ❤️ by AITDL Network · Gorakhpur, India</span>
-          <div className="flex gap-6">
-             <Link href="/privacy" className="hover:text-gold transition-colors">Privacy Policy</Link>
-             <Link href="/terms" className="hover:text-gold transition-colors">Terms of Service</Link>
-             <Link href="/#founders" className="hover:text-gold transition-colors">Founders</Link>
-          </div>
-          <div className="mt-4 opacity-50">
-             © 2026 Kutumbly Sovereign. India&apos;s Family OS.
-          </div>
-       </div>
-    </footer>
+    </section>
   );
 }
