@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+/* ============================================================
+ * कुटुंबली — KUTUMBLY SOVEREIGN OS
+ * Zero Cloud · Local First · Encrypted · Offline Forever
+ * ============================================================
+ * System Architect   :  Jawahar R. Mallah
+ * Organisation:  AITDL Network — Sovereign Division
+ * Project     :  Kutumbly — India's Family OS
+ * Contact     :  kutumbly@outlook.com
+ * Web         :  kutumbly.com | aitdl.com | aitdl.in
+ *
+ * © 2026 Kutumbly.com — All Rights Reserved
+ * Unauthorized use or distribution is prohibited.
+ *
+ * "Memory, Not Code."
+ * ============================================================ */
 
-## Getting Started
+# Kutumbly — India's Sovereign Family OS
 
-First, run the development server:
+**Kutumbly** is a local-first, high-fidelity operating system designed to protect and organize the modern Indian family's data. Built on the principle of **Zero Cloud**, it ensures that your private memories, financial ledgers, and health records never leave your device without your explicit encrypted command.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛡️ Core Pillars: Sovereign & Secure
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Zero Cloud**: No servers, no tracking. Your data is stored in a single, encrypted `.kutumb` file (SQL-WASM) locally on your device.
+- **Local First**: Lightning-fast performance with zero latency. Works perfectly offline, forever.
+- **Encrypted**: Military-grade **AES-256-GCM** encryption for every byte of data. Your Master PIN is the only key.
+- **Privacy Hardened**: Immersive PWA experience with biometric unlocking (Windows Hello / FaceID / Fingerprint) and hardware haptics.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📱 Premium Native Experience
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Kutumbly is engineered to feel like a premium native application, even in the browser:
+- **Tally-Style Gateway**: A professional, secure unlocking interface.
+- **Thumb-Optimized Navigation**: A fluid, responsive dashboard designed for one-handed mobile use.
+- **Glassmorphic Aesthetic**: A "High-Fidelity" design language featuring golden accents, vibrant safe-area handling, and smooth Framer Motion animations.
 
-## Learn More
+## 🧩 Powerful Modules (Sovereign Grid)
 
-To learn more about Next.js, take a look at the following resources:
+- **💰 Money (Aangan)**: Income/Expense tracking with TallyPrime Bridge (XML export).
+- **📝 Diary & Memories**: A private space for family journals and milestone logs.
+- **🩺 Health Pulse**: Vitals tracking (Weight, BP, Sugar) with historical insights.
+- **📅 Nevata**: Gift management and cultural occasion logs.
+- **✅ Tasks & Grocery**: Collaborative family to-dos and smart shopping lists.
+- **🤝 Sync & Peer Hub**: Secure P2P data sharing via encrypted WebRTC pipelines.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Quick Setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### For Developers
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/kutumbly/kutumbly.git
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the Sovereign Dev Environment:
+   ```bash
+   npm run dev
+   ```
+4. Open [http://localhost:3000](http://localhost:3000)
 
-## Deploy on Vercel
+## 🌐 Connectivity
+- **Web**: [kutumbly.com](https://kutumbly.com)
+- **Email**: [kutumbly@outlook.com](mailto:kutumbly@outlook.com)
+- **Vision**: [aitdl.com](https://aitdl.com)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+**© 2026 Kutumbly.com — AITDL Network — Sovereign Division**
