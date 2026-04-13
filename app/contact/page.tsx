@@ -94,7 +94,7 @@ export default function Contact() {
                    <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-bl-[100px] -z-10 group-hover:bg-gold/10 transition-all"></div>
                    <div className="flex items-center gap-3 mb-8">
                       <Star className="text-gold" />
-                      <h3 className="font-black uppercase tracking-widest text-[10px] text-text-primary">Co-Founder & Principal Financier</h3>
+                      <h3 className="font-black uppercase tracking-widest text-[10px] text-text-primary">Founder & Principal Financier</h3>
                    </div>
                    
                    <div className="mb-6 flex items-center gap-6">
@@ -109,13 +109,16 @@ export default function Contact() {
 
                    <div className="text-sm font-medium text-text-secondary leading-[1.8] space-y-4">
                       <p className="italic font-semibold text-text-primary border-l-2 border-gold pl-4 opacity-90">
-                        "Wisdom isn't always learned in a classroom; sometimes, it’s forged in the village."
+                        "Real wisdom isn't inherited in a classroom or a boardroom; it’s forged in the village and tempered by raw experience."
                       </p>
                       <p>
-                        Hailing from a small village in Gorakhpur, Pushpa D. formally attended school only up to the 1st standard. Yet, she possesses a profound, intuitive understanding of the complex operational processes that drive major corporations today. 
+                        Hailing from a small village in Gorakhpur, Pushpa formally attended school only up to the 1st standard. Yet, she shattered conventional corporate barriers by possessing a profound, intuitive understanding of the complex operational and financial processes that drive major global corporations today. 
                       </p>
                       <p>
-                        As the visionary force, primary financier, and head of Sales & Marketing at Kutumbly, Pushpa has been deeply involved in the architecture of this project—guiding the practical "real-world" flow of every single module to ensure it genuinely serves Indian families at its core.
+                        As the Founder, primary financier, and head of Sales & Marketing, Pushpa single-handedly provided the financial backbone that made Kutumbly a reality. Her leadership goes far beyond funding; she brings relentless practical insight to the table.
+                      </p>
+                      <p>
+                        Pushpa has been deeply involved in the granular architecture of this project—meticulously reviewing and guiding the "real-world" flow of every single module. She ensures that Kutumbly doesn't just function for engineers, but genuinely serves the daily realities and privacy needs of Indian families at its core.
                       </p>
                    </div>
                 </div>
@@ -125,7 +128,7 @@ export default function Contact() {
                    <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-bl-[100px] -z-10 group-hover:bg-gold/10 transition-all"></div>
                    <div className="flex items-center gap-3 mb-8">
                       <Code className="text-gold" />
-                      <h3 className="font-black uppercase tracking-widest text-[10px] text-text-primary">System Architect</h3>
+                      <h3 className="font-black uppercase tracking-widest text-[10px] text-text-primary">Founder & System Architect</h3>
                    </div>
                    
                    <div className="mb-6 flex items-center gap-6">
@@ -140,13 +143,19 @@ export default function Contact() {
 
                    <div className="text-sm font-medium text-text-secondary leading-[1.8] space-y-4">
                       <p className="italic font-semibold text-text-primary border-l-2 border-gold pl-4 opacity-90">
-                        "Bridging elite enterprise tech with family software."
+                        "Bridging elite, heavy-duty enterprise technology with uncompromising family software sovereignty."
                       </p>
                       <p>
-                        With over 19 years of deep engineering experience in Software as a Service (SaaS), Jawahar is the technical mastermind behind the Sovereign OS. His career is cemented by delivering critical software solutions for massive Indian conglomerates.
+                        With over 19 years of deep, hands-on engineering experience in Software as a Service (SaaS), Jawahar is the technical mastermind behind the Sovereign OS. His legendary career is cemented by architecting and delivering critical, high-availability software solutions for some of the most massive conglomerates in the country.
                       </p>
                       <p>
-                        His legendary portfolio includes architectural work for <strong>Tally Solutions, Aditya Birla Group, Titan Eye Plus, Madura Garments</strong> (Allen Solly, Van Heusen), <strong>Raymond, Adidas, Nike</strong>, and <strong>Ram Fashion Export</strong>. He has also executed high-stakes public trust projects, including software solutions for the Siddhivinayak Trust and GVK, spanning pan-India operations.
+                        His enterprise portfolio boasts core architectural and integrations work for <strong>Tally Solutions</strong> (defining local-first systems long before the cloud era), the <strong>Aditya Birla Group, Titan Eye Plus, Madura Garments</strong> (powering backend operations for Allen Solly, Van Heusen, Peter England), <strong>Raymond, Adidas, Nike, Krishan Textiles, GTN Textile</strong>, and <strong>Ram Fashion Export</strong>.
+                      </p>
+                      <p>
+                        Beyond corporate giants, Jawahar has executed high-stakes public trust tech infrastructure. He architected software solutions for the massive <strong>Siddhivinayak Trust</strong> and implemented heavy-duty systems for <strong>GVK</strong> through Parth Infotech, smoothly handling operations across Pan-India infrastructure. 
+                      </p>
+                      <p>
+                        At Kutumbly, Jawahar pours his master-level enterprise capabilities—from advanced AES encryption algorithms to complex, offline WebAssembly local compilation—into a product designed not for corporations, but for protecting the sovereign data of everyday families.
                       </p>
                    </div>
                 </div>
