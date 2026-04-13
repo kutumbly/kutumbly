@@ -22,6 +22,7 @@ import { SCHEMA_SQL } from "./schema";
 import { seedDatabase } from "./seed";
 import { loadDevState } from "./dev";
 import { saveVaultBackup } from "./backup";
+import { CURRENT_SCHEMA_VERSION } from "./migrations";
 
 let SQL_ENGINE: SqlJsStatic | null = null;
 
@@ -42,8 +43,9 @@ export async function createVault(name: string, pin: string): Promise<{ handle: 
   const db = new SQL.Database();
   
   const vaultId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
-  // 2. Run schema migrations
+  // 2. Run schema + stamp version so migration is never triggered on new vaults
   db.run(SCHEMA_SQL);
+  db.run(`PRAGMA user_version = ${CURRENT_SCHEMA_VERSION}`);
   db.run(`INSERT INTO settings (key, value) VALUES ('vault_id', ?)`, [vaultId]);
   db.run(`INSERT INTO settings (key, value) VALUES ('vault_name', ?)`, [name]);
   db.run(`INSERT INTO settings (key, value) VALUES ('created_at', ?)`, [new Date().toISOString()]);
@@ -167,6 +169,7 @@ export async function getDevVault(): Promise<Database> {
   
   const db = new SQL.Database();
   db.run(SCHEMA_SQL);
+  db.run(`PRAGMA user_version = ${CURRENT_SCHEMA_VERSION}`);
   db.run(`INSERT INTO settings (key, value) VALUES ('vault_name', 'Dev Vault')`);
   seedDatabase(db);
   return db;
@@ -180,4 +183,35 @@ export async function triggerManualBackup(db: any, pin: string, vaultId: string)
   const dbBytes = db.export();
   const fileBytes = await encryptDB(dbBytes, pin);
   await saveVaultBackup(fileBytes, vaultId, 'manual');
+}
+
+/**
+ * PRE-MIGRATION BACKUP:
+ * Encrypts the current DB state and triggers a browser download
+ * so users have a safe copy before schema migration is applied.
+ *
+ * @param db       - open sql.js Database (already decrypted in memory)
+ * @param pin      - current vault PIN to re-encrypt the backup
+ * @param vaultName - used to name the downloaded file
+ * @param fromVersion - the old schema version being migrated from
+ */
+export async function exportPreMigrationBackup(
+  db: any,
+  pin: string,
+  vaultName: string,
+  fromVersion: number
+): Promise<void> {
+  const dbBytes = db.export();
+  const fileBytes = await encryptDB(dbBytes, pin);
+  const ts = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const safeName = vaultName.replace(/\s+/g, '-').toLowerCase();
+  const filename = `${safeName}_pre-v${fromVersion + 1}_backup_${ts}.kutumb`;
+
+  const blob = new Blob([fileBytes as any], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
