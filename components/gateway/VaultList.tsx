@@ -61,9 +61,9 @@ export default function VaultList({ onPanelChange }: VaultListProps) {
   const historyTarget = groupedVaults.find(g => g.primary.name === showHistoryFor);
 
   return (
-    <div className="flex flex-col h-full bg-[#FAF9F6] relative overflow-hidden">
+    <div className="flex flex-col h-full bg-bg-tertiary relative overflow-hidden">
       {/* Header */}
-      <div className="p-6 border-b border-border-light bg-[#FAF9F6] sticky top-0 z-10">
+      <div className="p-6 border-b border-border-light bg-bg-tertiary sticky top-0 z-10">
         <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary">
           {lang === 'hi' ? 'AAPKE VAULTS' : 'YOUR VAULTS'}
         </h2>
@@ -72,7 +72,7 @@ export default function VaultList({ onPanelChange }: VaultListProps) {
       <div className="flex-1 overflow-y-auto scroller-hide p-6 space-y-3">
         {groupedVaults.length === 0 ? (
           <div className="py-12 text-center flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-[2rem] bg-white border border-border-light flex items-center justify-center opacity-40">
+            <div className="w-16 h-16 rounded-[2rem] bg-bg-primary border border-border-light flex items-center justify-center opacity-40">
                <Lock className="w-8 h-8 text-text-tertiary" />
             </div>
             <div>
@@ -102,8 +102,8 @@ export default function VaultList({ onPanelChange }: VaultListProps) {
                     }}
                     className={`w-full flex items-center gap-4 p-4 rounded-[2rem] transition-all text-left border-2
                       ${isActive 
-                        ? 'bg-white border-gold/20 shadow-xl shadow-black/[0.03]' 
-                        : 'bg-transparent border-transparent hover:bg-white/50'
+                        ? 'bg-bg-primary border-gold/20 shadow-xl shadow-black/[0.03]' 
+                        : 'bg-transparent border-transparent hover:bg-bg-primary/50'
                       }
                     `}
                   >
@@ -131,7 +131,7 @@ export default function VaultList({ onPanelChange }: VaultListProps) {
                         e.stopPropagation();
                         setShowHistoryFor(vault.name);
                       }}
-                      className="absolute top-4 right-4 p-1.5 rounded-xl bg-white/80 text-text-tertiary hover:text-gold hover:bg-gold/10 transition-all z-20 border border-border-light/50"
+                      className="absolute top-4 right-4 p-1.5 rounded-xl bg-bg-primary/80 text-text-tertiary hover:text-gold hover:bg-gold/10 transition-all z-20 border border-border-light/50"
                     >
                       <History size={14} />
                     </button>
@@ -185,7 +185,7 @@ export default function VaultList({ onPanelChange }: VaultListProps) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="absolute bottom-0 left-0 right-0 max-h-[70%] bg-white rounded-t-[2.5rem] z-40 shadow-2xl flex flex-col border-t border-border-light"
+              className="absolute bottom-0 left-0 right-0 max-h-[70%] bg-bg-primary rounded-t-[2.5rem] z-40 shadow-2xl flex flex-col border-t border-border-light"
             >
               <div className="flex items-center justify-between p-6 pb-2 border-b border-border-light/50">
                  <h3 className="text-[10px] font-black text-text-primary uppercase tracking-widest flex items-center gap-2">
@@ -209,7 +209,7 @@ export default function VaultList({ onPanelChange }: VaultListProps) {
                         setShowHistoryFor(null);
                         onPanelChange('unlock');
                       }}
-                      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#FAF9F6] border border-border-light hover:border-gold/20 transition-all text-left"
+                      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-bg-tertiary border border-border-light hover:border-gold/20 transition-all text-left"
                    >
                       <div className="text-xl opacity-60 filter grayscale">{hv.icon || '🏠'}</div>
                       <div className="flex-1 min-w-0">

@@ -27,7 +27,7 @@ import Link from 'next/link';
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-[#FAF9F6]">
+    <main className="min-h-screen bg-bg-tertiary">
       <LandingHero />
       
       <div className="-mt-20 relative z-20">
@@ -39,7 +39,7 @@ export default function LandingPage() {
       <LandingPrivacy />
 
       {/* Waitlist Section */}
-      <section className="py-24 bg-[#FAF9F6] px-6">
+      <section className="py-24 bg-bg-tertiary px-6">
         <div className="max-w-4xl mx-auto">
            <div className="bg-white p-10 md:p-16 rounded-[3rem] border border-border-light shadow-xl shadow-black/[0.02] text-center">
               <div className="flex items-center justify-center gap-4 mb-8">
@@ -61,7 +61,7 @@ export default function LandingPage() {
                  <input 
                    type="email" 
                    placeholder="aapka@email.com" 
-                   className="flex-1 h-14 px-6 rounded-2xl bg-[#FAF9F6] border border-border-light focus:border-gold outline-none font-bold text-sm transition-all"
+                   className="flex-1 h-14 px-6 rounded-2xl bg-bg-tertiary border border-border-light focus:border-gold outline-none font-bold text-sm transition-all"
                  />
                  <button className="h-14 px-8 bg-gold text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-gold/20 hover:opacity-90 active:scale-95 transition-all">
                     Notify me
@@ -87,7 +87,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-border-light mx-8 text-center bg-[#FAF9F6]">
+      <footer className="py-12 border-t border-border-light mx-8 text-center bg-bg-tertiary">
          <div className="text-[10px] font-bold text-text-tertiary uppercase tracking-[0.2em] flex flex-col items-center gap-4">
             <span>Built with ❤️ by AITDL Network · Gorakhpur, India</span>
             <div className="flex gap-6">

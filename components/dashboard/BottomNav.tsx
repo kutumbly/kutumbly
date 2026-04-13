@@ -43,7 +43,7 @@ export default function BottomNav({ tabs, activeTab, onTabChange, lang }: Bottom
   const isMoreActive = !visibleTabs.find(t => t.id === activeTab);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-border-light shadow-[0_-8px_30px_rgba(0,0,0,0.03)] pb-safe">
+    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-bg-primary border-t border-border-light shadow-[0_-8px_30px_rgba(0,0,0,0.03)] pb-safe">
       
       {/* Dynamic Thumb Nav Bar */}
       <nav className="relative flex justify-around items-center h-20 px-4">

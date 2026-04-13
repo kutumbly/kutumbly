@@ -47,7 +47,7 @@ const MINI_MODULES = [
 
 export default function LandingFeatures() {
   return (
-    <section className="py-24 bg-[#FAF9F6] px-6">
+    <section className="py-24 bg-bg-tertiary px-6">
       <div className="max-w-6xl mx-auto">
         
         {/* Step by Step Section */}
@@ -69,7 +69,7 @@ export default function LandingFeatures() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: step.id * 0.1 }}
-              className="bg-white p-8 rounded-[2rem] border border-border-light shadow-sm hover:shadow-md transition-all group"
+              className="bg-bg-primary p-8 rounded-[2rem] border border-border-light shadow-sm hover:shadow-md transition-all group"
             >
               <div className="w-10 h-10 rounded-full border border-gold/30 flex items-center justify-center text-xs font-black text-gold mb-6 group-hover:bg-gold-light/20 transition-colors">
                 {step.id}
@@ -101,7 +101,7 @@ export default function LandingFeatures() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className="bg-white p-8 rounded-[2rem] border border-border-light shadow-sm hover:border-gold/30 transition-all font-inter"
+                className="bg-bg-primary p-8 rounded-[2rem] border border-border-light shadow-sm hover:border-gold/30 transition-all font-inter"
               >
                 <div className={`w-12 h-12 ${m.color} rounded-2xl flex items-center justify-center mb-6`}>
                   <Icon size={24} />
@@ -118,7 +118,7 @@ export default function LandingFeatures() {
            {MINI_MODULES.map((m) => {
              const Icon = m.icon;
              return (
-               <div key={m.label} className="px-5 py-3 bg-white border border-border-light rounded-2xl flex items-center gap-3 text-sm font-bold text-text-primary shadow-sm hover:border-gold/20 transition-all cursor-default">
+               <div key={m.label} className="px-5 py-3 bg-bg-primary border border-border-light rounded-2xl flex items-center gap-3 text-sm font-bold text-text-primary shadow-sm hover:border-gold/20 transition-all cursor-default">
                   <Icon size={18} className="text-text-tertiary" />
                   <span>{m.label}</span>
                </div>

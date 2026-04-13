@@ -28,17 +28,17 @@ export default function LandingVaultPreview() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative bg-white rounded-[32px] border border-border-light shadow-2xl shadow-black/[0.03] overflow-hidden group"
+        className="relative bg-bg-primary rounded-[32px] border border-border-light shadow-2xl shadow-black/[0.03] overflow-hidden group"
       >
         {/* Browser Top Bar */}
-        <div className="h-12 bg-[#FAF9F6] border-b border-border-light flex items-center px-6 justify-between">
+        <div className="h-12 bg-bg-tertiary border-b border-border-light flex items-center px-6 justify-between">
           <div className="flex gap-2">
             <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
             <div className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
             <div className="w-3 h-3 rounded-full bg-[#28C840]" />
           </div>
           <div className="flex items-center gap-2 text-[11px] font-bold text-text-secondary">
-             <Shield size={12} className="text-[#3b82f6]" />
+             <Shield size={12} className="text-info" />
              <span>Kutumbly - Vault Gateway</span>
           </div>
           <div className="text-[10px] font-bold text-text-success flex items-center gap-1.5">
@@ -49,13 +49,13 @@ export default function LandingVaultPreview() {
 
         <div className="flex flex-col md:flex-row h-[480px]">
           {/* Sidebar Mockup */}
-          <div className="w-full md:w-64 bg-[#FAF9F6] border-r border-border-light p-6">
+          <div className="w-full md:w-64 bg-bg-tertiary border-r border-border-light p-6">
              <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4">
                AAPKE VAULTS
              </div>
              
              <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 bg-white border border-gold/20 rounded-2xl shadow-sm">
+                <div className="flex items-center gap-3 p-3 bg-bg-primary border border-gold/20 rounded-2xl shadow-sm">
                    <div className="w-10 h-10 bg-gold-light/30 rounded-xl flex items-center justify-center text-xl">🏠</div>
                    <div className="flex-1">
                       <div className="text-sm font-bold text-text-primary leading-tight">Mallah Parivar</div>
@@ -94,7 +94,7 @@ export default function LandingVaultPreview() {
           </div>
 
           {/* Unlock Dashboard Preview */}
-          <div className="flex-1 bg-white p-8 flex flex-col items-center justify-center">
+          <div className="flex-1 bg-bg-primary p-8 flex flex-col items-center justify-center">
              <div className="text-center mb-10">
                 <h3 className="text-base font-black text-text-primary mb-1">Mallah Parivar - PIN darj karein</h3>
                 <div className="flex justify-center gap-3 mt-4">

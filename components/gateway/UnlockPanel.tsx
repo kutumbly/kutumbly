@@ -138,7 +138,7 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center mb-10"
         >
-          <div className="w-20 h-20 bg-[#FAF9F6] rounded-[2.5rem] flex items-center justify-center mx-auto mb-4 border border-border-light shadow-inner">
+          <div className="w-20 h-20 bg-bg-tertiary rounded-[2.5rem] flex items-center justify-center mx-auto mb-4 border border-border-light shadow-inner">
             <span className="text-4xl filter drop-shadow-sm">{activeVault.icon || '🛡️'}</span>
           </div>
           <h2 className="text-xl font-black text-text-primary tracking-tight">{activeVault.name}</h2>
@@ -174,7 +174,7 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
               key={n}
               disabled={isDecrypting || waitTimer > 0}
               onClick={() => handleDigit(n.toString())}
-              className="w-full aspect-[4/3] rounded-[1.5rem] bg-white border border-border-light flex items-center justify-center text-xl font-black text-text-primary active:scale-95 active:bg-gold active:text-white transition-all shadow-sm hover:border-gold/30"
+              className="w-full aspect-[4/3] rounded-[1.5rem] bg-bg-primary border border-border-light flex items-center justify-center text-xl font-black text-text-primary active:scale-95 active:bg-gold active:text-white transition-all shadow-sm hover:border-gold/30"
             >
               {n}
             </button>
@@ -191,7 +191,7 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
           <button
             disabled={isDecrypting || waitTimer > 0}
             onClick={() => handleDigit('0')}
-            className="w-full aspect-[4/3] rounded-[1.5rem] bg-white border border-border-light flex items-center justify-center text-xl font-black text-text-primary active:scale-95 active:bg-gold active:text-white transition-all shadow-sm hover:border-gold/30"
+            className="w-full aspect-[4/3] rounded-[1.5rem] bg-bg-primary border border-border-light flex items-center justify-center text-xl font-black text-text-primary active:scale-95 active:bg-gold active:text-white transition-all shadow-sm hover:border-gold/30"
           >
             0
           </button>

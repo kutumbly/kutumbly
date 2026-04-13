@@ -14,6 +14,7 @@
  * "Memory, Not Code."
  * ============================================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -92,28 +93,30 @@
   --bg-info:       #1E3A8A;
 
   --text-primary:   #F9FAFB;
-  --text-secondary: #9CA3AF;
-  --text-tertiary:  #6B7280;
-  --text-success:   #A7F3D0;
+  --text-secondary: #D1D5DB;  /* Upgraded from #9CA3AF for better contrast */
+  --text-tertiary:  #9CA3AF;  /* Upgraded from #6B7280 for WCAG AA compliance */
+  --text-success:   #6EE7B7;
   --text-warning:   #FDE68A;
-  --text-danger:    #FECACA;
-  --text-info:      #BFDBFE;
+  --text-danger:    #FCA5A5;
+  --text-info:      #93C5FD;
 
   --border-light:  #374151;
   --border-medium: #4B5563;
 
   --gold:       #e8b84b;
-  --gold-light: rgba(201,151,28,0.15);
+  --gold-light: rgba(232,184,75,0.12);
   --gold-dim:   #c9971c;
   --gold-text:  #FAEEDA;
 }
 
 /* ─── Base ─────────────────────────────────────────────────── */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg-tertiary);
   color: var(--text-primary);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   /* Support for modern mobile safe areas */
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -243,3 +246,43 @@ input, select, textarea {
   100% { background-position: 200% 0; }
 }
 
+
+/* ─── Dark Mode Overrides ────────────────────────────────────── */
+
+/* Inputs/textareas stay white bg in dark mode without this          */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-light);
+  color-scheme: dark;
+}
+
+/* Placeholder text in dark mode */
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}
+
+/* BottomNav glass in dark mode */
+[data-theme="dark"] .mobile-glass-header {
+  background: rgba(17, 24, 39, 0.85);
+}
+
+/* Deepen card shadows slightly in dark mode for depth */
+[data-theme="dark"] .card {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* Text selection highlight */
+::selection {
+  background: rgba(201,151,28,0.15);
+  color: #111827;
+}
+
+[data-theme="dark"] ::selection {
+  background: rgba(232, 184, 75, 0.25);
+  color: #F9FAFB;
+}

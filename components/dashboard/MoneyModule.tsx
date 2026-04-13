@@ -22,8 +22,11 @@ import { useMoney } from '@/hooks/useMoney';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
 import DonutChart from '../ui/DonutChart';
-import { ShoppingCart, Home, Briefcase, Coffee, MoreHorizontal, ArrowDownLeft, ArrowUpRight, IndianRupee, Users, Book, ArrowLeft, Trash2, Shield } from 'lucide-react';
+import { ShoppingCart, Home, Briefcase, Coffee, MoreHorizontal, ArrowDownLeft, ArrowUpRight, IndianRupee, Users, Book, ArrowLeft, Trash2, Shield, CalendarDays, Receipt } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Transaction } from '@/types/db';
+
+type MoneyView = 'overview' | 'category-ledger' | 'voucher-view';
 
 const INCOME_CATEGORIES = ['Salary', 'Business', 'Investment', 'Gift', 'Other'];
 const EXPENSE_CATEGORIES = ['Grocery', 'Utilities', 'Food', 'Staff', 'Housing', 'Education', 'Health', 'Other'];
@@ -52,6 +55,11 @@ export default function MoneyModule() {
   const { lang } = useAppStore();
   const { txns, summary, addTransaction, deleteTransaction } = useMoney();
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
+  
+  // Drill-Down States
+  const [view, setView] = useState<MoneyView>('overview');
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeVoucher, setActiveVoucher] = useState<Transaction | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
   // Form State
@@ -88,12 +96,30 @@ export default function MoneyModule() {
     filter === 'all' ? true : t.type === filter
   );
 
+  const getBreadcrumbs = () => {
+    const b = [lang === 'en' ? "Money" : "Khata"];
+    if (view === 'category-ledger' || view === 'voucher-view') b.push(activeCategory || '');
+    if (view === 'voucher-view') b.push("Voucher");
+    return b;
+  };
+
+  const handleBack = () => {
+    if (view === 'voucher-view') setView('category-ledger');
+    else if (view === 'category-ledger') setView('overview');
+  };
+
   return (
     <ModuleShell 
-      title={lang === 'en' ? "Family Money" : "Parivar ki Unnati"}
-      subtitle={lang === 'en' ? "Tracking every rupee for the future" : "Bachat hi asli kamayi hai"}
-      onAdd={showAddForm ? undefined : () => setShowAddForm(true)}
-      addLabel={lang === 'en' ? "Add Entry" : "Khata Likho"}
+      title={
+        view === 'overview' ? (lang === 'en' ? "Family Money" : "Parivar ki Unnati") :
+        view === 'category-ledger' ? `${activeCategory} Ledger` :
+        "Accounting Voucher"
+      }
+      subtitle={view === 'overview' ? (lang === 'en' ? "Tracking every rupee for the future" : "Bachat hi asli kamayi hai") : undefined}
+      onAdd={showAddForm || view === 'voucher-view' ? undefined : () => setShowAddForm(true)}
+      addLabel={view === 'overview' ? (lang === 'en' ? "Add Entry" : "Khata Likho") : "Add Voucher"}
+      breadcrumbs={view !== 'overview' && !showAddForm ? getBreadcrumbs() : undefined}
+      onBack={showAddForm ? () => setShowAddForm(false) : (view !== 'overview' ? handleBack : undefined)}
     >
       {showAddForm ? (
         <motion.div 
@@ -102,7 +128,7 @@ export default function MoneyModule() {
           className="flex flex-col gap-6"
         >
           <div className="flex items-center gap-4">
-            <button onClick={() => setShowAddForm(false)} className="w-10 h-10 rounded-full bg-white border border-border-light flex items-center justify-center hover:text-gold transition-colors shadow-sm">
+            <button onClick={() => setShowAddForm(false)} className="w-10 h-10 rounded-full bg-bg-primary border border-border-light flex items-center justify-center hover:text-gold transition-colors shadow-sm">
               <ArrowLeft size={20} />
             </button>
             <h2 className="text-xl font-black text-text-primary tracking-tight">
@@ -110,8 +136,8 @@ export default function MoneyModule() {
             </h2>
           </div>
           
-          <div className="bg-white border border-border-light rounded-[2.5rem] p-8 flex flex-col gap-6 shadow-xl shadow-black/[0.02]">
-            <div className="flex bg-[#FAF9F6] p-1.5 rounded-2xl border border-border-light">
+          <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 flex flex-col gap-6 shadow-xl shadow-black/[0.02]">
+            <div className="flex bg-bg-tertiary p-1.5 rounded-2xl border border-border-light">
               {(['expense', 'income'] as const).map(t => (
                 <button
                   key={t}
@@ -125,21 +151,21 @@ export default function MoneyModule() {
 
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{lang === 'hi' ? 'RAKAM' : 'AMOUNT (₹)'}</label>
-              <input type="number" value={fAmount} onChange={e => setFAmount(e.target.value)} className="w-full bg-[#FAF9F6] border border-border-light rounded-2xl p-5 text-2xl font-black text-text-primary outline-none focus:border-gold transition-all" placeholder="₹0.00" />
+              <input type="number" value={fAmount} onChange={e => setFAmount(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-2xl font-black text-text-primary outline-none focus:border-gold transition-all" placeholder="₹0.00" />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{lang === 'hi' ? 'VARG' : 'CATEGORY'}</label>
               <div className="flex flex-wrap gap-2">
                 {(fType === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map(c => (
-                  <button key={c} onClick={() => setFCategory(c)} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${fCategory === c ? 'bg-gold-text text-white border-gold-text shadow-md' : 'bg-white text-text-tertiary border-border-light hover:border-gold/30'}`}>{c}</button>
+                  <button key={c} onClick={() => setFCategory(c)} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${fCategory === c ? 'bg-gold-text text-white border-gold-text shadow-md' : 'bg-bg-primary text-text-tertiary border-border-light hover:border-gold/30'}`}>{c}</button>
                 ))}
               </div>
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{lang === 'hi' ? 'VIVARAN' : 'DESCRIPTION'}</label>
-              <input type="text" value={fDesc} onChange={e => setFDesc(e.target.value)} className="w-full bg-[#FAF9F6] border border-border-light rounded-2xl p-5 text-sm font-bold text-text-primary outline-none focus:border-gold transition-all" placeholder={lang === 'hi' ? 'Kahan kharch kiya...' : 'Where did it go?...'} />
+              <input type="text" value={fDesc} onChange={e => setFDesc(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-sm font-bold text-text-primary outline-none focus:border-gold transition-all" placeholder={lang === 'hi' ? 'Kahan kharch kiya...' : 'Where did it go?...'} />
             </div>
 
             <button onClick={handleSave} disabled={!fAmount || !fDesc || !fCategory} className="w-full mt-4 bg-gold-text hover:opacity-90 text-white font-black tracking-[0.2em] h-16 rounded-2xl shadow-xl transition-all disabled:opacity-50 uppercase flex items-center justify-center gap-3">
@@ -149,7 +175,15 @@ export default function MoneyModule() {
           </div>
         </motion.div>
       ) : (
-        <div className="space-y-8 md:space-y-12">
+        <AnimatePresence mode="wait">
+        {view === 'overview' && !showAddForm && (
+        <motion.div 
+           key="overview"
+           initial={{ opacity: 0, x: -10 }}
+           animate={{ opacity: 1, x: 0 }}
+           exit={{ opacity: 0, x: 10 }}
+           className="space-y-8 md:space-y-12"
+        >
         
         {/* Top Stats Dashboard */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -160,27 +194,56 @@ export default function MoneyModule() {
               <MetricCard label="Efficiency" value={summary.income > 0 ? ((summary.balance / summary.income) * 100).toFixed(0) : 0} unit="%" status="info" />
            </div>
            
-           <div className="bg-white rounded-[2.5rem] p-6 flex flex-col items-center justify-center border border-border-light shadow-xl shadow-black/[0.02]">
+           <div className="bg-bg-primary rounded-[2.5rem] p-6 flex flex-col items-center justify-center border border-border-light shadow-xl shadow-black/[0.02]">
               <div className="text-[10px] font-black uppercase tracking-[0.3em] mb-6 text-text-tertiary">Expense Profile</div>
               <DonutChart data={donutData.length > 0 ? donutData : [{ label: 'Empty', value: 1, color: 'var(--bg-tertiary)' }]} size={160} thickness={18} />
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                  {donutData.slice(0, 3).map((d, i) => (
-                    <div key={i} className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF9F6] border border-border-light">
+                    <div key={i} className="flex items-center gap-2 px-3 py-1 rounded-full bg-bg-tertiary border border-border-light">
                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }}></div>
                        <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{d.label}</span>
                     </div>
                  ))}
               </div>
            </div>
-        </div>
+         </div>
+         
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {donutData.map((d, i) => {
+              const Icon = CATEGORY_ICONS[d.label] || MoreHorizontal;
+              return (
+                <motion.div 
+                  key={i}
+                  whileHover={{ y: -2 }}
+                  onClick={() => { setActiveCategory(d.label); setView('category-ledger'); }}
+                  className="card p-5 flex items-center justify-between cursor-pointer group hover:border-gold/30 hover:shadow-xl transition-all"
+                >
+                  <div className="flex items-center gap-4">
+                     <div className="w-12 h-12 rounded-2xl flex items-center justify-center opacity-80 transition-all border border-border-light group-hover:scale-105" style={{ backgroundColor: `${d.color}15`, color: d.color }}>
+                        <Icon size={20} />
+                     </div>
+                     <div>
+                        <h4 className="text-sm font-black text-text-primary">{d.label}</h4>
+                        <p className="text-[10px] text-text-tertiary font-black uppercase tracking-widest mt-0.5">Expenses</p>
+                     </div>
+                  </div>
+                  <div className="text-right">
+                     <div className="text-sm font-black text-text-primary">
+                        ₹{d.value.toLocaleString()}
+                     </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+         </div>
 
-        {/* Transaction Ledger */}
+         {/* Transaction Ledger */}
         <div className="space-y-6">
            <div className="flex items-center justify-between px-2">
               <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
                  Family Ledger
               </div>
-              <div className="flex bg-white p-1 rounded-xl border border-border-light shadow-sm">
+              <div className="flex bg-bg-primary p-1 rounded-xl border border-border-light shadow-sm">
                  {(['all', 'income', 'expense'] as const).map(f => (
                    <button 
                      key={f}
@@ -196,23 +259,24 @@ export default function MoneyModule() {
            <div className="space-y-4">
               {filteredTxns.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4">
-                  {filteredTxns.map((t, idx) => {
+                  {filteredTxns.slice(0, 5).map((t, idx) => {
                     const Icon = CATEGORY_ICONS[String(t.category)] || MoreHorizontal;
                     const isIncome = t.type === 'income';
                     return (
                       <motion.div 
+                        onClick={() => { setActiveVoucher(t); setActiveCategory(t.category); setView('voucher-view'); }}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.05 }}
                         key={String(t.id)} 
-                        className="bg-white border border-border-light rounded-[2rem] p-5 flex items-center gap-5 group hover:border-gold/30 hover:shadow-xl shadow-black/[0.02] transition-all"
+                        className="bg-bg-primary border border-border-light rounded-[2rem] p-5 flex items-center gap-5 group hover:border-gold/30 hover:shadow-xl shadow-black/[0.02] cursor-pointer transition-all"
                       >
                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-transform group-hover:scale-105 ${isIncome ? 'bg-success/5 border-success/20 text-success' : 'bg-red-500/5 border-red-500/20 text-red-500'}`}>
                            {isIncome ? <ArrowUpRight className="w-7 h-7" /> : <ArrowDownLeft className="w-7 h-7" />}
                         </div>
                         <div className="flex-1">
                            <div className="flex justify-between items-start">
-                              <h4 className="text-base font-black text-text-primary tracking-tight leading-none">{String(t.description)}</h4>
+                              <h4 className="text-base font-black text-text-primary tracking-tight leading-none truncate max-w-[200px] md:max-w-md">{String(t.description)}</h4>
                               <span className={`text-xl font-black tabular-nums tracking-tighter ${isIncome ? 'text-success' : 'text-red-500'}`}>
                                  {isIncome ? '+' : '-'}₹{Math.abs(Number(t.amount)).toLocaleString('en-IN')}
                               </span>
@@ -230,12 +294,6 @@ export default function MoneyModule() {
                                    {new Date(String(t.date)).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-US', { day: 'numeric', month: 'short' })}
                                 </span>
                               </div>
-                              <button 
-                                onClick={() => deleteTransaction(String(t.id))}
-                                className="w-9 h-9 flex items-center justify-center rounded-xl bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
-                              >
-                                <Trash2 size={16} />
-                              </button>
                            </div>
                         </div>
                       </motion.div>
@@ -243,8 +301,8 @@ export default function MoneyModule() {
                   })}
                 </div>
               ) : (
-                <div className="bg-white border border-border-light border-dashed rounded-[3rem] py-24 flex flex-col items-center justify-center opacity-40">
-                   <div className="w-20 h-20 bg-[#FAF9F6] rounded-full flex items-center justify-center mb-6">
+                <div className="bg-bg-primary border border-border-light border-dashed rounded-[3rem] py-24 flex flex-col items-center justify-center opacity-40">
+                   <div className="w-20 h-20 bg-bg-tertiary rounded-full flex items-center justify-center mb-6">
                       <IndianRupee size={32} className="text-text-tertiary" strokeWidth={1} />
                    </div>
                    <p className="font-black uppercase tracking-[0.4em] text-[10px]">Vault Ledger Empty</p>
@@ -252,7 +310,101 @@ export default function MoneyModule() {
               )}
            </div>
         </div>
-       </div>
+       </motion.div>
+      )}
+
+      {/* Level 2: Category Ledger Drill Down */}
+      {view === 'category-ledger' && !showAddForm && (
+        <motion.div
+           key="category-ledger"
+           initial={{ opacity: 0, x: 10 }}
+           animate={{ opacity: 1, x: 0 }}
+           exit={{ opacity: 0, x: -10 }}
+           className="space-y-4"
+        >
+          {txns.filter(t => t.category === activeCategory).map((t, idx) => {
+            const isIncome = t.type === 'income';
+            return (
+              <motion.div 
+                onClick={() => { setActiveVoucher(t); setView('voucher-view'); }}
+                key={String(t.id)} 
+                className="bg-bg-primary border border-border-light rounded-[2rem] p-5 flex items-center gap-5 group hover:border-gold/30 hover:shadow-xl shadow-black/[0.02] cursor-pointer transition-all"
+              >
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-transform group-hover:scale-105 ${isIncome ? 'bg-success/5 border-success/20 text-success' : 'bg-red-500/5 border-red-500/20 text-red-500'}`}>
+                   {isIncome ? <ArrowUpRight className="w-7 h-7" /> : <ArrowDownLeft className="w-7 h-7" />}
+                </div>
+                <div className="flex-1">
+                   <div className="flex justify-between items-start">
+                      <h4 className="text-base font-black text-text-primary tracking-tight leading-none">{String(t.description)}</h4>
+                      <span className={`text-xl font-black tabular-nums tracking-tighter ${isIncome ? 'text-success' : 'text-red-500'}`}>
+                         {isIncome ? '+' : '-'}₹{Math.abs(Number(t.amount)).toLocaleString('en-IN')}
+                      </span>
+                   </div>
+                   <div className="flex items-center gap-4 mt-2.5">
+                      <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">
+                         {new Date(String(t.date)).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-US', { day: 'numeric', month: 'short', year:'numeric' })}
+                      </span>
+                   </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      )}
+
+      {/* Level 3: Individual Voucher View Placeholder */}
+      {view === 'voucher-view' && activeVoucher && !showAddForm && (
+        <motion.div
+           key="voucher-view"
+           initial={{ opacity: 0, y: 10 }}
+           animate={{ opacity: 1, y: 0 }}
+           exit={{ opacity: 0, x: -10 }}
+           className="bg-bg-primary border border-border-light rounded-[2.5rem] overflow-hidden shadow-xl shadow-black/[0.02] max-w-2xl mx-auto"
+        >
+          <div className="p-10 text-center border-b border-border-light bg-bg-tertiary relative">
+            <div className={`absolute top-0 left-0 w-full h-1 ${activeVoucher.type === 'income' ? 'bg-success' : 'bg-red-500'}`}></div>
+            <div className={`w-20 h-20 mx-auto rounded-3xl flex items-center justify-center border-2 mb-6 ${activeVoucher.type === 'income' ? 'bg-success/5 border-success/20 text-success' : 'bg-red-500/5 border-red-500/20 text-red-500'}`}>
+               <Receipt size={36} />
+            </div>
+            
+            <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.4em] mb-3">VOUCHER No. {activeVoucher.id}</h3>
+            <h2 className="text-4xl font-black text-text-primary tracking-tighter mb-2">₹{activeVoucher.amount.toLocaleString('en-IN')}</h2>
+            <div className="flex items-center justify-center gap-2 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">
+               <span>{activeVoucher.category}</span>
+               <span>•</span>
+               <span>{new Date(String(activeVoucher.date)).toDateString()}</span>
+            </div>
+          </div>
+          
+          <div className="p-10 space-y-8">
+             <div>
+                <label className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em]">Particulars / Narration</label>
+                <div className="mt-2 text-base font-bold text-text-secondary p-4 bg-bg-tertiary rounded-2xl border border-border-light">
+                   {activeVoucher.description}
+                </div>
+             </div>
+             
+             <div className="flex gap-4">
+                <button 
+                  onClick={() => {
+                     deleteTransaction(String(activeVoucher.id));
+                     setView('category-ledger');
+                  }}
+                  className="flex-1 h-14 flex items-center justify-center gap-2 rounded-2xl border-2 border-red-500/20 text-red-500 font-black text-[11px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all focus:outline-none"
+                >
+                   <Trash2 size={16} /> Delete Voucher
+                </button>
+                <button 
+                  onClick={() => {}}
+                  className="flex-1 h-14 flex items-center justify-center gap-2 rounded-2xl bg-border-light/50 text-text-tertiary font-black text-[11px] uppercase tracking-widest opacity-50 cursor-not-allowed"
+                >
+                   Edit Voucher
+                </button>
+             </div>
+          </div>
+        </motion.div>
+      )}
+      </AnimatePresence>
       )}
     </ModuleShell>
   );

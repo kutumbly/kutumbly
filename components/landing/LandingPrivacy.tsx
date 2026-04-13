@@ -31,7 +31,7 @@ const BADGES = ['AES-256-GCM', 'PBKDF2', '100% offline', 'Zero telemetry', 'Expo
 
 export default function LandingPrivacy() {
   return (
-    <section className="py-24 bg-white px-6 overflow-hidden">
+    <section className="py-24 bg-bg-primary px-6 overflow-hidden">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16">
         
         {/* Text Content */}
@@ -61,8 +61,8 @@ export default function LandingPrivacy() {
 
         {/* Visual Mockup */}
         <div className="flex-1 relative w-full">
-           <div className="relative z-10 bg-white p-2 rounded-[2.5rem] border border-border-light shadow-2xl shadow-black/5">
-              <div className="bg-[#FAF9F6] p-8 rounded-[2rem]">
+           <div className="relative z-10 bg-bg-primary p-2 rounded-[2.5rem] border border-border-light shadow-2xl shadow-black/5">
+              <div className="bg-bg-tertiary p-8 rounded-[2rem]">
                  <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-6">
                    Sovereign Protocol
                  </div>
@@ -77,7 +77,7 @@ export default function LandingPrivacy() {
                         transition={{ delay: idx * 0.1 }}
                         className="flex items-center gap-5 group"
                       >
-                         <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-border-light flex items-center justify-center text-gold group-hover:scale-110 transition-transform">
+                         <div className="w-10 h-10 bg-bg-primary rounded-xl shadow-sm border border-border-light flex items-center justify-center text-gold group-hover:scale-110 transition-transform">
                             <p.icon size={18} />
                          </div>
                          <div>
@@ -94,7 +94,7 @@ export default function LandingPrivacy() {
            <motion.div 
              animate={{ y: [0, 10, 0] }}
              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-             className="absolute -top-10 -right-10 md:-left-12 bottom-auto md:top-1/2 w-16 h-16 bg-white rounded-full shadow-lg border border-border-light flex items-center justify-center text-text-tertiary z-20"
+             className="absolute -top-10 -right-10 md:-left-12 bottom-auto md:top-1/2 w-16 h-16 bg-bg-primary rounded-full shadow-lg border border-border-light flex items-center justify-center text-text-tertiary z-20"
            >
               <ArrowDownCircle size={24} />
            </motion.div>

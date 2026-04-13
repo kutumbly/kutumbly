@@ -51,7 +51,7 @@ export default function TasksModule() {
       <div className="space-y-8 md:space-y-10">
         
         {/* Modern Filter Pills */}
-        <div className="flex items-center gap-2 p-1 bg-white rounded-2xl border border-border-light w-fit shadow-sm">
+        <div className="flex items-center gap-2 p-1 bg-bg-primary rounded-2xl border border-border-light w-fit shadow-sm">
           {(['pending', 'done', 'all'] as const).map((f) => (
             <button
               key={f}
@@ -81,7 +81,7 @@ export default function TasksModule() {
                   animate={{ opacity: 1, scale: 1, x: 0 }}
                   exit={{ opacity: 0, scale: 0.98 }}
                   transition={{ delay: idx * 0.05 }}
-                  className={`bg-white border border-border-light p-6 rounded-[2rem] flex gap-6 items-start group shadow-black/[0.01] shadow-xl transition-all duration-300 ${isDone ? 'opacity-40 grayscale select-none' : 'hover:border-gold/30 hover:shadow-2xl'}`}
+                  className={`bg-bg-primary border border-border-light p-6 rounded-[2rem] flex gap-6 items-start group shadow-black/[0.01] shadow-xl transition-all duration-300 ${isDone ? 'opacity-40 grayscale select-none' : 'hover:border-gold/30 hover:shadow-2xl'}`}
                 >
                   <button 
                     onClick={() => toggleTask(t.id, t.status)}
@@ -112,7 +112,7 @@ export default function TasksModule() {
                         {t.due_date || (lang === 'en' ? 'No Due Date' : 'Tarik Nahi')}
                       </div>
                       <div className="flex items-center gap-2.5 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em]">
-                        <div className="w-6 h-6 rounded-lg bg-[#FAF9F6] border border-border-light flex items-center justify-center text-[9px] shadow-sm font-black text-gold-text">
+                        <div className="w-6 h-6 rounded-lg bg-bg-tertiary border border-border-light flex items-center justify-center text-[9px] shadow-sm font-black text-gold-text">
                           {String(t.assigned_to).slice(0, 2).toUpperCase()}
                         </div>
                         {t.assigned_to}
@@ -128,8 +128,8 @@ export default function TasksModule() {
                 </motion.div>
               );
             }) : (
-              <div className="py-32 flex flex-col items-center justify-center bg-white border border-border-light border-dashed rounded-[3rem] opacity-40">
-                 <div className="w-20 h-20 rounded-full bg-[#FAF9F6] flex items-center justify-center mb-6">
+              <div className="py-32 flex flex-col items-center justify-center bg-bg-primary border border-border-light border-dashed rounded-[3rem] opacity-40">
+                 <div className="w-20 h-20 rounded-full bg-bg-tertiary flex items-center justify-center mb-6">
                     <AlertCircle size={32} strokeWidth={1} className="text-text-tertiary" />
                  </div>
                  <h2 className="text-sm font-black uppercase tracking-[0.4em]">All tasks complete</h2>

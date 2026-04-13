@@ -27,15 +27,15 @@ export default function LandingHero() {
   const { lang, setLang } = useAppStore();
 
   return (
-    <div className="relative min-h-[90vh] bg-[#FAF9F6] flex flex-col pt-24 items-center px-6 text-center overflow-hidden">
+    <div className="relative min-h-[90vh] bg-bg-tertiary flex flex-col pt-24 items-center px-6 text-center overflow-hidden">
       
       {/* Background Subtle Gradient */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-gold/5 to-transparent pointer-events-none" />
 
       {/* Top Navigation */}
-      <nav className="fixed top-0 left-0 right-0 h-20 flex items-center justify-between px-8 md:px-20 z-50 bg-[#FAF9F6]/80 backdrop-blur-md border-b border-border-light">
+      <nav className="fixed top-0 left-0 right-0 h-20 flex items-center justify-between px-8 md:px-20 z-50 bg-bg-tertiary/80 backdrop-blur-md border-b border-border-light">
         <div className="flex items-center gap-3">
-           <div className="w-8 h-8 bg-white border border-border-light rounded-2xl flex items-center justify-center p-1 shadow-sm">
+           <div className="w-8 h-8 bg-bg-primary border border-border-light rounded-2xl flex items-center justify-center p-1 shadow-sm">
               <Image src="/favicon.svg" alt="Logo" width={20} height={20} />
            </div>
            <span className="font-black text-lg tracking-tight text-text-primary">Kutumbly</span>
@@ -64,7 +64,7 @@ export default function LandingHero() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-border-light shadow-sm mb-10"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-bg-primary border border-border-light shadow-sm mb-10"
         >
           <div className="w-2 h-2 rounded-full bg-text-success animate-pulse" />
           <span className="text-[11px] font-bold text-text-secondary">Runs in your browser - No install needed</span>
@@ -99,7 +99,7 @@ export default function LandingHero() {
           transition={{ delay: 0.3 }}
           className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-16"
         >
-          <Link href="/os" className="h-16 px-10 bg-white border-2 border-border-light rounded-[2rem] flex items-center gap-3 font-black text-base text-text-primary hover:border-gold transition-all shadow-xl shadow-black/[0.02]">
+          <Link href="/os" className="h-16 px-10 bg-bg-primary border-2 border-border-light rounded-[2rem] flex items-center gap-3 font-black text-base text-text-primary hover:border-gold transition-all shadow-xl shadow-black/[0.02]">
             Open Kutumbly Free
             <ArrowRight size={20} />
           </Link>

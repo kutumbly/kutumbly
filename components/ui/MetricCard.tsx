@@ -55,7 +55,7 @@ export default function MetricCard({
   };
 
   return (
-    <div className={`relative bg-white p-5 rounded-[1.8rem] border shadow-black/[0.02] shadow-xl transition-all hover:border-gold/30 group ${statusBorders[status]}`}>
+    <div className={`relative bg-bg-primary p-5 rounded-[1.8rem] border shadow-black/[0.02] shadow-xl transition-all hover:border-gold/30 group ${statusBorders[status]}`}>
       {/* Subtle Status Top-bar */}
       <div className={`absolute top-0 left-6 right-6 h-[2px] rounded-b-full opacity-30 group-hover:opacity-100 transition-opacity ${statusAccents[status]}`} />
 

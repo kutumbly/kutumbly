@@ -22,9 +22,11 @@ import { useStaff } from '@/hooks/useStaff';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
 import { Briefcase, UserCheck, CalendarDays, Wallet, UserMinus, UserPlus, Phone, History, MoreHorizontal, ArrowRight, ArrowLeft } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import RupeesDisplay from '../ui/RupeesDisplay';
 import { StaffMember, SalaryPayment, AttendanceRecord } from '@/types/db';
+
+type StaffView = 'overview' | 'staff-ledger';
 
 export default function HomeStaffModule() {
   const { lang } = useAppStore();
@@ -48,12 +50,30 @@ export default function HomeStaffModule() {
   const totalMonthlyPayout = staff.reduce((acc: number, s: StaffMember) => acc + s.salary, 0);
   const presentToday = attendance.filter((a: AttendanceRecord) => a.date === new Date().toISOString().slice(0, 10) && a.status === 'present').length;
 
+  const [view, setView] = React.useState<StaffView>('overview');
+  const [activeStaff, setActiveStaff] = React.useState<StaffMember | null>(null);
+
+  const getBreadcrumbs = () => {
+    const b = [lang === 'en' ? "Staff" : "Sahayak"];
+    if (view === 'staff-ledger') b.push(activeStaff?.name || '');
+    return b;
+  };
+
+  const handleBack = () => {
+    if (view === 'staff-ledger') setView('overview');
+  };
+
   return (
     <ModuleShell 
-      title={lang === 'en' ? "HomeStaff Management" : "Ghar ka Staff"}
-      subtitle={lang === 'en' ? "Managing household support and payroll" : "Ghar ke parivaar sam sahayakon ka hisab"}
-      onAdd={showAddForm ? undefined : () => setShowAddForm(true)}
-      addLabel={lang === 'en' ? "Add Staff" : "Naya Staff"}
+      title={
+         view === 'overview' ? (lang === 'en' ? "HomeStaff Management" : "Ghar ka Staff") :
+         `${activeStaff?.name} Ledger`
+      }
+      subtitle={view === 'overview' ? (lang === 'en' ? "Managing household support and payroll" : "Ghar ke parivaar sam sahayakon ka hisab") : undefined}
+      onAdd={showAddForm || view === 'staff-ledger' ? undefined : () => setShowAddForm(true)}
+      addLabel={view === 'overview' ? (lang === 'en' ? "Add Staff" : "Naya Staff") : undefined}
+      breadcrumbs={view !== 'overview' && !showAddForm ? getBreadcrumbs() : undefined}
+      onBack={showAddForm ? () => setShowAddForm(false) : (view !== 'overview' ? handleBack : undefined)}
     >
       {showAddForm ? (
         <div className="flex flex-col gap-6">
@@ -97,7 +117,15 @@ export default function HomeStaffModule() {
           </div>
         </div>
       ) : (
-      <div className="space-y-8">
+      <AnimatePresence mode="wait">
+        {view === 'overview' && !showAddForm && (
+        <motion.div 
+           key="overview"
+           initial={{ opacity: 0, x: -10 }}
+           animate={{ opacity: 1, x: 0 }}
+           exit={{ opacity: 0, x: 10 }}
+           className="space-y-8"
+        >
         
         {/* Payroll & Attendance Dashboard */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -113,7 +141,7 @@ export default function HomeStaffModule() {
              Support Team Roster
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             {staff.length > 0 ? staff.map((s: StaffMember, i: number) => {
+              {staff.length > 0 ? staff.map((s: StaffMember, i: number) => {
                const initials = s.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
                const sAtt = attendance.filter((a: AttendanceRecord) => a.staff_id === s.id);
                const pPercentage = sAtt.length > 0 ? (sAtt.filter((a: AttendanceRecord) => a.status === 'present').length / sAtt.length) * 100 : 100;
@@ -121,8 +149,9 @@ export default function HomeStaffModule() {
                return (
                 <motion.div 
                    key={String(s.id)}
+                   onClick={() => { setActiveStaff(s); setView('staff-ledger'); }}
                    whileHover={{ y: -2 }}
-                   className="card p-6 group transition-all hover:border-gold/30 hover:shadow-xl bg-bg-primary"
+                   className="card p-6 group transition-all hover:border-gold/30 hover:shadow-xl bg-bg-primary cursor-pointer"
                 >
                    <div className="flex items-center gap-5 mb-5">
                       <div className="w-16 h-16 rounded-2xl bg-bg-secondary border-2 border-border-light flex items-center justify-center font-black text-xl text-text-secondary group-hover:bg-gold/10 group-hover:text-gold group-hover:border-gold/20 transition-all shadow-inner">
@@ -133,7 +162,7 @@ export default function HomeStaffModule() {
                              <h4 className="text-base font-black text-text-primary tracking-tight">{s.name}</h4>
                              <div className="flex items-center gap-2">
                                 <span className="text-[9px] font-black bg-bg-success text-text-success px-2.5 py-1 rounded-full uppercase tracking-widest border border-text-success/10">Present</span>
-                                <button onClick={() => removeStaff(s.id)} className="text-text-tertiary hover:text-text-danger transition-colors p-1 opacity-0 group-hover:opacity-100">
+                                <button onClick={(e) => { e.stopPropagation(); removeStaff(s.id); }} className="text-text-tertiary hover:text-text-danger transition-colors p-1 opacity-0 group-hover:opacity-100">
                                    <MoreHorizontal size={14} />
                                 </button>
                              </div>
@@ -223,7 +252,99 @@ export default function HomeStaffModule() {
            </div>
           </section>
 
-       </div>
+        </motion.div>
+        )}
+
+        {/* Level 2: Staff Ledger Drill Down */}
+        {view === 'staff-ledger' && activeStaff && !showAddForm && (
+        <motion.div
+           key="staff-ledger"
+           initial={{ opacity: 0, x: 10 }}
+           animate={{ opacity: 1, x: 0 }}
+           exit={{ opacity: 0, x: -10 }}
+           className="space-y-8"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+             <div className="md:col-span-1 bg-bg-primary border border-border-light rounded-[2.5rem] p-8 flex flex-col items-center justify-center text-center shadow-xl shadow-black/[0.02]">
+                 <div className="w-24 h-24 rounded-3xl bg-gold-light border-2 border-border-light flex items-center justify-center font-black text-text-tertiary text-3xl mb-6 shadow-sm">
+                   <Briefcase size={40} />
+                 </div>
+                 <h2 className="text-2xl font-black text-text-primary tracking-tight">{activeStaff.name}</h2>
+                 <p className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em] mt-2 opacity-80">{activeStaff.role} • {activeStaff.phone}</p>
+                 <div className="mt-8 pt-8 border-t border-border-light/50 w-full grid grid-cols-2 gap-4 divide-x divide-border-light/50">
+                    <div>
+                       <div className="text-[10px] font-black text-text-tertiary uppercase tracking-widest mb-1">Salary</div>
+                       <div className="text-xl font-black text-text-primary tabular-nums">₹{activeStaff.salary.toLocaleString()}</div>
+                    </div>
+                    <div>
+                       <div className="text-[10px] font-black text-text-tertiary uppercase tracking-widest mb-1">Status</div>
+                       <div className="text-sm font-black text-success uppercase mt-2">Active</div>
+                    </div>
+                 </div>
+             </div>
+
+             <div className="md:col-span-2 space-y-6">
+               <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl shadow-black/[0.02]">
+                  <div className="flex items-center justify-between mb-6">
+                     <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] flex items-center gap-2">
+                        <Wallet size={16} className="text-gold" /> Payout History
+                     </h3>
+                     <button className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline">+ Process Pay</button>
+                  </div>
+                  <table className="w-full text-left">
+                     <thead>
+                        <tr className="border-b border-border-light bg-bg-tertiary">
+                           <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] rounded-tl-xl">Month</th>
+                           <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em]">Paid On</th>
+                           <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] rounded-tr-xl text-right">Amount</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        {payments.filter(p => p.staff_id === activeStaff.id).map((p, i) => (
+                           <tr key={p.id} className="border-b border-border-light/50 hover:bg-bg-tertiary transition-colors group">
+                              <td className="p-4 text-xs font-bold text-text-secondary uppercase">{p.month}</td>
+                              <td className="p-4 text-xs font-bold text-text-secondary">{p.paid_on}</td>
+                              <td className="p-4 text-sm font-black text-text-primary text-right">₹{p.net.toLocaleString()}</td>
+                           </tr>
+                        ))}
+                     </tbody>
+                  </table>
+                  {payments.filter(p => p.staff_id === activeStaff.id).length === 0 && (
+                     <div className="text-center py-8 text-[10px] font-black text-text-tertiary uppercase tracking-widest opacity-50">
+                        No payments yet
+                     </div>
+                  )}
+               </div>
+               
+               <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl shadow-black/[0.02]">
+                  <div className="flex items-center justify-between mb-6">
+                     <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] flex items-center gap-2">
+                        <CalendarDays size={16} className="text-info" /> Attendance History
+                     </h3>
+                     <button className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline">+ Mark Present</button>
+                  </div>
+                  <div className="space-y-3">
+                     {attendance.filter(a => a.staff_id === activeStaff.id).map((a, i) => (
+                        <div key={i} className="flex items-center justify-between p-4 bg-bg-tertiary border border-border-light rounded-2xl">
+                           <div className="text-sm font-bold text-text-primary">{a.date}</div>
+                           <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border ${a.status === 'present' ? 'bg-success/5 text-success border-success/10' : a.status === 'absent' ? 'bg-danger/5 text-danger border-danger/10' : 'bg-warning/5 text-warning border-warning/10'}`}>
+                              {a.status}
+                           </span>
+                        </div>
+                     ))}
+                     {attendance.filter(a => a.staff_id === activeStaff.id).length === 0 && (
+                        <div className="text-center py-8 text-[10px] font-black text-text-tertiary uppercase tracking-widest opacity-50">
+                           No attendance logged
+                        </div>
+                     )}
+                  </div>
+               </div>
+               
+             </div>
+          </div>
+        </motion.div>
+        )}
+      </AnimatePresence>
       )}
     </ModuleShell>
   );

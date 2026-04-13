@@ -107,8 +107,8 @@ export default function HomeModule() {
            { icon: Fingerprint, label: lang === 'en' ? "Biometric" : "Pehchan", value: bioActive ? (lang === 'en' ? 'Hardware Active' : 'Sajag') : (lang === 'en' ? 'PIN Required' : 'PIN Chahiye') },
            { icon: HardDrive, label: lang === 'en' ? "Sync Grid" : "Sync Jaal", value: lang === 'en' ? "Local P2P Discovery" : "Sovereign Sync" }
          ].map((sh, idx) => (
-           <div key={idx} className="bg-white border border-border-light rounded-[2rem] p-6 flex items-center gap-5 shadow-black/[0.02] shadow-xl transition-all hover:border-gold/30">
-              <div className="w-12 h-12 rounded-2xl bg-[#fdfaf5] flex items-center justify-center text-gold-text border border-border-light shadow-sm">
+           <div key={idx} className="bg-bg-primary border border-border-light rounded-[2rem] p-6 flex items-center gap-5 shadow-black/[0.02] shadow-xl transition-all hover:border-gold/30">
+              <div className="w-12 h-12 rounded-2xl bg-gold-light flex items-center justify-center text-gold-text border border-border-light shadow-sm">
                  <sh.icon size={22} />
               </div>
               <div className="flex-1">
@@ -143,9 +143,9 @@ export default function HomeModule() {
               <motion.div 
                 key={i} 
                 whileHover={{ x: 4 }}
-                className="bg-white border border-border-light p-5 rounded-[2rem] flex gap-5 items-start group shadow-black/[0.01] shadow-lg transition-all"
+                className="bg-bg-primary border border-border-light p-5 rounded-[2rem] flex gap-5 items-start group shadow-black/[0.01] shadow-lg transition-all"
               >
-                <div className="w-12 h-12 rounded-2xl bg-[#FAF9F6] flex items-center justify-center flex-shrink-0 border border-border-light group-hover:border-gold/30 group-hover:bg-white transition-all shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-bg-tertiary flex items-center justify-center flex-shrink-0 border border-border-light group-hover:border-gold/30 group-hover:bg-bg-primary transition-all shadow-sm">
                   <Clock className="w-5 h-5 text-text-tertiary" />
                 </div>
                 <div className="flex-1">
@@ -163,7 +163,7 @@ export default function HomeModule() {
                 </div>
               </motion.div>
             )) : (
-              <div className="bg-white border border-border-light border-dashed rounded-[3rem] py-20 flex flex-col items-center justify-center opacity-30">
+              <div className="bg-bg-primary border border-border-light border-dashed rounded-[3rem] py-20 flex flex-col items-center justify-center opacity-30">
                  <Shield className="w-14 h-14 mb-6 text-text-tertiary" strokeWidth={1} />
                  <p className="text-[10px] font-black uppercase tracking-[0.4em]">{lang === 'hi' ? 'Abhi Kuch Nahi' : 'Zero halchal detected'}</p>
               </div>
@@ -177,7 +177,7 @@ export default function HomeModule() {
               <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] px-2">
                  {lang === 'hi' ? 'Sehat Pulse' : 'Health Pulse'}
               </div>
-              <div className="bg-white border border-border-light rounded-[2.5rem] p-8 space-y-8 shadow-xl shadow-black/[0.02]">
+              <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 space-y-8 shadow-xl shadow-black/[0.02]">
                  <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-red-500/5 flex items-center justify-center text-red-500 border border-red-500/10">
                        <Heart className="animate-pulse" size={20} />
@@ -185,23 +185,23 @@ export default function HomeModule() {
                     <div className="text-sm font-black text-text-primary uppercase tracking-wider">{lang === 'hi' ? 'Tandurusti Report' : 'Wellness Pulse'}</div>
                  </div>
                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-[#FAF9F6] p-4 rounded-2xl border border-border-light shadow-sm">
+                    <div className="bg-bg-tertiary p-4 rounded-2xl border border-border-light shadow-sm">
                        <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">{lang === 'hi' ? 'Vajan' : 'Avg Weight'}</div>
                        <div className="text-base font-black text-text-primary">{avgWeight > 0 ? `${avgWeight.toFixed(1)}kg` : '--'}</div>
                     </div>
-                    <div className="bg-[#FAF9F6] p-4 rounded-2xl border border-border-light shadow-sm">
+                    <div className="bg-bg-tertiary p-4 rounded-2xl border border-border-light shadow-sm">
                        <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">{lang === 'hi' ? 'Cheeni' : 'Latest Sugar'}</div>
                        <div className="text-base font-black text-text-primary">{readings[0]?.blood_sugar || '--'}<span className="text-[10px] ml-1 opacity-40">mg</span></div>
                     </div>
                  </div>
-                 <button className="w-full py-4 bg-white border border-border-light rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-text-tertiary hover:text-gold-text hover:border-gold-text transition-all">
+                 <button className="w-full py-4 bg-bg-primary border border-border-light rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-text-tertiary hover:text-gold-text hover:border-gold-text transition-all">
                     {lang === 'hi' ? 'Vitals Dekhein' : 'Full Vitals Data'}
                  </button>
               </div>
            </motion.section>
 
            <motion.section variants={item} className="grid grid-cols-1 gap-4">
-              <button className="flex items-center justify-between p-6 bg-white border border-border-light rounded-[2rem] hover:border-gold-text transition-all group shadow-xl shadow-black/[0.02] active:scale-[0.98]">
+              <button className="flex items-center justify-between p-6 bg-bg-primary border border-border-light rounded-[2rem] hover:border-gold-text transition-all group shadow-xl shadow-black/[0.02] active:scale-[0.98]">
                 <div className="flex items-center gap-5">
                    <div className="w-14 h-14 rounded-2xl bg-gold/5 text-gold-text flex items-center justify-center border border-gold/10 group-hover:bg-gold-text group-hover:text-white transition-all shadow-sm">
                       <Zap size={24} strokeWidth={3} />
