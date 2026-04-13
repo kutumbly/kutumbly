@@ -22,7 +22,6 @@ import { useInvest } from '@/hooks/useInvest';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
 import SparkLine from '../ui/SparkLine';
-import RupeesDisplay from '../ui/RupeesDisplay';
 import { TrendingUp, PieChart, ArrowUpRight, ArrowDownRight, Briefcase, Landmark, Target, FileText, CalendarDays } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Investment } from '@/types/db';
@@ -31,11 +30,27 @@ type InvestView = 'overview' | 'asset-list' | 'ledger';
 
 export default function InvestModule() {
   const { lang } = useAppStore();
-  const { investments, summary } = useInvest();
+  const { investments, summary, addInvestment, addTransaction, getTransactions, updateValuation } = useInvest();
   
   const [view, setView] = useState<InvestView>('overview');
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedHold, setSelectedHold] = useState<Investment | null>(null);
+
+  // Add Investment Modal state
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [iName, setIName] = useState('');
+  const [iType, setIType] = useState('Mutual Fund');
+  const [iPrincipal, setIPrincipal] = useState('');
+  const [iValue, setIValue] = useState('');
+  const [iSip, setISip] = useState('');
+  const [iStartDate, setIStartDate] = useState('');
+
+  // Add Transaction Modal state
+  const [showTxModal, setShowTxModal] = useState(false);
+  const [txType, setTxType] = useState<'sip' | 'lumpsum' | 'withdrawal' | 'valuation'>('sip');
+  const [txAmount, setTxAmount] = useState('');
+  const [txDate, setTxDate] = useState('');
+  const [txNotes, setTxNotes] = useState('');
 
   const getBreadcrumbs = () => {
     const list = [lang === 'en' ? "Wealth" : "Nivesh"];
@@ -51,6 +66,40 @@ export default function InvestModule() {
 
   const assetTypes = Array.from(new Set(investments.map(i => i.type)));
 
+  const handleSaveInvestment = () => {
+    if (!iName.trim() || !iPrincipal) return;
+    addInvestment({
+      name: iName,
+      type: iType,
+      principal: Number(iPrincipal),
+      current_value: Number(iValue) || Number(iPrincipal),
+      units: null,
+      monthly_sip: Number(iSip) || null,
+      start_date: iStartDate || new Date().toISOString().split('T')[0],
+      maturity_date: null,
+      notes: null,
+    });
+    setShowAddModal(false);
+    setIName(''); setIPrincipal(''); setIValue(''); setISip('');
+  };
+
+  const handleSaveTransaction = () => {
+    if (!selectedHold || !txAmount) return;
+    if (txType === 'valuation') {
+      updateValuation(selectedHold.id, Number(txAmount), txNotes);
+    } else {
+      addTransaction({
+        investment_id: selectedHold.id,
+        type: txType as any,
+        amount: Number(txAmount),
+        date: txDate || new Date().toISOString().split('T')[0],
+        notes: txNotes,
+      });
+    }
+    setShowTxModal(false);
+    setTxAmount(''); setTxNotes('');
+  };
+
   return (
     <ModuleShell 
       title={
@@ -59,7 +108,7 @@ export default function InvestModule() {
         selectedHold?.name || "Ledger"
       }
       subtitle={view === 'overview' ? (lang === 'en' ? "Tracking family assets & growth" : "Parivar ki bachat aur nivesh ka lekha") : undefined}
-      onAdd={view === 'overview' ? () => {} : undefined}
+      onAdd={view === 'overview' && !showAddModal ? () => setShowAddModal(true) : undefined}
       addLabel={view === 'overview' ? (lang === 'en' ? "Add Holding" : "Naya Nivesh") : undefined}
       breadcrumbs={view !== 'overview' ? getBreadcrumbs() : undefined}
       onBack={view !== 'overview' ? handleBack : undefined}
@@ -73,6 +122,68 @@ export default function InvestModule() {
             exit={{ opacity: 0, x: 10 }}
             className="space-y-8"
           >
+          
+          {/* Add Investment Modal overlay */}
+          <AnimatePresence>
+            {showAddModal && (
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                className="bg-bg-primary border border-gold/30 rounded-[2.5rem] p-8 shadow-2xl space-y-6 mb-8">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">New Investment</h3>
+                  <button onClick={() => setShowAddModal(false)} className="text-text-tertiary hover:text-text-danger font-bold">✕</button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Asset Name *</label>
+                    <input type="text" value={iName} onChange={e => setIName(e.target.value)} placeholder="e.g. HDFC Index Fund"
+                      className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold" />
+                  </div>
+                  
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Asset Category</label>
+                    <div className="flex gap-2">
+                      {['Mutual Fund', 'PPF', 'Stock', 'FD'].map((t) => (
+                        <button key={t} onClick={() => setIType(t)}
+                          className={`flex-1 py-3 rounded-xl text-[10px] font-black border transition-all ${iType === t ? 'bg-gold-text text-white border-gold' : 'border-border-light text-text-tertiary'}`}>
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Invested Amount (Principal) *</label>
+                    <input type="number" value={iPrincipal} onChange={e => setIPrincipal(e.target.value)} placeholder="e.g. 50000"
+                      className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold" />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Current Market Value</label>
+                    <input type="number" value={iValue} onChange={e => setIValue(e.target.value)} placeholder="e.g. 52000 (Optional)"
+                      className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold" />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Monthly SIP (If any)</label>
+                    <input type="number" value={iSip} onChange={e => setISip(e.target.value)} placeholder="e.g. 5000"
+                      className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold" />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Start Date</label>
+                    <input type="date" value={iStartDate} onChange={e => setIStartDate(e.target.value)}
+                      className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold" />
+                  </div>
+                </div>
+                
+                <button onClick={handleSaveInvestment} disabled={!iName.trim() || !iPrincipal}
+                  className="w-full h-14 bg-gold-text text-white font-black rounded-2xl text-[11px] uppercase tracking-widest hover:opacity-90 disabled:opacity-30 shadow-lg shadow-gold/10">
+                  Add Holding
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         
         {/* Wealth Dashboard */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -185,7 +296,7 @@ export default function InvestModule() {
                         </div>
                         <div className="text-right">
                            <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-0.5">Market Value</div>
-                           <div className={`text-sm font-black ${isProfit ? 'text-success' : 'text-danger'}`}>
+                           <div className={`text-sm font-black ${isProfit ? 'text-text-success' : 'text-text-danger'}`}>
                              ₹{h.current_value.toLocaleString('en-IN')}
                            </div>
                         </div>
@@ -222,38 +333,79 @@ export default function InvestModule() {
               </div>
             </div>
             
+            {showTxModal && (
+              <div className="p-8 bg-bg-secondary border-b border-border-light">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">Add Ledger Entry</h3>
+                  <button onClick={() => setShowTxModal(false)} className="text-text-tertiary hover:text-text-danger font-bold">✕</button>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Type</label>
+                    <select value={txType} onChange={e => setTxType(e.target.value as any)}
+                      className="bg-bg-primary border border-border-light rounded-xl p-3 text-sm font-bold focus:border-gold">
+                      <option value="sip">SIP / Deposit</option>
+                      <option value="lumpsum">Lumpsum</option>
+                      <option value="withdrawal">Withdrawal</option>
+                      <option value="valuation">Valuation Update</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{txType === 'valuation' ? 'New Value' : 'Amount'}</label>
+                    <input type="number" value={txAmount} onChange={e => setTxAmount(e.target.value)} placeholder="e.g. 5000"
+                      className="bg-bg-primary border border-border-light rounded-xl p-3 text-sm font-bold focus:border-gold" />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Date</label>
+                    <input type="date" value={txDate} onChange={e => setTxDate(e.target.value)}
+                      className="bg-bg-primary border border-border-light rounded-xl p-3 text-sm font-bold focus:border-gold" />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Notes</label>
+                    <input type="text" value={txNotes} onChange={e => setTxNotes(e.target.value)} placeholder="Optional details..."
+                      className="bg-bg-primary border border-border-light rounded-xl p-3 text-sm font-bold focus:border-gold" />
+                  </div>
+                </div>
+                <button onClick={handleSaveTransaction} disabled={!txAmount}
+                  className="w-full bg-gold-text text-white py-3 rounded-xl font-black text-[11px] uppercase tracking-widest">
+                  Save Entry
+                </button>
+              </div>
+            )}
+
             <div className="p-0">
                <table className="w-full text-left border-collapse">
                   <thead>
                      <tr className="border-b border-border-light bg-bg-primary">
                         <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Date</th>
                         <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Particulars</th>
-                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">Units</th>
+                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">Type</th>
                         <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">Debit (Investment)</th>
                      </tr>
                   </thead>
                   <tbody>
-                     {/* Mock Drill Down Ledger Data */}
-                     {[
-                       { d: '01 Apr 2026', p: 'Monthly SIP Auto-Debit', u: '+12.450', a: selectedHold.monthly_sip || 5000 },
-                       { d: '01 Mar 2026', p: 'Monthly SIP Auto-Debit', u: '+12.102', a: selectedHold.monthly_sip || 5000 },
-                       { d: '01 Feb 2026', p: 'Monthly SIP Auto-Debit', u: '+13.001', a: selectedHold.monthly_sip || 5000 },
-                     ].map((row, i) => (
+                     {getTransactions(selectedHold.id).length > 0 ? getTransactions(selectedHold.id).map((row, i) => (
                        <tr key={i} className="border-b border-border-light/50 hover:bg-bg-tertiary transition-colors cursor-pointer group">
-                          <td className="p-5 text-[11px] font-bold text-text-secondary">{row.d}</td>
+                          <td className="p-5 text-[11px] font-bold text-text-secondary">{row.date}</td>
                           <td className="p-5 text-sm font-black text-text-primary tracking-tight flex items-center gap-3">
                              <FileText size={14} className="text-text-tertiary group-hover:text-gold" />
-                             {row.p}
+                             {row.notes || (row.type === 'sip' ? 'SIP Auto-Debit' : row.type === 'valuation' ? 'Valuation Update' : 'Investment Entry')}
                           </td>
-                          <td className="p-5 text-xs font-bold text-text-secondary text-right">{row.u}</td>
-                          <td className="p-5 text-sm font-black text-text-primary text-right text-success">₹{(Number(row.a)).toLocaleString()}</td>
+                          <td className="p-5 text-xs font-bold text-text-secondary text-right capitalize">{row.type}</td>
+                          <td className={`p-5 text-sm font-black text-right ${row.type === 'withdrawal' ? 'text-text-danger' : row.type === 'valuation' ? 'text-text-primary' : 'text-text-success'}`}>
+                            {row.type === 'withdrawal' ? '-' : row.type === 'valuation' ? '' : '+'}₹{Number(row.amount).toLocaleString()}
+                          </td>
                        </tr>
-                     ))}
+                     )) : (
+                       <tr>
+                         <td colSpan={4} className="p-8 text-center text-[10px] font-black text-text-tertiary uppercase tracking-widest">No transactions yet</td>
+                       </tr>
+                     )}
                   </tbody>
                </table>
                
-               <div className="p-8 text-center text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] flex flex-col items-center gap-3">
-                 <div className="w-8 h-8 rounded-full border border-border-light flex items-center justify-center hover:bg-gold hover:border-gold hover:text-white transition-all cursor-pointer">
+               <div onClick={() => setShowTxModal(true)} className="p-8 text-center text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] flex flex-col items-center gap-3 hover:text-gold transition-colors cursor-pointer group">
+                 <div className="w-8 h-8 rounded-full border border-border-light flex items-center justify-center group-hover:bg-gold group-hover:border-gold group-hover:text-white transition-all">
                     +
                  </div>
                  Enter Manual Voucher

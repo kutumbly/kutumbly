@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS diary_entries (
 );
 CREATE TABLE IF NOT EXISTS tasks (
   id TEXT PRIMARY KEY, title TEXT, description TEXT,
-  priority TEXT, status TEXT DEFAULT 'pending',
+  priority TEXT, status TEXT DEFAULT 'pending', category TEXT DEFAULT 'Home',
   assigned_to TEXT, due_date TEXT, created_at TEXT, completed_at TEXT
 );
 CREATE TABLE IF NOT EXISTS transactions (
@@ -61,6 +61,12 @@ CREATE TABLE IF NOT EXISTS investments (
   id TEXT PRIMARY KEY, name TEXT, type TEXT,
   principal REAL, current_value REAL, units REAL,
   monthly_sip REAL, start_date TEXT, maturity_date TEXT, notes TEXT
+);
+CREATE TABLE IF NOT EXISTS investment_transactions (
+  id TEXT PRIMARY KEY, investment_id TEXT NOT NULL,
+  type TEXT, amount REAL, date TEXT, notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (investment_id) REFERENCES investments(id)
 );
 CREATE TABLE IF NOT EXISTS grocery_lists (
   id TEXT PRIMARY KEY, name TEXT, created_at TEXT, status TEXT DEFAULT 'active'

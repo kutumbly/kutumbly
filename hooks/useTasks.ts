@@ -50,5 +50,32 @@ export function useTasks() {
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
-  return { tasks, toggleTask };
+  const addTask = useCallback((task: Omit<FamilyTask, 'id' | 'created_at' | 'status'>) => {
+    if (!db) return;
+    const id = crypto.randomUUID();
+    const created_at = new Date().toISOString();
+    
+    db.run(
+      `INSERT INTO tasks (id, title, description, priority, status, category, assigned_to, due_date, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, task.title, task.description || null, task.priority, 'pending', task.category || 'Home', task.assigned_to, task.due_date || null, created_at]
+    );
+
+    if (fileHandle && currentPin) {
+      saveVault(db, currentPin, fileHandle).catch(console.error);
+    }
+    setTick(t => t + 1);
+  }, [db, currentPin, fileHandle]);
+
+  const deleteTask = useCallback((id: string) => {
+    if (!db) return;
+    db.run("DELETE FROM tasks WHERE id = ?", [id]);
+    
+    if (fileHandle && currentPin) {
+      saveVault(db, currentPin, fileHandle).catch(console.error);
+    }
+    setTick(t => t + 1);
+  }, [db, currentPin, fileHandle]);
+
+  return { tasks, toggleTask, addTask, deleteTask };
 }

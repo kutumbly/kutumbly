@@ -31,7 +31,7 @@
  */
 
 /** Bump this whenever you add new tables or ALTER existing ones */
-export const CURRENT_SCHEMA_VERSION = 2;
+export const CURRENT_SCHEMA_VERSION = 3;
 
 /** What changed in each version — shown in the migration modal */
 export const MIGRATION_CHANGELOGS: Record<number, string[]> = {
@@ -44,6 +44,10 @@ export const MIGRATION_CHANGELOGS: Record<number, string[]> = {
     "Grocery module — full write support (add, check, delete items).",
     "Diary module — full write support (save & delete entries).",
     "StaffMember type fix — monthly_salary column alignment.",
+  ],
+  3: [
+    "Task manager category field support added.",
+    "Investment transactions tracking added for robust ledger.",
   ],
 };
 
@@ -161,6 +165,28 @@ const MIGRATIONS: Record<number, (db: any) => void> = {
     } catch {
       // Already exists — safe to ignore
     }
+  },
+
+  // ── V3: Tasks Category & Investment Ledger ──────────
+  3: (db) => {
+    // --- tasks category ---
+    try {
+      db.run(`ALTER TABLE tasks ADD COLUMN category TEXT DEFAULT 'Home'`);
+    } catch {
+      // Already exists
+    }
+
+    // --- investment_transactions ---
+    db.run(`CREATE TABLE IF NOT EXISTS investment_transactions (
+      id TEXT PRIMARY KEY,
+      investment_id TEXT NOT NULL,
+      type TEXT,
+      amount REAL,
+      date TEXT,
+      notes TEXT,
+      created_at TEXT,
+      FOREIGN KEY (investment_id) REFERENCES investments(id)
+    )`);
   },
 };
 

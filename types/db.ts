@@ -37,6 +37,7 @@ export interface FamilyTask {
   description: string | null;
   priority: 'high' | 'medium' | 'low';
   status: 'pending' | 'done';
+  category: string;
   assigned_to: string;
   due_date: string | null;
   created_at?: string;
@@ -203,6 +204,16 @@ export interface Investment {
   start_date: string;
   maturity_date: string | null;
   notes: string | null;
+}
+
+export interface InvestmentTransaction {
+  id: string;
+  investment_id: string;
+  type: 'sip' | 'lumpsum' | 'withdrawal' | 'valuation';
+  amount: number;
+  date: string;
+  notes: string | null;
+  created_at?: string;
 }
 
 /**
