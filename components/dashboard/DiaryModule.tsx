@@ -28,12 +28,23 @@ type DiaryView = 'overview' | 'timeline' | 'reading';
 
 export default function DiaryModule() {
   const { lang } = useAppStore();
-  const { entries } = useDiary();
+  const { entries, addEntry, deleteEntry } = useDiary();
   const [searchTerm, setSearchTerm] = useState('');
+  const [composeText, setComposeText] = useState('');
+  const [composeMood, setComposeMood] = useState<string>('neutral');
+  const [showCompose, setShowCompose] = useState(false);
 
   const [view, setView] = useState<DiaryView>('overview');
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [activeEntry, setActiveEntry] = useState<DiaryEntry | null>(null);
+
+  const handleSaveEntry = () => {
+    if (!composeText.trim()) return;
+    addEntry(composeText, composeMood);
+    setComposeText('');
+    setComposeMood('neutral');
+    setShowCompose(false);
+  };
 
   const filteredEntries = entries.filter(e => {
     const matchesSearch = String(e.content).toLowerCase().includes(searchTerm.toLowerCase());
@@ -68,8 +79,8 @@ export default function DiaryModule() {
         "Memoir"
       }
       subtitle={view === 'overview' ? (lang === 'en' ? "Preserving your legacy, day by day" : "Har din ki yaadein, hamesha ke liye") : undefined}
-      onAdd={() => {}}
-      addLabel={view === 'overview' ? (lang === 'en' ? "New Journal" : "Nayi Yaadein") : "Write Entry"}
+      onAdd={view === 'overview' && !showCompose ? () => setShowCompose(true) : undefined}
+      addLabel={lang === 'en' ? "New Entry" : "Nayi Yaad"}
       breadcrumbs={view !== 'overview' ? getBreadcrumbs() : undefined}
       onBack={view !== 'overview' ? handleBack : undefined}
     >
@@ -83,6 +94,48 @@ export default function DiaryModule() {
            className="space-y-8 md:space-y-12"
         >
         
+        {/* Compose Panel — shown when + is pressed */}
+        <AnimatePresence>
+          {showCompose && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="bg-bg-primary border border-gold/30 rounded-[2.5rem] p-8 shadow-2xl shadow-gold/5 space-y-6"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">
+                  {lang === 'en' ? 'New Journal Entry' : 'Nayi Diary Entry'}
+                </h3>
+                <button onClick={() => setShowCompose(false)} className="text-text-tertiary hover:text-text-danger text-xs font-bold uppercase tracking-widest">✕</button>
+              </div>
+              <textarea
+                autoFocus
+                placeholder={lang === 'hi' ? "Aaj kya hua? Apne dil ki baat likhein..." : "What happened today? Write from your heart..."}
+                className="w-full bg-bg-secondary border border-border-light rounded-2xl p-6 text-[14px] font-bold text-text-primary leading-relaxed resize-none focus:outline-none focus:border-gold transition-all min-h-[160px]"
+                value={composeText}
+                onChange={e => setComposeText(e.target.value)}
+              />
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Mood:</span>
+                {['happy', 'neutral', 'sad', 'grateful', 'anxious'].map(m => (
+                  <button key={m} onClick={() => setComposeMood(m)}
+                    className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${composeMood === m ? 'bg-gold/10 border-gold text-gold' : 'border-border-light text-text-tertiary hover:border-gold/30'}`}>
+                    {m}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={handleSaveEntry}
+                disabled={!composeText.trim()}
+                className="w-full h-14 bg-gold-text text-white font-black rounded-2xl text-[11px] uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-30 shadow-lg shadow-gold/10"
+              >
+                {lang === 'en' ? 'Save to Vault' : 'Vault Mein Bajao'}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Search & Filter Bar */}
         <div className="flex gap-4">
           <div className="relative flex-1 group">

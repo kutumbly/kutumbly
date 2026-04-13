@@ -149,7 +149,10 @@ export interface FamilyMember {
   name: string;
   role: string;
   dob: string | null;
-  initials: string;
+  /** DB column: avatar_initials */
+  avatar_initials: string;
+  /** Alias for backward compat */
+  initials?: string;
 }
 
 /**
@@ -159,6 +162,9 @@ export interface StaffMember {
   id: string;
   name: string;
   role: string;
+  /** DB column: monthly_salary */
+  monthly_salary: number;
+  /** Convenience alias used in display code */
   salary: number;
   join_date: string;
   phone: string;

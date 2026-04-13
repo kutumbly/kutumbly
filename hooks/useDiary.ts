@@ -19,14 +19,42 @@
 import { DiaryEntry } from '@/types/db';
 import { runQuery } from '@/lib/db';
 import { useAppStore } from '@/lib/store';
-import { useMemo } from 'react';
+import { saveVault } from '@/lib/vault';
+import { useMemo, useCallback, useState } from 'react';
 
 export function useDiary() {
-  const { db } = useAppStore();
+  const { db, currentPin, fileHandle } = useAppStore();
+  const [tick, setTick] = useState(0);
 
   const entries = useMemo<DiaryEntry[]>(() => {
     return runQuery<DiaryEntry>(db, "SELECT * FROM diary_entries ORDER BY date DESC");
-  }, [db]);
+  }, [db, tick]);
 
-  return { entries };
+  const addEntry = useCallback((content: string, mood_label?: string) => {
+    if (!db || !content.trim()) return;
+    const id = crypto.randomUUID();
+    const date = new Date().toISOString().split('T')[0];
+    const created_at = new Date().toISOString();
+
+    db.run(
+      "INSERT INTO diary_entries (id, date, content, mood_label, created_at) VALUES (?, ?, ?, ?, ?)",
+      [id, date, content.trim(), mood_label || null, created_at]
+    );
+
+    if (fileHandle && currentPin) {
+      saveVault(db, currentPin, fileHandle).catch(() => {});
+    }
+    setTick(t => t + 1);
+  }, [db, currentPin, fileHandle]);
+
+  const deleteEntry = useCallback((id: string) => {
+    if (!db) return;
+    db.run("DELETE FROM diary_entries WHERE id = ?", [id]);
+    if (fileHandle && currentPin) {
+      saveVault(db, currentPin, fileHandle).catch(() => {});
+    }
+    setTick(t => t + 1);
+  }, [db, currentPin, fileHandle]);
+
+  return { entries, addEntry, deleteEntry };
 }

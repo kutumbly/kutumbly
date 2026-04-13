@@ -29,12 +29,26 @@ import { GroceryItem } from '@/types/db';
 type GroceryView = 'overview' | 'category-items' | 'item-detail';
 
 export default function GroceryModule() {
-  const { lang, db } = useAppStore();
-  const { items } = useGrocery();
+  const { lang } = useAppStore();
+  const { items, addItem, checkItem, deleteItem, clearChecked } = useGrocery();
   
   const [view, setView] = useState<GroceryView>('overview');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeItem, setActiveItem] = useState<GroceryItem | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [fName, setFName] = useState('');
+  const [fCategory, setFCategory] = useState('Staples');
+  const [fQty, setFQty] = useState('1');
+  const [fUnit, setFUnit] = useState('kg');
+  const [fPrice, setFPrice] = useState('');
+
+  const handleAddItem = () => {
+    if (!fName.trim()) return;
+    addItem(fName, fCategory, fQty, fUnit, Number(fPrice) || 0);
+    setFName('');
+    setFPrice('');
+    setShowAddForm(false);
+  };
 
   // Group items by category
   const categories = Array.from(new Set(items.map(i => i.category)));
@@ -61,8 +75,8 @@ export default function GroceryModule() {
         activeItem?.name || "Item Details"
       }
       subtitle={view === 'overview' ? (lang === 'en' ? "Smart shopping lists with budget tracking" : "Rasoi ka saaman aur budget ka hisab") : undefined}
-      onAdd={view === 'overview' ? () => {} : undefined}
-      addLabel={view === 'overview' ? (lang === 'en' ? "Add Item" : "Saaman Jodein") : undefined}
+      onAdd={view === 'overview' && !showAddForm ? () => setShowAddForm(true) : undefined}
+      addLabel={lang === 'en' ? "Add Item" : "Saaman Jodein"}
       breadcrumbs={view !== 'overview' ? getBreadcrumbs() : undefined}
       onBack={view !== 'overview' ? handleBack : undefined}
     >
@@ -75,8 +89,64 @@ export default function GroceryModule() {
            exit={{ opacity: 0, x: 10 }}
            className="space-y-10 md:space-y-12"
         >
-        
-        {/* Shopping Overview */}
+        {/* Quick Add Form */}
+        <AnimatePresence>
+          {showAddForm && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="bg-bg-primary border border-gold/30 rounded-[2.5rem] p-8 space-y-6 shadow-2xl shadow-gold/5"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">
+                  {lang === 'en' ? 'Add to Shopping List' : 'Kirana Mein Jodein'}
+                </h3>
+                <button onClick={() => setShowAddForm(false)} className="text-text-tertiary hover:text-text-danger text-xs font-bold">✕</button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Item Name</label>
+                  <input autoFocus value={fName} onChange={e => setFName(e.target.value)} placeholder="e.g. Basmati Rice"
+                    className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold transition-all" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Category</label>
+                  <select value={fCategory} onChange={e => setFCategory(e.target.value)}
+                    className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold transition-all">
+                    {['Staples', 'Vegetables', 'Fruits', 'Dairy', 'Spices', 'Snacks', 'Beverages', 'Personal Care', 'Cleaning', 'General'].map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex flex-col gap-2 flex-1">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Qty</label>
+                    <input value={fQty} onChange={e => setFQty(e.target.value)} placeholder="1"
+                      className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold transition-all" />
+                  </div>
+                  <div className="flex flex-col gap-2 flex-1">
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Unit</label>
+                    <select value={fUnit} onChange={e => setFUnit(e.target.value)}
+                      className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold transition-all">
+                      {['kg', 'g', 'L', 'ml', 'pcs', 'dozen', 'pack', 'bottle'].map(u => <option key={u} value={u}>{u}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Est. Price (₹)</label>
+                  <input type="number" value={fPrice} onChange={e => setFPrice(e.target.value)} placeholder="0"
+                    className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold transition-all" />
+                </div>
+              </div>
+              <button onClick={handleAddItem} disabled={!fName.trim()}
+                className="w-full h-14 bg-gold-text text-white font-black rounded-2xl text-[11px] uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-30 shadow-lg shadow-gold/10">
+                {lang === 'en' ? 'Add to List' : 'List Mein Jodein'}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
            <MetricCard label="Items to Buy" value={pendingCount} status="warning" />
            <MetricCard label="Estimated Total" value={totalEstimated} isCurrency status="default" />

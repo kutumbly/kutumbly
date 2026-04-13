@@ -27,7 +27,8 @@ export function useStaff() {
   const [tick, setTick] = useState(0);
 
   const staff = useMemo<StaffMember[]>(() => {
-    return runQuery<StaffMember>(db, "SELECT * FROM staff_members ORDER BY name ASC");
+    // Alias monthly_salary → salary so UI code works uniformly
+    return runQuery<StaffMember>(db, "SELECT *, monthly_salary AS salary FROM staff_members ORDER BY name ASC");
   }, [db, tick]);
 
   const payments = useMemo<SalaryPayment[]>(() => {
