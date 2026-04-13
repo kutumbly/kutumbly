@@ -113,9 +113,9 @@ export default function DashboardPage() {
     <div className="flex flex-col min-h-screen bg-bg-tertiary">
 
       {/* ── App Header ─────────────────────────────────────────── */}
-      <header className="bg-white border-b border-border-light px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+      <header className="bg-bg-primary border-b border-border-light px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm shadow-black/[0.02]">
         <div className="flex items-center gap-4">
-          <div className="w-8 h-8 md:w-7 md:h-7 bg-white border border-border-light rounded-xl flex items-center justify-center p-1 shadow-sm">
+          <div className="w-8 h-8 md:w-7 md:h-7 bg-bg-primary border border-border-light rounded-xl flex items-center justify-center p-1 shadow-sm">
              <Image src="/favicon.svg" alt="Logo" width={20} height={20} className="brightness-110" />
           </div>
           <div className="flex flex-col md:flex-row md:items-baseline md:gap-2">
@@ -161,7 +161,7 @@ export default function DashboardPage() {
       </header>
 
       {/* ── Tab Navigation (Desktop Only) ─────────────────────────── */}
-      <nav className="hidden md:flex bg-white border-b border-border-light sticky top-[73px] z-40 overflow-x-auto scroller-hide items-center px-4">
+      <nav className="hidden md:flex bg-bg-primary border-b border-border-light sticky top-[57px] z-40 overflow-x-auto scroller-hide items-center px-4">
         {visibleTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeModule === tab.id;

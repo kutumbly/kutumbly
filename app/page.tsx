@@ -41,7 +41,7 @@ export default function LandingPage() {
       {/* Waitlist Section */}
       <section className="py-24 bg-bg-tertiary px-6">
         <div className="max-w-4xl mx-auto">
-           <div className="bg-white p-10 md:p-16 rounded-[3rem] border border-border-light shadow-xl shadow-black/[0.02] text-center">
+           <div className="bg-bg-primary p-10 md:p-16 rounded-[3rem] border border-border-light shadow-xl shadow-black/[0.02] text-center">
               <div className="flex items-center justify-center gap-4 mb-8">
                  <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 border border-blue-100">
                     <Globe size={24} />
@@ -80,7 +80,7 @@ export default function LandingPage() {
          <h2 className="text-3xl md:text-5xl font-black text-text-primary mb-4 tracking-tighter">Start your family vault today</h2>
          <p className="text-text-secondary font-medium text-base mb-12">Free forever. Works on any browser. No account needed.</p>
          
-         <Link href="/os" className="inline-flex h-16 px-10 bg-white border-2 border-border-light rounded-[2rem] items-center gap-3 font-black text-base text-text-primary hover:border-gold transition-all shadow-xl shadow-black/[0.02] mx-auto">
+         <Link href="/os" className="inline-flex h-16 px-10 bg-bg-primary border-2 border-border-light rounded-[2rem] items-center gap-3 font-black text-base text-text-primary hover:border-gold transition-all shadow-xl shadow-black/[0.02] mx-auto">
             Open Kutumbly — Free
             <ArrowRight size={20} />
          </Link>

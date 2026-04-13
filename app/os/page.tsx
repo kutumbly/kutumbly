@@ -68,8 +68,8 @@ export default function GatewayPage() {
         return <SuccessPanel />;
       default:
         return (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-secondary/20">
-            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border-[0.5px] border-border-light">
+          <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-bg-secondary/20">
+            <div className="w-16 h-16 bg-bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-sm border-[0.5px] border-border-light">
               <Image src="/favicon.svg" alt="Kutumbly Logo" width={36} height={36} className="brightness-110" />
             </div>
             <h2 className="text-xl font-bold text-text-primary mb-2">Swagat Hai!</h2>
