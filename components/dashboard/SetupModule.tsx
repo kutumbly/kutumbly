@@ -1,0 +1,328 @@
+/* ============================================================
+ * कुटुंबली — KUTUMBLY SOVEREIGN OS
+ * Zero Cloud · Local First · Encrypted · Offline Forever
+ * ============================================================
+ * System Architect   :  Jawahar R. Mallah
+ * Organisation:  AITDL Network — Sovereign Division
+ * Project     :  Kutumbly — India's Family OS
+ * Contact     :  kutumbly@outlook.com
+ * Web         :  kutumbly.com | aitdl.com | aitdl.in
+ *
+ * © 2026 Kutumbly.com — All Rights Reserved
+ * Unauthorized use or distribution is prohibited.
+ *
+ * "Memory, Not Code."
+ * ============================================================ */
+
+"use client";
+
+import React from 'react';
+import { useAppStore } from '@/lib/store';
+import ModuleShell from './ModuleShell';
+import {
+  Shield, Globe, Sun, Moon, Eye, EyeOff,
+  Trash2, Download, Lock, HardDrive, FileTerminal, Network, Fingerprint
+} from 'lucide-react';
+import { triggerManualBackup } from '@/lib/vault';
+import { downloadTallyXML, pushToTallyBridge } from '@/lib/tally';
+import { registerBiometric, hasBiometricRegistered } from '@/lib/biometric';
+
+const MODULE_LIST = [
+  { id: 'diary',   label: 'Diary',     desc: 'Family journals & memories' },
+  { id: 'tasks',   label: 'Tasks',     desc: 'Household chores & to-dos' },
+  { id: 'money',   label: 'Money',     desc: 'Income & expense ledger' },
+  { id: 'nevata',  label: 'Nevata',    desc: 'Gifting & occasion log' },
+  { id: 'health',  label: 'Health',    desc: 'Medical records & vitals' },
+  { id: 'invest',  label: 'Invest',    desc: 'Investment & SIP tracker' },
+  { id: 'grocery', label: 'Grocery',   desc: 'Smart shopping list' },
+  { id: 'staff',   label: 'HomeStaff', desc: 'Domestic helper management' },
+  { id: 'network', label: 'Network',   desc: 'P2P secure webRTC sync' },
+];
+
+export default function SetupModule() {
+  const {
+    activeVault, lang, toggleLang,
+    hiddenModules, toggleModule,
+    theme, setTheme,
+    db, currentPin
+  } = useAppStore();
+
+  const [backupStatus, setBackupStatus] = React.useState<'idle' | 'saving' | 'done'>('idle');
+
+  const handleManualBackup = async () => {
+    if (!db || !currentPin || !activeVault?.id) return;
+    setBackupStatus('saving');
+    try {
+      await triggerManualBackup(db, currentPin, activeVault.id);
+      setBackupStatus('done');
+      setTimeout(() => setBackupStatus('idle'), 3000);
+    } catch {
+      setBackupStatus('idle');
+    }
+  };
+
+  const [bridgeStatus, setBridgeStatus] = React.useState<'idle' | 'syncing' | 'error' | 'success'>('idle');
+
+  const handlePushToBridge = async () => {
+    if (!db) return;
+    setBridgeStatus('syncing');
+    const success = await pushToTallyBridge(db, 'http://localhost:3005/import');
+    setBridgeStatus(success ? 'success' : 'error');
+    setTimeout(() => setBridgeStatus('idle'), 3000);
+  };
+
+  const [bioState, setBioState] = React.useState<'idle' | 'registering' | 'success' | 'failed'>('idle');
+  const isBioRegistered = activeVault ? hasBiometricRegistered(activeVault.id) : false;
+
+  const handleRegisterBiometric = async () => {
+    if (!activeVault || !currentPin) return;
+    setBioState('registering');
+    const success = await registerBiometric(activeVault.id, currentPin);
+    setBioState(success ? 'success' : 'failed');
+    setTimeout(() => setBioState('idle'), 3000);
+  };
+
+  return (
+    <ModuleShell
+      title={lang === 'en' ? "Setup & Settings" : "Vyavastha"}
+      subtitle={lang === 'en' ? "Personalize your Sovereign OS" : "Apne system ko customize karein"}
+    >
+      <div className="space-y-8">
+
+        {/* ── Module Visibility Toggles ───────────────────────── */}
+        <section>
+          <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4 px-1">
+            Module Configuration
+          </div>
+          <div className="card divide-y divide-border-light/30">
+            {MODULE_LIST.map((m) => {
+              const isHidden = hiddenModules.includes(m.id);
+              return (
+                <div
+                  key={m.id}
+                  className="py-4 px-4 flex items-center justify-between group hover:bg-bg-secondary transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center border text-[10px] font-black transition-all ${
+                        isHidden
+                          ? 'bg-bg-tertiary border-border-light text-text-tertiary'
+                          : 'bg-bg-info border-text-info/20 text-text-info'
+                      }`}
+                    >
+                      {m.label.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <div className={`text-sm font-bold transition-colors ${isHidden ? 'text-text-tertiary' : 'text-text-primary'}`}>
+                        {m.label}
+                      </div>
+                      <div className="text-[10px] text-text-tertiary font-bold uppercase tracking-wider">
+                        {m.desc}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => toggleModule(m.id)}
+                    className={`transition-colors ${isHidden ? 'text-border-medium hover:text-gold' : 'text-text-success hover:text-text-danger'}`}
+                    title={isHidden ? 'Show module' : 'Hide module'}
+                  >
+                    {isHidden ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── Preferences ────────────────────────────────────── */}
+        <section>
+          <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4 px-1">
+            Preferences
+          </div>
+          <div className="space-y-3">
+
+            {/* Language */}
+            <div className="card p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Globe size={18} className="text-text-tertiary" />
+                <div>
+                  <div className="text-sm font-bold text-text-primary">System Language</div>
+                  <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
+                    {lang === 'en' ? 'English (Current)' : 'Hindi (वर्तमान)'}
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={toggleLang}
+                className="btn text-[10px] font-bold uppercase px-4 py-2"
+              >
+                {lang === 'en' ? 'हिन्दी में' : 'English'}
+              </button>
+            </div>
+
+            {/* Theme */}
+            <div className="card p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {theme === 'dark' ? <Moon size={18} className="text-text-tertiary" /> : <Sun size={18} className="text-text-tertiary" />}
+                <div>
+                  <div className="text-sm font-bold text-text-primary">Appearance</div>
+                  <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
+                    {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="btn text-[10px] font-bold uppercase px-4 py-2"
+              >
+                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              </button>
+            </div>
+
+            {/* Vault Security */}
+            <div className="card p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Shield size={18} className="text-text-tertiary" />
+                <div>
+                  <div className="text-sm font-bold text-text-primary">Vault Security</div>
+                  <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
+                    AES-256-GCM · {activeVault?.name || 'Locked'}
+                  </div>
+                </div>
+              </div>
+              <button className="btn text-[10px] font-bold uppercase px-4 py-2">
+                Change PIN
+              </button>
+            </div>
+
+            {/* Biometric Link */}
+            <div className="card p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Fingerprint size={18} className="text-text-tertiary" />
+                <div>
+                  <div className="text-sm font-bold text-text-primary">Biometric Link</div>
+                  <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest mt-1">
+                    WebAuthn PRF Harding
+                  </div>
+                </div>
+              </div>
+              <button 
+                onClick={handleRegisterBiometric}
+                disabled={bioState === 'registering' || isBioRegistered}
+                className={`btn text-[10px] font-bold uppercase px-4 py-2 border transition-all ${isBioRegistered ? 'border-text-success text-text-success border-transparent' : 'border-border-medium hover:border-text-primary'}`}
+              >
+                {isBioRegistered ? 'Biometric Active' : bioState === 'registering' ? 'Scanning...' : bioState === 'failed' ? 'Device Not Supported' : bioState === 'success' ? 'Linked!' : 'Link Device'}
+              </button>
+            </div>
+
+            {/* Export Vault */}
+            <div className="card p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Download size={18} className="text-text-tertiary" />
+                <div>
+                  <div className="text-sm font-bold text-text-primary">Export Vault</div>
+                  <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
+                    Download encrypted .kutumb file
+                  </div>
+                </div>
+              </div>
+              <button className="btn text-[10px] font-bold uppercase px-4 py-2">
+                Export
+              </button>
+            </div>
+
+            {/* Manual Backup */}
+            <div className="card p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <HardDrive size={18} className="text-text-tertiary" />
+                <div>
+                  <div className="text-sm font-bold text-text-primary">Manual Backup</div>
+                  <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
+                    Create an instant labeled snapshot
+                  </div>
+                </div>
+              </div>
+              <button 
+                onClick={handleManualBackup} 
+                disabled={backupStatus !== 'idle'}
+                className="btn text-[10px] font-bold uppercase px-4 py-2 border border-border-medium hover:border-gold hover:text-gold disabled:opacity-50 transition-all"
+              >
+                {backupStatus === 'saving' ? 'Saving...' : backupStatus === 'done' ? 'Backup Complete' : 'Backup Now'}
+              </button>
+            </div>
+
+            {/* GDrive Authorized Email (from .env.local) */}
+            <div className="card p-4 flex items-center justify-between bg-gold-light/20 border-gold/10">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <Globe size={18} className="text-gold" />
+                <div className="overflow-hidden">
+                  <div className="text-sm font-bold text-text-primary">Authorized Backup Email</div>
+                  <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest truncate">
+                    {process.env.NEXT_PUBLIC_GDRIVE_ALLOWED_EMAILS || 'All Accounts Allowed'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── TallyPrime Gateway ────────────────────────────────────── */}
+        <section>
+          <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4 px-1">
+            Enterprise Sync Gateway
+          </div>
+          <div className="space-y-3">
+            <div className="card p-4 flex flex-col gap-4">
+               <div>
+                  <div className="text-sm font-black text-text-primary">TallyPrime Protocol</div>
+                  <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest mt-1">
+                    Export Kutumbly Ledgers to Standard XML Vouchers
+                  </div>
+               </div>
+               
+               <div className="flex bg-bg-secondary p-3 rounded-xl border border-border-light gap-4">
+                  <div className="flex-1">
+                    <div className="text-xs font-bold text-text-primary mb-1">Option A: Native Setup</div>
+                    <div className="text-[10px] text-text-tertiary mb-3">Silent XML compilation. Install manually via Tally Data config.</div>
+                    <button onClick={() => downloadTallyXML(db)} className="btn text-[10px] font-bold uppercase px-4 py-2 border border-border-medium hover:border-text-primary transition-all flex items-center gap-2">
+                       <FileTerminal size={14} /> Download XML
+                    </button>
+                  </div>
+                  <div className="w-px bg-border-light/50"></div>
+                  <div className="flex-1">
+                    <div className="text-xs font-bold text-text-primary mb-1">Option B: HTTP Bridge</div>
+                    <div className="text-[10px] text-text-tertiary mb-3">Sync zero-trust pipeline to localhost:3005 TallyNode.</div>
+                    <button onClick={handlePushToBridge} className={`btn text-[10px] font-bold uppercase px-4 py-2 border transition-all flex items-center gap-2 ${bridgeStatus === 'error' ? 'border-text-danger text-text-danger' : 'border-border-medium hover:border-text-primary'}`}>
+                       <Network size={14} /> {bridgeStatus === 'syncing' ? 'Syncing...' : bridgeStatus === 'success' ? 'Pushed' : bridgeStatus === 'error' ? 'Bridge Refused' : 'Push via Node'}
+                    </button>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Danger Zone ────────────────────────────────────── */}
+        <section>
+          <div className="text-[11px] font-black text-text-danger uppercase tracking-[0.2em] mb-4 px-1">
+            Danger Zone
+          </div>
+          <div className="card border-text-danger/20 bg-bg-danger p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Trash2 size={18} className="text-text-danger" />
+              <div>
+                <div className="text-sm font-bold text-text-primary">Delete Vault Data</div>
+                <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
+                  This cannot be undone
+                </div>
+              </div>
+            </div>
+            <button className="btn bg-text-danger text-white text-[10px] font-bold uppercase px-4 py-2 border-none hover:opacity-90">
+              Erase All
+            </button>
+          </div>
+        </section>
+
+      </div>
+    </ModuleShell>
+  );
+}

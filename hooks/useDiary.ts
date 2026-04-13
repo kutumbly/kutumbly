@@ -1,12 +1,3 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
-
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-
-## Mandatory File Signature
-Every NEW file created by the agent MUST start with the following official signature block:
-
-```javascript
 /* ============================================================
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
@@ -22,5 +13,31 @@ Every NEW file created by the agent MUST start with the following official signa
  *
  * "Memory, Not Code."
  * ============================================================ */
-```
-<!-- END:nextjs-agent-rules -->
+
+"use client";
+
+import { useAppStore } from '@/lib/store';
+import { useMemo } from 'react';
+
+export function useDiary() {
+  const { db } = useAppStore();
+
+  const entries = useMemo(() => {
+    if (!db) return [];
+    try {
+      const res = db.exec("SELECT * FROM diary_entries ORDER BY date DESC");
+      return res[0]?.values.map(v => ({
+        id: v[0],
+        date: v[1],
+        content: v[2],
+        mood: v[3],
+        mood_label: v[4],
+        created_at: v[5]
+      })) || [];
+    } catch (e) {
+      return [];
+    }
+  }, [db]);
+
+  return { entries };
+}

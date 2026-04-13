@@ -1,26 +1,244 @@
+/* ============================================================
+ * कुटुंबली — KUTUMBLY SOVEREIGN OS
+ * Zero Cloud · Local First · Encrypted · Offline Forever
+ * ============================================================
+ * System Architect   :  Jawahar R. Mallah
+ * Organisation:  AITDL Network — Sovereign Division
+ * Project     :  Kutumbly — India's Family OS
+ * Contact     :  kutumbly@outlook.com
+ * Web         :  kutumbly.com | aitdl.com | aitdl.in
+ *
+ * © 2026 Kutumbly.com — All Rights Reserved
+ * Unauthorized use or distribution is prohibited.
+ *
+ * "Memory, Not Code."
+ * ============================================================ */
+
 @import "tailwindcss";
 
+@theme {
+  --color-bg-primary:    var(--bg-primary);
+  --color-bg-secondary:  var(--bg-secondary);
+  --color-bg-tertiary:   var(--bg-tertiary);
+  --color-bg-success:    var(--bg-success);
+  --color-bg-warning:    var(--bg-warning);
+  --color-bg-danger:     var(--bg-danger);
+  --color-bg-info:       var(--bg-info);
+
+  --color-text-primary:   var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary:  var(--text-tertiary);
+  --color-text-success:   var(--text-success);
+  --color-text-warning:   var(--text-warning);
+  --color-text-danger:    var(--text-danger);
+  --color-text-info:      var(--text-info);
+
+  --color-border-light:  var(--border-light);
+  --color-border-medium: var(--border-medium);
+
+  --color-gold:       var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dim:   var(--gold-dim);
+  --color-gold-text:  var(--gold-text);
+
+  --color-success: var(--text-success);
+  --color-danger:  var(--text-danger);
+}
+
+/* ─── Light Mode (Default) ─────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --bg-primary:    #FFFFFF;
+  --bg-secondary:  #F9FAFB;
+  --bg-tertiary:   #F3F4F6;
+  --bg-success:    #ECFDF5;
+  --bg-warning:    #FFFBEB;
+  --bg-danger:     #FEF2F2;
+  --bg-info:       #EFF6FF;
+
+  /* Text */
+  --text-primary:   #111827;
+  --text-secondary: #6B7280;
+  --text-tertiary:  #9CA3AF;
+  --text-success:   #065F46;
+  --text-warning:   #92400E;
+  --text-danger:    #991B1B;
+  --text-info:      #1E40AF;
+
+  /* Borders */
+  --border-light:  #E5E7EB;
+  --border-medium: #D1D5DB;
+
+  /* Gold — Kutumbly brand */
+  --gold:      #c9971c;
+  --gold-light: #FAEEDA;
+  --gold-dim:  #7a5a0e;
+  --gold-text: #633806;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── Dark Mode ────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --bg-primary:    #1F2937;
+  --bg-secondary:  #111827;
+  --bg-tertiary:   #0F172A;
+  --bg-success:    #064E3B;
+  --bg-warning:    #78350F;
+  --bg-danger:     #7F1D1D;
+  --bg-info:       #1E3A8A;
+
+  --text-primary:   #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --text-tertiary:  #6B7280;
+  --text-success:   #A7F3D0;
+  --text-warning:   #FDE68A;
+  --text-danger:    #FECACA;
+  --text-info:      #BFDBFE;
+
+  --border-light:  #374151;
+  --border-medium: #4B5563;
+
+  --gold:       #e8b84b;
+  --gold-light: rgba(201,151,28,0.15);
+  --gold-dim:   #c9971c;
+  --gold-text:  #FAEEDA;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─── Base ─────────────────────────────────────────────────── */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  /* Support for modern mobile safe areas */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Safe Area Utilities — Notch & Home Indicator Handling */
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pl-safe { padding-left: env(safe-area-inset-left); }
+.pr-safe { padding-right: env(safe-area-inset-right); }
+
+.mt-safe { margin-top: env(safe-area-inset-top); }
+.mb-safe { margin-bottom: env(safe-area-inset-bottom); }
+
+/* Prevent accidental scrolling/touch-drag on fixed elements */
+.touch-none { touch-action: none; }
+.touch-pan-y { touch-action: pan-y; }
+
+/* ─── Design System Components ──────────────────────────────── */
+
+.btn {
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-medium);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--text-primary);
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: white;
+  border-color: var(--gold);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  background: var(--gold);
+}
+
+.card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  border: 0.5px solid var(--border-light);
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Gold active state — sidebar + tabs */
+.active-gold {
+  border-left: 2px solid var(--gold);
+  color: var(--gold);
+  background: var(--gold-light);
+}
+
+/* All borders — 0.5px thin premium feel */
+.border-thin { border: 0.5px solid var(--border-light); }
+
+/* Hide scrollbar but keep scroll */
+.scroller-hide::-webkit-scrollbar { display: none; }
+.scroller-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* App shell — 880px max, centered */
+.app-shell {
+  max-width: 880px;
+  margin: 0 auto;
+  background: var(--bg-tertiary);
+  min-height: 100vh;
+}
+
+.glass {
+  background: rgba(var(--bg-primary-rgb), 0.7);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+}
+
+[data-theme="dark"] .glass {
+  background: rgba(31, 41, 55, 0.7);
+}
+
+.shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0) 0%, 
+    rgba(255,255,255,0.05) 50%, 
+    rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Tap targets & Mobile Polish */
+input, select, textarea {
+  font-size: 16px !important; /* Prevent iOS auto-zoom */
+}
+
+@media (max-width: 768px) {
+  .btn {
+    min-height: 44px; /* Apple's minimum tap target */
+    padding: 12px 24px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.btn:active {
+  transform: scale(0.96);
+  opacity: 0.8;
 }
+
+/* Glass effect for mobile headers */
+.mobile-glass-header {
+  background: rgba(var(--bg-primary-rgb), 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+

@@ -1,12 +1,3 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
-
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-
-## Mandatory File Signature
-Every NEW file created by the agent MUST start with the following official signature block:
-
-```javascript
 /* ============================================================
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
@@ -22,5 +13,29 @@ Every NEW file created by the agent MUST start with the following official signa
  *
  * "Memory, Not Code."
  * ============================================================ */
-```
-<!-- END:nextjs-agent-rules -->
+
+"use client";
+
+import React from 'react';
+
+interface RupeesDisplayProps {
+  amount: number | string;
+  className?: string;
+  showSymbol?: boolean;
+}
+
+export default function RupeesDisplay({ 
+  amount, 
+  className = "", 
+  showSymbol = true 
+}: RupeesDisplayProps) {
+  const formatted = new Intl.NumberFormat('en-IN', {
+    maximumFractionDigits: 0,
+  }).format(Number(amount));
+
+  return (
+    <span className={`font-bold tabular-nums ${className}`}>
+      {showSymbol ? "₹" : ""}{formatted}
+    </span>
+  );
+}
