@@ -21,14 +21,11 @@ import LandingHero from '@/components/landing/LandingHero';
 import LandingVaultPreview from '@/components/landing/LandingVaultPreview';
 import LandingFeatures from '@/components/landing/LandingFeatures';
 import LandingPrivacy from '@/components/landing/LandingPrivacy';
-import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { motion } from 'framer-motion';
 import { ArrowRight, Globe } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LandingPage() {
-  const { isInstallable, installApp } = usePWAInstall();
-
   return (
     <main className="min-h-screen bg-[#FAF9F6]">
       <LandingHero />
@@ -87,15 +84,6 @@ export default function LandingPage() {
             Open Kutumbly — Free
             <ArrowRight size={20} />
          </Link>
-
-         {isInstallable && (
-           <button 
-             onClick={installApp}
-             className="block mt-8 mx-auto text-[11px] font-black text-gold uppercase tracking-[0.3em] hover:underline"
-           >
-             Install PWA as Native App
-           </button>
-         )}
       </section>
 
       {/* Footer */}

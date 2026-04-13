@@ -27,7 +27,6 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Kutumbly — Your Family's Digital Ghar",
   description: "Secure, local-first Sovereign OS for Indian families. Zero cloud, absolute privacy, and total data ownership.",
-  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
