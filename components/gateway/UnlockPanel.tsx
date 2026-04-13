@@ -39,13 +39,7 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
   const [attempts, setAttempts] = useState(0);
   const [waitTimer, setWaitTimer] = useState(0);
 
-  // Auto-unlock when 4th digit is entered
-  useEffect(() => {
-    if (currentPin.length === 4) {
-      const t = setTimeout(() => handleUnlock(), 180);
-      return () => clearTimeout(t);
-    }
-  }, [currentPin]);
+  // Removed async useEffect to preserve user action context.
 
   useEffect(() => {
     if (waitTimer <= 0) return;
@@ -63,8 +57,12 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
     if (waitTimer > 0 || isDecrypting) return;
     hapticFeedback();
     if (currentPin.length < 4) {
-      setCurrentPin(currentPin + digit);
+      const newPin = currentPin + digit;
+      setCurrentPin(newPin);
       setError(null);
+      if (newPin.length === 4) {
+        handleUnlock(newPin); // Synchronous call preserves user-activation for Permissions API
+      }
     }
   };
 
@@ -99,6 +97,8 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
         setError(lang === 'hi' ? 'Galat PIN — dobara try karo' : 'Wrong PIN — please try again');
       } else if (err.message === 'PERMISSION_DENIED') {
         setError(lang === 'hi' ? 'File Access zaruri hai — Browser prompt me Allow karein' : 'Permission Required — Please select "Allow" in the browser prompt');
+      } else if (err.message === 'INVALID_FILE' || err.name === 'NotFoundError') {
+        setError(lang === 'hi' ? 'File nahi mila. Remove karke dobara import karein' : 'File error. Please remove and re-import vault');
       } else {
         setError(lang === 'hi' ? 'Ek galti hui' : 'An error occurred');
       }

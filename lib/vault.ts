@@ -108,7 +108,15 @@ export async function openVault(pin: string, handle?: FileSystemFileHandle) {
       throw new Error('PERMISSION_DENIED');
     }
 
-    const file = await handle.getFile();
+    let file: File;
+    try {
+      file = await handle.getFile();
+    } catch (e: any) {
+      if (e.name === 'NotFoundError' || e.name === 'NotAllowedError') {
+        throw new Error('INVALID_FILE');
+      }
+      throw e;
+    }
     fileBytes = new Uint8Array(await file.arrayBuffer());
   } else if (typeof window !== 'undefined' && 'showOpenFilePicker' in window) {
     try {
