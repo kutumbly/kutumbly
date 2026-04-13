@@ -91,9 +91,9 @@ export default function LandingPage() {
          <div className="text-[10px] font-bold text-text-tertiary uppercase tracking-[0.2em] flex flex-col items-center gap-4">
             <span>Built with ❤️ by AITDL Network · Gorakhpur, India</span>
             <div className="flex gap-6">
-               <a href="#" className="hover:text-gold transition-colors">Privacy Policy</a>
-               <a href="#" className="hover:text-gold transition-colors">Terms of Service</a>
-               <a href="#" className="hover:text-gold transition-colors">Contact</a>
+               <Link href="/privacy" className="hover:text-gold transition-colors">Privacy Policy</Link>
+               <Link href="/terms" className="hover:text-gold transition-colors">Terms of Service</Link>
+               <Link href="/contact" className="hover:text-gold transition-colors">Contact</Link>
             </div>
             <div className="mt-4 opacity-50">
                © 2026 Kutumbly Sovereign. India&apos;s Family OS.
