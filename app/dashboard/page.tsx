@@ -197,12 +197,12 @@ export default function DashboardPage() {
         {activeModule === "home" && (
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-text-primary">
-              {lang === "en" ? "नमस्ते," : "Namaste,"}{" "}
+              {lang === "hi" ? "नमस्ते," : "Namaste,"}{" "}
               {activeVault?.name?.split(" ")[0] || ""}
             </h2>
             <p className="text-[11px] font-bold text-text-tertiary uppercase tracking-widest mt-1">
               {new Date().toLocaleDateString(
-                lang === "en" ? "en-IN" : "hi-IN",
+                lang === "hi" ? "hi-IN" : "en-IN",
                 { weekday: "long", day: "numeric", month: "long", year: "numeric" }
               )}
             </p>

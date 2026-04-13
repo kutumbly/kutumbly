@@ -179,7 +179,7 @@ export default function HomeModule() {
               </div>
               <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 space-y-8 shadow-xl shadow-black/[0.02]">
                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-red-500/5 flex items-center justify-center text-red-500 border border-red-500/10">
+                    <div className="w-10 h-10 rounded-full bg-text-danger/10 flex items-center justify-center text-text-danger border border-text-danger/20">
                        <Heart className="animate-pulse" size={20} />
                     </div>
                     <div className="text-sm font-black text-text-primary uppercase tracking-wider">{lang === 'hi' ? 'Tandurusti Report' : 'Wellness Pulse'}</div>

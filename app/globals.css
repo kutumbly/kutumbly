@@ -18,14 +18,17 @@
 @import "tailwindcss";
 
 @theme {
+  /* Background tokens */
   --color-bg-primary:    var(--bg-primary);
   --color-bg-secondary:  var(--bg-secondary);
   --color-bg-tertiary:   var(--bg-tertiary);
+  --color-bg-paper:      var(--bg-paper);
   --color-bg-success:    var(--bg-success);
   --color-bg-warning:    var(--bg-warning);
   --color-bg-danger:     var(--bg-danger);
   --color-bg-info:       var(--bg-info);
 
+  /* Text tokens — CRITICAL: enables text-text-success, text-text-danger etc. */
   --color-text-primary:   var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-tertiary:  var(--text-tertiary);
@@ -34,16 +37,20 @@
   --color-text-danger:    var(--text-danger);
   --color-text-info:      var(--text-info);
 
+  /* Border tokens */
   --color-border-light:  var(--border-light);
   --color-border-medium: var(--border-medium);
 
+  /* Gold — Kutumbly brand */
   --color-gold:       var(--gold);
   --color-gold-light: var(--gold-light);
   --color-gold-dim:   var(--gold-dim);
   --color-gold-text:  var(--gold-text);
 
+  /* Semantic aliases (for legacy .card, .btn usage) */
   --color-success: var(--text-success);
   --color-danger:  var(--text-danger);
+  --color-warning: var(--text-warning);
 }
 
 /* ─── Light Mode (Default) ─────────────────────────────────── */
@@ -286,3 +293,78 @@ input, select, textarea {
   background: rgba(232, 184, 75, 0.25);
   color: #F9FAFB;
 }
+
+/* ─── UX Polish Layer ───────────────────────────────────────── */
+
+/* Remove tap highlight flash on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Allow text selection on content elements */
+p, span, h1, h2, h3, h4, h5, h6, label, input, textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Focus-visible ring — keyboard nav only, not on mouse click */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Image rendering optimization */
+img {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Scroll snap for horizontal lists */
+.snap-x-list {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.snap-x-list > * {
+  scroll-snap-align: start;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ─── Dark Mode — gold-text on dark bg fix ─────────────────── */
+/* gold-text (#633806) is invisible on dark bg. In dark mode it maps
+   to #FAEEDA (cream) which is correctly readable. No override needed —
+   verified that [data-theme=dark] --gold-text: #FAEEDA handles this.
+   But bg-gold-text buttons need white text in dark mode: */
+[data-theme="dark"] .bg-gold-text {
+  background: var(--gold) !important;
+  color: #111827 !important;
+}
+
+/* ─── Scrollbar — thin gold on desktop ─────────────────────── */
+@media (min-width: 768px) {
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-tertiary); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-medium);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+}
+
+/* ─── Loading skeleton animation ───────────────────────────── */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.skeleton {
+  animation: skeleton-pulse 1.8s ease-in-out infinite;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+/* ─── Prevent layout shift on module switch ────────────────── */
+main { overflow-anchor: none; }
