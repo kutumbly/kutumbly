@@ -9,10 +9,10 @@
   "name": "Kutumbly Sovereign OS",
   "short_name": "Kutumbly",
   "description": "Secure, local-first Family OS. Zero cloud, absolute privacy.",
-  "start_url": "/dashboard",
+  "start_url": "/os",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
+  "background_color": "#FAF9F6",
+  "theme_color": "#FAF9F6",
   "icons": [
     {
       "src": "/icons/icon-72.png",

@@ -16,32 +16,32 @@
 
 "use client";
 
+import { Investment } from '@/types/db';
+import { runQuery } from '@/lib/db';
 import { useAppStore } from '@/lib/store';
 import { useMemo } from 'react';
 
-export function useInvest() {
+export interface InvestData {
+  investments: Investment[];
+  summary: {
+    totalPrincipal: number;
+    currentValue: number;
+    profit: number;
+    pnlPercent: number;
+  };
+}
+
+export function useInvest(): InvestData {
   const { db } = useAppStore();
 
-  const data = useMemo(() => {
+  return useMemo<InvestData>(() => {
     if (!db) return { investments: [], summary: { totalPrincipal: 0, currentValue: 0, profit: 0, pnlPercent: 0 } };
 
     try {
-      const res = db.exec("SELECT * FROM investments ORDER BY current_value DESC");
-      const investments = res[0]?.values.map(v => ({
-        id: v[0],
-        name: v[1],
-        type: v[2],
-        principal: Number(v[3]),
-        current_value: Number(v[4]),
-        units: v[5],
-        monthly_sip: v[6],
-        start_date: v[7],
-        maturity_date: v[8],
-        notes: v[9]
-      })) || [];
-
-      const totalPrincipal = investments.reduce((acc, i) => acc + i.principal, 0);
-      const currentValue = investments.reduce((acc, i) => acc + i.current_value, 0);
+      const investments = runQuery<Investment>(db, "SELECT * FROM investments ORDER BY current_value DESC");
+      
+      const totalPrincipal = investments.reduce((acc: number, i: Investment) => acc + i.principal, 0);
+      const currentValue = investments.reduce((acc: number, i: Investment) => acc + i.current_value, 0);
       const profit = currentValue - totalPrincipal;
       const pnlPercent = totalPrincipal > 0 ? (profit / totalPrincipal) * 100 : 0;
 
@@ -54,10 +54,8 @@ export function useInvest() {
           pnlPercent
         }
       };
-    } catch (e) {
+    } catch {
       return { investments: [], summary: { totalPrincipal: 0, currentValue: 0, profit: 0, pnlPercent: 0 } };
     }
   }, [db]);
-
-  return data;
 }

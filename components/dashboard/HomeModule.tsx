@@ -26,6 +26,8 @@ import { Shield, Clock, Plus, ArrowRight, Fingerprint, HardDrive, Activity, Hear
 import { motion } from 'framer-motion';
 import { hasBiometricRegistered } from '@/lib/biometric';
 
+type MetricStatus = "success" | "default" | "warning" | "danger" | "info";
+
 export default function HomeModule() {
   const { db, lang, activeVault } = useAppStore();
   const { summary } = useMoney();
@@ -36,38 +38,44 @@ export default function HomeModule() {
   let tasksPending = 0;
   let eventsUpcoming = 0;
   if (db) {
-    try { tasksPending = db.exec("SELECT COUNT(*) FROM tasks WHERE status = 'pending'")[0]?.values[0][0] as number; } catch {}
-    try { eventsUpcoming = db.exec("SELECT COUNT(*) FROM nevata_events WHERE event_date >= date('now')")[0]?.values[0][0] as number; } catch {}
+    try { 
+      const resT = db.exec("SELECT COUNT(*) FROM tasks WHERE status = 'pending'");
+      tasksPending = resT[0]?.values[0][0] as number; 
+    } catch {}
+    try { 
+      const resE = db.exec("SELECT COUNT(*) FROM nevata_events WHERE event_date >= date('now')");
+      eventsUpcoming = resE[0]?.values[0][0] as number; 
+    } catch {}
   }
 
   const bioActive = activeVault && hasBiometricRegistered(activeVault.id);
   const avgWeight = readings.length > 0 ? readings.reduce((acc, r) => acc + (r.weight || 0), 0) / readings.length : 0;
   const latestBP = readings[0] ? `${readings[0].bp_systolic}/${readings[0].bp_diastolic}` : '--/--';
 
-  const stats = [
+  const stats: { label: string; value: string | number; status: MetricStatus; isCurrency?: boolean; trend?: number[] }[] = [
     { 
       label: lang === 'en' ? "Monthly Balance" : "Kul Jama", 
       value: summary.balance, 
       isCurrency: true, 
       trend: [20000, 25000, 22000, 30000, summary.balance as number],
-      status: 'success' as const
+      status: 'success'
     },
     { 
       label: lang === 'en' ? "Tasks Due" : "Baaki Kaam", 
-      value: tasksPending as number, 
-      status: (Number(tasksPending) > 5 ? 'danger' : 'warning') as const,
-      trend: [2, 4, 3, 5, tasksPending as number]
+      value: tasksPending, 
+      status: Number(tasksPending) > 5 ? 'danger' : 'warning',
+      trend: [2, 4, 3, 5, tasksPending]
     },
     { 
       label: lang === 'en' ? "Latest BP" : "Blood Pressure", 
       value: latestBP,
-      status: 'info' as const
+      status: 'info'
     },
     { 
       label: lang === 'en' ? "Expenses" : "Kharcha", 
       value: summary.expense, 
       isCurrency: true, 
-      status: 'danger' as const,
+      status: 'danger',
       trend: [5000, 8000, 4000, 12000, summary.expense as number]
     },
   ];
@@ -90,31 +98,25 @@ export default function HomeModule() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-6 md:space-y-8"
+      className="space-y-8 md:space-y-12"
     >
       {/* ── Sovereign Shield Hub ────────────────────────────── */}
-      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-3">
-         <div className="card glass border-l-4 border-l-gold py-3 px-4 flex items-center gap-3">
-            <Shield size={18} className="text-gold" />
-            <div className="flex-1">
-               <div className="text-[8px] font-black uppercase tracking-[0.2em] text-text-tertiary">OS Security</div>
-               <div className="text-[10px] font-bold text-text-primary">AES-256 Lockdown Active</div>
-            </div>
-         </div>
-         <div className="card glass border-l-4 border-l-text-info py-3 px-4 flex items-center gap-3">
-            <Fingerprint size={18} className="text-text-info" />
-            <div className="flex-1">
-               <div className="text-[8px] font-black uppercase tracking-[0.2em] text-text-tertiary">Biometric Enclave</div>
-               <div className="text-[10px] font-bold text-text-primary">{bioActive ? 'Hardware Linked' : 'Unlinked (PIN Only)'}</div>
-            </div>
-         </div>
-         <div className="card glass border-l-4 border-l-text-success py-3 px-4 flex items-center gap-3">
-            <HardDrive size={18} className="text-text-success" />
-            <div className="flex-1">
-               <div className="text-[8px] font-black uppercase tracking-[0.2em] text-text-tertiary">Sync Grid</div>
-               <div className="text-[10px] font-bold text-text-primary">P2P Peer Discovery Ready</div>
-            </div>
-         </div>
+      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+         {[
+           { icon: Shield, label: lang === 'en' ? "OS Security" : "OS Suraksha", value: "AES-256 Lockdown" },
+           { icon: Fingerprint, label: lang === 'en' ? "Biometric" : "Pehchan", value: bioActive ? (lang === 'en' ? 'Hardware Active' : 'Sajag') : (lang === 'en' ? 'PIN Required' : 'PIN Chahiye') },
+           { icon: HardDrive, label: lang === 'en' ? "Sync Grid" : "Sync Jaal", value: lang === 'en' ? "Local P2P Discovery" : "Sovereign Sync" }
+         ].map((sh, idx) => (
+           <div key={idx} className="bg-white border border-border-light rounded-[2rem] p-6 flex items-center gap-5 shadow-black/[0.02] shadow-xl transition-all hover:border-gold/30">
+              <div className="w-12 h-12 rounded-2xl bg-[#fdfaf5] flex items-center justify-center text-gold-text border border-border-light shadow-sm">
+                 <sh.icon size={22} />
+              </div>
+              <div className="flex-1">
+                 <div className="text-[9px] font-black uppercase tracking-[0.3em] text-text-tertiary mb-1">{sh.label}</div>
+                 <div className="text-[11px] font-black text-text-primary uppercase tracking-wider">{sh.value}</div>
+              </div>
+           </div>
+         ))}
       </motion.div>
 
       {/* Dynamic Metric Cards */}
@@ -124,83 +126,94 @@ export default function HomeModule() {
         ))}
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Activity Feed */}
-        <motion.section variants={item} className="md:col-span-2">
-          <div className="flex items-center justify-between mb-4 px-1">
-            <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em]">
-              {lang === 'en' ? 'Sovereign Activity' : 'Parivar ki Halchal'}
+        <motion.section variants={item} className="md:col-span-2 space-y-6">
+          <div className="flex items-center justify-between px-2">
+            <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
+              {lang === 'hi' ? 'Parivar ki Halchal' : 'Sovereign Activity'}
             </div>
-            <button className="text-[10px] font-bold text-gold uppercase tracking-widest flex items-center gap-1 hover:underline">
-              View All <ArrowRight size={12} />
+            <button className="text-[10px] font-black text-gold-text uppercase tracking-[0.3em] flex items-center gap-1.5 hover:underline decoration-gold-text/30 underline-offset-4">
+              {lang === 'hi' ? 'Sab Dekhein' : 'View History'} <ArrowRight size={14} />
             </button>
           </div>
           
-          <div className="card divide-y divide-border-light/30">
+          <div className="space-y-4">
             {entries.length > 0 ? entries.slice(0, 4).map((a, i) => (
-              <div key={i} className="p-4 flex gap-4 items-start group hover:bg-bg-secondary transition-colors">
-                <div className="w-8 h-8 rounded-xl bg-bg-tertiary flex items-center justify-center flex-shrink-0 border border-border-light group-hover:border-gold/30 transition-all">
-                  <Clock className="w-4 h-4 text-text-tertiary" />
+              <motion.div 
+                key={i} 
+                whileHover={{ x: 4 }}
+                className="bg-white border border-border-light p-5 rounded-[2rem] flex gap-5 items-start group shadow-black/[0.01] shadow-lg transition-all"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-[#FAF9F6] flex items-center justify-center flex-shrink-0 border border-border-light group-hover:border-gold/30 group-hover:bg-white transition-all shadow-sm">
+                  <Clock className="w-5 h-5 text-text-tertiary" />
                 </div>
                 <div className="flex-1">
-                   <p className="text-sm font-bold text-text-primary leading-tight line-clamp-2">
+                   <p className="text-[14px] font-bold text-text-secondary leading-relaxed line-clamp-2">
                       {String(a.content)}
                    </p>
-                   <div className="flex items-center gap-2 mt-2">
-                     <span className="text-[8px] font-black text-gold uppercase tracking-widest bg-gold/5 px-2 py-0.5 rounded border border-gold/10">
-                       Diary
+                   <div className="flex items-center gap-3 mt-3">
+                     <span className="text-[8px] font-black text-gold-text uppercase tracking-[0.2em] bg-gold/5 px-3 py-1 rounded-full border border-gold/10">
+                       {lang === 'hi' ? 'Diary' : 'Diary'}
                      </span>
-                     <span className="text-[9px] text-text-tertiary font-bold uppercase tracking-wider">
-                       {String(a.date)}
+                     <span className="text-[9px] text-text-tertiary font-black uppercase tracking-[0.2em] opacity-60">
+                       {new Date(String(a.date)).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short' })}
                      </span>
                    </div>
                 </div>
-              </div>
+              </motion.div>
             )) : (
-              <div className="py-12 flex flex-col items-center justify-center opacity-30">
-                 <Shield className="w-12 h-12 mb-4" />
-                 <p className="text-[10px] font-black uppercase tracking-[0.2em]">No logs yet</p>
+              <div className="bg-white border border-border-light border-dashed rounded-[3rem] py-20 flex flex-col items-center justify-center opacity-30">
+                 <Shield className="w-14 h-14 mb-6 text-text-tertiary" strokeWidth={1} />
+                 <p className="text-[10px] font-black uppercase tracking-[0.4em]">{lang === 'hi' ? 'Abhi Kuch Nahi' : 'Zero halchal detected'}</p>
               </div>
             )}
           </div>
         </motion.section>
 
         {/* Quick Access & Health Pulse */}
-        <div className="space-y-6">
-           <motion.section variants={item}>
-              <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4 px-1">
-                 {lang === 'en' ? 'Family Health' : 'Parivar Sehat'}
+        <div className="space-y-8">
+           <motion.section variants={item} className="space-y-6">
+              <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] px-2">
+                 {lang === 'hi' ? 'Sehat Pulse' : 'Health Pulse'}
               </div>
-              <div className="card bg-bg-info/5 border-bg-info/20 p-5 space-y-4">
-                 <div className="flex items-center gap-3">
-                    <Heart className="text-text-danger animate-pulse" size={20} />
-                    <div className="text-sm font-black text-text-primary">Health Pulse</div>
-                 </div>
-                 <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-bg-primary p-3 rounded-xl border border-border-light/50">
-                       <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-1">Avg Weight</div>
-                       <div className="text-sm font-black text-text-primary">{avgWeight > 0 ? `${avgWeight.toFixed(1)}kg` : '--'}</div>
+              <div className="bg-white border border-border-light rounded-[2.5rem] p-8 space-y-8 shadow-xl shadow-black/[0.02]">
+                 <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-red-500/5 flex items-center justify-center text-red-500 border border-red-500/10">
+                       <Heart className="animate-pulse" size={20} />
                     </div>
-                    <div className="bg-bg-primary p-3 rounded-xl border border-border-light/50">
-                       <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-1">Blood Sugar</div>
-                       <div className="text-sm font-black text-text-primary">{readings[0]?.blood_sugar || '--'} mg</div>
+                    <div className="text-sm font-black text-text-primary uppercase tracking-wider">{lang === 'hi' ? 'Tandurusti Report' : 'Wellness Pulse'}</div>
+                 </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-[#FAF9F6] p-4 rounded-2xl border border-border-light shadow-sm">
+                       <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">{lang === 'hi' ? 'Vajan' : 'Avg Weight'}</div>
+                       <div className="text-base font-black text-text-primary">{avgWeight > 0 ? `${avgWeight.toFixed(1)}kg` : '--'}</div>
+                    </div>
+                    <div className="bg-[#FAF9F6] p-4 rounded-2xl border border-border-light shadow-sm">
+                       <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">{lang === 'hi' ? 'Cheeni' : 'Latest Sugar'}</div>
+                       <div className="text-base font-black text-text-primary">{readings[0]?.blood_sugar || '--'}<span className="text-[10px] ml-1 opacity-40">mg</span></div>
                     </div>
                  </div>
+                 <button className="w-full py-4 bg-white border border-border-light rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-text-tertiary hover:text-gold-text hover:border-gold-text transition-all">
+                    {lang === 'hi' ? 'Vitals Dekhein' : 'Full Vitals Data'}
+                 </button>
               </div>
            </motion.section>
 
-           <motion.section variants={item} className="grid grid-cols-1 gap-3">
-              <button className="flex items-center justify-between p-4 bg-bg-primary border border-border-light rounded-2xl hover:border-gold transition-all group shadow-sm active:scale-[0.98]">
-                <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-xl bg-gold/10 text-gold flex items-center justify-center group-hover:bg-gold group-hover:text-white transition-all">
-                      <Zap size={20} strokeWidth={3} />
+           <motion.section variants={item} className="grid grid-cols-1 gap-4">
+              <button className="flex items-center justify-between p-6 bg-white border border-border-light rounded-[2rem] hover:border-gold-text transition-all group shadow-xl shadow-black/[0.02] active:scale-[0.98]">
+                <div className="flex items-center gap-5">
+                   <div className="w-14 h-14 rounded-2xl bg-gold/5 text-gold-text flex items-center justify-center border border-gold/10 group-hover:bg-gold-text group-hover:text-white transition-all shadow-sm">
+                      <Zap size={24} strokeWidth={3} />
                    </div>
                    <div className="text-left">
-                      <div className="text-sm font-black text-text-primary">Sync Now</div>
-                      <div className="text-[9px] text-text-tertiary uppercase font-black tracking-widest">P2P Beam</div>
+                      <div className="text-[15px] font-black text-text-primary tracking-tight">{lang === 'hi' ? 'Sync Karein' : 'Sync Now'}</div>
+                      <div className="text-[9px] text-text-tertiary uppercase font-black tracking-[0.3em] opacity-60 mt-1">P2P Beam Grid</div>
                    </div>
                 </div>
-                <ArrowRight className="text-border-medium group-hover:text-gold transition-colors" size={16} />
+                <div className="w-10 h-10 rounded-full border border-border-light flex items-center justify-center group-hover:border-gold-text group-hover:bg-gold-text/5 transition-all">
+                   <ArrowRight className="text-border-medium group-hover:text-gold-text transition-colors" size={18} />
+                </div>
               </button>
            </motion.section>
         </div>

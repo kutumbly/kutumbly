@@ -16,108 +16,102 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useAppStore } from '@/lib/store';
-import { GatewayPanel } from '@/types/vault';
-import { isDevBypassEnabled } from '@/lib/dev';
-import GatewayShell from '@/components/gateway/GatewayShell';
-import VaultList from '@/components/gateway/VaultList';
-import UnlockPanel from '@/components/gateway/UnlockPanel';
-import CreateVaultPanel from '@/components/gateway/CreateVaultPanel';
-import ImportPanel from '@/components/gateway/ImportPanel';
-import SuccessPanel from '@/components/gateway/SuccessPanel';
-import RecoverPanel from '@/components/gateway/RecoverPanel';
-import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import LandingHero from '@/components/landing/LandingHero';
+import LandingVaultPreview from '@/components/landing/LandingVaultPreview';
+import LandingFeatures from '@/components/landing/LandingFeatures';
+import LandingPrivacy from '@/components/landing/LandingPrivacy';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
+import { motion } from 'framer-motion';
+import { ArrowRight, Globe } from 'lucide-react';
+import Link from 'next/link';
 
-export default function GatewayPage() {
-  const { loadRecentVaults, recentVaults, setActiveVault, devInit } = useAppStore();
-  const [panel, setPanel] = useState<GatewayPanel>('empty');
-
-  // Initial load
-  useEffect(() => {
-    loadRecentVaults();
-  }, []);
-
-  // Decide initial panel based on recent vaults
-  useEffect(() => {
-    if (recentVaults.length > 0) {
-      setActiveVault(recentVaults[0]);
-      setPanel('unlock');
-    } else {
-      setPanel('empty');
-    }
-  }, [recentVaults.length]);
-
-  const handleDevBypass = async () => {
-    await devInit();
-    setPanel('success');
-  };
-
-  const renderPanel = () => {
-    switch (panel) {
-      case 'unlock':
-        return <UnlockPanel onSuccess={() => setPanel('success')} />;
-      case 'create':
-        return <CreateVaultPanel onBack={() => setPanel('unlock')} onSuccess={() => setPanel('success')} />;
-      case 'import':
-        return <ImportPanel onBack={() => setPanel('unlock')} onSuccess={() => setPanel('success')} />;
-      case 'recover':
-        return <RecoverPanel onBack={() => setPanel('unlock')} />;
-      case 'success':
-        return <SuccessPanel />;
-      default:
-        return (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-secondary/20">
-            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border-[0.5px] border-border-light">
-              <Image src="/favicon.svg" alt="Kutumbly Logo" width={36} height={36} className="brightness-110" />
-            </div>
-            <h2 className="text-xl font-bold text-text-primary mb-2">Swagat Hai!</h2>
-            <p className="text-sm text-text-secondary max-w-[280px] mb-8 leading-relaxed">
-              Kutumbly setup karne ke liye ek naya vault banayein ya apni puraani file kholiye.
-            </p>
-            <div className="flex flex-col gap-3 w-full max-w-[200px]">
-              <button 
-                onClick={() => setPanel('create')}
-                className="btn btn-primary w-full"
-              >
-                Naya Vault Banao
-              </button>
-              <button 
-                onClick={() => setPanel('import')}
-                className="btn w-full"
-              >
-                File Kholo
-              </button>
-              
-              {isDevBypassEnabled() && (
-                <button 
-                  onClick={handleDevBypass}
-                  className="mt-4 text-xs font-semibold text-gold hover:underline"
-                >
-                  ⚡ Developer Bypass (DX)
-                </button>
-              )}
-            </div>
-          </div>
-        );
-    }
-  };
+export default function LandingPage() {
+  const { isInstallable, installApp } = usePWAInstall();
 
   return (
-    <GatewayShell sidebar={<VaultList onPanelChange={setPanel} />}>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={panel}
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.02 }}
-          transition={{ duration: 0.2 }}
-          className="h-full"
-        >
-          {renderPanel()}
-        </motion.div>
-      </AnimatePresence>
-    </GatewayShell>
+    <main className="min-h-screen bg-[#FAF9F6]">
+      <LandingHero />
+      
+      <div className="-mt-20 relative z-20">
+        <LandingVaultPreview />
+      </div>
+
+      <LandingFeatures />
+      
+      <LandingPrivacy />
+
+      {/* Waitlist Section */}
+      <section className="py-24 bg-[#FAF9F6] px-6">
+        <div className="max-w-4xl mx-auto">
+           <div className="bg-white p-10 md:p-16 rounded-[3rem] border border-border-light shadow-xl shadow-black/[0.02] text-center">
+              <div className="flex items-center justify-center gap-4 mb-8">
+                 <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 border border-blue-100">
+                    <Globe size={24} />
+                 </div>
+                 <div className="text-2xl text-text-tertiary">→</div>
+                 <div className="w-12 h-12 bg-gold-light/20 rounded-2xl flex items-center justify-center text-gold border border-gold/10">
+                    <span>📱</span>
+                 </div>
+              </div>
+
+              <h2 className="text-2xl font-black text-text-primary mb-4">Browser now · App soon</h2>
+              <p className="text-text-secondary font-medium leading-relaxed max-w-xl mx-auto mb-10 text-sm md:text-base">
+                 Kutumbly runs fully in your browser today. Native installable apps for Android and iOS are on the way — your .kutumb vault file will work across both.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                 <input 
+                   type="email" 
+                   placeholder="aapka@email.com" 
+                   className="flex-1 h-14 px-6 rounded-2xl bg-[#FAF9F6] border border-border-light focus:border-gold outline-none font-bold text-sm transition-all"
+                 />
+                 <button className="h-14 px-8 bg-gold text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-gold/20 hover:opacity-90 active:scale-95 transition-all">
+                    Notify me
+                 </button>
+              </div>
+
+              <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mt-8">
+                 Join the waitlist to get notified when the app launches
+              </p>
+           </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-24 text-center px-6">
+         <h2 className="text-3xl md:text-5xl font-black text-text-primary mb-4 tracking-tighter">Start your family vault today</h2>
+         <p className="text-text-secondary font-medium text-base mb-12">Free forever. Works on any browser. No account needed.</p>
+         
+         <Link href="/os" className="inline-flex h-16 px-10 bg-white border-2 border-border-light rounded-[2rem] items-center gap-3 font-black text-base text-text-primary hover:border-gold transition-all shadow-xl shadow-black/[0.02] mx-auto">
+            Open Kutumbly — Free
+            <ArrowRight size={20} />
+         </Link>
+
+         {isInstallable && (
+           <button 
+             onClick={installApp}
+             className="block mt-8 mx-auto text-[11px] font-black text-gold uppercase tracking-[0.3em] hover:underline"
+           >
+             Install PWA as Native App
+           </button>
+         )}
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 border-t border-border-light mx-8 text-center bg-[#FAF9F6]">
+         <div className="text-[10px] font-bold text-text-tertiary uppercase tracking-[0.2em] flex flex-col items-center gap-4">
+            <span>Built with ❤️ by AITDL Network · Gorakhpur, India</span>
+            <div className="flex gap-6">
+               <a href="#" className="hover:text-gold transition-colors">Privacy Policy</a>
+               <a href="#" className="hover:text-gold transition-colors">Terms of Service</a>
+               <a href="#" className="hover:text-gold transition-colors">Contact</a>
+            </div>
+            <div className="mt-4 opacity-50">
+               © 2026 Kutumbly Sovereign. India&apos;s Family OS.
+            </div>
+         </div>
+      </footer>
+    </main>
   );
 }

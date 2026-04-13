@@ -17,7 +17,8 @@
 "use client";
 
 import { useAppStore } from '@/lib/store';
-import { useMemo } from 'react';
+import { FamilyMember } from '@/types/db';
+import { runQuery } from '@/lib/db';
 
 export function useVault() {
   const { db, activeVault, isUnlocked, lockVault } = useAppStore();
@@ -27,7 +28,7 @@ export function useVault() {
     try {
       const res = db.exec("SELECT * FROM settings");
       const settings: Record<string, string> = {};
-      res[0]?.values.forEach(v => {
+      res[0]?.values.forEach((v: any[]) => {
         settings[v[0] as string] = v[1] as string;
       });
       return settings;
@@ -36,20 +37,9 @@ export function useVault() {
     }
   };
 
-  const getFamilyMembers = () => {
+  const getFamilyMembers = (): FamilyMember[] => {
     if (!db) return [];
-    try {
-      const res = db.exec("SELECT * FROM family_members");
-      return res[0]?.values.map(v => ({
-        id: v[0],
-        name: v[1],
-        role: v[2],
-        dob: v[3],
-        initials: v[4]
-      })) || [];
-    } catch {
-      return [];
-    }
+    return runQuery<FamilyMember>(db, "SELECT * FROM family_members ORDER BY name ASC");
   };
 
   return {

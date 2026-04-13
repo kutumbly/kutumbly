@@ -89,6 +89,8 @@ export async function createVault(name: string, pin: string): Promise<{ handle: 
   }
 }
 
+import { verifyPermission } from "./handles";
+
 /**
  * OPEN: Pick .kutumb file, decrypt with PIN, return sql.js DB
  */
@@ -97,6 +99,13 @@ export async function openVault(pin: string, handle?: FileSystemFileHandle) {
   let finalHandle = handle;
   
   if (handle) {
+    // SECURITY: Browser requires a fresh user gesture to re-authorize handles after refresh.
+    // verifyPermission will return true if already granted, or trigger the browser prompt.
+    const hasPermission = await verifyPermission(handle);
+    if (!hasPermission) {
+      throw new Error('PERMISSION_DENIED');
+    }
+
     const file = await handle.getFile();
     fileBytes = new Uint8Array(await file.arrayBuffer());
   } else if (typeof window !== 'undefined' && 'showOpenFilePicker' in window) {

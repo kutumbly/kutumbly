@@ -38,36 +38,49 @@ export default function MetricCard({
   isCurrency = false
 }: MetricCardProps) {
   
-  const statusColors = {
-    success: 'text-text-success bg-bg-success border-text-success/10',
-    warning: 'text-text-warning bg-bg-warning border-text-warning/10',
-    danger:  'text-text-danger bg-bg-danger border-text-danger/10',
-    info:    'text-text-info bg-bg-info border-text-info/10',
-    default: 'text-text-primary bg-bg-primary border-border-light'
+  const statusBorders = {
+    success: 'border-text-success/20',
+    warning: 'border-text-warning/20',
+    danger:  'border-text-danger/20',
+    info:    'border-text-info/20',
+    default: 'border-border-light'
+  };
+
+  const statusAccents = {
+    success: 'bg-text-success',
+    warning: 'bg-text-warning',
+    danger:  'bg-text-danger',
+    info:    'bg-text-info',
+    default: 'bg-gold'
   };
 
   return (
-    <div className={`card p-5 border shadow-sm transition-all hover:border-gold/30 hover:shadow-md ${statusColors[status]}`}>
-      <div className="flex justify-between items-start mb-2">
-        <span className="text-[10px] font-black uppercase tracking-[0.1em] opacity-80">
+    <div className={`relative bg-white p-5 rounded-[1.8rem] border shadow-black/[0.02] shadow-xl transition-all hover:border-gold/30 group ${statusBorders[status]}`}>
+      {/* Subtle Status Top-bar */}
+      <div className={`absolute top-0 left-6 right-6 h-[2px] rounded-b-full opacity-30 group-hover:opacity-100 transition-opacity ${statusAccents[status]}`} />
+
+      <div className="flex justify-between items-start mb-3">
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary">
           {label}
         </span>
         {trend && trend.length > 0 && (
-          <SparkLine 
-            data={trend} 
-            color={status === 'default' ? 'var(--gold)' : `var(--text-${status})`} 
-          />
+          <div className="opacity-60 group-hover:opacity-100 transition-opacity">
+            <SparkLine 
+              data={trend} 
+              color={status === 'default' ? 'var(--gold)' : `var(--text-${status})`} 
+            />
+          </div>
         )}
       </div>
       
       <div className="flex items-baseline gap-1 overflow-hidden">
         {isCurrency ? (
-          <RupeesDisplay amount={value} className="text-base md:text-xl font-black truncate leading-none" />
+          <RupeesDisplay amount={value} className="text-base md:text-xl font-black text-text-primary truncate leading-none" />
         ) : (
-          <span className="text-base md:text-xl font-black truncate leading-none">{value}</span>
+          <span className="text-base md:text-xl font-black text-text-primary truncate leading-none">{value}</span>
         )}
         {unit && (
-          <span className="text-[10px] font-bold uppercase opacity-60 ml-0.5">
+          <span className="text-[9px] font-black uppercase text-text-tertiary tracking-widest ml-1">
             {unit}
           </span>
         )}

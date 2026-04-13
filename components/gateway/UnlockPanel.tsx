@@ -97,11 +97,13 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
 
       if (err.message === 'WRONG_PIN') {
         setError(lang === 'hi' ? 'Galat PIN — dobara try karo' : 'Wrong PIN — please try again');
+      } else if (err.message === 'PERMISSION_DENIED') {
+        setError(lang === 'hi' ? 'File Access zaruri hai — Browser prompt me Allow karein' : 'Permission Required — Please select "Allow" in the browser prompt');
       } else {
         setError(lang === 'hi' ? 'Ek galti hui' : 'An error occurred');
       }
 
-      if (newAttempts >= 5) {
+      if (newAttempts >= 5 && err.message !== 'PERMISSION_DENIED') {
         setWaitTimer(30);
         setAttempts(0);
         setError(lang === 'hi' ? 'Bahut zyada koshish. 30s wait karein' : 'Too many attempts. Wait 30s');
@@ -132,46 +134,47 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
 
         {/* Vault Profile */}
         <motion.div 
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
           className="text-center mb-10"
         >
-          <div className="w-20 h-20 bg-gold-light/20 rounded-[2rem] flex items-center justify-center mx-auto mb-4 border border-gold/10 backdrop-blur-xl shadow-inner">
-            <span className="text-4xl filter drop-shadow-md">{activeVault.icon || '🛡️'}</span>
+          <div className="w-20 h-20 bg-[#FAF9F6] rounded-[2.5rem] flex items-center justify-center mx-auto mb-4 border border-border-light shadow-inner">
+            <span className="text-4xl filter drop-shadow-sm">{activeVault.icon || '🛡️'}</span>
           </div>
           <h2 className="text-xl font-black text-text-primary tracking-tight">{activeVault.name}</h2>
-          <div className="flex items-center justify-center gap-1.5 mt-1.5 opacity-60">
-             <Lock size={10} className="text-gold" />
-             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary">
-               {lang === 'hi' ? 'Vault Suraksha' : 'Vault Security'}
-             </p>
+          <div className="flex items-center justify-center gap-1.5 mt-2 opacity-60">
+             <div className="text-[10px] font-black uppercase tracking-[0.3em] text-text-tertiary">
+               {lang === 'hi' ? 'VAULT SURAKSHA' : 'VAULT SECURITY'}
+             </div>
           </div>
         </motion.div>
 
         {/* PIN Indicators */}
-        <div className="flex gap-6 mb-12">
+        <div className="flex gap-5 mb-14">
           {[0, 1, 2, 3].map((i) => (
             <motion.div
               key={i}
+              initial={false}
               animate={{
-                scale: currentPin.length > i ? [1, 1.25, 1] : 1,
-                backgroundColor: currentPin.length > i ? 'var(--gold)' : 'transparent',
+                scale: currentPin.length > i ? [1, 1.1, 1] : 1,
               }}
-              className={`w-3.5 h-3.5 rounded-full border-2 transition-colors duration-200 ${
-                currentPin.length > i ? 'border-gold shadow-[0_0_15px_rgba(201,151,28,0.4)]' : 'border-border-medium'
+              className={`w-3.5 h-3.5 rounded-full border-2 transition-all duration-300 ${
+                currentPin.length > i 
+                  ? 'bg-gold border-gold/20 shadow-[0_0_15px_rgba(201,151,28,0.2)]' 
+                  : 'bg-transparent border-border-light'
               }`}
             />
           ))}
         </div>
 
         {/* Numpad */}
-        <div className="grid grid-cols-3 gap-y-6 gap-x-8 w-full">
+        <div className="grid grid-cols-3 gap-4 w-full max-w-[280px]">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
             <button
               key={n}
               disabled={isDecrypting || waitTimer > 0}
               onClick={() => handleDigit(n.toString())}
-              className="w-16 h-16 rounded-full bg-bg-secondary/50 border border-border-light/50 flex items-center justify-center text-2xl font-bold text-text-primary active:scale-90 active:bg-gold active:text-white transition-all backdrop-blur-md mx-auto"
+              className="w-full aspect-[4/3] rounded-[1.5rem] bg-white border border-border-light flex items-center justify-center text-xl font-black text-text-primary active:scale-95 active:bg-gold active:text-white transition-all shadow-sm hover:border-gold/30"
             >
               {n}
             </button>
@@ -180,15 +183,15 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
           <button
             disabled={isDecrypting}
             onClick={handleDelete}
-            className="w-16 h-16 rounded-full flex items-center justify-center text-text-secondary active:scale-90 mx-auto"
+            className="w-full aspect-[4/3] flex items-center justify-center text-text-tertiary hover:text-text-danger transition-colors active:scale-95"
           >
-            <Delete size={24} />
+            <Delete size={20} />
           </button>
           
           <button
             disabled={isDecrypting || waitTimer > 0}
             onClick={() => handleDigit('0')}
-            className="w-16 h-16 rounded-full bg-bg-secondary/50 border border-border-light/50 flex items-center justify-center text-2xl font-bold text-text-primary active:scale-90 active:bg-gold active:text-white transition-all backdrop-blur-md mx-auto"
+            className="w-full aspect-[4/3] rounded-[1.5rem] bg-white border border-border-light flex items-center justify-center text-xl font-black text-text-primary active:scale-95 active:bg-gold active:text-white transition-all shadow-sm hover:border-gold/30"
           >
             0
           </button>
@@ -196,12 +199,12 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
           {bioActive ? (
             <button 
               onClick={handleBiometricClick}
-              className="w-16 h-16 rounded-full flex items-center justify-center text-gold active:scale-90 mx-auto"
+              className="w-full aspect-[4/3] flex items-center justify-center text-gold active:scale-95 transition-all"
             >
-              <Fingerprint size={28} />
+              <Fingerprint size={24} />
             </button>
           ) : (
-            <div className="w-16 h-16" />
+            <div className="w-full aspect-[4/3]" />
           )}
         </div>
 

@@ -34,94 +34,95 @@ export default function DiaryModule() {
 
   return (
     <ModuleShell 
-      title={lang === 'en' ? "Family Diary" : "Parivar ki Diary"}
-      subtitle={lang === 'en' ? "Preserving your legacy, day by day" : "Har din ki yaadein sahejien"}
+      title={lang === 'en' ? "Family Diary" : "Dastaan-e-Parivar"}
+      subtitle={lang === 'en' ? "Preserving your legacy, day by day" : "Har din ki yaadein, hamesha ke liye"}
       onAdd={() => {}}
-      addLabel={lang === 'en' ? "Nayi Yaat Kholo" : "New Entry"}
+      addLabel={lang === 'en' ? "New Journal" : "Nayi Yaadein"}
     >
-      <div className="space-y-8">
+      <div className="space-y-8 md:space-y-12">
         
         {/* Search & Filter Bar */}
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary group-focus-within:text-gold transition-colors" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary group-focus-within:text-gold transition-colors" />
             <input 
               type="text"
-              placeholder={lang === 'en' ? "Dhundhein yahan..." : "Search through the past..."}
-              className="w-full pl-12 pr-4 py-4 bg-bg-primary border border-border-light rounded-2xl text-sm font-bold tracking-tight shadow-sm focus:outline-none focus:border-gold transition-all"
+              placeholder={lang === 'hi' ? "Kuch purana dhundhein..." : "Search through the past..."}
+              className="w-full pl-14 pr-5 py-5 bg-white border border-border-light rounded-2xl text-[13px] font-black tracking-tight shadow-sm focus:outline-none focus:border-gold transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="w-14 h-14 bg-bg-primary border border-border-light rounded-2xl flex items-center justify-center text-text-tertiary hover:text-gold hover:border-gold transition-all shadow-sm">
-             <MessageSquare size={20} />
+          <button className="w-16 h-16 bg-white border border-border-light rounded-2xl flex items-center justify-center text-text-tertiary hover:text-gold hover:border-gold transition-all shadow-sm">
+             <MessageSquare size={22} />
           </button>
         </div>
 
         {/* Timeline List */}
-        <div className="grid gap-8 relative before:absolute before:left-[19px] before:top-4 before:bottom-4 before:w-[2px] before:bg-gradient-to-b before:from-border-light before:via-border-light before:to-transparent">
+        <div className="grid gap-10 relative before:absolute before:left-[21px] before:top-4 before:bottom-4 before:w-[1px] before:bg-border-light">
           {filteredEntries.length > 0 ? filteredEntries.map((e, i) => (
             <motion.div 
               key={String(e.id)}
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="relative pl-12 group"
+              transition={{ delay: i * 0.08 }}
+              className="relative pl-14 group"
             >
                {/* Date Dot */}
-               <div className="absolute left-0 top-1 w-10 h-10 rounded-full bg-bg-primary border-[3px] border-bg-tertiary shadow-sm flex items-center justify-center z-10 transition-transform group-hover:scale-110">
+               <div className="absolute left-0 top-2 w-11 h-11 rounded-full bg-white border border-border-light shadow-sm flex items-center justify-center z-10 transition-transform group-hover:scale-110">
                   <div className="w-2 h-2 rounded-full bg-gold"></div>
                </div>
 
-               <div className="card p-6 border shadow-sm transition-all hover:border-gold/30 hover:shadow-xl bg-bg-primary relative overflow-hidden group-hover:-translate-y-1">
-                  {/* Holographic accent */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full -mr-16 -mt-16 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+               <div className="bg-white border border-border-light p-8 rounded-[2.5rem] shadow-xl shadow-black/[0.02] relative overflow-hidden transition-all hover:border-gold/30 hover:shadow-2xl">
+                  {/* Subtle paper texture overlay could be added here */}
                   
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-xl bg-bg-tertiary flex items-center justify-center border border-border-light font-black text-xs text-text-tertiary tracking-tighter shadow-inner">
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex items-center gap-4">
+                       <div className="w-12 h-12 rounded-2xl bg-[#fdfaf5] flex items-center justify-center border border-border-light font-black text-xs text-gold-text tracking-tighter shadow-sm">
                           SM
                        </div>
                        <div>
-                          <h4 className="text-sm font-black text-text-primary uppercase tracking-tighter">Sunita Mallah</h4>
-                          <div className="flex items-center gap-1.5 text-[10px] font-black text-text-tertiary uppercase tracking-widest mt-0.5">
-                             <Calendar size={10} className="text-gold" />
-                             {String(e.date)}
+                          <h4 className="text-[11px] font-black text-text-primary uppercase tracking-[0.2em]">{lang === 'hi' ? 'Sunita Mallah' : 'Sunita Mallah'}</h4>
+                          <div className="flex items-center gap-2 text-[10px] font-black text-text-tertiary uppercase tracking-widest mt-1">
+                             <Calendar size={12} className="text-gold" />
+                             {new Date(String(e.date)).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
                           </div>
                        </div>
                     </div>
                     
-                    <div className="flex items-center gap-3">
-                       <div className="bg-bg-secondary px-3 py-1.5 rounded-full border border-border-light flex items-center gap-2">
-                          <span className="text-lg">{String(e.mood_label || '📝')}</span>
-                          <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Feeling Good</span>
+                    <div className="flex items-center gap-4">
+                       <div className="bg-[#FAF9F6] px-4 py-2 rounded-full border border-border-light flex items-center gap-2.5">
+                          <span className="text-xl">{String(e.mood_label || '📝')}</span>
+                          <span className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em]">{lang === 'hi' ? 'Theek Hai' : 'Feeling Good'}</span>
                        </div>
-                       <button className="p-2 rounded-xl text-text-tertiary opacity-0 group-hover:opacity-100 hover:bg-bg-danger hover:text-white transition-all">
-                          <Trash2 size={16} />
+                       <button className="w-10 h-10 flex items-center justify-center rounded-xl text-text-tertiary opacity-0 group-hover:opacity-100 hover:bg-red-500/10 hover:text-red-500 transition-all">
+                          <Trash2 size={18} />
                        </button>
                     </div>
                   </div>
 
-                  <p className="text-base font-bold text-text-secondary leading-relaxed tracking-tight select-none">
+                  <p className="text-lg font-bold text-text-secondary leading-[1.6] tracking-tight selection:bg-gold/20">
                     {String(e.content)}
                   </p>
 
-                  <div className="mt-6 flex items-center gap-4 text-text-tertiary border-t border-border-light/30 pt-4">
-                     <button className="flex items-center gap-1.5 hover:text-gold transition-colors">
-                        <Heart size={14} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Like</span>
+                  <div className="mt-8 flex items-center gap-6 text-text-tertiary border-t border-border-light/50 pt-5">
+                     <button className="flex items-center gap-2 hover:text-gold transition-colors">
+                        <Heart size={16} />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Sanjeeda</span>
                      </button>
-                     <button className="flex items-center gap-1.5 hover:text-gold transition-colors">
-                        <MessageSquare size={14} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Add Note</span>
+                     <button className="flex items-center gap-2 hover:text-gold transition-colors">
+                        <MessageSquare size={16} />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Add Memory</span>
                      </button>
                   </div>
                </div>
             </motion.div>
           )) : (
-            <div className="py-24 flex flex-col items-center justify-center opacity-30">
-               <Book size={64} strokeWidth={1} />
-               <p className="font-black uppercase tracking-[0.4em] text-[10px] mt-6">Zero diary logs</p>
+            <div className="py-32 flex flex-col items-center justify-center bg-white border border-border-light border-dashed rounded-[3rem] opacity-40">
+               <div className="w-24 h-24 bg-[#FAF9F6] rounded-full flex items-center justify-center mb-8">
+                  <Book size={40} strokeWidth={1} className="text-text-tertiary" />
+               </div>
+               <p className="font-black uppercase tracking-[0.4em] text-[11px]">{lang === 'hi' ? 'Diary Khaali Hai' : 'Zero diary logs'}</p>
             </div>
           )}
         </div>

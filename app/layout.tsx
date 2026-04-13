@@ -18,15 +18,15 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
+  themeColor: "#FAF9F6",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
 };
 
 export const metadata: Metadata = {
-  title: "Kutumbly — Indian Family OS",
-  description: "Secure, local-first Family OS for the modern Indian family. Zero cloud, absolute privacy.",
+  title: "Kutumbly — Your Family's Digital Ghar",
+  description: "Secure, local-first Sovereign OS for Indian families. Zero cloud, absolute privacy, and total data ownership.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

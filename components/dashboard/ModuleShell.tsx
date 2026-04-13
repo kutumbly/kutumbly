@@ -38,15 +38,15 @@ export default function ModuleShell({
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-4 md:space-y-6 px-2 md:px-0"
+      className="space-y-6 md:space-y-8"
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-2">
         <div className="flex-1">
-          <h2 className="text-base md:text-xl font-bold text-text-primary tracking-tight truncate">
+          <h2 className="text-xl md:text-2xl font-black text-text-primary tracking-tight truncate">
             {title}
           </h2>
           {subtitle && (
-            <p className="text-[8px] md:text-[11px] font-bold text-text-tertiary uppercase tracking-widest mt-0.5 md:mt-1 truncate">
+            <p className="text-[10px] md:text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em] mt-1.5 truncate">
               {subtitle}
             </p>
           )}
@@ -54,8 +54,9 @@ export default function ModuleShell({
         {onAdd && (
           <button 
             onClick={onAdd}
-            className="btn btn-primary shadow-sm px-4 py-2 text-xs"
+            className="h-10 px-5 bg-white border border-border-light rounded-xl font-bold text-xs text-text-secondary hover:border-gold/30 hover:text-gold transition-all shadow-sm active:scale-95 flex items-center gap-2"
           >
+            <span className="text-lg leading-none">+</span>
             {addLabel}
           </button>
         )}

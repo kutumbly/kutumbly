@@ -18,14 +18,15 @@ import { create } from 'zustand';
 import { VaultMeta, VaultStore } from '@/types/vault';
 import { getDevVault } from './vault';
 import { saveDevState } from './dev';
+import { saveFileHandle, getFileHandle } from './handles';
 
 interface AppStore extends VaultStore {
   // Vault state
   recentVaults: VaultMeta[];
   activeVault: VaultMeta | null;
   isUnlocked: boolean;
-  db: any | null;
-  fileHandle: any | null;         // FileSystemFileHandle — in memory only
+  db: any | null; // Placeholder for sql.js Database
+  fileHandle: FileSystemFileHandle | null;
   currentPin: string;             // NEVER persisted
 
   // Gateway UI state
@@ -44,10 +45,11 @@ interface AppStore extends VaultStore {
 
   // Actions
   loadRecentVaults: () => void;
+  syncHandles: () => Promise<void>;
   addRecentVault: (vault: VaultMeta) => void;
   setActiveVault: (vault: VaultMeta | null) => void;
   setGatewayPanel: (p: 'unlock' | 'create' | 'import' | 'success' | 'empty') => void;
-  setUnlocked: (db: any, handle?: any) => void;
+  setUnlocked: (db: any, handle?: FileSystemFileHandle) => void;
   lockVault: () => void;
   setCurrentPin: (pin: string) => void;
   setActiveModule: (id: string) => void;
@@ -81,8 +83,14 @@ export const useAppStore = create<AppStore>((set, get) => ({
     if (typeof window === 'undefined') return;
     try {
       const raw = localStorage.getItem('kutumbly_vaults');
-      if (raw) set({ recentVaults: JSON.parse(raw) });
-      // Also restore theme and hidden modules
+      if (raw) {
+        const vaults = JSON.parse(raw);
+        set({ recentVaults: vaults });
+        // Trigger async sync of handles
+        get().syncHandles();
+      }
+
+      // Restore theme
       const savedTheme = localStorage.getItem('kutumbly_theme') as 'dark' | 'light' | null;
       if (savedTheme) {
         document.documentElement.setAttribute('data-theme', savedTheme);
@@ -90,6 +98,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       } else {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
+
+      // Restore other settings
       const savedSettings = localStorage.getItem('kutumbly_settings');
       if (savedSettings) {
         const s = JSON.parse(savedSettings);
@@ -98,11 +108,33 @@ export const useAppStore = create<AppStore>((set, get) => ({
     } catch {}
   },
 
+  syncHandles: async () => {
+    const vaults = get().recentVaults;
+    if (!vaults.length) return;
+
+    const updated = await Promise.all(vaults.map(async (v) => {
+      const handle = await getFileHandle(v.id);
+      return { ...v, fileHandle: handle || undefined };
+    }));
+
+    set({ recentVaults: updated });
+  },
+
   addRecentVault: (vault) => {
     if (vault.id === 'dev-vault') return;
+    
+    // Save handle to IndexedDB for persistence across refreshes
+    if (vault.fileHandle) {
+      saveFileHandle(vault.id, vault.fileHandle as FileSystemFileHandle);
+    }
+
     const existing = get().recentVaults.filter(v => v.id !== vault.id);
     const updated = [vault, ...existing].slice(0, 10);
-    localStorage.setItem('kutumbly_vaults', JSON.stringify(updated));
+    
+    // We don't stringify the fileHandle into localStorage (it would be empty anyway)
+    const serializable = updated.map(({ fileHandle, ...rest }) => rest);
+    localStorage.setItem('kutumbly_vaults', JSON.stringify(serializable));
+    
     set({ recentVaults: updated });
   },
 

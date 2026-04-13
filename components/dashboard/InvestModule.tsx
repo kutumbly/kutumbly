@@ -25,6 +25,7 @@ import SparkLine from '../ui/SparkLine';
 import RupeesDisplay from '../ui/RupeesDisplay';
 import { TrendingUp, PieChart, ArrowUpRight, ArrowDownRight, Briefcase, Landmark, Target } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Investment } from '@/types/db';
 
 export default function InvestModule() {
   const { lang } = useAppStore();
@@ -44,7 +45,7 @@ export default function InvestModule() {
            <MetricCard label="Total Value" value={summary.currentValue} isCurrency status="success" trend={[summary.currentValue * 0.9, summary.currentValue * 0.95, summary.currentValue]} />
            <MetricCard label="Total Profit" value={summary.profit} isCurrency status={summary.profit >= 0 ? 'success' : 'danger'} />
            <MetricCard label="PnL Percent" value={summary.pnlPercent.toFixed(1)} unit="%" status={summary.pnlPercent >= 0 ? 'success' : 'danger'} />
-           <MetricCard label="SIP Volume" value={investments.reduce((acc, i) => acc + (Number(i.monthly_sip) || 0), 0)} isCurrency status="info" />
+           <MetricCard label="SIP Volume" value={investments.reduce((acc: number, i: Investment) => acc + (Number(i.monthly_sip) || 0), 0)} isCurrency status="info" />
         </div>
 
         {/* Portfolio Holdings */}
@@ -53,9 +54,9 @@ export default function InvestModule() {
              Active Asset Holdings
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-             {investments.length > 0 ? investments.map((h, i) => {
+             {investments.length > 0 ? investments.map((h: Investment, i: number) => {
                const isProfit = h.current_value >= h.principal;
-               const gain = h.principal > 0 ? (((h.current_value - h.principal) / h.principal) * 100).toFixed(1) : 0;
+               const gain = h.principal > 0 ? (((h.current_value - h.principal) / h.principal) * 100).toFixed(1) : "0.0";
                
                return (
                 <motion.div 
@@ -76,8 +77,8 @@ export default function InvestModule() {
                    </div>
 
                    <div>
-                      <h4 className="text-sm font-black text-text-primary tracking-tight leading-tight mb-1">{String(h.name)}</h4>
-                      <p className="text-[10px] text-text-tertiary font-black uppercase tracking-widest">{String(h.type)}</p>
+                      <h4 className="text-sm font-black text-text-primary tracking-tight leading-tight mb-1">{h.name}</h4>
+                      <p className="text-[10px] text-text-tertiary font-black uppercase tracking-widest">{h.type}</p>
                    </div>
 
                    <div className="flex justify-between items-end border-t border-border-light/30 pt-4 mt-2">

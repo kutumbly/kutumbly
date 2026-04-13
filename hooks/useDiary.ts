@@ -16,27 +16,16 @@
 
 "use client";
 
+import { DiaryEntry } from '@/types/db';
+import { runQuery } from '@/lib/db';
 import { useAppStore } from '@/lib/store';
 import { useMemo } from 'react';
 
 export function useDiary() {
   const { db } = useAppStore();
 
-  const entries = useMemo(() => {
-    if (!db) return [];
-    try {
-      const res = db.exec("SELECT * FROM diary_entries ORDER BY date DESC");
-      return res[0]?.values.map(v => ({
-        id: v[0],
-        date: v[1],
-        content: v[2],
-        mood: v[3],
-        mood_label: v[4],
-        created_at: v[5]
-      })) || [];
-    } catch (e) {
-      return [];
-    }
+  const entries = useMemo<DiaryEntry[]>(() => {
+    return runQuery<DiaryEntry>(db, "SELECT * FROM diary_entries ORDER BY date DESC");
   }, [db]);
 
   return { entries };

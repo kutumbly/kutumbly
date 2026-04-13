@@ -27,6 +27,7 @@ import {
   MapPin, CheckCircle2, Clock, Package2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { NevataEvent, ShagunRecord, NevataLedgerEntry } from '@/types/db';
 
 const EVENT_TYPE_EMOJI: Record<string, string> = {
   shaadi: '💍', sagai: '💒', tilak: '🪔', janmdin: '🎂',
@@ -53,12 +54,11 @@ export default function NevataModule() {
   const [direction, setDirection] = useState<'aaya' | 'bheja'>('aaya');
   const [activeTab, setActiveTab] = useState<'events' | 'ledger' | 'upcoming' | 'registry'>('events');
 
-  const events   = useMemo(() => getEvents(direction), [direction, db]);
-  const ledger   = useMemo(() => getLedger(),           [db]);
-  const upcoming = useMemo(() => getUpcoming(),          [db]);
+  const events   = useMemo(() => getEvents(direction), [direction, db, getEvents]);
+  const ledger   = useMemo(() => getLedger(),           [db, getLedger]);
+  const upcoming = useMemo(() => getUpcoming(),          [db, getUpcoming]);
 
   // Real stats from DB
-  const allEvents = useMemo(() => getEvents(), [db]);
   const totalDiya = useMemo(() => {
     if (!db) return 0;
     try {
@@ -74,26 +74,28 @@ export default function NevataModule() {
     } catch { return 0; }
   }, [db]);
 
-  const stats = direction === 'aaya'
+  type MetricStatus = "success" | "default" | "warning" | "danger" | "info";
+  
+  const stats: { label: string; value: number; status: MetricStatus; isCurrency?: boolean }[] = direction === 'aaya'
     ? [
-        { label: 'Upcoming',    value: upcoming.length,  status: 'warning'  as const },
-        { label: 'Diya (Total)',value: totalDiya, isCurrency: true, status: 'danger' as const },
-        { label: 'Mila (Total)',value: totalMila, isCurrency: true, status: 'success' as const },
-        { label: 'Net Rivaaj',  value: totalMila - totalDiya, isCurrency: true,
-          status: (totalMila - totalDiya >= 0 ? 'info' : 'warning') as const },
+        { label: 'Upcoming',    value: upcoming.length,  status: 'warning' },
+        { label: 'Diya (Total)',value: totalDiya, isCurrency: true, status: 'danger' },
+        { label: 'Mila (Total)',value: totalMila, isCurrency: true, status: 'success' },
+        { label: 'Net Rivaaj',  value: (totalMila - totalDiya), isCurrency: true,
+          status: (totalMila - totalDiya >= 0 ? 'info' : 'warning') as MetricStatus },
       ]
     : [
-        { label: 'Invited',    value: 0,         status: 'info'    as const },
-        { label: 'Mila Total', value: totalMila, isCurrency: true, status: 'success' as const },
-        { label: 'Diya Total', value: totalDiya, isCurrency: true, status: 'danger'  as const },
-        { label: 'Shuddh Net', value: totalMila - totalDiya, isCurrency: true, status: 'info' as const },
+        { label: 'Invited',    value: 0,         status: 'info' },
+        { label: 'Mila Total', value: totalMila, isCurrency: true, status: 'success' },
+        { label: 'Diya Total', value: totalDiya, isCurrency: true, status: 'danger' },
+        { label: 'Shuddh Net', value: totalMila - totalDiya, isCurrency: true, status: 'info' },
       ];
 
   // --- Tab content renderers ---
 
   const renderEvents = () => (
     <div className="grid gap-4">
-      {events.length > 0 ? events.map((e) => {
+      {events.length > 0 ? events.map((e: NevataEvent) => {
         const emoji = EVENT_TYPE_EMOJI[String(e.event_type)] || '📅';
         const dir   = DIRECTION_LABEL[String(e.direction)] || DIRECTION_LABEL['aaya'];
         return (
@@ -108,23 +110,23 @@ export default function NevataModule() {
               <div>
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <h4 className="text-sm font-black text-text-primary tracking-tight">
-                    {String(e.title)}
+                    {e.title}
                   </h4>
                   <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest ${dir.color}`}>
                     {dir.label}
                   </span>
                 </div>
                 <p className="text-[11px] font-bold text-text-tertiary uppercase tracking-widest">
-                  {String(e.family_name)} · {String(e.event_date)}
+                  {e.family_name} · {e.event_date}
                 </p>
                 <div className="flex items-center gap-3 mt-2">
                   {e.location && (
                     <span className="flex items-center gap-1 text-[10px] font-bold text-text-tertiary">
-                      <MapPin size={11} className="text-gold" /> {String(e.location)}
+                      <MapPin size={11} className="text-gold" /> {e.location}
                     </span>
                   )}
                   <span className="flex items-center gap-1 text-[10px] font-bold text-text-tertiary">
-                    <Users size={11} className="text-gold" /> {String(e.our_count)} ja rahe
+                    <Users size={11} className="text-gold" /> {e.our_count} ja rahe
                   </span>
                 </div>
               </div>
@@ -137,18 +139,18 @@ export default function NevataModule() {
                     Suggester Rivaaj
                   </div>
                   <div className="text-base font-black text-gold tabular-nums">
-                    <RupeesDisplay amount={suggestShagun(String(e.family_name))} />
+                    <RupeesDisplay amount={suggestShagun(e.family_name)} />
                   </div>
                 </div>
               )}
               <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border ${
-                String(e.status) === 'attended'
+                e.status === 'attended'
                   ? 'bg-bg-success text-text-success border-text-success/10'
-                  : String(e.status) === 'upcoming'
+                  : e.status === 'upcoming'
                   ? 'bg-bg-warning text-text-warning border-text-warning/10'
                   : 'bg-bg-tertiary text-text-tertiary border-border-light'
               }`}>
-                {String(e.status)}
+                {e.status}
               </span>
             </div>
           </div>
@@ -164,34 +166,34 @@ export default function NevataModule() {
 
   const renderLedger = () => (
     <div className="card divide-y divide-border-light/30">
-      {ledger.length > 0 ? ledger.map((l, i) => (
+      {ledger.length > 0 ? ledger.map((l: NevataLedgerEntry, i: number) => (
         <div key={i} className="p-5 flex justify-between items-center group hover:bg-bg-secondary transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-bg-tertiary border border-border-light flex items-center justify-center font-black text-sm text-text-secondary">
-              {String(l.family_name).slice(0, 2).toUpperCase()}
+              {l.family_name.slice(0, 2).toUpperCase()}
             </div>
             <div>
-              <h5 className="text-sm font-black text-text-primary">{String(l.family_name)}</h5>
+              <h5 className="text-sm font-black text-text-primary">{l.family_name}</h5>
               <div className="flex items-center gap-3 mt-0.5">
                 <span className="text-[10px] text-text-tertiary font-bold">
-                  Diya: <RupeesDisplay amount={Number(l.diya)} />
+                  Diya: <RupeesDisplay amount={l.diya || 0} />
                 </span>
                 <span className="text-[10px] text-text-tertiary font-bold">
-                  Mila: <RupeesDisplay amount={Number(l.mila)} />
+                  Mila: <RupeesDisplay amount={l.mila || 0} />
                 </span>
               </div>
               {l.notes && (
-                <p className="text-[10px] text-text-tertiary italic mt-0.5">{String(l.notes)}</p>
+                <p className="text-[10px] text-text-tertiary italic mt-0.5">{l.notes}</p>
               )}
             </div>
           </div>
           <div className="text-right">
-            <div className={`text-base font-black tabular-nums ${Number(l.net) >= 0 ? 'text-text-success' : 'text-text-danger'}`}>
-              {Number(l.net) > 0 ? '+' : ''}
-              <RupeesDisplay amount={Number(l.net)} />
+            <div className={`text-base font-black tabular-nums ${l.net >= 0 ? 'text-text-success' : 'text-text-danger'}`}>
+              {l.net > 0 ? '+' : ''}
+              <RupeesDisplay amount={l.net} />
             </div>
             <div className="text-[9px] font-bold text-text-tertiary uppercase tracking-tighter mt-0.5">
-              {Number(l.net) >= 0 ? 'Hum aage hain' : 'Baaki hai'}
+              {l.net >= 0 ? 'Hum aage hain' : 'Baaki hai'}
             </div>
           </div>
         </div>
@@ -206,10 +208,10 @@ export default function NevataModule() {
 
   const renderUpcoming = () => (
     <div className="grid gap-4">
-      {upcoming.length > 0 ? upcoming.map((e, i) => {
-        const days = daysUntil(String(e.event_date));
+      {upcoming.length > 0 ? upcoming.map((e: NevataEvent, i: number) => {
+        const days = daysUntil(e.event_date);
         const urgency = days <= 7 ? 'bg-bg-danger text-text-danger' : days <= 30 ? 'bg-bg-warning text-text-warning' : 'bg-bg-info text-text-info';
-        const suggested = suggestShagun(String(e.family_name));
+        const suggested = suggestShagun(e.family_name);
         return (
           <div key={i} className="card p-5 flex items-center justify-between group hover:border-gold transition-all">
             <div className="flex items-center gap-4">
@@ -217,9 +219,9 @@ export default function NevataModule() {
                 <Calendar size={20} className="text-gold" />
               </div>
               <div>
-                <h4 className="text-sm font-black text-text-primary">{String(e.title)}</h4>
+                <h4 className="text-sm font-black text-text-primary">{e.title}</h4>
                 <p className="text-[11px] font-bold text-text-tertiary uppercase tracking-widest mt-0.5">
-                  {String(e.family_name)} · {String(e.event_date)}
+                  {e.family_name} · {e.event_date}
                 </p>
                 <div className="flex items-center gap-2 mt-1.5">
                   <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${urgency}`}>

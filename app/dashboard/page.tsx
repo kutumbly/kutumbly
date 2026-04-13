@@ -25,6 +25,7 @@ import {
   Settings, LogOut, Shield, Heart, Users,
   Utensils, TrendingUp, Calendar, Briefcase, Network
 } from "lucide-react";
+import { motion } from "framer-motion";
 import HomeModule from "@/components/dashboard/HomeModule";
 import DiaryModule from "@/components/dashboard/DiaryModule";
 import TasksModule from "@/components/dashboard/TasksModule";
@@ -109,37 +110,48 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg-tertiary">
+    <div className="flex flex-col min-h-screen bg-[#FAF9F6]">
 
       {/* ── App Header ─────────────────────────────────────────── */}
-      <header className="bg-bg-primary border-b border-border-light px-4 py-2 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          <Image src="/favicon.svg" alt="Kutumbly" width={24} height={24} className="brightness-110" />
-          <span className="text-lg font-bold tracking-tight text-text-primary">kutumbly</span>
-          <span className="w-px h-4 bg-border-light mx-1" />
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-text-primary leading-none">
-              {activeVault?.name || "Vault"}
-            </span>
-            <span className="text-[9px] font-bold text-gold uppercase tracking-tighter">
-              Sovereign OS
-            </span>
+      <header className="bg-white border-b border-border-light px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+        <div className="flex items-center gap-4">
+          <div className="w-8 h-8 md:w-7 md:h-7 bg-white border border-border-light rounded-xl flex items-center justify-center p-1 shadow-sm">
+             <Image src="/favicon.svg" alt="Logo" width={20} height={20} className="brightness-110" />
+          </div>
+          <div className="flex flex-col md:flex-row md:items-baseline md:gap-2">
+            <span className="text-base md:text-lg font-black tracking-tight text-text-primary">Kutumbly</span>
+            <div className="flex items-center gap-2">
+              <span className="hidden md:block w-px h-3 bg-border-light" />
+              <span className="text-[10px] md:text-[11px] font-black text-gold uppercase tracking-[0.2em]">
+                {activeVault?.name || "Vault"}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-6">
           {/* Offline badge */}
-          <div className="hidden md:flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-text-tertiary">
-            <span className="w-1.5 h-1.5 rounded-full bg-text-success inline-block" />
-            offline · AES-256
+          <div className="hidden md:flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.3em] text-text-tertiary">
+            <div className="flex items-center gap-1.5">
+               <span className="w-1.5 h-1.5 rounded-full bg-text-success shadow-[0_0_8px_rgba(5,150,105,0.4)]" />
+               offline
+            </div>
+            <span>·</span>
+            <div className="flex items-center gap-1.5">
+               <Shield size={10} className="opacity-50" />
+               AES-256
+            </div>
           </div>
           {/* Language toggle */}
           <button
             onClick={toggleLang}
-            className="text-[10px] uppercase font-bold tracking-widest text-text-tertiary hover:text-gold transition-colors"
+            className="text-[10px] uppercase font-black tracking-[0.2em] text-text-tertiary hover:text-gold transition-colors"
           >
             {lang === "en" ? "हिन्दी" : "English"}
           </button>
+          
+          <span className="w-px h-4 bg-border-light mx-1" />
+
           {/* Lock button */}
           <button
             onClick={handleLogout}
@@ -152,7 +164,7 @@ export default function DashboardPage() {
       </header>
 
       {/* ── Tab Navigation (Desktop Only) ─────────────────────────── */}
-      <nav className="hidden md:flex bg-bg-primary border-b border-border-light sticky top-[49px] z-40 overflow-x-auto scroller-hide items-center px-2">
+      <nav className="hidden md:flex bg-white border-b border-border-light sticky top-[73px] z-40 overflow-x-auto scroller-hide items-center px-4">
         {visibleTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeModule === tab.id;
@@ -161,16 +173,19 @@ export default function DashboardPage() {
             <button
               key={tab.id}
               onClick={() => setActiveModule(tab.id)}
-              className={`flex-shrink-0 px-4 py-3.5 text-[11px] font-bold uppercase tracking-wider transition-all relative ${
-                isActive ? "text-gold" : "text-text-secondary hover:text-text-primary"
+              className={`flex-shrink-0 px-5 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative group ${
+                isActive ? "text-gold-text" : "text-text-tertiary hover:text-text-primary"
               }`}
             >
-              <div className="flex items-center gap-1.5">
-                <Icon size={13} />
+              <div className="flex items-center gap-2">
+                <Icon size={14} strokeWidth={isActive ? 3 : 2} className="transition-transform group-active:scale-90" />
                 <span>{label}</span>
               </div>
               {isActive && (
-                <div className="absolute bottom-0 left-3 right-3 h-0.5 bg-gold rounded-t-full" />
+                <motion.div 
+                  layoutId="active-tab-bar"
+                  className="absolute bottom-0 left-5 right-5 h-[3px] bg-gold rounded-t-full shadow-[0_-4px_10px_rgba(201,151,28,0.2)]" 
+                />
               )}
             </button>
           );

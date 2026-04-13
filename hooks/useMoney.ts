@@ -18,6 +18,8 @@
 
 import { useAppStore } from '@/lib/store';
 import { saveVault } from '@/lib/vault';
+import { Transaction } from '@/types/db';
+import { runQuery } from '@/lib/db';
 import { useMemo, useCallback, useState } from 'react';
 
 export function useMoney(month?: string) {
@@ -28,47 +30,30 @@ export function useMoney(month?: string) {
   const data = useMemo(() => {
     if (!db) return { txns: [], summary: { income: 0, expense: 0, balance: 0 } };
 
-    try {
-      // 1. Fetch Transactions for the month
-      const txnRes = db.exec(`
-        SELECT * FROM transactions 
-        WHERE strftime('%Y-%m', date) = ? 
-        ORDER BY date DESC
-      `, [currentMonth]);
-      
-      const txns = txnRes[0]?.values.map(v => ({
-        id: v[0],
-        date: v[1],
-        amount: Number(v[2]),
-        type: v[3],
-        category: v[4],
-        description: v[5],
-        member_id: v[6]
-      })) || [];
+    // 1. Fetch Transactions for the month
+    const txns = runQuery<Transaction>(db, `
+      SELECT * FROM transactions 
+      WHERE strftime('%Y-%m', date) = ? 
+      ORDER BY date DESC
+    `, [currentMonth]);
+    
+    // 2. Calculate Summary
+    const income = txns
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+    
+    const expense = txns
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
 
-      // 2. Calculate Summary
-      const summaryRes = db.exec(`
-        SELECT
-          SUM(CASE WHEN type='income' THEN amount ELSE 0 END) as income,
-          SUM(CASE WHEN type='expense' THEN amount ELSE 0 END) as expense
-        FROM transactions 
-        WHERE strftime('%Y-%m', date) = ?
-      `, [currentMonth]);
-
-      const income = Number(summaryRes[0]?.values[0][0]) || 0;
-      const expense = Number(summaryRes[0]?.values[0][1]) || 0;
-
-      return {
-        txns,
-        summary: {
-          income,
-          expense,
-          balance: income - expense
-        }
-      };
-    } catch (e) {
-      return { txns: [], summary: { income: 0, expense: 0, balance: 0 } };
-    }
+    return {
+      txns,
+      summary: {
+        income,
+        expense,
+        balance: income - expense
+      }
+    };
   }, [db, currentMonth, tick]);
 
   const addTransaction = useCallback((type: 'income'|'expense', amount: number, category: string, description: string, date: string) => {

@@ -21,9 +21,10 @@ import { useAppStore } from '@/lib/store';
 import { useStaff } from '@/hooks/useStaff';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
-import { Briefcase, UserCheck, CalendarDays, Wallet, UserMinus, UserPlus, Phone, History, MoreHorizontal, ArrowRight } from 'lucide-react';
+import { Briefcase, UserCheck, CalendarDays, Wallet, UserMinus, UserPlus, Phone, History, MoreHorizontal, ArrowRight, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import RupeesDisplay from '../ui/RupeesDisplay';
+import { StaffMember, SalaryPayment, AttendanceRecord } from '@/types/db';
 
 export default function HomeStaffModule() {
   const { lang } = useAppStore();
@@ -44,8 +45,8 @@ export default function HomeStaffModule() {
     setFPhone('');
   };
 
-  const totalMonthlyPayout = staff.reduce((acc, s) => acc + s.salary, 0);
-  const presentToday = attendance.filter(a => a.date === new Date().toISOString().slice(0, 10) && a.status === 'present').length;
+  const totalMonthlyPayout = staff.reduce((acc: number, s: StaffMember) => acc + s.salary, 0);
+  const presentToday = attendance.filter((a: AttendanceRecord) => a.date === new Date().toISOString().slice(0, 10) && a.status === 'present').length;
 
   return (
     <ModuleShell 
@@ -112,10 +113,10 @@ export default function HomeStaffModule() {
              Support Team Roster
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             {staff.length > 0 ? staff.map((s, i) => {
-               const initials = s.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-               const sAtt = attendance.filter(a => a.staff_id === s.id);
-               const pPercentage = sAtt.length > 0 ? (sAtt.filter(a => a.status === 'present').length / sAtt.length) * 100 : 100;
+             {staff.length > 0 ? staff.map((s: StaffMember, i: number) => {
+               const initials = s.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
+               const sAtt = attendance.filter((a: AttendanceRecord) => a.staff_id === s.id);
+               const pPercentage = sAtt.length > 0 ? (sAtt.filter((a: AttendanceRecord) => a.status === 'present').length / sAtt.length) * 100 : 100;
 
                return (
                 <motion.div 
@@ -129,16 +130,16 @@ export default function HomeStaffModule() {
                       </div>
                       <div className="flex-1">
                           <div className="flex justify-between items-center">
-                             <h4 className="text-base font-black text-text-primary tracking-tight">{String(s.name)}</h4>
+                             <h4 className="text-base font-black text-text-primary tracking-tight">{s.name}</h4>
                              <div className="flex items-center gap-2">
                                 <span className="text-[9px] font-black bg-bg-success text-text-success px-2.5 py-1 rounded-full uppercase tracking-widest border border-text-success/10">Present</span>
-                                <button onClick={() => removeStaff(String(s.id))} className="text-text-tertiary hover:text-text-danger transition-colors p-1 opacity-0 group-hover:opacity-100">
+                                <button onClick={() => removeStaff(s.id)} className="text-text-tertiary hover:text-text-danger transition-colors p-1 opacity-0 group-hover:opacity-100">
                                    <MoreHorizontal size={14} />
                                 </button>
                              </div>
                           </div>
                          <p className="text-[10px] text-text-tertiary font-black uppercase tracking-widest mt-0.5">
-                            {String(s.role)} · Since {String(s.join_date).slice(0, 4)}
+                            {s.role} · Since {s.join_date.slice(0, 4)}
                          </p>
                       </div>
                    </div>
@@ -187,40 +188,40 @@ export default function HomeStaffModule() {
           </div>
           
           <div className="card divide-y divide-border-light/30">
-             {payments.length > 0 ? payments.map((p, i) => (
-               <div key={String(p.id)} className="p-5 flex justify-between items-center group hover:bg-bg-secondary transition-all">
-                  <div className="flex gap-4 items-center">
-                     <div className="w-10 h-10 rounded-xl bg-bg-success/5 text-text-success flex items-center justify-center border border-text-success/10 group-hover:bg-text-success group-hover:text-white transition-all shadow-inner">
-                        <Wallet size={20} />
-                     </div>
-                     <div>
-                        <div className="text-sm font-black text-text-primary tracking-tight">
-                          {staff.find(s => s.id === p.staff_id)?.name || 'Former Staff'}
+             {payments.length > 0 ? payments.map((p: SalaryPayment, i: number) => (
+                <div key={p.id} className="p-5 flex justify-between items-center group hover:bg-bg-secondary transition-all">
+                   <div className="flex gap-4 items-center">
+                      <div className="w-10 h-10 rounded-xl bg-bg-success/5 text-text-success flex items-center justify-center border border-text-success/10 group-hover:bg-text-success group-hover:text-white transition-all shadow-inner">
+                         <Wallet size={20} />
+                      </div>
+                      <div>
+                         <div className="text-sm font-black text-text-primary tracking-tight">
+                           {staff.find((s: StaffMember) => s.id === p.staff_id)?.name || 'Former Staff'}
+                         </div>
+                         <div className="text-[10px] text-text-tertiary font-bold uppercase tracking-widest mt-0.5">
+                           Month of {p.month} · Paid on {p.paid_on}
+                         </div>
+                      </div>
+                   </div>
+                   <div className="text-right">
+                      <div className="text-sm font-black text-text-primary tabular-nums">
+                         <RupeesDisplay amount={p.net} />
+                      </div>
+                      {p.advance > 0 && (
+                        <div className="text-[8px] font-bold text-text-danger uppercase tracking-tighter">
+                           -₹{p.advance} Advance Adj.
                         </div>
-                        <div className="text-[10px] text-text-tertiary font-bold uppercase tracking-widest mt-0.5">
-                          Month of {p.month} · Paid on {p.paid_on}
-                        </div>
-                     </div>
-                  </div>
-                  <div className="text-right">
-                     <div className="text-sm font-black text-text-primary tabular-nums">
-                        <RupeesDisplay amount={p.net as number} />
-                     </div>
-                     {Number(p.advance) > 0 && (
-                       <div className="text-[8px] font-bold text-text-danger uppercase tracking-tighter">
-                          -₹{Number(p.advance)} Advance Adj.
-                       </div>
-                     )}
-                  </div>
-               </div>
+                      )}
+                   </div>
+                </div>
              )) : (
-               <div className="py-12 flex flex-col items-center justify-center opacity-20">
-                  <Wallet size={32} />
-                  <p className="text-[9px] font-black uppercase tracking-widest mt-2">No payment logs</p>
-               </div>
+                <div className="py-12 flex flex-col items-center justify-center opacity-20">
+                   <Wallet size={32} />
+                   <p className="text-[9px] font-black uppercase tracking-widest mt-2">No payment logs</p>
+                </div>
              )}
            </div>
-         </section>
+          </section>
 
        </div>
       )}

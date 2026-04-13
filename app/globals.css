@@ -50,7 +50,8 @@
   /* Backgrounds */
   --bg-primary:    #FFFFFF;
   --bg-secondary:  #F9FAFB;
-  --bg-tertiary:   #F3F4F6;
+  --bg-tertiary:   #FAF9F6; /* Minimalist Off-white Main */
+  --bg-paper:      #FAF9F6;
   --bg-success:    #ECFDF5;
   --bg-warning:    #FFFBEB;
   --bg-danger:     #FEF2F2;
@@ -58,15 +59,15 @@
 
   /* Text */
   --text-primary:   #111827;
-  --text-secondary: #6B7280;
-  --text-tertiary:  #9CA3AF;
+  --text-secondary: #374151; /* Darker for accessibility */
+  --text-tertiary:  #6B7280; /* Hardened for legibility on paper */
   --text-success:   #065F46;
   --text-warning:   #92400E;
   --text-danger:    #991B1B;
   --text-info:      #1E40AF;
 
   /* Borders */
-  --border-light:  #E5E7EB;
+  --border-light:  #E5E2DA; /* Slightly more defined warmth */
   --border-medium: #D1D5DB;
 
   /* Gold — Kutumbly brand */
@@ -76,8 +77,8 @@
   --gold-text: #633806;
 
   --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-md: 10px; /* Slightly smoother */
+  --radius-lg: 24px; /* Larger for modern landing cards */
 }
 
 /* ─── Dark Mode ────────────────────────────────────────────── */

@@ -31,25 +31,25 @@ export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
 
   return (
     <div className="flex flex-col min-h-[100dvh] bg-bg-tertiary relative overflow-hidden pt-safe">
-      {/* Immersive Background Decor */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(201,151,28,0.1)_0%,_transparent_50%)] pointer-events-none" />
       
-      <div className="flex-1 flex flex-col w-full md:w-[80vw] md:max-w-[1280px] md:min-w-[800px] md:h-[80vh] md:max-h-[900px] md:min-h-[600px] bg-bg-primary md:rounded-xl shadow-2xl overflow-hidden md:border-[0.5px] border-border-light relative z-10 mx-auto transition-all duration-500">
+      <div className="flex-1 flex flex-col w-full md:w-[85vw] md:max-w-[1200px] md:h-[80vh] md:max-h-[860px] md:min-h-[600px] bg-white md:rounded-[2.5rem] shadow-2xl shadow-black/[0.03] overflow-hidden border-border-light relative z-10 mx-auto transition-all duration-500 md:border md:mt-10">
         
-        {/* Top bar (Immersive & Safe) */}
-        <div className="h-16 md:h-12 border-b-[0.5px] border-border-light bg-bg-primary/80 backdrop-blur-xl flex items-center justify-between px-6 md:px-4 flex-shrink-0">
-          <div className="flex items-center gap-2.5">
-            <Image src="/favicon.svg" alt="Logo" width={24} height={24} className="brightness-110 drop-shadow-sm" />
-            <div className="flex flex-col md:flex-row md:items-center md:gap-2">
-               <span className="font-black text-text-primary tracking-tight text-sm md:text-base leading-none">Kutumbly</span>
-               <span className="text-[10px] md:text-xs text-gold font-bold uppercase tracking-widest hidden md:block">Sovereign OS</span>
+        {/* Top bar (Clean & Minimalist) */}
+        <div className="h-16 md:h-14 border-b border-border-light bg-white flex items-center justify-between px-6 md:px-8 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 md:w-7 md:h-7 bg-white border border-border-light rounded-xl flex items-center justify-center p-1 shadow-sm">
+               <Image src="/favicon.svg" alt="Logo" width={20} height={20} className="brightness-110" />
+            </div>
+            <div className="flex items-baseline gap-2">
+               <span className="font-black text-text-primary tracking-tight text-base md:text-lg leading-none">Kutumbly</span>
+               <span className="text-[10px] text-gold font-black uppercase tracking-[0.2em] hidden md:block">Bharat</span>
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <button 
               onClick={toggleLang}
-              className="text-[10px] font-black tracking-[0.2em] uppercase text-text-secondary hover:text-gold transition-colors"
+              className="text-[10px] font-black tracking-[0.2em] uppercase text-text-tertiary hover:text-gold transition-colors"
             >
               {lang === 'en' ? 'हिन्दी' : 'English'}
             </button>
@@ -59,31 +59,30 @@ export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
         {/* Content Area */}
         <div className="flex flex-1 overflow-hidden">
           {/* Left Panel: Sidebar (Desktop Only) */}
-          <aside className="hidden md:block w-72 border-r-[0.5px] border-border-light bg-bg-secondary overflow-y-auto scroller-hide">
+          <aside className="hidden md:block w-72 border-r border-border-light bg-[#FAF9F6] overflow-y-auto scroller-hide">
              {sidebar}
           </aside>
 
-          {/* Right Panel: Dynamic Content (Immersive for Mobile) */}
-          <main className="flex-1 bg-bg-primary overflow-y-auto scroller-hide flex flex-col pt-safe">
-            {/* On mobile, if no sidebar is shown, we might need to show the selection here */}
+          {/* Right Panel: Dynamic Content */}
+          <main className="flex-1 bg-white overflow-y-auto scroller-hide flex flex-col pt-safe">
             {children}
           </main>
         </div>
 
-        {/* Status bar (Desktop Only or Hidden for cleaner Mobile) */}
-        <div className="hidden md:flex h-8 border-t-[0.5px] border-border-light bg-bg-secondary items-center justify-between px-4 flex-shrink-0">
-          <div className="flex items-center gap-3 text-[10px] text-text-secondary font-medium">
-            <div className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-success" />
-              Offline
+        {/* Status bar */}
+        <div className="hidden md:flex h-10 border-t border-border-light bg-[#FAF9F6] items-center justify-between px-8 flex-shrink-0">
+          <div className="flex items-center gap-4 text-[9px] text-text-tertiary font-black uppercase tracking-widest">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-text-success shadow-[0_0_8px_rgba(5,150,105,0.4)]" />
+              Sovereign Instance
             </div>
-            <div className="flex items-center gap-1">
-              <Lock className="w-3 h-3" />
-              AES-256-GCM
+            <div className="flex items-center gap-2">
+              <Lock size={12} className="opacity-50" />
+              AES-256 Protocol
             </div>
           </div>
-          <div className="text-[10px] text-text-tertiary font-bold tracking-widest">
-            BHARAT · ZERO CLOUD
+          <div className="text-[9px] text-text-tertiary font-black tracking-[0.4em] uppercase">
+             Zero Cloud · Local First
           </div>
         </div>
       </div>

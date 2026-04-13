@@ -16,122 +16,215 @@
 
 "use client";
 
-import React from 'react';
-import { PlusCircle, FileCode2, Lock, ArrowRight, ShieldCheck, History } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { PlusCircle, FileCode2, Lock, ArrowRight, History, X, Clock } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { VaultMeta, GatewayPanel } from '@/types/vault';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface VaultListProps {
   onPanelChange: (panel: GatewayPanel) => void;
 }
 
+interface VaultGroup {
+  primary: VaultMeta;
+  history: VaultMeta[];
+}
+
 export default function VaultList({ onPanelChange }: VaultListProps) {
   const { recentVaults, activeVault, setActiveVault, lang } = useAppStore();
+  const [showHistoryFor, setShowHistoryFor] = useState<string | null>(null);
+
+  // Group vaults by name
+  const groupedVaults = useMemo(() => {
+    const groups: Record<string, VaultMeta[]> = {};
+    
+    recentVaults.forEach(v => {
+      const key = v.name;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(v);
+    });
+
+    return Object.values(groups).map(members => {
+      const sorted = [...members].sort((a, b) => 
+        new Date(b.lastOpened).getTime() - new Date(a.lastOpened).getTime()
+      );
+      return {
+        primary: sorted[0],
+        history: sorted.slice(1)
+      } as VaultGroup;
+    }).sort((a, b) => 
+      new Date(b.primary.lastOpened).getTime() - new Date(a.primary.lastOpened).getTime()
+    );
+  }, [recentVaults]);
+
+  const historyTarget = groupedVaults.find(g => g.primary.name === showHistoryFor);
 
   return (
-    <div className="flex flex-col h-full bg-bg-secondary/50">
+    <div className="flex flex-col h-full bg-[#FAF9F6] relative overflow-hidden">
       {/* Header */}
-      <div className="p-6 md:p-4 border-b-[0.5px] border-border-light bg-bg-primary/50 backdrop-blur-md sticky top-0 z-10">
-        <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-text-tertiary">
-          {lang === 'hi' ? 'Aapke Surakshit Vaults' : 'Your Secure Vaults'}
+      <div className="p-6 border-b border-border-light bg-[#FAF9F6] sticky top-0 z-10">
+        <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary">
+          {lang === 'hi' ? 'AAPKE VAULTS' : 'YOUR VAULTS'}
         </h2>
       </div>
 
-      <div className="flex-1 overflow-y-auto scroller-hide p-6 md:p-4 space-y-4">
-        {recentVaults.length === 0 ? (
-          <div className="py-12 px-6 text-center flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-bg-primary border border-border-light flex items-center justify-center opacity-40">
+      <div className="flex-1 overflow-y-auto scroller-hide p-6 space-y-3">
+        {groupedVaults.length === 0 ? (
+          <div className="py-12 text-center flex flex-col items-center gap-4">
+            <div className="w-16 h-16 rounded-[2rem] bg-white border border-border-light flex items-center justify-center opacity-40">
                <Lock className="w-8 h-8 text-text-tertiary" />
             </div>
             <div>
-               <p className="text-sm font-bold text-text-primary">Koi Vault Nahi Mila</p>
-               <p className="text-[10px] text-text-tertiary mt-1 uppercase font-black tracking-widest">Setup shuru karein niche se</p>
+               <p className="text-sm font-bold text-text-primary">No Vaults Found</p>
+               <p className="text-[9px] text-text-tertiary mt-1 uppercase font-black tracking-widest">Setup a new one below</p>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {recentVaults.map((vault, i) => {
+          <div className="space-y-3">
+            {groupedVaults.map((group, i) => {
+              const vault = group.primary;
               const isActive = activeVault?.id === vault.id;
+              const hasHistory = group.history.length > 0;
+
               return (
-                <motion.button
-                  key={vault.id}
+                <motion.div
+                  key={vault.name}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  onClick={() => {
-                    setActiveVault(vault);
-                    onPanelChange('unlock');
-                  }}
-                  className={`relative flex items-center gap-5 p-5 rounded-3xl transition-all text-left group overflow-hidden border-2
-                    ${isActive 
-                      ? 'bg-bg-primary border-gold shadow-[0_10px_30px_rgba(201,151,28,0.1)]' 
-                      : 'bg-bg-primary border-transparent hover:border-border-medium active:scale-[0.98]'
-                    }
-                  `}
+                  className="relative group"
                 >
-                  {/* Active Indicator */}
-                  {isActive && (
-                    <div className="absolute top-0 right-0 p-2">
-                       <ShieldCheck className="w-4 h-4 text-gold" />
+                  <button
+                    onClick={() => {
+                      setActiveVault(vault);
+                      onPanelChange('unlock');
+                    }}
+                    className={`w-full flex items-center gap-4 p-4 rounded-[2rem] transition-all text-left border-2
+                      ${isActive 
+                        ? 'bg-white border-gold/20 shadow-xl shadow-black/[0.03]' 
+                        : 'bg-transparent border-transparent hover:bg-white/50'
+                      }
+                    `}
+                  >
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner
+                      ${isActive ? 'bg-gold-light/30' : 'bg-bg-tertiary grayscale opacity-50'}
+                    `}>
+                      {vault.icon || '🏠'}
                     </div>
+
+                    <div className="flex-1 min-w-0 pr-6">
+                      <div className="text-sm font-black text-text-primary truncate">
+                         {vault.name}
+                      </div>
+                      <div className="text-[9px] text-text-tertiary font-black uppercase tracking-widest mt-0.5">
+                        {lang === 'hi' ? 'Aaj khola' : 'Last Opened: Today'}
+                      </div>
+                    </div>
+
+                    <ArrowRight className={`w-4 h-4 transition-transform duration-300 ${isActive ? 'text-gold' : 'text-border-medium group-hover:translate-x-1'}`} />
+                  </button>
+
+                  {hasHistory && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowHistoryFor(vault.name);
+                      }}
+                      className="absolute top-4 right-4 p-1.5 rounded-xl bg-white/80 text-text-tertiary hover:text-gold hover:bg-gold/10 transition-all z-20 border border-border-light/50"
+                    >
+                      <History size={14} />
+                    </button>
                   )}
-
-                  {/* Icon */}
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl transition-all shadow-inner
-                    ${isActive ? 'bg-gold-light/50 filter drop-shadow-sm' : 'bg-bg-tertiary'}
-                  `}>
-                    {vault.icon || '🏠'}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="text-base font-black text-text-primary truncate">
-                       {vault.name}
-                    </div>
-                    <div className="flex items-center gap-2 mt-1">
-                       <History size={10} className="text-text-tertiary" />
-                       <span className="text-[9px] text-text-tertiary font-black uppercase tracking-widest">
-                         {new Date(vault.lastOpened).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short' })}
-                       </span>
-                    </div>
-                  </div>
-
-                  <ArrowRight className={`w-5 h-5 transition-transform duration-300 ${isActive ? 'text-gold' : 'text-border-medium group-hover:translate-x-1'}`} />
-                </motion.button>
+                </motion.div>
               );
             })}
           </div>
         )}
 
-        {/* Action Grid (Secondary) */}
-        <div className="grid grid-cols-2 gap-3 pt-4">
+        <div className="mt-8 space-y-4 pt-6 border-t border-border-light/50">
            <button 
              onClick={() => onPanelChange('create')}
-             className="flex flex-col items-center justify-center gap-3 p-6 rounded-[2rem] bg-gold text-white shadow-lg active:scale-95 transition-all"
+             className="w-full flex items-center gap-3 px-2 text-[10px] font-black uppercase tracking-widest text-text-tertiary hover:text-gold transition-colors"
            >
-             <PlusCircle className="w-6 h-6" />
-             <span className="text-[10px] font-black uppercase tracking-widest">{lang === 'hi' ? 'Naya Vault' : 'New Vault'}</span>
+             <span className="text-lg">+</span>
+             {lang === 'hi' ? 'Naya Vault Banao' : 'Create New Vault'}
            </button>
            <button 
              onClick={() => onPanelChange('import')}
-             className="flex flex-col items-center justify-center gap-3 p-6 rounded-[2rem] bg-bg-primary border border-border-light active:scale-95 transition-all shadow-sm"
+             className="w-full flex items-center gap-3 px-2 text-[10px] font-black uppercase tracking-widest text-text-tertiary hover:text-gold transition-colors"
            >
-             <FileCode2 className="w-6 h-6 text-text-tertiary" />
-             <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary">{lang === 'hi' ? 'Import' : 'Import'}</span>
+             <span className="text-lg">📁</span>
+             {lang === 'hi' ? '.kutumb File Kholo' : 'Open .kutumb File'}
            </button>
         </div>
       </div>
 
-      {/* Recover / Setup (Optional/Secondary) */}
-      <div className="p-6 text-center">
+      <div className="p-6 text-center border-t border-border-light/50">
          <button 
            onClick={() => onPanelChange('recover')}
-           className="text-[10px] font-black text-text-tertiary hover:text-gold uppercase tracking-[0.3em] transition-colors"
+           className="text-[9px] font-black text-text-tertiary hover:text-gold uppercase tracking-[0.3em] transition-colors"
          >
            Cloud Recovery & Reset
          </button>
       </div>
+
+      {/* History Drawer Overlay */}
+      <AnimatePresence>
+        {showHistoryFor && historyTarget && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowHistoryFor(null)}
+              className="absolute inset-0 bg-black/20 backdrop-blur-sm z-30"
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="absolute bottom-0 left-0 right-0 max-h-[70%] bg-white rounded-t-[2.5rem] z-40 shadow-2xl flex flex-col border-t border-border-light"
+            >
+              <div className="flex items-center justify-between p-6 pb-2 border-b border-border-light/50">
+                 <h3 className="text-[10px] font-black text-text-primary uppercase tracking-widest flex items-center gap-2">
+                   <History size={14} className="text-gold" />
+                   {lang === 'hi' ? 'Vault Itihas' : 'Vault History'}
+                 </h3>
+                 <button 
+                  onClick={() => setShowHistoryFor(null)}
+                  className="p-2 rounded-full bg-bg-tertiary text-text-tertiary"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 space-y-3 scroller-hide pb-12">
+                 {historyTarget.history.map((hv) => (
+                   <button
+                      key={hv.id}
+                      onClick={() => {
+                        setActiveVault(hv);
+                        setShowHistoryFor(null);
+                        onPanelChange('unlock');
+                      }}
+                      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-[#FAF9F6] border border-border-light hover:border-gold/20 transition-all text-left"
+                   >
+                      <div className="text-xl opacity-60 filter grayscale">{hv.icon || '🏠'}</div>
+                      <div className="flex-1 min-w-0">
+                         <div className="text-xs font-bold text-text-primary truncate">{hv.path || 'Previous Copy'}</div>
+                         <div className="text-[9px] text-text-tertiary font-black uppercase tracking-widest mt-1">
+                            {new Date(hv.lastOpened).toLocaleString()}
+                         </div>
+                      </div>
+                   </button>
+                 ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
-
