@@ -23,6 +23,7 @@ import LandingFeatures from '@/components/landing/LandingFeatures';
 import LandingPrivacy from '@/components/landing/LandingPrivacy';
 import LandingFooter from '@/components/landing/LandingFooter';
 import LandingHeader from '@/components/landing/LandingHeader';
+import LandingFounders from '@/components/landing/LandingFounders';
 import { motion } from 'framer-motion';
 import { ArrowRight, Globe } from 'lucide-react';
 import Link from 'next/link';
@@ -89,6 +90,7 @@ export default function LandingPage() {
          </Link>
       </section>
 
+      <LandingFounders />
       <LandingFooter />
     </main>
   );

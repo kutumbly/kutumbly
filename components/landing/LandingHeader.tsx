@@ -41,6 +41,12 @@ export default function LandingHeader() {
          >
             {lang === 'hi' ? 'Kaise kaam karta hai' : 'How it works'}
          </button>
+         <Link 
+           href="/contact"
+           className="hidden md:block text-sm font-bold text-text-secondary hover:text-text-primary transition-colors"
+         >
+            Contact
+         </Link>
          <button 
            onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
            className="text-[10px] font-black uppercase tracking-widest text-gold bg-gold/5 px-4 py-2 rounded-xl border border-gold/10 hover:bg-gold-light transition-all active:scale-95"
