@@ -38,7 +38,7 @@ interface AppStore extends VaultStore {
   hiddenModules: string[];
   theme: 'dark' | 'light';
   sidebarCollapsed: boolean;
-  lang: 'en' | 'hi';
+  lang: 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho';
 
   // Dev helper
   isDevMode: boolean;
@@ -56,7 +56,7 @@ interface AppStore extends VaultStore {
   toggleModule: (id: string) => void;
   setTheme: (t: 'dark' | 'light') => void;
   setSidebarCollapsed: (v: boolean) => void;
-  toggleLang: () => void;
+  setLang: (l: 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho') => void;
   saveSettings: () => void;
 
   // Dev only
@@ -185,7 +185,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
 
-  toggleLang: () => set((state) => ({ lang: state.lang === 'en' ? 'hi' : 'en' })),
+  setLang: (l) => set({ lang: l }),
 
   saveSettings: () => {
     localStorage.setItem('kutumbly_settings', JSON.stringify({

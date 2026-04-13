@@ -24,7 +24,7 @@ import Image from 'next/image';
 import { useAppStore } from '@/lib/store';
 
 export default function LandingHero() {
-  const { lang, toggleLang } = useAppStore();
+  const { lang, setLang } = useAppStore();
 
   return (
     <div className="relative min-h-[90vh] bg-[#FAF9F6] flex flex-col pt-24 items-center px-6 text-center overflow-hidden">
@@ -48,7 +48,7 @@ export default function LandingHero() {
               {lang === 'hi' ? 'Kaise kaam karta hai' : 'How it works'}
            </button>
            <button 
-             onClick={toggleLang}
+             onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
              className="text-[10px] font-black uppercase tracking-widest text-gold bg-gold/5 px-4 py-2 rounded-xl border border-gold/10 hover:bg-gold-light transition-all active:scale-95"
            >
              {lang === 'en' ? 'हिन्दी' : 'EN'}

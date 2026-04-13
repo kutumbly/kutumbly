@@ -23,6 +23,7 @@ import {
   Shield, Globe, Sun, Moon, Eye, EyeOff,
   Trash2, Download, Lock, HardDrive, FileTerminal, Network, Fingerprint
 } from 'lucide-react';
+import { useTranslation, Language } from '@/lib/i18n';
 import { triggerManualBackup } from '@/lib/vault';
 import { downloadTallyXML, pushToTallyBridge } from '@/lib/tally';
 import { registerBiometric, hasBiometricRegistered } from '@/lib/biometric';
@@ -41,11 +42,12 @@ const MODULE_LIST = [
 
 export default function SetupModule() {
   const {
-    activeVault, lang, toggleLang,
+    activeVault, lang, setLang,
     hiddenModules, toggleModule,
     theme, setTheme,
     db, currentPin
   } = useAppStore();
+  const t = useTranslation(lang as Language);
 
   const [backupStatus, setBackupStatus] = React.useState<'idle' | 'saving' | 'done'>('idle');
 
@@ -84,7 +86,7 @@ export default function SetupModule() {
 
   return (
     <ModuleShell
-      title={lang === 'en' ? "Setup & Settings" : "Vyavastha"}
+      title={t('VYAVASTHA')}
       subtitle={lang === 'en' ? "Personalize your Sovereign OS" : "Apne system ko customize karein"}
     >
       <div className="space-y-8">
@@ -142,22 +144,29 @@ export default function SetupModule() {
           <div className="space-y-3">
 
             {/* Language */}
-            <div className="card p-4 flex items-center justify-between">
+            <div className="card p-4 flex items-center justify-between overflow-visible">
               <div className="flex items-center gap-3">
                 <Globe size={18} className="text-text-tertiary" />
                 <div>
-                  <div className="text-sm font-bold text-text-primary">System Language</div>
+                  <div className="text-sm font-bold text-text-primary">{t('SYSTEM_LANG')}</div>
                   <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
-                    {lang === 'en' ? 'English (Current)' : 'Hindi (वर्तमान)'}
+                    Current: {lang.toUpperCase()}
                   </div>
                 </div>
               </div>
-              <button
-                onClick={toggleLang}
-                className="btn text-[10px] font-bold uppercase px-4 py-2"
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value as Language)}
+                className="bg-bg-secondary border border-border-medium rounded-lg text-[10px] font-bold uppercase px-3 py-2 text-text-primary focus:outline-none focus:border-gold"
               >
-                {lang === 'en' ? 'हिन्दी में' : 'English'}
-              </button>
+                <option value="en">English</option>
+                <option value="hi">हिन्दी (Hindi)</option>
+                <option value="mr">मराठी (Marathi)</option>
+                <option value="gu">ગુજરાતી (Gujarati)</option>
+                <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+                <option value="bho">भोजपुरी (Bhojpuri)</option>
+              </select>
             </div>
 
             {/* Theme */}

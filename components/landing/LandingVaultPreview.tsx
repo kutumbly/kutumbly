@@ -58,7 +58,7 @@ export default function LandingVaultPreview() {
                 <div className="flex items-center gap-3 p-3 bg-white border border-gold/20 rounded-2xl shadow-sm">
                    <div className="w-10 h-10 bg-gold-light/30 rounded-xl flex items-center justify-center text-xl">🏠</div>
                    <div className="flex-1">
-                      <div className="text-sm font-bold text-text-primary leading-tight">Sharma Parivar</div>
+                      <div className="text-sm font-bold text-text-primary leading-tight">Mallah Parivar</div>
                       <div className="text-[10px] text-text-tertiary font-bold">Aaj khola</div>
                    </div>
                    <Lock size={12} className="text-gold opacity-50" />
@@ -96,7 +96,7 @@ export default function LandingVaultPreview() {
           {/* Unlock Dashboard Preview */}
           <div className="flex-1 bg-white p-8 flex flex-col items-center justify-center">
              <div className="text-center mb-10">
-                <h3 className="text-base font-black text-text-primary mb-1">Sharma Parivar - PIN darj karein</h3>
+                <h3 className="text-base font-black text-text-primary mb-1">Mallah Parivar - PIN darj karein</h3>
                 <div className="flex justify-center gap-3 mt-4">
                    <div className="w-3 h-3 rounded-full bg-gold" />
                    <div className="w-3 h-3 rounded-full bg-gold" />

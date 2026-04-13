@@ -27,7 +27,7 @@ interface GatewayShellProps {
 }
 
 export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
-  const { lang, toggleLang } = useAppStore();
+  const { lang, setLang } = useAppStore();
 
   return (
     <div className="flex flex-col min-h-[100dvh] bg-bg-tertiary relative overflow-hidden pt-safe">
@@ -48,7 +48,7 @@ export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
           
           <div className="flex items-center gap-6">
             <button 
-              onClick={toggleLang}
+              onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
               className="text-[10px] font-black tracking-[0.2em] uppercase text-text-tertiary hover:text-gold transition-colors"
             >
               {lang === 'en' ? 'हिन्दी' : 'English'}

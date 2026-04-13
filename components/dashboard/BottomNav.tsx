@@ -32,7 +32,7 @@ interface BottomNavProps {
   tabs: TabItem[];
   activeTab: string;
   onTabChange: (id: string) => void;
-  lang: 'en' | 'hi';
+  lang: string;
 }
 
 export default function BottomNav({ tabs, activeTab, onTabChange, lang }: BottomNavProps) {

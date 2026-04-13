@@ -49,7 +49,7 @@ export default function RecoverPanel({ onBack }: RecoverPanelProps) {
     const a = document.createElement('a');
     a.href = url;
     
-    // Suggest a name like "Sharma_Parivar-Backup_2026-04-13.kutumb"
+    // Suggest a name like "Mallah_Parivar-Backup_2026-04-13.kutumb"
     const safeVaultName = activeVault?.name?.replace(/\s+/g, '_') || 'Vault';
     const dateStr = new Date(backup.timestamp).toISOString().split('T')[0];
     

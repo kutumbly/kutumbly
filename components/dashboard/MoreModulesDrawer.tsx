@@ -34,7 +34,7 @@ interface MoreModulesDrawerProps {
   tabs: TabItem[];
   activeTab: string;
   onTabChange: (id: string) => void;
-  lang: 'en' | 'hi';
+  lang: string;
 }
 
 export default function MoreModulesDrawer({ 

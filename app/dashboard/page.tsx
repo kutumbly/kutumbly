@@ -58,7 +58,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const {
     isUnlocked, activeVault, lockVault,
-    lang, toggleLang,
+    lang, setLang,
     hiddenModules, activeModule, setActiveModule,
     theme,
   } = useAppStore();
@@ -142,13 +142,10 @@ export default function DashboardPage() {
                AES-256
             </div>
           </div>
-          {/* Language toggle */}
-          <button
-            onClick={toggleLang}
-            className="text-[10px] uppercase font-black tracking-[0.2em] text-text-tertiary hover:text-gold transition-colors"
-          >
-            {lang === "en" ? "हिन्दी" : "English"}
-          </button>
+          {/* Language display (change in Vyavastha) */}
+          <div className="text-[10px] uppercase font-black tracking-[0.2em] text-text-tertiary">
+            {lang}
+          </div>
           
           <span className="w-px h-4 bg-border-light mx-1" />
 

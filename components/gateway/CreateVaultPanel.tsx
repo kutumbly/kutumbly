@@ -141,7 +141,7 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder={lang === 'hi' ? "i.e. Sharma Family" : "e.g. The Smiths"}
+                    placeholder={lang === 'hi' ? "i.e. Mallah Parivar" : "e.g. Mallah Family"}
                     className="w-full h-16 px-6 rounded-3xl bg-bg-secondary border-2 border-transparent focus:border-gold/50 outline-none transition-all font-bold text-lg text-text-primary shadow-inner"
                   />
                 </div>
