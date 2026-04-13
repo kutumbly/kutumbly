@@ -132,4 +132,68 @@ CREATE TABLE IF NOT EXISTS nevata_family_ledger (
   notes TEXT,
   updated_at TEXT
 );
+
+-- VIDYA MODULE TABLES
+-- Learner profile — one per studying person (self or family member)
+CREATE TABLE IF NOT EXISTS vidya_learners (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,                   -- learner name (can match family_members.name)
+  family_member_id TEXT,                -- optional FK to family_members.id
+  institution TEXT,                     -- school / college / online platform name
+  standard TEXT,                        -- "Class 10", "B.Tech 3rd Year", "Self-Study" etc.
+  board TEXT,                           -- CBSE | ICSE | State Board | University | Self
+  avatar_initials TEXT,
+  goal TEXT,                            -- e.g. "JEE 2027", "UPSC 2028", "Class 10 95%+"
+  goal_deadline TEXT,                   -- YYYY-MM-DD
+  is_active INTEGER DEFAULT 1,
+  created_at TEXT
+);
+
+-- Subject per learner
+CREATE TABLE IF NOT EXISTS vidya_subjects (
+  id TEXT PRIMARY KEY,
+  learner_id TEXT NOT NULL,
+  name TEXT NOT NULL,                   -- "Physics", "History", "React.js"
+  category TEXT DEFAULT 'General',      -- "Science" | "Commerce" | "Arts" | "Tech" | "Language" | "General"
+  color TEXT DEFAULT '#c9971c',         -- accent color for UI
+  target_score TEXT,                    -- "90%", "Full Marks" etc.
+  notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (learner_id) REFERENCES vidya_learners(id)
+);
+
+-- Study resource — PDF / Article / YouTube / Website
+CREATE TABLE IF NOT EXISTS vidya_resources (
+  id TEXT PRIMARY KEY,
+  subject_id TEXT NOT NULL,
+  learner_id TEXT NOT NULL,             -- denormalized for fast query
+  title TEXT NOT NULL,
+  resource_type TEXT NOT NULL,          -- 'youtube' | 'pdf' | 'article' | 'book' | 'website'
+  url TEXT,                             -- for youtube/article/website
+  thumbnail_url TEXT,                   -- YouTube thumbnail or article OG image
+  description TEXT,
+  chapter TEXT,                         -- e.g. "Chapter 5 — Newton's Laws"
+  lesson TEXT,                          -- e.g. "Lesson 3 — Force and Motion"
+  tags TEXT,                            -- comma-separated
+  is_bookmarked INTEGER DEFAULT 0,
+  is_completed INTEGER DEFAULT 0,
+  difficulty TEXT DEFAULT 'medium',     -- 'easy' | 'medium' | 'hard'
+  duration_mins INTEGER,                -- video length or estimated read time
+  created_at TEXT,
+  FOREIGN KEY (subject_id) REFERENCES vidya_subjects(id)
+);
+
+-- Study session log
+CREATE TABLE IF NOT EXISTS vidya_sessions (
+  id TEXT PRIMARY KEY,
+  learner_id TEXT NOT NULL,
+  subject_id TEXT,
+  resource_id TEXT,                     -- optional — which resource was studied
+  date TEXT NOT NULL,                   -- YYYY-MM-DD
+  duration_mins INTEGER NOT NULL,
+  notes TEXT,
+  mood TEXT DEFAULT 'neutral',          -- 'focused' | 'tired' | 'neutral' | 'distracted'
+  created_at TEXT,
+  FOREIGN KEY (learner_id) REFERENCES vidya_learners(id)
+);
 `;

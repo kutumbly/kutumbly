@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import {
   Home, Book, CheckSquare, IndianRupee,
   Settings, LogOut, Shield, Heart, Users,
-  Utensils, TrendingUp, Calendar, Briefcase, Network
+  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap
 } from "lucide-react";
 import { motion } from "framer-motion";
 import HomeModule from "@/components/dashboard/HomeModule";
@@ -37,6 +37,7 @@ import InvestModule from "@/components/dashboard/InvestModule";
 import GroceryModule from "@/components/dashboard/GroceryModule";
 import SetupModule from "@/components/dashboard/SetupModule";
 import NetworkModule from "@/components/dashboard/NetworkModule";
+import VidyaModule from "@/components/dashboard/VidyaModule";
 import BottomNav from "@/components/dashboard/BottomNav";
 import ModuleShell from "@/components/dashboard/ModuleShell";
 
@@ -50,6 +51,7 @@ const ALL_TABS = [
   { id: "invest",  labelEn: "Invest",    labelHi: "Nivesh",    icon: TrendingUp },
   { id: "grocery", labelEn: "Grocery",   labelHi: "Kirana",    icon: Utensils },
   { id: "staff",   labelEn: "HomeStaff", labelHi: "Staff",     icon: Briefcase },
+  { id: "vidya",   labelEn: "Vidya",     labelHi: "विद्या",    icon: GraduationCap },
   { id: "network", labelEn: "Sync",      labelHi: "Jodna",     icon: Network },
   { id: "setup",   labelEn: "Setup",     labelHi: "Vyavastha", icon: Settings },
 ];
@@ -90,6 +92,7 @@ export default function DashboardPage() {
       case "invest":  return <InvestModule />;
       case "grocery": return <GroceryModule />;
       case "staff":   return <HomeStaffModule />;
+      case "vidya":   return <VidyaModule />;
       case "network": return <NetworkModule />;
       case "setup":   return <SetupModule />;
       default:

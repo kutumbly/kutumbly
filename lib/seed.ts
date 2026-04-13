@@ -94,4 +94,28 @@ export function seedDatabase(db: any) {
     ('gi6','gl1','Tomatoes','2','kg',80,1,'Vegetables'),
     ('gi7','gl1','Coriander + Mint','1','bunch',30,1,'Vegetables'),
     ('gi8','gl1','Mother Dairy Curd','500','g',65,0,'Dairy')`);
+
+  // Vidya (Study Buddy) seed
+  db.run(`INSERT OR IGNORE INTO vidya_learners VALUES
+    ('vl1','Priya Mallah','pj','Delhi Public School','Class 8','CBSE','PJ','Score 90%+ in Board Exams','2028-03-31',1,'2026-04-01'),
+    ('vl2','Jawahar Mallah','jm',NULL,'Self-Study','Self','JM','Clear SEBI Grade-A Officer exam','2027-12-31',1,'2026-04-01')`);
+
+  db.run(`INSERT OR IGNORE INTO vidya_subjects VALUES
+    ('vs1','vl1','Mathematics','Science','#6366f1','90%+',NULL,'2026-04-01'),
+    ('vs2','vl1','Science','Science','#10b981','85%+',NULL,'2026-04-01'),
+    ('vs3','vl1','English','Language','#f59e0b','85%+',NULL,'2026-04-01'),
+    ('vs4','vl2','Economics & Finance','Commerce','#c9971c','Full Command',NULL,'2026-04-01'),
+    ('vs5','vl2','Stock Market Analysis','Tech','#3b82f6','Practical Mastery',NULL,'2026-04-01')`);
+
+  db.run(`INSERT OR IGNORE INTO vidya_resources VALUES
+    ('vr1','vs1','vl1','Class 8 Maths Chapter 11 — Mensuration','youtube','https://www.youtube.com/watch?v=v2K5k1TW-zQ','https://img.youtube.com/vi/v2K5k1TW-zQ/mqdefault.jpg','NCERT Chapter 11 — Area, Surface Area & Volume','Chapter 11','Lesson 1 — Surface Area of Cube','ncert,mensuration,class8',1,0,'medium',18,'2026-04-01'),
+    ('vr2','vs1','vl1','Vedantu Class 8 Algebra — Full Playlist','youtube','https://www.youtube.com/watch?v=L3LMbpZIKhQ','https://img.youtube.com/vi/L3LMbpZIKhQ/mqdefault.jpg','Complete Algebra revision for Class 8','Chapter 9','Lesson 1 — Variables and Expressions','algebra,class8,vedantu',0,0,'easy',22,'2026-04-01'),
+    ('vr3','vs2','vl1','NCERT Science Class 8 Chapter 3 — Synthetic Fibres','article','https://ncert.nic.in/textbook/pdf/hesc108.pdf',NULL,'Official NCERT PDF — Synthetic Fibres and Plastics','Chapter 3','Lesson 1','ncert,science,fibres',0,0,'medium',NULL,'2026-04-01'),
+    ('vr4','vs4','vl2','Zerodha Varsity — Option Trading Basics','article','https://zerodha.com/varsity/module/option-theory/',NULL,'Free comprehensive option trading course by Zerodha',NULL,'Module 3','finance,options,zerodha',1,0,'hard',NULL,'2026-04-01'),
+    ('vr5','vs4','vl2','CA Rachana Ranade — Stock Market for Beginners','youtube','https://www.youtube.com/watch?v=GfxRHONcMZw','https://img.youtube.com/vi/GfxRHONcMZw/mqdefault.jpg','Complete stock market investing guide for Indians',NULL,NULL,'stocks,investing,beginner',1,0,'easy',45,'2026-04-01')`);
+
+  db.run(`INSERT OR IGNORE INTO vidya_sessions VALUES
+    ('vsn1','vl1','vs1',NULL,'2026-04-12',45,'Completed mensuration exercises from NCERT','focused','2026-04-12'),
+    ('vsn2','vl1','vs2',NULL,'2026-04-12',30,'Read Chapter 3 — Synthetic Fibres','neutral','2026-04-12'),
+    ('vsn3','vl2','vs4',NULL,'2026-04-13',60,'Read Varsity Options module + 2 mock tests','focused','2026-04-13')`);
 }

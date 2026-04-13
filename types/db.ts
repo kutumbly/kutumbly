@@ -204,3 +204,64 @@ export interface Investment {
   maturity_date: string | null;
   notes: string | null;
 }
+
+/**
+ * Vidya (Study Buddy) Module Models
+ */
+export interface VidyaLearner {
+  id: string;
+  name: string;
+  family_member_id: string | null;
+  institution: string | null;
+  standard: string | null;     // "Class 10", "B.Tech 3rd Year", "Self-Study"
+  board: string | null;        // CBSE | ICSE | State Board | University | Self
+  avatar_initials: string;
+  goal: string | null;
+  goal_deadline: string | null;
+  is_active: number;            // 1 = active, 0 = inactive
+  created_at: string;
+}
+
+export interface VidyaSubject {
+  id: string;
+  learner_id: string;
+  name: string;
+  category: string;             // Science | Commerce | Arts | Tech | Language | General
+  color: string;                // CSS hex color for accent
+  target_score: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export type VidyaResourceType = 'youtube' | 'pdf' | 'article' | 'book' | 'website';
+
+export interface VidyaResource {
+  id: string;
+  subject_id: string;
+  learner_id: string;
+  title: string;
+  resource_type: VidyaResourceType;
+  url: string | null;
+  thumbnail_url: string | null;
+  description: string | null;
+  chapter: string | null;
+  lesson: string | null;
+  tags: string | null;
+  is_bookmarked: number;        // 0 | 1
+  is_completed: number;         // 0 | 1
+  difficulty: 'easy' | 'medium' | 'hard';
+  duration_mins: number | null;
+  created_at: string;
+}
+
+export interface VidyaSession {
+  id: string;
+  learner_id: string;
+  subject_id: string | null;
+  resource_id: string | null;
+  date: string;
+  duration_mins: number;
+  notes: string | null;
+  mood: 'focused' | 'tired' | 'neutral' | 'distracted';
+  created_at: string;
+}
