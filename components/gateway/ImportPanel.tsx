@@ -182,8 +182,15 @@ export default function ImportPanel({ onBack, onSuccess }: ImportPanelProps) {
         setError(lang === 'hi' ? 'Galat PIN — dobara try karo' : 'Invalid PIN — please try again');
       } else if (err.message === 'UNAUTHORIZED_IDENTITY') {
         setError(lang === 'hi' ? 'Yah email authorized nahi hai' : 'Authenticated email is not authorized for this vault');
+      } else if (err.message === 'UNENCRYPTED_DB_DETECTED') {
+        setError(lang === 'hi' ? 'Yah unencrypted raw database hai. (.kutumb file chahiye)' : 'This is an unencrypted raw database. Please select a .kutumb vault file.');
       } else {
-        setError(lang === 'hi' ? 'Vault khul nahi paya' : 'Failed to open vault');
+        setError(lang === 'hi' ? 'Vault khul nahi paya (Invalid File Signature)' : 'Failed to open vault (Invalid File Signature)');
+        
+        // Diagnostic Log for Developer
+        if (fileHandle || cloudBuffer) {
+           console.warn("[EOS-DIAGNOSTIC] Decryption failed. Signature Mismatch.");
+        }
       }
       setPin('');
     } finally {

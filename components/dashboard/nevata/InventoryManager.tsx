@@ -16,25 +16,27 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Package, 
-  Plus, 
-  Search, 
-  Filter, 
-  Truck, 
-  CheckCircle2, 
-  Clock, 
-  User, 
-  AlertCircle,
-  MoreVertical,
-  ChevronRight,
-  ShieldCheck
+  Package, Plus, Search, Filter, Truck, 
+  CheckCircle2, Clock, User, AlertCircle,
+  MoreVertical, ChevronRight, ShieldCheck,
+  ExternalLink, RefreshCcw, Send, MessageCircle, 
+  ScanLine, X, QrCode
 } from 'lucide-react';
+import { useScanner } from '@/hooks/useScanner';
 import { useNevataEngine } from '@/hooks/useNevataEngine';
 import { useVault } from '@/hooks/useVault';
+import { useAppStore } from '@/lib/store';
+import { requestAccessToken } from '@/lib/gdrive';
+import { 
+  createUniversalBridge, 
+  fetchUniversalResponses 
+} from '@/lib/googleBridge';
+import { broadcastMission } from '@/lib/whatsapp';
 import { NevataEvent, NevataInventoryItem } from '@/types/db';
+import LogisticsPulse from '../../ui/LogisticsPulse';
 
 interface InventoryManagerProps {
   event: NevataEvent;
@@ -48,13 +50,21 @@ const CAT_COLORS: Record<string, string> = {
 };
 
 export default function InventoryManager({ event }: InventoryManagerProps) {
-  const { inventory, addInventoryItem, updateInventoryStatus } = useNevataEngine(event.id);
+  const { 
+    inventory, addInventoryItem, updateInventoryStatus, findInventoryItem 
+  } = useNevataEngine(event.id);
   const { getFamilyMembers } = useVault();
   const family = getFamilyMembers();
+
+  const { videoRef, isScanning, startScanner, stopScanner, scanFrame } = useScanner();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'ALL' | 'ORDERED' | 'DISPATCHED' | 'RECEIVED' | 'RETURNED'>('ALL');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<NevataInventoryItem | null>(null);
+  const [isBridging, setIsBridging] = useState(false);
+  const { gdriveToken } = useAppStore();
 
   // New Item State
   const [inName, setInName] = useState('');
@@ -62,7 +72,47 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
   const [inQty, setInQty] = useState(1);
   const [inAssign, setInAssign] = useState(family?.[0]?.name || '');
 
-  const filtered = inventory.filter(i => {
+  // Scanner Logic Loop
+  useEffect(() => {
+    let active = true;
+    if (showScanner) {
+      startScanner();
+      
+      const interval = setInterval(async () => {
+        if (!active) return;
+        const result = await scanFrame();
+        if (result) {
+          const item = findInventoryItem(result.rawValue);
+          if (item) {
+            // Success Feedback (Haptic + Beep)
+            try {
+               if (navigator.vibrate) navigator.vibrate(50);
+               const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+               const osc = audioCtx.createOscillator();
+               osc.type = 'sine';
+               osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+               osc.connect(audioCtx.destination);
+               osc.start();
+               osc.stop(audioCtx.currentTime + 0.1);
+            } catch(e) {}
+
+            setSelectedItem(item);
+            setShowScanner(false);
+            stopScanner();
+            active = false;
+          }
+        }
+      }, 300);
+
+      return () => {
+        clearInterval(interval);
+        active = false;
+        stopScanner();
+      };
+    }
+  }, [showScanner, startScanner, stopScanner, scanFrame, findInventoryItem]);
+
+  const filtered = inventory.filter((i: NevataInventoryItem) => {
     const sMatch = searchTerm === '' || i.item_name.toLowerCase().includes(searchTerm.toLowerCase());
     const fMatch = filter === 'ALL' || i.status === filter;
     return sMatch && fMatch;
@@ -101,6 +151,89 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
     }
   };
 
+  const handleGenerateBridge = async () => {
+    if (!gdriveToken) {
+      requestAccessToken();
+      return;
+    }
+
+    const itemsToBridge = inventory.filter((i: NevataInventoryItem) => i.status === 'ORDERED');
+    if (itemsToBridge.length === 0) return;
+
+    setIsBridging(true);
+    try {
+      // 1. Create Universal Payload
+      const payload = {
+        title: `NVT Mission: ${event.title}`,
+        description: `Coordination Link for ${event.title}. Mission ID: ${event.id.slice(0, 8)}`,
+        fields: itemsToBridge.flatMap((i: NevataInventoryItem) => [
+          {
+            title: `Actual Qty for ${i.item_name} (${i.quantity_expected} ${i.unit} EXP)`,
+            description: `Task ID: ${i.id}`,
+            type: 'NUMBER' as const,
+            required: true
+          },
+          {
+            title: `Final Price for ${i.item_name}`,
+            type: 'NUMBER' as const,
+            required: true
+          }
+        ])
+      };
+
+      const result = await createUniversalBridge(gdriveToken, payload);
+      
+      // 2. Pro-level WhatsApp Broadcast
+      broadcastMission({
+        name: itemsToBridge[0].assigned_to_id || 'Siddharth',
+        missionType: 'INVENTORY',
+        missionTitle: event.title,
+        bridgeUrl: result.responderUri
+      });
+      
+      alert(`Universal Bridge Created!\nForm opened in link/WhatsApp.\n\nForm ID: ${result.formId}`);
+    } catch (err) {
+      alert("Bridge failed. Check console.");
+    } finally {
+      setIsBridging(false);
+    }
+  };
+
+  const handleSyncFulfillment = async () => {
+    if (!gdriveToken) {
+      requestAccessToken();
+      return;
+    }
+
+    const formId = prompt("Enter the Google Form ID to sync responses:");
+    if (!formId) return;
+
+    setIsBridging(true);
+    try {
+      const responses = await fetchUniversalResponses(gdriveToken, formId);
+      if (responses.length === 0) {
+        alert("No responses found yet.");
+        return;
+      }
+
+      // We take the latest response for simplicity in this V1 bridge
+      const latest = responses[responses.length - 1];
+      const answers = latest.answers; // Map of questionId to answer
+
+      // High-fidelity mapping would happen here using Task IDs in descriptions.
+      // For this "Simple" V1, we simply alert the user to the raw data ingestion logic.
+      console.log("[EOS-BRIDGE] Syncing data:", answers);
+      alert(`Found ${responses.length} responses. Sync logic initiated in console.`);
+      
+      // In a production scenario, we'd iterate answers and call:
+      // ingestFulfillment(itemId, qty, price);
+    } catch (err) {
+      alert("Sync failed. Check console.");
+    } finally {
+      setIsBridging(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* 1. Interactive Hub Controls */}
@@ -132,13 +265,38 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
             >
                <Plus size={24} strokeWidth={3} />
             </button>
+
+            <button 
+               onClick={handleGenerateBridge}
+               disabled={isBridging}
+               className="ml-2 px-6 h-12 bg-bg-primary border border-gold/30 text-gold rounded-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-gold/10 transition-all disabled:opacity-50"
+            >
+               {isBridging ? <RefreshCcw size={16} className="animate-spin" /> : <MessageCircle size={16} />}
+               Broadcast
+            </button>
+
+            <button 
+               onClick={handleSyncFulfillment}
+               disabled={isBridging}
+               className="ml-2 px-6 h-12 bg-bg-primary border border-text-success/30 text-text-success rounded-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-text-success/10 transition-all disabled:opacity-50"
+            >
+               <RefreshCcw size={16} className={isBridging ? 'animate-spin' : ''} />
+               Sync
+            </button>
+
+            <button 
+               onClick={() => setShowScanner(true)}
+               className="ml-2 w-12 h-12 bg-bg-tertiary border border-border-light text-text-primary rounded-full flex items-center justify-center shadow-xl hover:border-gold/50 transition-all flex-shrink-0"
+            >
+               <ScanLine size={20} />
+            </button>
          </div>
       </div>
 
       {/* 2. Inventory Grid - Lifecycle Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
          <AnimatePresence mode="popLayout">
-            {filtered.map((item, idx) => (
+            {filtered.map((item: NevataInventoryItem, idx: number) => (
                <motion.div 
                   layout
                   key={item.id}
@@ -255,7 +413,7 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
                            <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Assign Responsibility</label>
                            <select value={inAssign} onChange={e => setInAssign(e.target.value)} className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none">
                               <option value="">Anyone</option>
-                              {family.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
+                              {family.map((m: any) => <option key={m.id} value={m.name}>{m.name}</option>)}
                            </select>
                         </div>
                      </div>
@@ -269,6 +427,46 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
                   </button>
                </motion.div>
             </div>
+         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+         {showScanner && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center p-6">
+               <motion.div 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="absolute inset-0 bg-black/90 backdrop-blur-md"
+               />
+               <motion.div 
+                   initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                   className="relative w-full max-w-sm aspect-square bg-black border-2 border-gold/40 rounded-[3rem] overflow-hidden shadow-2xl"
+                >
+                   {/* Real Camera Feed */}
+                   <video 
+                      ref={videoRef}
+                      autoPlay 
+                      playsInline 
+                      className="absolute inset-0 w-full h-full object-cover"
+                   />
+
+                   {/* Scanning Animation Overlay */}
+                   <LogisticsPulse />
+
+                   <button 
+                      onClick={() => setShowScanner(false)}
+                      className="absolute top-6 right-6 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/60 transition-all z-10"
+                   >
+                      <X size={20} />
+                   </button>
+
+                   <div className="absolute bottom-10 left-0 right-0 p-6 text-center z-10">
+                      <h3 className="text-sm font-black text-white uppercase tracking-widest mb-2 drop-shadow-lg">Mission Scan Hub</h3>
+                      <p className="text-[9px] font-bold text-white/70 uppercase leading-relaxed max-w-[200px] mx-auto drop-shadow-md">
+                         Align NVT-QR within frame. Instant identification active.
+                      </p>
+                   </div>
+                </motion.div>
+             </div>
          )}
       </AnimatePresence>
     </div>

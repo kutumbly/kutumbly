@@ -227,6 +227,9 @@ export const UI_STRINGS: Record<string, Partial<Record<Language, string>>> = {
   'NO_DUE_DATE': { en: 'No Due Date', hi: 'तारीख नहीं', bho: 'तारीख नाहीं' },
   'ALL_CAUGHT_UP': { en: 'All caught up', hi: 'सब काम हो गया', bho: 'सभ काम पूरा भइल' },
   'TASKS_EMPTY': { en: 'Task list is empty.', hi: 'कर्तव्य सूची खाली है।', bho: 'कर्तव्य सूची खाली बा।' },
+  'NET_PARAM': { en: 'Traditional Balance', hi: 'परंपरा शेष', bho: 'परंपरा बाकि' },
+  'SUGGEST_PARAM': { en: 'Suggested Tradition', hi: 'प्रस्तावित परंपरा', bho: 'प्रस्तावित परंपरा' },
+  'LEKHA_JOKHA': { en: 'Mission Records', hi: 'लेखा-जोखा', bho: 'लेखा-जोखा' },
   'P2P_BEAM_GRID': { en: 'P2P Beam Grid', hi: 'P2P बीम ग्रिड', bho: 'P2P बीम ग्रिड' }
 };
 

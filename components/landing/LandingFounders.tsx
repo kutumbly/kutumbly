@@ -100,10 +100,10 @@ export default function LandingFounders() {
                 "Bridging elite enterprise technology with uncompromising family software sovereignty."
               </p>
               <p>
-                With 19+ years in SaaS engineering, Jawahar has delivered critical solutions for massive conglomerates like <strong>Tally Solutions, Aditya Birla Group, Raymond, Adidas</strong>, and <strong>Nike</strong>.
+                With 19+ years in SaaS engineering, Jawahar has delivered critical **Pan-India Retail and Warehouse solutions** for massive conglomerates like **Aditya Birla Group, Raymond, Adidas**, and **Nike**.
               </p>
               <p>
-                He has architected Pan-India tech infrastructure for the <strong>Siddhivinayak Trust</strong> and <strong>GVK</strong>. At Kutumbly, he pours this master-level experience into protecting the sovereign data of families.
+                He has architected tech infrastructure for the **Siddhivinayak Trust** and managed **GVK's Retail & Warehouse sections in Mumbai**. At Kutumbly, he pours this master-level experience into protecting the sovereign data of families.
               </p>
             </div>
           </motion.div>

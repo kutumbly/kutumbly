@@ -30,87 +30,71 @@ export default function LandingFeatures() {
   const t = useTranslation(lang);
 
   const STEPS = [
-    { id: 1, title: t('FEAT_STEP1_TITLE'), desc: t('FEAT_STEP1_DESC') },
-    { id: 2, title: 'Create your vault', desc: 'Pick a name, set a 4-digit PIN. Your encrypted .kutumb file is created instantly.' },
-    { id: 3, title: 'Use it fully offline', desc: 'After first load, zero network calls. Your data never leaves your device — ever.' },
+    { id: 1, title: 'No Sign-up, Ever.', desc: 'Hum data nahi mangte. No email, no mobile number, no OTP. Open app and start.' },
+    { id: 2, title: 'Build Your Vault.', desc: 'Pick a mission name and set a 4-digit Sovereign PIN. Your encrypted .kutumb file is generated locally.' },
+    { id: 3, title: 'Total Sovereignty.', desc: 'After first load, zero network calls. All family memories and wealth remain on your hardware.' },
   ];
 
   const MODULES = [
-    { id: 'aangan',   label: t('HOME'), desc: 'Family snapshot — finances, events, tasks, and health all at a glance.', icon: BarChart3, color: 'bg-gold-light/20 text-gold' },
-    { id: 'money',    label: t('MONEY'),    desc: 'Log income and expenses in ₹. Monthly summaries without any bank sync.', icon: Wallet, color: 'bg-green-50 text-green-700' },
-    { id: 'tasks',    label: t('TASKS'),           desc: 'Priority-sorted tasks for every family member. High, medium, low — always right.', icon: CheckSquare, color: 'bg-blue-50 text-blue-700' },
-    { id: 'health',   label: t('HEALTH'),    desc: 'BP, weight, medications, appointment notes — for every member in one place.', icon: HeartPulse, color: 'bg-red-50 text-red-700' },
-    { id: 'invest',   label: t('INVEST'),      desc: 'Track MFs, stocks, FDs. Private portfolio with simple XIRR — no broker login.', icon: TrendingUp, color: 'bg-indigo-50 text-indigo-700' },
-    { id: 'nevata',   label: t('NEVATA'), desc: 'Shaadi, pooja, birthdays. Gift registry so nothing is ever forgotten.', icon: Gift, color: 'bg-amber-50 text-amber-700' },
+    { id: 'aangan',   label: 'Aangan (Command Center)', desc: 'Ek jhalak me pura kuber ka khazana aur parivar ka haal dekhein.', icon: BarChart3, color: 'bg-gold/10 text-gold' },
+    { id: 'money',    label: 'Lekha-Jokha (Treasury)',    desc: 'Income aur Kharche ka sampurn hisaab-kitab ₹ me. Zero cloud sync.', icon: Wallet, color: 'bg-green-500/10 text-green-700' },
+    { id: 'tasks',    label: 'Niyantran (Control)',           desc: 'Parivar ke har member ki zimmedari. Priority sorted — always right.', icon: CheckSquare, color: 'bg-blue-500/10 text-blue-700' },
+    { id: 'health',   label: 'Swasthya (Wellness)',    desc: 'Medications, appointment notes, aur healthcare logs for every soul.', icon: HeartPulse, color: 'bg-red-500/10 text-red-700' },
+    { id: 'invest',   label: 'Samridhi (Wealth)',      desc: 'Track MFs, Stocks, aur FDs. Private portfolio with zero broker login.', icon: TrendingUp, color: 'bg-indigo-500/10 text-indigo-700' },
+    { id: 'nevata',   label: 'Parampara (Events)', desc: 'Janmdin, Shaadi, Pooja. Gift registry so honor is never forgotten.', icon: Gift, color: 'bg-amber-500/10 text-amber-700' },
   ];
 
   return (
-    <section className="py-24 bg-bg-tertiary px-6">
+    <section className="py-32 bg-bg-tertiary px-6 relative overflow-hidden" id="features">
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border-light to-transparent" />
+      
       <div className="max-w-6xl mx-auto">
         
         {/* Step by Step Section */}
-        <div className="text-center mb-16">
-           <div className="text-[11px] font-black text-gold uppercase tracking-[0.3em] mb-3">
-             Simple by Design
+        <div className="text-center mb-20">
+           <div className="text-[12px] font-black text-gold uppercase tracking-[0.4em] mb-4">
+             Mission Protocols
            </div>
-           <h2 className="text-3xl md:text-4xl font-black text-text-primary mb-6">{t('FEAT_UP_IN_30')}</h2>
-           <p className="text-text-secondary max-w-xl mx-auto font-medium">
-             No sign-up, no email, no OTP. Just open, create your vault, and start.
+           <h2 className="text-4xl md:text-6xl font-black text-text-primary mb-8 tracking-tighter">
+              {t('FEAT_UP_IN_30')}
+           </h2>
+           <p className="text-text-secondary max-w-2xl mx-auto font-semibold text-lg md:text-xl leading-relaxed">
+             Zero Cloud. Zero Compromise. <br className="hidden md:block" />
+             Just pure family data sovereignty, engineered for local hardware.
            </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-32">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-40">
           {STEPS.map((step) => (
             <motion.div 
               key={step.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: step.id * 0.1 }}
-              className="bg-bg-primary p-8 rounded-[2rem] border border-border-light shadow-sm hover:shadow-md transition-all group"
+              transition={{ delay: i * 0.1 }}
+              className="group p-10 bg-white border border-border-light rounded-[32px] shadow-sm hover:shadow-xl hover:shadow-gold/5 hover:border-gold/30 transition-all duration-500 relative overflow-hidden"
             >
-              <div className="w-10 h-10 rounded-full border border-gold/30 flex items-center justify-center text-xs font-black text-gold mb-6 group-hover:bg-gold-light/20 transition-colors">
-                {step.id}
+              <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                 {React.cloneElement(f.icon as React.ReactElement, { size: 80 })}
               </div>
-              <h3 className="text-lg font-black text-text-primary mb-3">{step.title}</h3>
-              <p className="text-sm text-text-secondary leading-relaxed font-medium">{step.desc}</p>
+              
+              <div className="w-16 h-16 bg-clinical rounded-2xl flex items-center justify-center text-gold mb-8 shadow-inner group-hover:bg-gold group-hover:text-white transition-all duration-500">
+                {f.icon}
+              </div>
+
+              <div className="space-y-4 relative z-10">
+                <h3 className="text-2xl font-black text-text-primary tracking-tight font-inter-tight">{f.title}</h3>
+                <p className="text-sm text-text-secondary leading-relaxed font-medium">
+                  {f.desc}
+                </p>
+                <div className="pt-6 flex items-center gap-3">
+                   <div className="w-1.5 h-1.5 rounded-full bg-text-success shadow-[0_0_8px_rgba(6,95,70,0.3)]" />
+                   <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Autonomous Module Ready</span>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
-
-        {/* 9 Modules Section */}
-        <div className="text-center mb-16">
-           <div className="text-[11px] font-black text-gold uppercase tracking-[0.3em] mb-3">
-             9 Modules
-           </div>
-           <h2 className="text-3xl md:text-4xl font-black text-text-primary mb-6">Everything your family needs</h2>
-           <p className="text-text-secondary max-w-xl mx-auto font-medium">
-             From daily groceries to long-term investments — all private, all offline.
-           </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {MODULES.map((m, idx) => {
-            const Icon = m.icon;
-            return (
-              <motion.div 
-                key={m.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
-                className="bg-bg-primary p-8 rounded-[2rem] border border-border-light shadow-sm hover:border-gold/30 transition-all font-inter"
-              >
-                <div className={`w-12 h-12 ${m.color} rounded-2xl flex items-center justify-center mb-6`}>
-                  <Icon size={24} />
-                </div>
-                <h3 className="text-lg font-black text-text-primary mb-3">{m.label}</h3>
-                <p className="text-sm text-text-secondary leading-relaxed font-medium">{m.desc}</p>
-              </motion.div>
-            );
-          })}
-        </div>
-
       </div>
     </section>
   );

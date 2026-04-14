@@ -30,7 +30,9 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import MissionControl from './nevata/MissionControl';
 import InventoryManager from './nevata/InventoryManager';
-import { NevataEvent, ShagunRecord, NevataLedgerEntry } from '@/types/db';
+import MissionLedger from './nevata/MissionLedger';
+import GuestManager from './nevata/GuestManager';
+import { NevataEvent, ShagunRecord, NevataLedgerEntry, NevataGuest } from '@/types/db';
 
 const EVENT_TYPE_EMOJI: Record<string, string> = {
   shaadi: '💍', sagai: '💒', tilak: '🪔', janmdin: '🎂',
@@ -60,7 +62,7 @@ export default function NevataModule() {
   const [direction, setDirection] = useState<'they_invited' | 'we_hosted'>('they_invited');
   const [activeTab, setActiveTab] = useState<'events' | 'ledger' | 'upcoming' | 'registry'>('events');
   const [selectedEvent, setSelectedEvent] = useState<NevataEvent | null>(null);
-  const [nevataMode, setNevataMode] = useState<'list' | 'control' | 'inventory'>('list');
+  const [nevataMode, setNevataMode] = useState<'list' | 'control' | 'inventory' | 'ledger' | 'guests'>('list');
 
   const events   = useMemo(() => getEvents(direction), [direction, db, getEvents]);
   const ledger   = useMemo(() => getLedger(),           [db, getLedger]);
@@ -89,14 +91,14 @@ export default function NevataModule() {
         { label: t('UPCOMING'),    value: upcoming.length,  status: 'warning' },
         { label: t('GIVEN_TOTAL'), value: totalDiya, isCurrency: true, status: 'danger' },
         { label: t('RECEIVED_TOTAL'), value: totalMila, isCurrency: true, status: 'success' },
-        { label: t('NET_RIVAAJ'),  value: (totalMila - totalDiya), isCurrency: true,
+        { label: t('NET_PARAM'),  value: (totalMila - totalDiya), isCurrency: true,
           status: (totalMila - totalDiya >= 0 ? 'info' : 'warning') as MetricStatus },
       ]
     : [
         { label: t('INVITED'),    value: 0,         status: 'info' },
         { label: t('RECEIVED_TOTAL'), value: totalMila, isCurrency: true, status: 'success' },
         { label: t('GIVEN_TOTAL'), value: totalDiya, isCurrency: true, status: 'danger' },
-        { label: t('NET_RIVAAJ'), value: totalMila - totalDiya, isCurrency: true, status: 'info' },
+        { label: t('NET_PARAM'), value: totalMila - totalDiya, isCurrency: true, status: 'info' },
       ];
 
   // --- Tab content renderers ---
@@ -148,7 +150,7 @@ export default function NevataModule() {
               {direction === 'they_invited' && (
                 <div className="bg-gold/5 border border-gold/20 rounded-xl p-3 text-right min-w-[120px]">
                   <div className="text-[9px] font-black text-gold uppercase tracking-[0.2em] mb-1">
-                    {t('SUGGEST_RIVAAJ')}
+                    PARAM-PRASAD
                   </div>
                   <div className="text-base font-black text-gold tabular-nums">
                     <RupeesDisplay amount={suggestShagun(e.family_name)} />
@@ -269,7 +271,7 @@ export default function NevataModule() {
 
   const TABS = [
     { id: 'events',   label: lang === 'bho' ? 'कार्यक्रम' : 'Kaaryakram' },
-    { id: 'ledger',   label: lang === 'bho' ? 'हिसाब-किताब' : 'Hisaab' },
+    { id: 'ledger',   label: lang === 'bho' ? 'लेखा-जोखा' : 'Lekha-Jokha' },
     { id: 'upcoming', label: lang === 'bho' ? 'आवे वाला' : 'Aane Waale' },
     { id: 'registry', label: lang === 'bho' ? 'नेवता रजिस्टर' : 'Gift Registry' },
   ] as const;
@@ -302,6 +304,18 @@ export default function NevataModule() {
                   className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${nevataMode === 'inventory' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
                >
                   Saamaan
+               </button>
+               <button 
+                  onClick={() => setNevataMode('ledger')}
+                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${nevataMode === 'ledger' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
+               >
+                  Lekha-Jokha
+               </button>
+               <button 
+                  onClick={() => setNevataMode('guests')}
+                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${nevataMode === 'guests' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
+               >
+                  Atithi
                </button>
             </div>
           </div>
@@ -384,8 +398,12 @@ export default function NevataModule() {
         >
           {nevataMode === 'control' ? (
             <MissionControl event={selectedEvent} onNavigate={(v) => setNevataMode(v === 'inventory' ? 'inventory' : 'control' as any)} />
-          ) : (
+          ) : nevataMode === 'inventory' ? (
             <InventoryManager event={selectedEvent} />
+          ) : nevataMode === 'ledger' ? (
+            <MissionLedger event={selectedEvent} />
+          ) : (
+            <GuestManager event={selectedEvent} />
           )}
         </motion.div>
       )}

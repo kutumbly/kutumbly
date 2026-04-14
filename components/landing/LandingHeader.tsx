@@ -36,34 +36,41 @@ export default function LandingHeader() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 h-20 flex items-center justify-between px-8 md:px-20 z-50 bg-bg-tertiary/80 backdrop-blur-md border-b border-border-light">
-        <div className="flex items-center gap-3">
-           <Link href="/" className="w-8 h-8 bg-bg-primary border border-border-light rounded-2xl flex items-center justify-center p-1 shadow-sm hover:border-gold transition-colors block">
-              <Image src="/favicon.svg" alt="Logo" width={20} height={20} style={{ height: 'auto' }} />
+      <nav className="fixed top-0 left-0 right-0 h-20 flex items-center justify-between px-8 md:px-20 z-50 bg-white/80 backdrop-blur-xl border-b border-border-light shadow-sm">
+        <div className="flex items-center gap-4">
+           <Link href="/" className="w-9 h-9 bg-white border border-border-light rounded-[14px] flex items-center justify-center p-1.5 shadow-sm hover:border-gold transition-all hover:scale-105 active:scale-95">
+              <Image src="/favicon.svg" alt="Kutumbly Logo" width={22} height={22} style={{ height: 'auto' }} />
            </Link>
-           <Link href="/" className="font-black text-lg tracking-tight text-text-primary hover:text-gold transition-colors">
+           <Link href="/" className="font-black text-xl tracking-tight text-text-primary hover:text-gold transition-colors font-inter-tight">
               Kutumbly
            </Link>
         </div>
-        <div className="flex items-center gap-4">
-           <button 
-             onClick={() => window.location.pathname === '/' ? window.scrollTo({ top: 800, behavior: 'smooth' }) : window.location.href = '/'}
-             className="hidden md:block text-sm font-bold text-text-secondary hover:text-text-primary transition-colors"
-           >
-              {t('NAV_HOW_IT_WORKS')}
-           </button>
+        <div className="flex items-center gap-8">
+           <div className="hidden lg:flex items-center gap-8 px-8 border-x border-border-light/40">
+              <Link href="/product" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary hover:text-text-primary transition-colors">
+                Technical Manifesto
+              </Link>
+              <button 
+                onClick={() => window.location.pathname === '/' ? window.scrollTo({ top: 800, behavior: 'smooth' }) : window.location.href = '/'}
+                className="text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary hover:text-text-primary transition-colors"
+              >
+                Mission Architecture
+              </button>
+           </div>
            
-           <button 
-             onClick={() => setIsPickerOpen(true)}
-             className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gold bg-gold/5 px-4 py-2 rounded-xl border border-gold/10 hover:bg-gold-light transition-all active:scale-95"
-           >
-             <Globe size={14} />
-             {LANG_LABELS[lang] ?? lang.toUpperCase()}
-           </button>
+           <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setIsPickerOpen(true)}
+                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-primary bg-clinical px-5 py-2.5 rounded-2xl border border-border-light hover:bg-white hover:shadow-sm transition-all active:scale-95"
+              >
+                <Globe size={14} className="text-gold" />
+                {LANG_LABELS[lang] ?? lang.toUpperCase()}
+              </button>
 
-           <Link href="/os" className="btn px-6 py-2.5 rounded-2xl border-2 border-text-primary font-black uppercase text-[11px] tracking-widest hover:bg-text-primary hover:text-white transition-all shadow-sm">
-              {t('NAV_OPEN_APP')}
-           </Link>
+              <Link href="/os" className="px-8 py-3 bg-text-primary text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-gold transition-all shadow-lg shadow-black/5 active:scale-95">
+                 {t('NAV_OPEN_APP')}
+              </Link>
+           </div>
         </div>
       </nav>
 

@@ -37,7 +37,7 @@ interface MissionControlProps {
 }
 
 export default function MissionControl({ event, onNavigate }: MissionControlProps) {
-  const { inventory, activityLogs } = useNevataEngine(event.id);
+  const { inventory, activityLogs, budgetStats } = useNevataEngine(event.id);
 
   const stats = {
     inventoryReceived: inventory.filter(i => i.status === 'RECEIVED' || i.status === 'IN_USE').length,
@@ -48,6 +48,10 @@ export default function MissionControl({ event, onNavigate }: MissionControlProp
   const progressPercent = stats.inventoryTotal > 0 
     ? Math.round((stats.inventoryReceived / stats.inventoryTotal) * 100) 
     : 0;
+
+  const budgetTotal = event.budget || 0;
+  const budgetRisk = budgetStats.forecasted > budgetTotal;
+  const budgetRiskAmount = budgetStats.forecasted - budgetTotal;
 
   return (
     <div className="space-y-8">
@@ -63,9 +67,11 @@ export default function MissionControl({ event, onNavigate }: MissionControlProp
         <div className="flex-1">
           <p className="text-[10px] font-black text-gold uppercase tracking-widest mb-1">EOS Decision Engine Insight</p>
           <p className="text-sm font-bold text-text-primary">
-            {stats.pendingAlerts > 0 
-              ? `Attention: ${stats.pendingAlerts} inventory deliveries are delayed. Logistic chain at risk.` 
-              : "All clear. Event logistics are currently operating within nominal parameters."}
+            {budgetRisk 
+              ? `Financial Risk Detected: Current forecast exceeds budget by ₹${budgetRiskAmount.toLocaleString()}. Strategy optimization required.`
+              : stats.pendingAlerts > 0 
+                ? `Attention: ${stats.pendingAlerts} inventory deliveries are delayed. Logistic chain at risk.` 
+                : "All clear. Event logistics and financials are currently operating within nominal parameters."}
           </p>
         </div>
       </motion.div>
@@ -98,20 +104,27 @@ export default function MissionControl({ event, onNavigate }: MissionControlProp
             <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-gold/10 transition-all" />
          </div>
 
-         {/* Budget Forecast Card (Placeholder for now) */}
-         <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl group hover:border-gold/30 transition-all cursor-pointer">
-            <div className="flex justify-between items-start mb-6">
-               <div className="p-3 bg-bg-secondary rounded-2xl border border-border-light">
-                 <Package size={24} className="text-gold" />
+         {/* Budget Forecast Card */}
+         <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl group hover:border-gold/30 transition-all cursor-pointer overflow-hidden relative">
+            <div className="relative z-10">
+               <div className="flex justify-between items-start mb-6">
+                  <div className="p-3 bg-bg-secondary rounded-2xl border border-border-light">
+                    <Package size={24} className="text-gold" />
+                  </div>
+                  <div className="text-right">
+                    <span className="text-2xl font-black text-text-primary">₹{budgetStats.forecasted.toLocaleString()}</span>
+                    <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Projected Total</p>
+                  </div>
                </div>
-               <div className="text-right">
-                 <span className="text-2xl font-black text-text-primary">₹{event.budget?.toLocaleString() || '0'}</span>
-                 <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Total Budget</p>
+               <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
+                  {budgetRisk ? (
+                     <span className="text-text-danger">⚠️ Risk: ₹{budgetRiskAmount.toLocaleString()} Overload</span>
+                  ) : (
+                     <span className="text-text-success">✅ Within Budget: ₹{budgetTotal.toLocaleString()} Max</span>
+                  )}
                </div>
             </div>
-            <div className="flex items-center gap-2 text-[10px] font-bold text-text-tertiary uppercase tracking-widest">
-               <span className="text-text-danger">⚠️ Risk: ₹12K Overload</span>
-            </div>
+            {budgetRisk && <div className="absolute inset-0 bg-text-danger/5 animate-pulse-slow" />}
          </div>
 
          {/* Responsibility Heatmap Card */}

@@ -28,7 +28,7 @@
 ## 📱 Premium Native Experience
 
 Kutumbly is engineered to feel like a premium native application, even in the browser:
-- **Tally-Style Gateway**: A professional, secure unlocking interface.
+- **Sovereign Gateway**: A professional, secure unlocking interface.
 - **Thumb-Optimized Navigation**: A fluid, responsive dashboard designed for one-handed mobile use.
 - **Glassmorphic Aesthetic**: A "High-Fidelity" design language featuring golden accents, vibrant safe-area handling, and smooth Framer Motion animations.
 

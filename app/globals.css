@@ -14,7 +14,7 @@
  * "Memory, Not Code."
  * ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Inter+Tight:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -84,9 +84,12 @@
   --gold-dim:  #7a5a0e;
   --gold-text: #633806;
 
-  --radius-sm: 6px;
-  --radius-md: 10px; /* Slightly smoother */
-  --radius-lg: 24px; /* Larger for modern landing cards */
+  --radius-sm: 4px;
+  --radius-md: 8px; /* Sharper, more professional */
+  --radius-lg: 32px; /* Deeper for major container sections */
+  
+  /* Anthropic Visual Baseline */
+  --bg-clinical: #FAFAFA;
 }
 
 /* ─── Dark Mode ────────────────────────────────────────────── */
@@ -118,8 +121,8 @@
 
 /* ─── Base ─────────────────────────────────────────────────── */
 body {
-  font-family: 'Outfit', var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: -0.0125em;
   background: var(--bg-tertiary);
   color: var(--text-primary);
   min-height: 100vh;
@@ -272,6 +275,36 @@ input, select, textarea {
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 20px rgba(201, 151, 28, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(201, 151, 28, 0.3); }
+}
+
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-pulse-gold { animation: pulse-gold 4s ease-in-out infinite; }
+
+.sovereign-gradient {
+  background: linear-gradient(135deg, #FAF9F6 0%, #FAEEDA 100%);
+}
+
+[data-theme="dark"] .sovereign-gradient {
+  background: linear-gradient(135deg, #0F172A 0%, #1E2937 100%);
+}
+
+.gold-glow {
+  background: radial-gradient(circle at center, rgba(201, 151, 28, 0.15) 0%, transparent 70%);
+}
+
+.mission-grid {
+  background-image: radial-gradient(rgba(201, 151, 28, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
 

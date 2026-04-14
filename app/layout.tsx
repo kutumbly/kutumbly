@@ -15,13 +15,20 @@
  * ============================================================ */
 
 import type { Metadata, Viewport } from "next";
-import { Inter, Noto_Sans_Devanagari, Noto_Sans_Bengali, Noto_Sans_Gujarati, Noto_Sans_Gurmukhi, Noto_Sans_Tamil, Noto_Sans_Kannada, Noto_Sans_Telugu } from "next/font/google";
+import { Inter, Inter_Tight, Noto_Sans_Devanagari, Noto_Sans_Bengali, Noto_Sans_Gujarati, Noto_Sans_Gurmukhi, Noto_Sans_Tamil, Noto_Sans_Kannada, Noto_Sans_Telugu } from "next/font/google";
 import "./globals.css";
 import LanguageContextWrapper from "@/components/ui/LanguageContextWrapper";
 
 const inter = Inter({ 
   subsets: ["latin"],
   variable: '--font-inter',
+  display: 'swap',
+});
+
+const interTight = Inter_Tight({
+  subsets: ["latin"],
+  variable: '--font-inter-tight',
+  display: 'swap',
 });
 
 const notoDevanagari = Noto_Sans_Devanagari({ 
@@ -74,8 +81,36 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Kutumbly — Your Family's Digital Ghar",
-  description: "Secure, local-first Sovereign OS for Indian families. Zero cloud, absolute privacy, and total data ownership.",
+  metadataBase: new URL('https://kutumbly.com'),
+  title: {
+    default: "Kutumbly — The Sovereign Family Operating System",
+    template: "%s | Kutumbly Sovereign OS"
+  },
+  description: "Secure, local-first Sovereign OS for the modern Indian family. Zero cloud, absolute privacy, and total data ownership through AES-256 encrypted vaults.",
+  keywords: ["Sovereign OS", "Family OS", "Local-first", "Privacy", "Encrypted Vaults", "Indian Family Tech", "Data Sovereignty", "Zero Cloud"],
+  authors: [{ name: "Jawahar R. Mallah", url: "https://kutumbly.com" }],
+  creator: "AITDL Network — Sovereign Division",
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://kutumbly.com",
+    title: "Kutumbly — The Sovereign Family Operating System",
+    description: "Your life, locked in your control. The world's first local-first, zero-cloud OS for families.",
+    siteName: "Kutumbly Sovereign OS",
+    images: [{
+      url: "/og-image.png",
+      width: 1200,
+      height: 630,
+      alt: "Kutumbly Sovereign OS - Memory, Not Code."
+    }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kutumbly — The Sovereign Family Operating System",
+    description: "Zero Cloud. Local First. Encrypted. Offline Forever.",
+    images: ["/og-image.png"],
+    creator: "@kutumbly",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -84,6 +119,17 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.svg",
     apple: "/favicon.svg",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
@@ -95,13 +141,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth" className={`
       ${inter.variable} 
+      ${interTight.variable}
       ${notoDevanagari.variable} 
       ${notoBengali.variable} 
       ${notoGujarati.variable} 
       ${notoGurmukhi.variable} 
       ${notoTamil.variable} 
       ${notoKannada.variable} 
-        ${notoTelugu.variable}
+      ${notoTelugu.variable}
     `}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />

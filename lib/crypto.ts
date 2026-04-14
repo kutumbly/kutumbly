@@ -74,8 +74,24 @@ export async function encryptDB(dbBytes: Uint8Array, pin: string): Promise<Uint8
  * Throws 'INVALID_FILE' or 'WRONG_PIN' errors on failure.
  */
 export async function decryptDB(fileBytes: Uint8Array, pin: string): Promise<Uint8Array> {
-  const magic = new TextDecoder().decode(fileBytes.slice(0, 4));
-  if (magic !== MAGIC) throw new Error('INVALID_FILE');
+  if (fileBytes.length < 32) throw new Error('INVALID_FILE');
+
+  // Hardening: Use direct byte comparison for "KUTB" signature [75, 85, 84, 66]
+  const isKutumb = fileBytes[0] === 75 && fileBytes[1] === 85 && 
+                   fileBytes[2] === 84 && fileBytes[3] === 66;
+  
+  if (!isKutumb) {
+    // Advanced Diagnostic: Check if this is an unencrypted SQLite DB ("SQLite format 3")
+    // [83, 81, 76, 105, 116, 101]
+    const isRawSqlite = fileBytes[0] === 83 && fileBytes[1] === 81 && 
+                        fileBytes[2] === 76 && fileBytes[3] === 105;
+    
+    if (isRawSqlite) {
+      throw new Error('UNENCRYPTED_DB_DETECTED');
+    }
+    
+    throw new Error('INVALID_FILE');
+  }
   
   const salt = fileBytes.slice(4, 20);
   const iv   = fileBytes.slice(20, 32);

@@ -140,14 +140,19 @@ export interface ShagunRecord {
   created_at: string;
 }
 
-export interface NevataLedgerEntry {
+export interface NevataFamilyLedger {
+  id: string;
   family_name: string;
+  event_id: string | null;
   diya: number;
   mila: number;
   net: number;
   notes: string | null;
   updated_at: string;
 }
+
+// Keep the old name for backward compatibility if needed, but alias it
+export type NevataLedgerEntry = NevataFamilyLedger;
 
 /** 
  * Nevata 2.0 (Event Operating System) High-Fidelity Models 
@@ -192,13 +197,23 @@ export interface NevataVendor {
 export interface NevataActivityLog {
   id: string;
   event_id: string;
-  type: 'ITEM' | 'PAYMENT' | 'TASK' | 'ALERT';
-  action: 'CREATED' | 'UPDATED' | 'RECEIVED' | 'PAID' | 'ASSIGNED';
+  type: 'ITEM' | 'PAYMENT' | 'TASK' | 'ALERT' | 'GUEST' | 'LEDGER';
+  action: string;
   item_id?: string | null;
   vendor_id?: string | null;
   user_id?: string | null;
   timestamp: string;
   metadata?: string | null; // JSON string
+}
+
+export interface NevataGuest {
+  id: string;
+  event_id: string;
+  guest_name: string;
+  family_tag: string | null;
+  guest_count: number;
+  rsvp_status: 'pending' | 'confirmed' | 'declined';
+  phone: string | null;
 }
 
 /** 
