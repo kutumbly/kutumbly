@@ -15,7 +15,7 @@
  * ============================================================ */
 
 import { create } from 'zustand';
-import { VaultMeta, VaultStore } from '@/types/vault';
+import { VaultMeta, VaultStore, GatewayPanel } from '@/types/vault';
 import { getDevVault } from './vault';
 import { saveDevState } from './dev';
 import { saveFileHandle, getFileHandle } from './handles';
@@ -30,8 +30,9 @@ interface AppStore extends VaultStore {
   currentPin: string;             // NEVER persisted
 
   // Gateway UI state
-  gatewayPanel: 'unlock' | 'create' | 'import' | 'success' | 'empty';
+  gatewayPanel: GatewayPanel;
   selectedVaultIdx: number;
+  discoveryEmail: string;
 
   // App UI state
   activeModule: string;
@@ -39,6 +40,12 @@ interface AppStore extends VaultStore {
   theme: 'dark' | 'light';
   sidebarCollapsed: boolean;
   lang: 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho';
+  
+  // Cloud-Syncript state
+  lastSyncDate: string | null;
+  isSyncing: boolean;
+  gdriveToken: string | null;  // Memory only
+  pendingSync: boolean;
 
   // Dev helper
   isDevMode: boolean;
@@ -48,7 +55,8 @@ interface AppStore extends VaultStore {
   syncHandles: () => Promise<void>;
   addRecentVault: (vault: VaultMeta) => void;
   setActiveVault: (vault: VaultMeta | null) => void;
-  setGatewayPanel: (p: 'unlock' | 'create' | 'import' | 'success' | 'empty') => void;
+  setGatewayPanel: (p: GatewayPanel) => void;
+  setDiscoveryEmail: (email: string) => void;
   setUnlocked: (db: any, handle?: FileSystemFileHandle) => void;
   lockVault: () => void;
   setCurrentPin: (pin: string) => void;
@@ -57,6 +65,10 @@ interface AppStore extends VaultStore {
   setTheme: (t: 'dark' | 'light') => void;
   setSidebarCollapsed: (v: boolean) => void;
   setLang: (l: 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho') => void;
+  setGDriveToken: (t: string | null) => void;
+  setSyncStatus: (s: { lastSync?: string, isSyncing?: boolean, pendingSync?: boolean }) => void;
+  unlinkCloud: () => void;
+  factoryReset: () => Promise<void>;
   saveSettings: () => void;
 
   // Dev only
@@ -70,24 +82,30 @@ export const useAppStore = create<AppStore>((set, get) => ({
   db: null,
   fileHandle: null,
   currentPin: '',
-  gatewayPanel: 'empty',
+  gatewayPanel: 'discovery',
   selectedVaultIdx: 0,
+  discoveryEmail: '',
   activeModule: 'home',
   hiddenModules: [],
   theme: 'dark',
   sidebarCollapsed: false,
   lang: 'en',
+  lastSyncDate: null,
+  isSyncing: false,
+  gdriveToken: null,
+  pendingSync: false,
   isDevMode: process.env.NODE_ENV === 'development',
 
   loadRecentVaults: () => {
     if (typeof window === 'undefined') return;
     try {
       const raw = localStorage.getItem('kutumbly_vaults');
-      if (raw) {
+      if (raw && raw.trim()) {
         const vaults = JSON.parse(raw);
-        set({ recentVaults: vaults });
-        // Trigger async sync of handles
+        set({ recentVaults: vaults, gatewayPanel: (vaults && vaults.length > 0) ? 'unlock' : 'discovery' });
         get().syncHandles();
+      } else {
+        set({ gatewayPanel: 'discovery' });
       }
 
       // Restore theme
@@ -101,9 +119,15 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
       // Restore other settings
       const savedSettings = localStorage.getItem('kutumbly_settings');
-      if (savedSettings) {
-        const s = JSON.parse(savedSettings);
-        if (s.hiddenModules) set({ hiddenModules: s.hiddenModules });
+      if (savedSettings && savedSettings.trim()) {
+        try {
+          const s = JSON.parse(savedSettings);
+          if (s.hiddenModules) set({ hiddenModules: s.hiddenModules });
+          if (s.lastSyncDate) set({ lastSyncDate: s.lastSyncDate });
+          if (s.pendingSync) set({ pendingSync: s.pendingSync });
+        } catch (e) {
+          console.error("Failed to parse settings", e);
+        }
       }
     } catch {}
   },
@@ -146,6 +170,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   }),
 
   setGatewayPanel: (p) => set({ gatewayPanel: p }),
+  setDiscoveryEmail: (email) => set({ discoveryEmail: email }),
 
   setUnlocked: (db, handle) => {
     set({ isUnlocked: true, db, fileHandle: handle || null });
@@ -187,10 +212,46 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   setLang: (l) => set({ lang: l }),
 
+  setGDriveToken: (t) => set({ gdriveToken: t }),
+
+  setSyncStatus: (s) => {
+    set((state) => ({
+      lastSyncDate: s.lastSync !== undefined ? s.lastSync : state.lastSyncDate,
+      isSyncing: s.isSyncing !== undefined ? s.isSyncing : state.isSyncing,
+      pendingSync: s.pendingSync !== undefined ? s.pendingSync : state.pendingSync,
+    }));
+    get().saveSettings();
+  },
+
+  unlinkCloud: () => {
+    set({ gdriveToken: null, lastSyncDate: null, pendingSync: false });
+    get().saveSettings();
+  },
+
+  factoryReset: async () => {
+    // 1. Clear memory variables explicitly
+    set({ db: null, currentPin: '', activeVault: null, isUnlocked: false });
+    
+    // 2. Wipe IndexedDBs
+    const { deleteAllSnapshots } = await import('./backup');
+    const { clearAllHandles } = await import('./handles');
+    await Promise.all([deleteAllSnapshots(), clearAllHandles()]);
+    
+    // 3. Wipe LocalStorage
+    localStorage.clear();
+    
+    // 4. Ultimate Memory Wipe: Reload
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
+  },
+
   saveSettings: () => {
     localStorage.setItem('kutumbly_settings', JSON.stringify({
       hiddenModules: get().hiddenModules,
       theme: get().theme,
+      lastSyncDate: get().lastSyncDate,
+      pendingSync: get().pendingSync,
     }));
   },
 
@@ -201,7 +262,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
       db,
       isUnlocked: true,
       fileHandle: null,
-      activeVault: { id: 'dev-vault', name: 'Dev Vault', path: 'memory', lastOpened: new Date().toISOString() },
+      activeVault: { id: 'dev-vault', name: 'Dev Vault', icon: '🛠️', lastOpened: new Date().toISOString(), createdAt: new Date().toISOString(), memberCount: 1 },
     });
   },
 }));

@@ -35,6 +35,7 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
   const [step, setStep] = useState<'details' | 'pin'>('details');
   const [name, setName] = useState('');
   const [icon, setIcon] = useState('🏠');
+  const [authorizedEmail, setAuthorizedEmail] = useState('');
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   
@@ -68,7 +69,12 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
     setError(null);
 
     try {
-      const { handle, vaultId } = await createVault(name, pin);
+      const emailList = authorizedEmail
+        .split(',')
+        .map(e => e.trim().toLowerCase())
+        .filter(e => e.includes('@')); // Basic validation
+
+      const { handle, vaultId } = await createVault(name, pin, emailList);
       
       const newVault: VaultMeta = {
         id: vaultId,
@@ -144,6 +150,22 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
                     placeholder={lang === 'hi' ? "i.e. Mallah Parivar" : "e.g. Mallah Family"}
                     className="w-full h-16 px-6 rounded-3xl bg-bg-secondary border-2 border-transparent focus:border-gold/50 outline-none transition-all font-bold text-lg text-text-primary shadow-inner"
                   />
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] ml-1">
+                    {lang === 'hi' ? 'Authorized Backup Email (G-Drive)' : 'Authorized Backup Email (G-Drive)'}
+                  </label>
+                  <input
+                    type="text"
+                    value={authorizedEmail}
+                    onChange={(e) => setAuthorizedEmail(e.target.value)}
+                    placeholder="e.g., father@gmail.com, mother@gmail.com"
+                    className="w-full h-16 px-6 rounded-3xl bg-bg-secondary border-2 border-transparent focus:border-gold/50 outline-none transition-all font-bold text-lg text-text-primary shadow-inner"
+                  />
+                  <p className="text-[9px] text-text-tertiary font-bold uppercase tracking-widest ml-1">
+                    Comma separated Gmail IDs allowed to sync this vault.
+                  </p>
                 </div>
 
                 <div className="space-y-4">

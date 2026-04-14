@@ -30,85 +30,52 @@ import RecoverPanel from '@/components/gateway/RecoverPanel';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import DiscoveryPanel from '@/components/gateway/DiscoveryPanel';
+
 export default function GatewayPage() {
-  const { loadRecentVaults, recentVaults, setActiveVault, devInit } = useAppStore();
-  const [panel, setPanel] = useState<GatewayPanel>('empty');
+  const { 
+    loadRecentVaults, 
+    recentVaults, 
+    setActiveVault, 
+    devInit,
+    gatewayPanel,
+    setGatewayPanel
+  } = useAppStore();
 
   // Initial load
   useEffect(() => {
     loadRecentVaults();
   }, []);
 
-  // Decide initial panel based on recent vaults
-  useEffect(() => {
-    if (recentVaults.length > 0) {
-      setActiveVault(recentVaults[0]);
-      setPanel('unlock');
-    } else {
-      setPanel('empty');
-    }
-  }, [recentVaults.length]);
-
   const handleDevBypass = async () => {
     await devInit();
-    setPanel('success');
+    setGatewayPanel('success');
   };
 
   const renderPanel = () => {
-    switch (panel) {
+    switch (gatewayPanel) {
+      case 'discovery':
+        return <DiscoveryPanel />;
       case 'unlock':
-        return <UnlockPanel onSuccess={() => setPanel('success')} />;
+        return <UnlockPanel onSuccess={() => setGatewayPanel('success')} />;
       case 'create':
-        return <CreateVaultPanel onBack={() => setPanel('unlock')} onSuccess={() => setPanel('success')} />;
+        return <CreateVaultPanel onBack={() => setGatewayPanel('discovery')} onSuccess={() => setGatewayPanel('success')} />;
       case 'import':
-        return <ImportPanel onBack={() => setPanel('unlock')} onSuccess={() => setPanel('success')} />;
+        return <ImportPanel onBack={() => setGatewayPanel('discovery')} onSuccess={() => setGatewayPanel('success')} />;
       case 'recover':
-        return <RecoverPanel onBack={() => setPanel('unlock')} />;
+        return <RecoverPanel onBack={() => setGatewayPanel('discovery')} />;
       case 'success':
         return <SuccessPanel />;
       default:
-        return (
-          <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-bg-secondary/20">
-            <div className="w-16 h-16 bg-bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-sm border-[0.5px] border-border-light">
-              <Image src="/favicon.svg" alt="Kutumbly Logo" width={36} height={36} className="brightness-110" />
-            </div>
-            <h2 className="text-xl font-bold text-text-primary mb-2">Swagat Hai!</h2>
-            <p className="text-sm text-text-secondary max-w-[280px] mb-8 leading-relaxed">
-              Kutumbly setup karne ke liye ek naya vault banayein ya apni puraani file kholiye.
-            </p>
-            <div className="flex flex-col gap-3 w-full max-w-[200px]">
-              <button 
-                onClick={() => setPanel('create')}
-                className="btn btn-primary w-full"
-              >
-                Naya Vault Banao
-              </button>
-              <button 
-                onClick={() => setPanel('import')}
-                className="btn w-full"
-              >
-                File Kholo
-              </button>
-              
-              {isDevBypassEnabled() && (
-                <button 
-                  onClick={handleDevBypass}
-                  className="mt-4 text-xs font-semibold text-gold hover:underline"
-                >
-                  ⚡ Developer Bypass (DX)
-                </button>
-              )}
-            </div>
-          </div>
-        );
+        return <DiscoveryPanel />;
     }
   };
 
   return (
-    <GatewayShell sidebar={<VaultList onPanelChange={setPanel} />}>
+    <GatewayShell sidebar={<VaultList onPanelChange={setGatewayPanel} />}>
       <AnimatePresence mode="wait">
         <motion.div
-          key={panel}
+          key={gatewayPanel}
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 1.02 }}

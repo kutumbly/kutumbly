@@ -23,6 +23,7 @@ import ModuleShell from './ModuleShell';
 import { Search, Book, Trash2, Calendar, Smile, Heart, MessageSquare, ArrowRight, BookOpen, MapPin, Cloud, Tag, Lock, Unlock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DiaryEntry } from '@/types/db';
+import { parseRichContent } from '@/lib/richContent';
 
 type DiaryView = 'overview' | 'timeline' | 'reading';
 
@@ -436,9 +437,7 @@ export default function DiaryModule() {
            </div>
 
            <article className="prose prose-lg prose-headings:font-black prose-p:font-bold prose-p:text-text-primary prose-p:leading-[2] max-w-none mb-12">
-             {String(activeEntry.content).split('\n').map((para, i) => (
-                <p key={i} className="mb-6">{para}</p>
-             ))}
+             {parseRichContent(activeEntry.content)}
            </article>
 
            <div className="flex border-t border-border-light pt-8 justify-between items-center">

@@ -45,11 +45,50 @@ export default function SetupModule() {
     activeVault, lang, setLang,
     hiddenModules, toggleModule,
     theme, setTheme,
-    db, currentPin
+    db, currentPin,
+    unlinkCloud, factoryReset
   } = useAppStore();
   const t = useTranslation(lang as Language);
 
   const [backupStatus, setBackupStatus] = React.useState<'idle' | 'saving' | 'done'>('idle');
+  const [authorizedEmails, setAuthorizedEmails] = React.useState<string[]>([]);
+  const [newEmail, setNewEmail] = React.useState('');
+  const [showBurnConfirm, setShowBurnConfirm] = React.useState(false);
+  const [burnConfirmText, setBurnConfirmText] = React.useState('');
+
+  // Load authorized emails from DB settings
+  React.useEffect(() => {
+    if (!db) return;
+    try {
+      const res = db.exec("SELECT value FROM settings WHERE key = 'gdrive_auth_emails'");
+      if (res.length > 0) {
+        setAuthorizedEmails(JSON.parse(res[0].values[0][0]));
+      }
+    } catch {}
+  }, [db]);
+
+  const saveAuthorizedEmails = (emails: string[]) => {
+    if (!db) return;
+    try {
+      db.run("INSERT OR REPLACE INTO settings (key, value) VALUES ('gdrive_auth_emails', ?)", [JSON.stringify(emails)]);
+      setAuthorizedEmails(emails);
+    } catch (err) {
+      console.error("Failed to save auth emails:", err);
+    }
+  };
+
+  const handleAddEmail = () => {
+    if (!newEmail.trim() || !newEmail.includes('@')) return;
+    const emailSet = new Set([...authorizedEmails, newEmail.trim().toLowerCase()]);
+    const updatedList = Array.from(emailSet);
+    saveAuthorizedEmails(updatedList);
+    setNewEmail('');
+  };
+
+  const handleRemoveEmail = (email: string) => {
+    const updated = authorizedEmails.filter(e => e !== email);
+    saveAuthorizedEmails(updated);
+  };
 
   const handleManualBackup = async () => {
     if (!db || !currentPin || !activeVault?.id) return;
@@ -260,15 +299,51 @@ export default function SetupModule() {
               </button>
             </div>
 
-            {/* GDrive Authorized Email (from .env.local) */}
-            <div className="card p-4 flex items-center justify-between bg-gold-light/20 border-gold/10">
-              <div className="flex items-center gap-3 overflow-hidden">
-                <Globe size={18} className="text-gold" />
-                <div className="overflow-hidden">
-                  <div className="text-sm font-bold text-text-primary">Authorized Backup Email</div>
-                  <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest truncate">
-                    {process.env.NEXT_PUBLIC_GDRIVE_ALLOWED_EMAILS || 'All Accounts Allowed'}
+            {/* GDrive Authorized Emails */}
+            <div className="card p-4 bg-gold-light/20 border-gold/10">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    <Globe size={18} className="text-gold" />
+                    <div className="overflow-hidden">
+                      <div className="text-sm font-bold text-text-primary">Cloud Authorization</div>
+                      <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
+                        Allowed sync email addresses
+                      </div>
+                    </div>
                   </div>
+                  <button onClick={unlinkCloud} className="text-[9px] font-black text-text-tertiary bg-bg-primary px-2 py-1 rounded hover:text-text-danger transition-colors">
+                    LOGOUT CLOUD
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {authorizedEmails.map(email => (
+                    <div key={email} className="flex items-center justify-between bg-bg-primary/50 py-2 px-3 rounded-lg border border-border-light/50">
+                      <span className="text-xs font-bold text-text-primary">{email}</span>
+                      <button onClick={() => handleRemoveEmail(email)} className="text-text-danger hover:opacity-70 transition-opacity">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                  <div className="flex gap-2">
+                    <input 
+                      type="email" 
+                      value={newEmail}
+                      onChange={(e) => setNewEmail(e.target.value)}
+                      placeholder="Add Gmail Address"
+                      className="flex-1 bg-bg-primary border border-border-light rounded-lg px-3 py-2 text-xs font-bold focus:outline-none focus:border-gold"
+                    />
+                    <button 
+                      onClick={handleAddEmail}
+                      className="bg-gold text-white px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity"
+                    >
+                      ADD
+                    </button>
+                  </div>
+                  <p className="text-[9px] text-text-tertiary font-bold uppercase tracking-widest ml-1">
+                    Backups will be blocked if linked account is not in this list.
+                  </p>
                 </div>
               </div>
             </div>
@@ -276,6 +351,7 @@ export default function SetupModule() {
         </section>
 
         {/* ── TallyPrime Gateway ────────────────────────────────────── */}
+        {/* ... (Tally UI remains unchanged) ... */}
         <section>
           <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4 px-1">
             Enterprise Sync Gateway
@@ -319,18 +395,62 @@ export default function SetupModule() {
             <div className="flex items-center gap-3">
               <Trash2 size={18} className="text-text-danger" />
               <div>
-                <div className="text-sm font-bold text-text-primary">Delete Vault Data</div>
+                <div className="text-sm font-bold text-text-primary">Sovereign Reset (The Burn Protocol)</div>
                 <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
-                  This cannot be undone
+                  Wipe device cache, memory & identity handles
                 </div>
               </div>
             </div>
-            <button className="btn bg-text-danger text-white text-[10px] font-bold uppercase px-4 py-2 border-none hover:opacity-90">
-              Erase All
+            <button 
+              onClick={() => setShowBurnConfirm(true)}
+              className="btn bg-text-danger text-white text-[10px] font-bold uppercase px-4 py-2 border-none hover:opacity-90"
+            >
+              System Burn
             </button>
           </div>
         </section>
 
+        {/* Burn Protocol Modal */}
+        {showBurnConfirm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-6">
+            <div className="w-full max-w-sm bg-bg-primary rounded-[2.5rem] p-8 border border-text-danger/20 shadow-2xl">
+              <div className="w-16 h-16 bg-text-danger/10 text-text-danger rounded-3xl flex items-center justify-center mb-6 mx-auto">
+                <Trash2 size={32} />
+              </div>
+              <h3 className="text-2xl font-black text-center text-text-primary mb-2 uppercase tracking-wide">
+                Burn Protocol
+              </h3>
+              <p className="text-xs font-bold text-center text-text-tertiary mb-6 leading-relaxed">
+                This will wipe ALL device memory and handles. This is irreversible but does not affect cloud files.
+                Type <span className="text-text-danger">BURN</span> below to confirm.
+              </p>
+              
+              <input 
+                type="text" 
+                value={burnConfirmText}
+                onChange={(e) => setBurnConfirmText(e.target.value)}
+                placeholder="BURN"
+                className="w-full h-14 bg-bg-secondary border border-border-light rounded-2xl px-6 text-center font-black text-lg tracking-[0.5em] focus:outline-none focus:border-text-danger transition-all mb-6"
+              />
+
+              <div className="flex flex-col gap-3">
+                <button 
+                  disabled={burnConfirmText !== 'BURN'}
+                  onClick={factoryReset}
+                  className="w-full h-14 bg-text-danger text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-text-danger/20 active:scale-95 transition-all disabled:opacity-50"
+                >
+                  Confirm Destroy
+                </button>
+                <button 
+                  onClick={() => { setShowBurnConfirm(false); setBurnConfirmText(''); }}
+                  className="w-full h-14 bg-bg-tertiary text-text-tertiary rounded-2xl font-black uppercase tracking-[0.2em] active:scale-95 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </ModuleShell>
   );

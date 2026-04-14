@@ -35,4 +35,4 @@ export interface VaultStore {
   fileHandle: FileSystemFileHandle | null; 
 }
 
-export type GatewayPanel = 'unlock' | 'create' | 'import' | 'success' | 'empty' | 'recover';
+export type GatewayPanel = 'unlock' | 'create' | 'import' | 'success' | 'empty' | 'recover' | 'discovery';

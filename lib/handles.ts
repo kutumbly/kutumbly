@@ -87,3 +87,15 @@ export async function verifyPermission(handle: FileSystemFileHandle, readWrite =
   
   return false;
 }
+
+/**
+ * COMPLETELY WIPE ALL HANDLES: Used for Factory Reset
+ */
+export async function clearAllHandles(): Promise<boolean> {
+  return new Promise((resolve) => {
+    const req = indexedDB.deleteDatabase(DB_NAME);
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => resolve(false);
+    req.onblocked = () => resolve(false);
+  });
+}

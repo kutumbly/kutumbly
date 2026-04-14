@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import {
   Home, Book, CheckSquare, IndianRupee,
   Settings, LogOut, Shield, Heart, Users,
-  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap
+  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap, Cloud
 } from "lucide-react";
 import { motion } from "framer-motion";
 import HomeModule from "@/components/dashboard/HomeModule";
@@ -37,6 +37,7 @@ import InvestModule from "@/components/dashboard/InvestModule";
 import GroceryModule from "@/components/dashboard/GroceryModule";
 import SetupModule from "@/components/dashboard/SetupModule";
 import NetworkModule from "@/components/dashboard/NetworkModule";
+import CloudSyncriptModule from "@/components/dashboard/CloudSyncriptModule";
 import VidyaModule from "@/components/dashboard/VidyaModule";
 import BottomNav from "@/components/dashboard/BottomNav";
 import ModuleShell from "@/components/dashboard/ModuleShell";
@@ -52,6 +53,7 @@ const ALL_TABS = [
   { id: "grocery", labelEn: "Grocery",   labelHi: "Kirana",    icon: Utensils },
   { id: "staff",   labelEn: "HomeStaff", labelHi: "Staff",     icon: Briefcase },
   { id: "vidya",   labelEn: "Vidya",     labelHi: "विद्या",    icon: GraduationCap },
+  { id: "sync",    labelEn: "Cloud-Syncript", labelHi: "Cloud-Sync", icon: Cloud },
   { id: "network", labelEn: "Sync",      labelHi: "Jodna",     icon: Network },
   { id: "setup",   labelEn: "Setup",     labelHi: "Vyavastha", icon: Settings },
 ];
@@ -93,6 +95,7 @@ export default function DashboardPage() {
       case "grocery": return <GroceryModule />;
       case "staff":   return <HomeStaffModule />;
       case "vidya":   return <VidyaModule />;
+      case "sync":    return <CloudSyncriptModule />;
       case "network": return <NetworkModule />;
       case "setup":   return <SetupModule />;
       default:

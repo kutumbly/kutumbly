@@ -28,6 +28,8 @@ import { hasBiometricRegistered } from '@/lib/biometric';
 
 type MetricStatus = "success" | "default" | "warning" | "danger" | "info";
 
+import { parseRichContent } from '@/lib/richContent';
+
 export default function HomeModule() {
   const { db, lang, activeVault } = useAppStore();
   const { summary } = useMoney();
@@ -148,10 +150,10 @@ export default function HomeModule() {
                 <div className="w-12 h-12 rounded-2xl bg-bg-tertiary flex items-center justify-center flex-shrink-0 border border-border-light group-hover:border-gold/30 group-hover:bg-bg-primary transition-all shadow-sm">
                   <Clock className="w-5 h-5 text-text-tertiary" />
                 </div>
-                <div className="flex-1">
-                   <p className="text-[14px] font-bold text-text-secondary leading-relaxed line-clamp-2">
-                      {String(a.content)}
-                   </p>
+                <div className="flex-1 min-w-0">
+                   <div className="text-[13px] font-bold text-text-secondary leading-relaxed line-clamp-3 overflow-hidden">
+                      {parseRichContent(String(a.content))}
+                   </div>
                    <div className="flex items-center gap-3 mt-3">
                      <span className="text-[8px] font-black text-gold-text uppercase tracking-[0.2em] bg-gold/5 px-3 py-1 rounded-full border border-gold/10">
                        {lang === 'hi' ? 'Diary' : 'Diary'}

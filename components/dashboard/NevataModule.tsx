@@ -47,6 +47,8 @@ function daysUntil(dateStr: string): number {
   return Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 }
 
+import { parseRichContent } from '@/lib/richContent';
+
 export default function NevataModule() {
   const { lang, db } = useAppStore();
   const { getEvents, getLedger, getUpcoming, suggestShagun } = useNevata();
@@ -183,7 +185,9 @@ export default function NevataModule() {
                 </span>
               </div>
               {l.notes && (
-                <p className="text-[10px] text-text-tertiary italic mt-0.5">{l.notes}</p>
+                <div className="text-[10px] text-text-tertiary italic mt-1 leading-relaxed">
+                  {parseRichContent(l.notes)}
+                </div>
               )}
             </div>
           </div>

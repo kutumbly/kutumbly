@@ -23,6 +23,8 @@ import { seedDatabase } from "./seed";
 import { loadDevState } from "./dev";
 import { saveVaultBackup } from "./backup";
 import { CURRENT_SCHEMA_VERSION } from "./migrations";
+import { useAppStore } from "./store";
+import { isSyncDue, performCloudSync } from "./sync";
 
 let SQL_ENGINE: SqlJsStatic | null = null;
 
@@ -37,7 +39,7 @@ async function getEngine(): Promise<SqlJsStatic> {
 /**
  * CREATE: Initialize new SQLite DB, encrypt, save as .kutumb
  */
-export async function createVault(name: string, pin: string): Promise<{ handle: FileSystemFileHandle | null, vaultId: string }> {
+export async function createVault(name: string, pin: string, authorizedEmails: string[] = []): Promise<{ handle: FileSystemFileHandle | null, vaultId: string }> {
   // 1. Init sql.js with empty DB
   const SQL = await getEngine();
   const db = new SQL.Database();
@@ -49,6 +51,11 @@ export async function createVault(name: string, pin: string): Promise<{ handle: 
   db.run(`INSERT INTO settings (key, value) VALUES ('vault_id', ?)`, [vaultId]);
   db.run(`INSERT INTO settings (key, value) VALUES ('vault_name', ?)`, [name]);
   db.run(`INSERT INTO settings (key, value) VALUES ('created_at', ?)`, [new Date().toISOString()]);
+  
+  // Save authorized emails
+  if (authorizedEmails.length > 0) {
+    db.run(`INSERT INTO settings (key, value) VALUES ('gdrive_auth_emails', ?)`, [JSON.stringify(authorizedEmails)]);
+  }
   
   // Seed with initial data
   seedDatabase(db);
@@ -142,6 +149,16 @@ export async function openVault(pin: string, handle?: FileSystemFileHandle) {
 }
 
 /**
+ * OPEN FROM BYTES: For cloud restoration or other non-file-handle sources
+ */
+export async function openVaultFromBytes(bytes: Uint8Array, pin: string) {
+  const dbBytes = await decryptDB(bytes, pin);
+  const SQL = await getEngine();
+  const db = new SQL.Database(dbBytes);
+  return db;
+}
+
+/**
  * SAVE: Encrypt current DB state and write back to file
  */
 export async function saveVault(db: Database, pin: string, handle: FileSystemFileHandle) {
@@ -161,6 +178,23 @@ export async function saveVault(db: Database, pin: string, handle: FileSystemFil
     // Fallback for non-writable handles (e.g. mobile) might need a download trigger
     // but typically FileSystemFileHandle will have createWritable in Chrome.
     console.warn("Handle not writable. Auto-save failed.");
+  }
+
+  // Cloud-Syncript Orchestration: Once-a-day push
+  const store = useAppStore.getState();
+  const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : false;
+
+  if (isSyncDue(store.lastSyncDate)) {
+    if (isOnline && store.gdriveToken && store.currentPin) {
+      performCloudSync(store.gdriveToken, db, store.currentPin, (status) => {
+        if (status === 'success') {
+          store.setSyncStatus({ lastSync: new Date().toISOString(), pendingSync: false });
+        }
+      });
+    } else {
+      // If offline or no auth, queue it
+      store.setSyncStatus({ pendingSync: true });
+    }
   }
 }
 

@@ -102,3 +102,15 @@ export async function getVaultBackups(vaultId: string): Promise<{ id: string; ty
     return [];
   }
 }
+
+/**
+ * COMPLETELY WIPE ALL BACKUPS: Used for Factory Reset
+ */
+export async function deleteAllSnapshots(): Promise<boolean> {
+  return new Promise((resolve) => {
+    const req = indexedDB.deleteDatabase(DB_NAME);
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => resolve(false);
+    req.onblocked = () => resolve(false);
+  });
+}
