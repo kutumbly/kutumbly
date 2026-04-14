@@ -28,62 +28,6 @@ export default function LandingHero() {
   const t = useTranslation(lang);
 
   return (
-    <div className="relative min-h-screen sovereign-gradient flex flex-col pt-32 pb-20 items-center px-6 text-center overflow-hidden">
-      
-      {/* Immersive Mission Background */}
-      <div className="absolute inset-0 gold-glow opacity-50" />
-      <div className="absolute inset-0 mission-grid opacity-30" />
-      
-      {/* Floating Decorative Elements */}
-      <motion.div 
-        animate={{ 
-          y: [0, -30, 0],
-          rotate: [0, 5, 0]
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-40 -left-20 w-80 h-80 bg-gold/10 rounded-full blur-[100px] pointer-events-none" 
-      />
-      <motion.div 
-        animate={{ 
-          y: [0, 40, 0],
-          rotate: [0, -5, 0]
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-40 -right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" 
-      />
-
-      <div className="max-w-5xl mx-auto z-10">
-        {/* Sovereign Badge */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: -20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/60 backdrop-blur-xl border border-white shadow-2xl shadow-gold/10 mb-12 animate-pulse-gold group cursor-default"
-        >
-          <div className="w-2.5 h-2.5 rounded-full bg-gold shadow-[0_0_10px_rgba(201,151,28,0.8)]" />
-          <span className="text-[12px] font-black text-text-primary uppercase tracking-[0.15em]">
-             Sovereign OS <span className="text-gold mx-1">·</span> V1.0 Stable
-          </span>
-        </motion.div>
-
-        {/* High-Fidelity Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-5xl md:text-8xl font-black text-text-primary tracking-[-0.04em] leading-[0.95] mb-10"
-        >
-          {t('HERO_TITLE_PART1')} <br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-tr from-gold via-gold-dim to-gold-text">
-             {t('HERO_TITLE_GOLD')}
-          </span>
-        </motion.h1>
-
-        {/* Purified Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="text-lg md:text-2xl text-text-secondary max-w-3xl mx-auto font-semibold leading-relaxed mb-14 px-4"
     <section className="relative pt-32 pb-20 overflow-hidden mission-grid">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] gold-glow -z-10" />
       

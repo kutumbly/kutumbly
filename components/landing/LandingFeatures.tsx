@@ -65,31 +65,27 @@ export default function LandingFeatures() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-40">
-          {STEPS.map((step) => (
+          {STEPS.map((step, idx) => (
             <motion.div 
               key={step.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              transition={{ delay: idx * 0.1 }}
               className="group p-10 bg-white border border-border-light rounded-[32px] shadow-sm hover:shadow-xl hover:shadow-gold/5 hover:border-gold/30 transition-all duration-500 relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
-                 {React.cloneElement(f.icon as React.ReactElement, { size: 80 })}
+              <div className="w-16 h-16 bg-clinical rounded-2xl flex items-center justify-center text-gold mb-8 shadow-inner group-hover:bg-gold group-hover:text-white transition-all duration-500">
+                <span className="text-xl font-black italic">0{step.id}</span>
               </div>
               
-              <div className="w-16 h-16 bg-clinical rounded-2xl flex items-center justify-center text-gold mb-8 shadow-inner group-hover:bg-gold group-hover:text-white transition-all duration-500">
-                {f.icon}
-              </div>
-
               <div className="space-y-4 relative z-10">
-                <h3 className="text-2xl font-black text-text-primary tracking-tight font-inter-tight">{f.title}</h3>
+                <h3 className="text-2xl font-black text-text-primary tracking-tight font-inter-tight">{step.title}</h3>
                 <p className="text-sm text-text-secondary leading-relaxed font-medium">
-                  {f.desc}
+                  {step.desc}
                 </p>
                 <div className="pt-6 flex items-center gap-3">
                    <div className="w-1.5 h-1.5 rounded-full bg-text-success shadow-[0_0_8px_rgba(6,95,70,0.3)]" />
-                   <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Autonomous Module Ready</span>
+                   <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Autonomous Step Verified</span>
                 </div>
               </div>
             </motion.div>
