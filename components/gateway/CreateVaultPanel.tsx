@@ -23,6 +23,7 @@ import { useAppStore } from '@/lib/store';
 import { createVault } from '@/lib/vault';
 import { VaultMeta } from '@/types/vault';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation, Language } from '@/lib/i18n';
 
 interface CreateVaultPanelProps {
   onBack: () => void;
@@ -31,6 +32,7 @@ interface CreateVaultPanelProps {
 
 export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanelProps) {
   const { addRecentVault, setActiveVault, lang } = useAppStore();
+  const t = useTranslation(lang as Language);
   
   const [step, setStep] = useState<'details' | 'pin'>('details');
   const [name, setName] = useState('');
@@ -46,7 +48,7 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
 
   const handleNext = () => {
     if (!name.trim()) {
-      setError(lang === 'hi' ? 'Kripya naam enter karein' : 'Please enter a vault name');
+      setError(t('ERROR_ENTER_NAME'));
       return;
     }
     setError(null);
@@ -55,11 +57,11 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
 
   const handleCreate = async () => {
     if (pin.length !== 4) {
-      setError(lang === 'hi' ? '4 digit PIN zaroori hai' : '4-digit PIN is required');
+      setError(t('ERROR_PIN_REQ'));
       return;
     }
     if (pin !== confirmPin) {
-      setError(lang === 'hi' ? 'PIN match nahi kar raha' : 'PINs do not match');
+      setError(t('ERROR_PIN_MATCH'));
       setPin('');
       setConfirmPin('');
       return;
@@ -91,7 +93,7 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
       onSuccess();
     } catch (err: any) {
       console.error("Vault creation failed:", err);
-      setError(lang === 'hi' ? 'Koshish nakamyab rahi' : 'Failed to create vault');
+      setError(t('GENERIC_ERROR'));
     } finally {
       setIsCreating(false);
     }
@@ -111,12 +113,12 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
           <ArrowLeft size={20} />
         </button>
         <div className="text-[10px] font-black uppercase tracking-[0.3em] text-gold opacity-50">
-          Step {step === 'details' ? '1' : '2'} of 2
+          {t('STEP_INDICATOR').replace('{n}', step === 'details' ? '1' : '2')}
         </div>
         <div className="w-10" /> {/* Spacer */}
       </div>
 
-      <div className="flex-1 flex flex-col px-8 pb-20 pt-4 relative z-10 overflow-y-auto scroller-hide">
+      <div className="flex-1 flex flex-col px-8 pb-8 pt-2 relative z-10 overflow-hidden">
         <AnimatePresence mode="wait">
           {step === 'details' ? (
             <motion.div 
@@ -126,58 +128,58 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
               exit={{ opacity: 0, x: -20 }}
               className="w-full flex flex-col flex-1"
             >
-              <div className="mb-10">
-                <div className="w-20 h-20 bg-gold-light/20 rounded-[2rem] flex items-center justify-center mb-6 border border-gold/10 backdrop-blur-xl">
-                   <Shield className="w-10 h-10 text-gold" />
+              <div className="mb-6">
+                <div className="w-16 h-16 bg-gold-light/20 rounded-[1.5rem] flex items-center justify-center mb-4 border border-gold/10 backdrop-blur-xl">
+                   <Shield className="w-8 h-8 text-gold" />
                 </div>
-                <h2 className="text-3xl font-black text-text-primary leading-tight tracking-tight">
-                  {lang === 'hi' ? 'Apna Naya Vault Banao' : 'Create Your New Vault'}
+                <h2 className="text-2xl font-black text-text-primary leading-tight tracking-tight">
+                  {t('CREATE_VAULT_TITLE')}
                 </h2>
-                <p className="text-sm font-bold text-text-tertiary mt-3 leading-relaxed">
-                  {lang === 'hi' ? 'Ye aapke parivar ka private digital ghar hoga.' : 'This will be your family\'s private digital safe.'}
+                <p className="text-xs font-bold text-text-tertiary mt-2 leading-relaxed">
+                  {t('CREATE_VAULT_SUB')}
                 </p>
               </div>
 
-              <div className="space-y-8 flex-1">
-                <div className="space-y-3">
+              <div className="space-y-6 flex-1">
+                <div className="space-y-2">
                   <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] ml-1">
-                    {lang === 'hi' ? 'Vault ka Naam' : 'Vault Name'}
+                    {t('VAULT_NAME_LABEL')}
                   </label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder={lang === 'hi' ? "i.e. Mallah Parivar" : "e.g. Mallah Family"}
-                    className="w-full h-16 px-6 rounded-3xl bg-bg-secondary border-2 border-transparent focus:border-gold/50 outline-none transition-all font-bold text-lg text-text-primary shadow-inner"
+                    placeholder={t('VAULT_NAME_PH')}
+                    className="w-full h-14 px-6 rounded-2xl bg-bg-secondary border-2 border-transparent focus:border-gold/50 outline-none transition-all font-bold text-base text-text-primary shadow-inner"
                   />
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] ml-1">
-                    {lang === 'hi' ? 'Authorized Backup Email (G-Drive)' : 'Authorized Backup Email (G-Drive)'}
+                    {t('BACKUP_EMAIL_LABEL')}
                   </label>
                   <input
                     type="text"
                     value={authorizedEmail}
                     onChange={(e) => setAuthorizedEmail(e.target.value)}
                     placeholder="e.g., father@gmail.com, mother@gmail.com"
-                    className="w-full h-16 px-6 rounded-3xl bg-bg-secondary border-2 border-transparent focus:border-gold/50 outline-none transition-all font-bold text-lg text-text-primary shadow-inner"
+                    className="w-full h-14 px-6 rounded-2xl bg-bg-secondary border-2 border-transparent focus:border-gold/50 outline-none transition-all font-bold text-base text-text-primary shadow-inner"
                   />
                   <p className="text-[9px] text-text-tertiary font-bold uppercase tracking-widest ml-1">
-                    Comma separated Gmail IDs allowed to sync this vault.
+                    {t('BACKUP_EMAIL_HINT')}
                   </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] ml-1">
-                    {lang === 'hi' ? 'Identify with Icon' : 'Identify with Icon'}
+                    {t('ICON_LABEL')}
                   </label>
-                  <div className="grid grid-cols-4 gap-4">
+                  <div className="grid grid-cols-4 gap-3">
                     {emojiList.map((e) => (
                       <button
                         key={e}
                         onClick={() => setIcon(e)}
-                        className={`aspect-square rounded-[1.5rem] flex items-center justify-center text-2xl transition-all border-2
+                        className={`h-14 rounded-2xl flex items-center justify-center text-xl transition-all border-2
                           ${icon === e ? 'bg-gold-light/30 border-gold shadow-md scale-105' : 'bg-bg-secondary border-transparent'}
                         `}
                       >
@@ -188,7 +190,7 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
                 </div>
               </div>
 
-              <div className="pt-8">
+              <div className="pt-6">
                 {error && (
                   <div className="flex items-center gap-2 text-text-danger text-[11px] font-bold justify-center mb-4">
                     <AlertCircle className="w-3.5 h-3.5" />
@@ -197,9 +199,9 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
                 )}
                 <button
                   onClick={handleNext}
-                  className="w-full h-16 bg-gold text-white rounded-[2rem] font-black text-base uppercase tracking-widest shadow-lg shadow-gold/20 active:scale-95 transition-all flex items-center justify-center gap-3"
+                  className="w-full h-14 bg-gold text-white rounded-2xl font-black text-base uppercase tracking-widest shadow-lg shadow-gold/20 active:scale-95 transition-all flex items-center justify-center gap-3"
                 >
-                  {lang === 'hi' ? 'Bas Ek Aur Step' : 'One More Step'}
+                  {t('NEXT_STEP_BTN')}
                   <Check className="w-5 h-5" strokeWidth={3} />
                 </button>
               </div>
@@ -212,22 +214,22 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
               exit={{ opacity: 0, x: -20 }}
               className="w-full flex flex-col flex-1"
             >
-              <div className="mb-10">
-                <div className="w-20 h-20 bg-gold-light/20 rounded-[2rem] flex items-center justify-center mb-6 border border-gold/10 backdrop-blur-xl">
-                   <Key className="w-10 h-10 text-gold" />
+              <div className="mb-6">
+                <div className="w-16 h-16 bg-gold-light/20 rounded-[1.5rem] flex items-center justify-center mb-4 border border-gold/10 backdrop-blur-xl">
+                   <Key className="w-8 h-8 text-gold" />
                 </div>
-                <h2 className="text-3xl font-black text-text-primary leading-tight tracking-tight">
-                  {lang === 'hi' ? 'Master PIN Set Karein' : 'Set Master PIN'}
+                <h2 className="text-2xl font-black text-text-primary leading-tight tracking-tight">
+                  {t('SET_PIN_TITLE')}
                 </h2>
-                <p className="text-sm font-bold text-text-tertiary mt-3 leading-relaxed">
-                  {lang === 'hi' ? 'Ise hamesha yaad rakhein, ye vault kholne ki chabi hai.' : 'Remember this well. It is the only key to your vault.'}
+                <p className="text-xs font-bold text-text-tertiary mt-2 leading-relaxed">
+                  {t('SET_PIN_SUB')}
                 </p>
               </div>
 
-              <div className="space-y-8 flex-1">
-                <div className="space-y-3">
+              <div className="space-y-6 flex-1">
+                <div className="space-y-2">
                   <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] ml-1">
-                    {lang === 'hi' ? 'Choose 4-Digit PIN' : 'Choose 4-Digit PIN'}
+                    {t('CHOOSE_PIN_LABEL')}
                   </label>
                   <input
                     type="password"
@@ -237,13 +239,13 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
                     value={pin}
                     onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
                     placeholder="••••"
-                    className="w-full h-20 px-4 rounded-[2.5rem] bg-bg-secondary border-2 border-transparent text-center text-4xl tracking-[1em] outline-none focus:border-gold/50 transition-all font-bold shadow-inner"
+                    className="w-full h-16 px-4 rounded-2xl bg-bg-secondary border-2 border-transparent text-center text-3xl tracking-[1em] outline-none focus:border-gold/50 transition-all font-bold shadow-inner"
                   />
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] ml-1">
-                    {lang === 'hi' ? 'Confirm PIN' : 'Confirm PIN'}
+                    {t('CONFIRM_PIN_LABEL')}
                   </label>
                   <input
                     type="password"
@@ -253,12 +255,12 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
                     value={confirmPin}
                     onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
                     placeholder="••••"
-                    className="w-full h-20 px-4 rounded-[2.5rem] bg-bg-secondary border-2 border-transparent text-center text-4xl tracking-[1em] outline-none focus:border-gold/50 transition-all font-bold shadow-inner"
+                    className="w-full h-16 px-4 rounded-2xl bg-bg-secondary border-2 border-transparent text-center text-3xl tracking-[1em] outline-none focus:border-gold/50 transition-all font-bold shadow-inner"
                   />
                 </div>
               </div>
 
-              <div className="pt-8">
+              <div className="pt-6">
                 {error && (
                   <div className="flex items-center gap-2 text-text-danger text-[11px] font-bold justify-center mb-4">
                     <AlertCircle className="w-3.5 h-3.5" />
@@ -268,23 +270,23 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
                 <button
                   onClick={handleCreate}
                   disabled={isCreating || pin.length < 4}
-                  className="w-full h-16 bg-gold text-white rounded-[2rem] font-black text-base uppercase tracking-widest shadow-lg shadow-gold/20 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                  className="w-full h-14 bg-gold text-white rounded-2xl font-black text-base uppercase tracking-widest shadow-lg shadow-gold/20 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
                   {isCreating ? (
                     <Loader2 className="w-6 h-6 animate-spin" />
                   ) : (
                     <>
-                      {lang === 'hi' ? 'Vault Taiyaar Hai' : 'Finalize Vault'}
+                      {t('FINALIZE_VAULT_BTN')}
                       <Check className="w-5 h-5" strokeWidth={3} />
                     </>
                   )}
                 </button>
                 <button 
                   onClick={() => setStep('details')}
-                  className="w-full mt-4 py-2 text-[10px] font-black text-text-tertiary hover:text-gold uppercase tracking-[0.3em] transition-colors"
+                  className="w-full mt-2 py-1 text-[10px] font-black text-text-tertiary hover:text-gold uppercase tracking-[0.3em] transition-colors"
                   disabled={isCreating}
                 >
-                  {lang === 'hi' ? 'Pichla Page' : 'Previous Step'}
+                  {t('PREV_STEP_BTN')}
                 </button>
               </div>
             </motion.div>

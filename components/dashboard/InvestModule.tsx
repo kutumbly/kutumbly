@@ -24,12 +24,14 @@ import MetricCard from '../ui/MetricCard';
 import SparkLine from '../ui/SparkLine';
 import { TrendingUp, PieChart, ArrowUpRight, ArrowDownRight, Briefcase, Landmark, Target, FileText, CalendarDays } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation, Language } from '@/lib/i18n';
 import { Investment } from '@/types/db';
 
 type InvestView = 'overview' | 'asset-list' | 'ledger';
 
 export default function InvestModule() {
   const { lang } = useAppStore();
+  const t = useTranslation(lang as Language);
   const { investments, summary, addInvestment, addTransaction, getTransactions, updateValuation } = useInvest();
   
   const [view, setView] = useState<InvestView>('overview');
@@ -53,7 +55,7 @@ export default function InvestModule() {
   const [txNotes, setTxNotes] = useState('');
 
   const getBreadcrumbs = () => {
-    const list = [lang === 'en' ? "Wealth" : "Nivesh"];
+    const list = [t('WEALTH_PORTFOLIO')];
     if (view === 'asset-list' || view === 'ledger') list.push(selectedType || '');
     if (view === 'ledger') list.push(selectedHold?.name || '');
     return list;
@@ -103,13 +105,13 @@ export default function InvestModule() {
   return (
     <ModuleShell 
       title={
-        view === 'overview' ? (lang === 'en' ? "Wealth Portfolio" : "Nivesh Vault") :
+        view === 'overview' ? t('WEALTH_PORTFOLIO') :
         view === 'asset-list' ? `${selectedType} Holdings` :
         selectedHold?.name || "Ledger"
       }
-      subtitle={view === 'overview' ? (lang === 'en' ? "Tracking family assets & growth" : "Parivar ki bachat aur nivesh ka lekha") : undefined}
+      subtitle={view === 'overview' ? t('TRACKING_ASSETS') : undefined}
       onAdd={view === 'overview' && !showAddModal ? () => setShowAddModal(true) : undefined}
-      addLabel={view === 'overview' ? (lang === 'en' ? "Add Holding" : "Naya Nivesh") : undefined}
+      addLabel={view === 'overview' ? t('ADD_HOLDING') : undefined}
       breadcrumbs={view !== 'overview' ? getBreadcrumbs() : undefined}
       onBack={view !== 'overview' ? handleBack : undefined}
     >
@@ -129,19 +131,19 @@ export default function InvestModule() {
               <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
                 className="bg-bg-primary border border-gold/30 rounded-[2.5rem] p-8 shadow-2xl space-y-6 mb-8">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">New Investment</h3>
+                  <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">{t('NEW_INVESTMENT')}</h3>
                   <button onClick={() => setShowAddModal(false)} className="text-text-tertiary hover:text-text-danger font-bold">✕</button>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Asset Name *</label>
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('ASSET_NAME')} *</label>
                     <input type="text" value={iName} onChange={e => setIName(e.target.value)} placeholder="e.g. HDFC Index Fund"
                       className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold" />
                   </div>
                   
                   <div className="flex flex-col gap-2">
-                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Asset Category</label>
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('ASSET_CATEGORY')}</label>
                     <div className="flex gap-2">
                       {['Mutual Fund', 'PPF', 'Stock', 'FD'].map((t) => (
                         <button key={t} onClick={() => setIType(t)}
@@ -153,19 +155,19 @@ export default function InvestModule() {
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Invested Amount (Principal) *</label>
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('INVESTED_PRINCIPAL')} *</label>
                     <input type="number" value={iPrincipal} onChange={e => setIPrincipal(e.target.value)} placeholder="e.g. 50000"
                       className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold" />
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Current Market Value</label>
+                    <label className="text-[9px) font-black text-text-tertiary uppercase tracking-widest">{t('MARKET_VALUE')}</label>
                     <input type="number" value={iValue} onChange={e => setIValue(e.target.value)} placeholder="e.g. 52000 (Optional)"
                       className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold" />
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Monthly SIP (If any)</label>
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('MONTHLY_SIP')} (If any)</label>
                     <input type="number" value={iSip} onChange={e => setISip(e.target.value)} placeholder="e.g. 5000"
                       className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold" />
                   </div>
@@ -179,7 +181,7 @@ export default function InvestModule() {
                 
                 <button onClick={handleSaveInvestment} disabled={!iName.trim() || !iPrincipal}
                   className="w-full h-14 bg-gold-text text-white font-black rounded-2xl text-[11px] uppercase tracking-widest hover:opacity-90 disabled:opacity-30 shadow-lg shadow-gold/10">
-                  Add Holding
+                  {t('ADD_HOLDING')}
                 </button>
               </motion.div>
             )}
@@ -187,16 +189,16 @@ export default function InvestModule() {
         
         {/* Wealth Dashboard */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-           <MetricCard label="Total Value" value={summary.currentValue} isCurrency status="success" trend={[summary.currentValue * 0.9, summary.currentValue * 0.95, summary.currentValue]} />
-           <MetricCard label="Total Profit" value={summary.profit} isCurrency status={summary.profit >= 0 ? 'success' : 'danger'} />
-           <MetricCard label="PnL Percent" value={summary.pnlPercent.toFixed(1)} unit="%" status={summary.pnlPercent >= 0 ? 'success' : 'danger'} />
-           <MetricCard label="SIP Volume" value={investments.reduce((acc: number, i: Investment) => acc + (Number(i.monthly_sip) || 0), 0)} isCurrency status="info" />
+           <MetricCard label={t('TOTAL_VALUE')} value={summary.currentValue} isCurrency status="success" trend={[summary.currentValue * 0.9, summary.currentValue * 0.95, summary.currentValue]} />
+           <MetricCard label={t('TOTAL_PROFIT')} value={summary.profit} isCurrency status={summary.profit >= 0 ? 'success' : 'danger'} />
+           <MetricCard label={t('PNL_PERCENT')} value={summary.pnlPercent.toFixed(1)} unit="%" status={summary.pnlPercent >= 0 ? 'success' : 'danger'} />
+           <MetricCard label={t('SIP_VOLUME')} value={investments.reduce((acc: number, i: Investment) => acc + (Number(i.monthly_sip) || 0), 0)} isCurrency status="info" />
         </div>
 
         {/* Portfolio Classes */}
         <section>
           <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4 px-1">
-             Asset Classes
+             {t('ASSET_CLASSES')}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
              {assetTypes.map((type) => {
@@ -236,7 +238,7 @@ export default function InvestModule() {
              {assetTypes.length === 0 && (
                <div className="col-span-full py-24 flex flex-col items-center justify-center opacity-20">
                   <Briefcase size={48} strokeWidth={1} />
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-4">No investments found</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-4">{t('NO_INVESTMENTS')}</p>
                </div>
              )}
           </div>
@@ -250,11 +252,11 @@ export default function InvestModule() {
                  <Target size={32} strokeWidth={2.5} />
               </div>
               <div className="flex-1 text-center md:text-left">
-                 <h3 className="text-base font-black text-text-primary tracking-tight">Financial Independence Target</h3>
+                 <h3 className="text-base font-black text-text-primary tracking-tight">{t('FIRE_TARGET')}</h3>
                  <p className="text-xs font-bold text-text-secondary mt-1 max-w-md">Your current portfolio covers approximately 4% of your family's FIRE target. Consistent SIPs will accelerate this.</p>
               </div>
               <button className="btn bg-gold text-white text-[10px] font-black px-6 py-3 rounded-xl uppercase tracking-[0.2em] border-none shadow-lg shadow-gold/20 hover:scale-105 active:scale-95 transition-all">
-                 Review Analysis
+                 {t('REVIEW_ANALYSIS')}
               </button>
            </div>
         </section>
@@ -291,11 +293,11 @@ export default function InvestModule() {
                      </div>
                      <div className="flex justify-between items-end border-t border-border-light/30 pt-4 mt-2">
                         <div>
-                           <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-0.5">Principal</div>
+                           <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-0.5">{t('INVESTED_PRINCIPAL')}</div>
                            <div className="text-xs font-bold text-text-secondary">₹{h.principal.toLocaleString('en-IN')}</div>
                         </div>
                         <div className="text-right">
-                           <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-0.5">Market Value</div>
+                           <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-0.5">{t('MARKET_VALUE')}</div>
                            <div className={`text-sm font-black ${isProfit ? 'text-text-success' : 'text-text-danger'}`}>
                              ₹{h.current_value.toLocaleString('en-IN')}
                            </div>
@@ -368,7 +370,7 @@ export default function InvestModule() {
                 </div>
                 <button onClick={handleSaveTransaction} disabled={!txAmount}
                   className="w-full bg-gold-text text-white py-3 rounded-xl font-black text-[11px] uppercase tracking-widest">
-                  Save Entry
+                  {t('SAVE_TO_VAULT')}
                 </button>
               </div>
             )}
@@ -377,10 +379,10 @@ export default function InvestModule() {
                <table className="w-full text-left border-collapse">
                   <thead>
                      <tr className="border-b border-border-light bg-bg-primary">
-                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Date</th>
-                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Particulars</th>
-                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">Type</th>
-                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">Debit (Investment)</th>
+                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{lang === 'bho' ? 'तारीख' : 'Date'}</th>
+                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{lang === 'bho' ? 'विवरण' : 'Particulars'}</th>
+                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">{lang === 'bho' ? 'प्रकार' : 'Type'}</th>
+                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">{lang === 'bho' ? 'रुपिया' : 'Amount'}</th>
                      </tr>
                   </thead>
                   <tbody>

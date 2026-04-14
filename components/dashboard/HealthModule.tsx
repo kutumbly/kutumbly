@@ -21,6 +21,7 @@ import { useAppStore } from '@/lib/store';
 import { useHealth } from '@/hooks/useHealth';
 import { useVault } from '@/hooks/useVault';
 import ModuleShell from './ModuleShell';
+import { useTranslation } from '@/lib/i18n';
 import MetricCard from '../ui/MetricCard';
 import { Activity, Pill, Clock, ArrowRight, ShieldCheck, HeartPulse, LineChart, PillIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -30,6 +31,7 @@ type HealthView = 'overview' | 'member-report';
 
 export default function HealthModule() {
   const { lang } = useAppStore();
+  const t = useTranslation(lang);
   const { getFamilyMembers } = useVault();
   const { readings, medications, addReading } = useHealth();
   
@@ -58,7 +60,7 @@ export default function HealthModule() {
   const [activeMember, setActiveMember] = React.useState<FamilyMember | null>(null);
 
   const getBreadcrumbs = () => {
-    const b = [lang === 'en' ? "Health" : "Swasthya"];
+    const b = [t('HEALTH')];
     if (view === 'member-report') b.push(activeMember?.name || '');
     return b;
   };
@@ -70,12 +72,12 @@ export default function HealthModule() {
   return (
     <ModuleShell 
       title={
-        view === 'overview' ? (lang === 'en' ? "Family Health" : "Parivar ka Swasthya") :
+        view === 'overview' ? t('HEALTH') :
         `${activeMember?.name} Medical Profile`
       }
-      subtitle={view === 'overview' ? (lang === 'en' ? "Your family's wellness history" : "Parivar ki tandurusti ka hisab") : undefined}
+      subtitle={view === 'overview' ? (lang === 'en' ? "Your family's wellness history" : t('WELLNESS_PULSE')) : undefined}
       onAdd={showAddForm ? undefined : () => setShowAddForm(true)}
-      addLabel={view === 'overview' ? (lang === 'en' ? "Log Vitals" : "Record Karein") : undefined}
+      addLabel={view === 'overview' ? t('HEALTH_VITALS') : undefined}
       breadcrumbs={view !== 'overview' && !showAddForm ? getBreadcrumbs() : undefined}
       onBack={showAddForm ? () => setShowAddForm(false) : (view !== 'overview' ? handleBack : undefined)}
     >
@@ -90,13 +92,13 @@ export default function HealthModule() {
               <ArrowRight className="w-5 h-5 opacity-40 rotate-180" />
             </button>
             <h2 className="text-xl font-black text-text-primary tracking-tight">
-              {lang === 'hi' ? 'Naya Swasthya Record' : 'Record New Vitals'}
+              {t('HEALTH_VITALS')}
             </h2>
           </div>
 
           <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 flex flex-col gap-8 shadow-xl shadow-black/[0.02]">
             <div className="flex flex-col gap-3">
-              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{lang === 'hi' ? 'SADASYA CHUNEIN' : 'SELECT MEMBER'}</label>
+              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('SELECT_MEMBER')}</label>
               <div className="flex flex-wrap gap-2">
                 {members.map((m: FamilyMember) => (
                   <button key={m.id} onClick={() => setFMem(m.id)} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${fMem === m.id ? 'bg-gold-text text-white border-gold-text shadow-md' : 'bg-bg-primary text-text-tertiary border-border-light hover:border-gold/30'}`}>{m.name}</button>
@@ -106,29 +108,29 @@ export default function HealthModule() {
 
             <div className="grid grid-cols-2 gap-6">
                <div className="flex flex-col gap-3">
-                 <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">BP SYSTOLIC</label>
+                 <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('SYSTOLIC')}</label>
                  <input type="number" value={fSys} onChange={e => setFSys(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-2xl font-black text-text-primary outline-none focus:border-gold transition-all" placeholder="120" />
                </div>
                <div className="flex flex-col gap-3">
-                 <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">BP DIASTOLIC</label>
+                 <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('DIASTOLIC')}</label>
                  <input type="number" value={fDia} onChange={e => setFDia(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-2xl font-black text-text-primary outline-none focus:border-gold transition-all" placeholder="80" />
                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
                <div className="flex flex-col gap-3">
-                 <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{lang === 'hi' ? 'SHAKKAR (SUGAR)' : 'BLOOD SUGAR'}</label>
+                 <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('BLOOD_SUGAR')}</label>
                  <input type="number" value={fSugar} onChange={e => setFSugar(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-2xl font-black text-text-primary outline-none focus:border-gold transition-all" placeholder="mg/dL" />
                </div>
                <div className="flex flex-col gap-3">
-                 <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{lang === 'hi' ? 'VAJAN (WEIGHT)' : 'WEIGHT (KG)'}</label>
+                 <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('WEIGHT')}</label>
                  <input type="number" value={fWeight} onChange={e => setFWeight(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-2xl font-black text-text-primary outline-none focus:border-gold transition-all" placeholder="kg" />
                </div>
             </div>
 
             <button onClick={handleAdd} disabled={!fMem || (!fSys && !fSugar)} className="w-full mt-4 bg-gold-text hover:opacity-90 text-white font-black tracking-[0.2em] h-16 rounded-2xl shadow-xl transition-all disabled:opacity-50 uppercase flex items-center justify-center gap-3">
               <ShieldCheck size={20} />
-              {lang === 'hi' ? 'VAULT ME SAHEJIEN' : 'PROTECT IN VAULT'}
+              {t('SAVE_TO_VAULT')}
             </button>
           </div>
         </motion.div>
@@ -145,16 +147,16 @@ export default function HealthModule() {
         
         {/* Top Summary Dashboard */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-           <MetricCard label="Active Medications" value={activeMedsCount} status="default" />
-           <MetricCard label="Total Readings" value={readings.length} status="success" trend={[10, 12, 11, 15, readings.length]} />
-           <MetricCard label="Critical Alerts" value={recentCriticals} status={recentCriticals > 0 ? 'danger' : 'success'} />
-           <MetricCard label="Wellness Index" value="94" unit="%" status="success" />
+           <MetricCard label={t('HEALTH_MEDS')} value={activeMedsCount} status="default" />
+           <MetricCard label={t('SOVEREIGN_ACTIVITY')} value={readings.length} status="success" trend={[10, 12, 11, 15, readings.length]} />
+           <MetricCard label={t('CRITICAL_ALERTS')} value={recentCriticals} status={recentCriticals > 0 ? 'danger' : 'success'} />
+           <MetricCard label={t('WELLNESS_PULSE')} value="94" unit="%" status="success" />
         </div>
 
         {/* Family Member Profiles */}
         <section className="space-y-6">
           <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] px-2">
-             Medical Profiles
+             {t('MEDICAL_PROFILES')}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              {members.map((m: FamilyMember, i: number) => {
@@ -179,11 +181,11 @@ export default function HealthModule() {
                          <div className="flex justify-between items-center">
                             <h4 className="text-base font-black text-text-primary tracking-tight">{m.name}</h4>
                             <div className="flex items-center gap-1.5 text-[9px] font-black text-success uppercase tracking-widest bg-success/5 border border-success/10 px-3 py-1 rounded-full">
-                               <ShieldCheck size={12} /> Verified
+                               <ShieldCheck size={12} /> {t('VERIFIED')}
                             </div>
                          </div>
                          <p className="text-[10px] text-text-tertiary font-black uppercase tracking-widest mt-1.5 opacity-80">
-                            {m.role} · {latestReading ? `Latest BP: ${latestReading.bp_systolic}/${latestReading.bp_diastolic}` : 'Zero history'}
+                            {m.role} · {latestReading ? `${t('LATEST_BP')}: ${latestReading.bp_systolic}/${latestReading.bp_diastolic}` : 'Zero history'}
                          </p>
                       </div>
                    </div>
@@ -208,10 +210,10 @@ export default function HealthModule() {
         <section className="space-y-6">
           <div className="flex items-center justify-between px-2">
             <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-               Pritority Regimen
+               {t('HEALTH_MEDS')}
             </div>
             <button className="text-[10px] font-black text-gold-text uppercase tracking-[0.3em] flex items-center gap-1.5 hover:underline">
-               Full Schedule <ArrowRight size={14} />
+               {t('FULL_SCHEDULE')} <ArrowRight size={14} />
             </button>
           </div>
           
@@ -246,7 +248,7 @@ export default function HealthModule() {
                   </div>
                   <div className="text-right">
                      <span className="text-[9px] font-black bg-red-500/5 text-red-500 px-4 py-2 rounded-full uppercase tracking-[0.2em] border border-red-500/10">
-                        Critical stock
+                        {t('CRITICAL_STOCK')}
                      </span>
                   </div>
                 </motion.div>
@@ -294,7 +296,7 @@ export default function HealthModule() {
              <div className="md:col-span-2 space-y-6">
                <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl shadow-black/[0.02]">
                   <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-6 flex items-center gap-2">
-                     <LineChart size={16} className="text-info" /> Recent Vitals History
+                     <LineChart size={16} className="text-info" /> {t('VITALS_HISTORY')}
                   </h3>
                   <table className="w-full text-left">
                      <thead>
@@ -334,9 +336,9 @@ export default function HealthModule() {
                <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl shadow-black/[0.02]">
                   <div className="flex items-center justify-between mb-6">
                      <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] flex items-center gap-2">
-                        <PillIcon size={16} className="text-gold" /> Current Medications
+                        <PillIcon size={16} className="text-gold" /> {t('CURRENT_MEDS')}
                      </h3>
-                     <button className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline">+ Provide Meds</button>
+                     <button className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline">+ {t('PROVIDE_MEDS')}</button>
                   </div>
                   <div className="space-y-3">
                      {medications.filter(m => m.member_id === activeMember.id).map((m, i) => (

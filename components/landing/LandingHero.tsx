@@ -20,19 +20,18 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Shield, Globe } from 'lucide-react';
-import Image from 'next/image';
 import { useAppStore } from '@/lib/store';
+import { useTranslation } from '@/lib/i18n';
 
 export default function LandingHero() {
-  const { lang, setLang } = useAppStore();
+  const { lang } = useAppStore();
+  const t = useTranslation(lang);
 
   return (
     <div className="relative min-h-[90vh] bg-bg-tertiary flex flex-col pt-24 items-center px-6 text-center overflow-hidden">
       
       {/* Background Subtle Gradient */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-gold/5 to-transparent pointer-events-none" />
-
-      {/* Top Navigation extracted to LandingHeader */}
 
       <div className="max-w-4xl mx-auto z-10">
         {/* Top Badge */}
@@ -52,8 +51,8 @@ export default function LandingHero() {
           transition={{ delay: 0.1 }}
           className="text-4xl md:text-7xl font-black text-text-primary tracking-tighter leading-[1.05] mb-8"
         >
-          Your family&apos;s <span className="text-gold">digital ghar</span>,<br />
-          completely private
+          {t('HERO_TITLE_PART1')} <span className="text-gold">{t('HERO_TITLE_GOLD')}</span>,<br />
+          {t('COMPLETELY_PRIVATE')}
         </motion.h1>
 
         {/* Subtitle */}
@@ -63,8 +62,7 @@ export default function LandingHero() {
           transition={{ delay: 0.2 }}
           className="text-base md:text-xl text-text-secondary max-w-2xl mx-auto font-medium leading-relaxed mb-12"
         >
-          Diary, money, health, tasks, investments — all in one encrypted vault 
-          that lives on your device. No cloud. No account. No subscription.
+          {t('HERO_DESC')}
         </motion.p>
 
         {/* CTA Buttons */}
@@ -75,7 +73,7 @@ export default function LandingHero() {
           className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-16"
         >
           <Link href="/os" className="h-16 px-10 bg-bg-primary border-2 border-border-light rounded-[2rem] flex items-center gap-3 font-black text-base text-text-primary hover:border-gold transition-all shadow-xl shadow-black/[0.02]">
-            Open Kutumbly Free
+            {t('NAV_OPEN_APP')} — Free
             <ArrowRight size={20} />
           </Link>
         </motion.div>
@@ -117,7 +115,7 @@ export default function LandingHero() {
       </div>
 
       {/* Hero Bottom Mask */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[--bg-tertiary] to-transparent pointer-events-none" />
     </div>
   );
 }

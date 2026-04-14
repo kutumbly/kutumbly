@@ -98,7 +98,7 @@ export default function ModuleShell({
           {onAdd && (
             <button 
               onClick={onAdd}
-              className="h-10 px-4 bg-gold-text text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:opacity-90 transition-all shadow-md shadow-gold/10 active:scale-95 flex items-center gap-2"
+              className="h-10 px-4 bg-gold text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:opacity-90 transition-all shadow-md shadow-gold/20 active:scale-95 flex items-center gap-2"
               aria-label={addLabel}
             >
               <Plus size={14} strokeWidth={3} />

@@ -126,14 +126,14 @@ export default function SetupModule() {
   return (
     <ModuleShell
       title={t('VYAVASTHA')}
-      subtitle={lang === 'en' ? "Personalize your Sovereign OS" : "Apne system ko customize karein"}
+      subtitle={t('CHOOSE_LANG')}
     >
       <div className="space-y-8">
 
         {/* ── Module Visibility Toggles ───────────────────────── */}
         <section>
           <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4 px-1">
-            Module Configuration
+             {t('SETUP_MODULES')}
           </div>
           <div className="card divide-y divide-border-light/30">
             {MODULE_LIST.map((m) => {
@@ -155,7 +155,7 @@ export default function SetupModule() {
                     </div>
                     <div>
                       <div className={`text-sm font-bold transition-colors ${isHidden ? 'text-text-tertiary' : 'text-text-primary'}`}>
-                        {m.label}
+                        {t(m.id.toUpperCase() === 'STAFF' ? 'HOME_STAFF' : m.id.toUpperCase())}
                       </div>
                       <div className="text-[10px] text-text-tertiary font-bold uppercase tracking-wider">
                         {m.desc}
@@ -178,7 +178,7 @@ export default function SetupModule() {
         {/* ── Preferences ────────────────────────────────────── */}
         <section>
           <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4 px-1">
-            Preferences
+             {t('SETUP_PREFERENCES')}
           </div>
           <div className="space-y-3">
 
@@ -198,13 +198,18 @@ export default function SetupModule() {
                 onChange={(e) => setLang(e.target.value as Language)}
                 className="bg-bg-secondary border border-border-medium rounded-lg text-[10px] font-bold uppercase px-3 py-2 text-text-primary focus:outline-none focus:border-gold"
               >
-                <option value="en">English</option>
+                <option value="en">English (India)</option>
                 <option value="hi">हिन्दी (Hindi)</option>
-                <option value="mr">मराठी (Marathi)</option>
+                <option value="mr">मরাठी (Marathi)</option>
                 <option value="gu">ગુજરાતી (Gujarati)</option>
                 <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
                 <option value="ta">தமிழ் (Tamil)</option>
                 <option value="bho">भोजपुरी (Bhojpuri)</option>
+                <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                <option value="te">తెలుగు (Telugu)</option>
+                <option value="ne">नेपाली (Nepali)</option>
+                <option value="bn">বাংলা (Bangla)</option>
+                <option value="mni">মৈতেইলোন (Manipuri)</option>
               </select>
             </div>
 
@@ -213,9 +218,9 @@ export default function SetupModule() {
               <div className="flex items-center gap-3">
                 {theme === 'dark' ? <Moon size={18} className="text-text-tertiary" /> : <Sun size={18} className="text-text-tertiary" />}
                 <div>
-                  <div className="text-sm font-bold text-text-primary">Appearance</div>
+                  <div className="text-sm font-bold text-text-primary">{t('APPEARANCE')}</div>
                   <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
-                    {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                    {theme === 'dark' ? t('DARK_MODE') : t('LIGHT_MODE')}
                   </div>
                 </div>
               </div>
@@ -223,7 +228,7 @@ export default function SetupModule() {
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 className="btn text-[10px] font-bold uppercase px-4 py-2"
               >
-                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                {theme === 'dark' ? t('LIGHT_MODE_SHORT') : t('DARK_MODE_SHORT')}
               </button>
             </div>
 
@@ -232,14 +237,14 @@ export default function SetupModule() {
               <div className="flex items-center gap-3">
                 <Shield size={18} className="text-text-tertiary" />
                 <div>
-                  <div className="text-sm font-bold text-text-primary">Vault Security</div>
+                  <div className="text-sm font-bold text-text-primary">{t('VAULT_SECURITY')}</div>
                   <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
                     AES-256-GCM · {activeVault?.name || 'Locked'}
                   </div>
                 </div>
               </div>
               <button className="btn text-[10px] font-bold uppercase px-4 py-2">
-                Change PIN
+                {t('CHANGE_PIN')}
               </button>
             </div>
 
@@ -259,7 +264,7 @@ export default function SetupModule() {
                 disabled={bioState === 'registering' || isBioRegistered}
                 className={`btn text-[10px] font-bold uppercase px-4 py-2 border transition-all ${isBioRegistered ? 'border-text-success text-text-success border-transparent' : 'border-border-medium hover:border-text-primary'}`}
               >
-                {isBioRegistered ? 'Biometric Active' : bioState === 'registering' ? 'Scanning...' : bioState === 'failed' ? 'Device Not Supported' : bioState === 'success' ? 'Linked!' : 'Link Device'}
+                {isBioRegistered ? t('BIOMETRIC_ACTIVE') : bioState === 'registering' ? t('SCANNING') : bioState === 'failed' ? t('NOT_SUPPORTED') : bioState === 'success' ? t('LINKED') : t('LINK_DEVICE')}
               </button>
             </div>
 
@@ -268,14 +273,14 @@ export default function SetupModule() {
               <div className="flex items-center gap-3">
                 <Download size={18} className="text-text-tertiary" />
                 <div>
-                  <div className="text-sm font-bold text-text-primary">Export Vault</div>
+                  <div className="text-sm font-bold text-text-primary">{lang === 'bho' ? 'कोठरी के बैकअप' : 'Export Vault'}</div>
                   <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
-                    Download encrypted .kutumb file
+                    {lang === 'bho' ? 'सुरक्षित फ़ाइल डाउनलोड करीं' : 'Download encrypted .kutumb file'}
                   </div>
                 </div>
               </div>
               <button className="btn text-[10px] font-bold uppercase px-4 py-2">
-                Export
+                {t('DOWNLOAD')}
               </button>
             </div>
 
@@ -306,14 +311,14 @@ export default function SetupModule() {
                   <div className="flex items-center gap-3 overflow-hidden">
                     <Globe size={18} className="text-gold" />
                     <div className="overflow-hidden">
-                      <div className="text-sm font-bold text-text-primary">Cloud Authorization</div>
+                      <div className="text-sm font-bold text-text-primary">{lang === 'bho' ? 'क्लाउड के इजाजत' : 'Cloud Authorization'}</div>
                       <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
-                        Allowed sync email addresses
+                        {lang === 'bho' ? 'बैकअप खातिर ई-मेल' : 'Allowed sync email addresses'}
                       </div>
                     </div>
                   </div>
                   <button onClick={unlinkCloud} className="text-[9px] font-black text-text-tertiary bg-bg-primary px-2 py-1 rounded hover:text-text-danger transition-colors">
-                    LOGOUT CLOUD
+                    {t('LOGOUT_CLOUD')}
                   </button>
                 </div>
 
@@ -389,7 +394,7 @@ export default function SetupModule() {
         {/* ── Danger Zone ────────────────────────────────────── */}
         <section>
           <div className="text-[11px] font-black text-text-danger uppercase tracking-[0.2em] mb-4 px-1">
-            Danger Zone
+            {t('DANGER_ZONE')}
           </div>
           <div className="card border-text-danger/20 bg-bg-danger p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -405,7 +410,7 @@ export default function SetupModule() {
               onClick={() => setShowBurnConfirm(true)}
               className="btn bg-text-danger text-white text-[10px] font-bold uppercase px-4 py-2 border-none hover:opacity-90"
             >
-              System Burn
+              {t('FACTORY_RESET')}
             </button>
           </div>
         </section>
@@ -421,8 +426,8 @@ export default function SetupModule() {
                 Burn Protocol
               </h3>
               <p className="text-xs font-bold text-center text-text-tertiary mb-6 leading-relaxed">
-                This will wipe ALL device memory and handles. This is irreversible but does not affect cloud files.
-                Type <span className="text-text-danger">BURN</span> below to confirm.
+                {lang === 'bho' ? 'ई कइला से राउर सभ याद अउर कोठरी एकदम साफ हो जाई। दोबारा वापस ना आई।' : 'This will wipe ALL device memory and handles. This is irreversible but does not affect cloud files.'}
+                {lang === 'bho' ? ' नीचे ' : ' Type '} <span className="text-text-danger">BURN</span> {lang === 'bho' ? ' लिखीं।' : ' below to confirm.'}
               </p>
               
               <input 
@@ -439,13 +444,13 @@ export default function SetupModule() {
                   onClick={factoryReset}
                   className="w-full h-14 bg-text-danger text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-text-danger/20 active:scale-95 transition-all disabled:opacity-50"
                 >
-                  Confirm Destroy
+                  {lang === 'bho' ? 'साफ करे खातिर पक्की करीं' : 'Confirm Destroy'}
                 </button>
                 <button 
                   onClick={() => { setShowBurnConfirm(false); setBurnConfirmText(''); }}
                   className="w-full h-14 bg-bg-tertiary text-text-tertiary rounded-2xl font-black uppercase tracking-[0.2em] active:scale-95 transition-all"
                 >
-                  Cancel
+                  {t('CANCEL')}
                 </button>
               </div>
             </div>

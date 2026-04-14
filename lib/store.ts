@@ -39,7 +39,7 @@ interface AppStore extends VaultStore {
   hiddenModules: string[];
   theme: 'dark' | 'light';
   sidebarCollapsed: boolean;
-  lang: 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho';
+  lang: 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho' | 'kn' | 'te' | 'ne' | 'bn' | 'mni';
   
   // Cloud-Syncript state
   lastSyncDate: string | null;
@@ -64,7 +64,7 @@ interface AppStore extends VaultStore {
   toggleModule: (id: string) => void;
   setTheme: (t: 'dark' | 'light') => void;
   setSidebarCollapsed: (v: boolean) => void;
-  setLang: (l: 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho') => void;
+  setLang: (l: 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho' | 'kn' | 'te' | 'ne' | 'bn' | 'mni') => void;
   setGDriveToken: (t: string | null) => void;
   setSyncStatus: (s: { lastSync?: string, isSyncing?: boolean, pendingSync?: boolean }) => void;
   unlinkCloud: () => void;
@@ -87,7 +87,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   discoveryEmail: '',
   activeModule: 'home',
   hiddenModules: [],
-  theme: 'dark',
+  theme: 'light',
   sidebarCollapsed: false,
   lang: 'en',
   lastSyncDate: null,
@@ -114,7 +114,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
         document.documentElement.setAttribute('data-theme', savedTheme);
         set({ theme: savedTheme });
       } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.setAttribute('data-theme', 'light');
       }
 
       // Restore other settings

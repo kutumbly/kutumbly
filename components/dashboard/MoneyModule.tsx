@@ -20,6 +20,7 @@ import React, { useMemo, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { useMoney } from '@/hooks/useMoney';
 import ModuleShell from './ModuleShell';
+import { useTranslation } from '@/lib/i18n';
 import MetricCard from '../ui/MetricCard';
 import DonutChart from '../ui/DonutChart';
 import { ShoppingCart, Home, Briefcase, Coffee, MoreHorizontal, ArrowDownLeft, ArrowUpRight, IndianRupee, Users, Book, ArrowLeft, Trash2, Shield, CalendarDays, Receipt } from 'lucide-react';
@@ -53,6 +54,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export default function MoneyModule() {
   const { lang } = useAppStore();
+  const t = useTranslation(lang);
   const { txns, summary, addTransaction, deleteTransaction } = useMoney();
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
   
@@ -97,7 +99,7 @@ export default function MoneyModule() {
   );
 
   const getBreadcrumbs = () => {
-    const b = [lang === 'en' ? "Money" : "Khata"];
+    const b = [t('MONEY')];
     if (view === 'category-ledger' || view === 'voucher-view') b.push(activeCategory || '');
     if (view === 'voucher-view') b.push("Voucher");
     return b;
@@ -111,13 +113,13 @@ export default function MoneyModule() {
   return (
     <ModuleShell 
       title={
-        view === 'overview' ? (lang === 'en' ? "Family Money" : "Parivar ki Unnati") :
-        view === 'category-ledger' ? `${activeCategory} Ledger` :
-        "Accounting Voucher"
+        view === 'overview' ? t('MONEY') :
+        view === 'category-ledger' ? `${t('MONEY')} - ${activeCategory}` :
+        t('MONEY')
       }
-      subtitle={view === 'overview' ? (lang === 'en' ? "Tracking every rupee for the future" : "Bachat hi asli kamayi hai") : undefined}
+      subtitle={view === 'overview' ? t('MONEY_SUBTITLE') : undefined}
       onAdd={showAddForm || view === 'voucher-view' ? undefined : () => setShowAddForm(true)}
-      addLabel={view === 'overview' ? (lang === 'en' ? "Add Entry" : "Khata Likho") : "Add Voucher"}
+      addLabel={view === 'overview' ? t('MONEY_INCOME') : undefined}
       breadcrumbs={view !== 'overview' && !showAddForm ? getBreadcrumbs() : undefined}
       onBack={showAddForm ? () => setShowAddForm(false) : (view !== 'overview' ? handleBack : undefined)}
     >
@@ -132,30 +134,30 @@ export default function MoneyModule() {
               <ArrowLeft size={20} />
             </button>
             <h2 className="text-xl font-black text-text-primary tracking-tight">
-              {lang === 'hi' ? 'Nayi Entry Karein' : 'New Entry'}
+              {t('MONEY_INCOME')}
             </h2>
           </div>
           
           <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 flex flex-col gap-6 shadow-xl shadow-black/[0.02]">
             <div className="flex bg-bg-tertiary p-1.5 rounded-2xl border border-border-light">
-              {(['expense', 'income'] as const).map(t => (
+              {(['expense', 'income'] as const).map(t_type => (
                 <button
-                  key={t}
-                  onClick={() => { setFType(t); setFCategory(t === 'income' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]); }}
-                  className={`flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${fType === t ? (t === 'income' ? 'bg-success text-white shadow-md' : 'bg-red-500 text-white shadow-md') : 'text-text-tertiary hover:text-text-primary'}`}
+                  key={t_type}
+                  onClick={() => { setFType(t_type); setFCategory(t_type === 'income' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]); }}
+                  className={`flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all ${fType === t_type ? (t_type === 'income' ? 'bg-success text-white shadow-md' : 'bg-red-500 text-white shadow-md') : 'text-text-tertiary hover:text-text-primary'}`}
                 >
-                  {t}
+                  {t_type === 'income' ? t('MONEY_INCOME') : t('MONEY_EXPENSE')}
                 </button>
               ))}
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{lang === 'hi' ? 'RAKAM' : 'AMOUNT (₹)'}</label>
+              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('AMOUNT_LABEL')}</label>
               <input type="number" value={fAmount} onChange={e => setFAmount(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-2xl font-black text-text-primary outline-none focus:border-gold transition-all" placeholder="₹0.00" />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{lang === 'hi' ? 'VARG' : 'CATEGORY'}</label>
+              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('CATEGORY_LABEL')}</label>
               <div className="flex flex-wrap gap-2">
                 {(fType === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map(c => (
                   <button key={c} onClick={() => setFCategory(c)} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${fCategory === c ? 'bg-gold-text text-white border-gold-text shadow-md' : 'bg-bg-primary text-text-tertiary border-border-light hover:border-gold/30'}`}>{c}</button>
@@ -164,13 +166,13 @@ export default function MoneyModule() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{lang === 'hi' ? 'VIVARAN' : 'DESCRIPTION'}</label>
-              <input type="text" value={fDesc} onChange={e => setFDesc(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-sm font-bold text-text-primary outline-none focus:border-gold transition-all" placeholder={lang === 'hi' ? 'Kahan kharch kiya...' : 'Where did it go?...'} />
+              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('DESC_LABEL')}</label>
+              <input type="text" value={fDesc} onChange={e => setFDesc(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-sm font-bold text-text-primary outline-none focus:border-gold transition-all" placeholder={t('DESC_PH')} />
             </div>
 
             <button onClick={handleSave} disabled={!fAmount || !fDesc || !fCategory} className="w-full mt-4 bg-gold-text hover:opacity-90 text-white font-black tracking-[0.2em] h-16 rounded-2xl shadow-xl transition-all disabled:opacity-50 uppercase flex items-center justify-center gap-3">
               <Shield size={20} />
-              {lang === 'hi' ? 'SURAKSHIT KAREN' : 'SAVE TO VAULT'}
+              {t('SAVE_TO_VAULT')}
             </button>
           </div>
         </motion.div>
@@ -187,15 +189,15 @@ export default function MoneyModule() {
         
         {/* Top Stats Dashboard */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-           <div className="lg:col-span-2 grid grid-cols-2 gap-4">
-              <MetricCard label={lang === 'hi' ? 'KUL JAMA' : 'Total Balance'} value={summary.balance} isCurrency status="default" trend={[15000, 20000, 18000, 25000, summary.balance]} />
-              <MetricCard label={lang === 'hi' ? 'AYE' : 'Income'} value={summary.income} isCurrency status="success" />
-              <MetricCard label={lang === 'hi' ? 'KHARCHA' : 'Expenses'} value={summary.expense} isCurrency status="danger" trend={[5000, 12000, 8000, 15000, summary.expense]} />
-              <MetricCard label="Efficiency" value={summary.income > 0 ? ((summary.balance / summary.income) * 100).toFixed(0) : 0} unit="%" status="info" />
-           </div>
+            <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+              <MetricCard label={t('MONEY_BALANCE')} value={summary.balance} isCurrency status="default" trend={[15000, 20000, 18000, 25000, summary.balance]} />
+              <MetricCard label={t('MONEY_INCOME')} value={summary.income} isCurrency status="success" />
+              <MetricCard label={t('MONEY_EXPENSE')} value={summary.expense} isCurrency status="danger" trend={[5000, 12000, 8000, 15000, summary.expense]} />
+              <MetricCard label={t('MONEY_EFFICIENCY')} value={summary.income > 0 ? ((summary.balance / summary.income) * 100).toFixed(0) : 0} unit="%" status="info" />
+            </div>
            
            <div className="bg-bg-primary rounded-[2.5rem] p-6 flex flex-col items-center justify-center border border-border-light shadow-xl shadow-black/[0.02]">
-              <div className="text-[10px] font-black uppercase tracking-[0.3em] mb-6 text-text-tertiary">Expense Profile</div>
+              <div className="text-[10px] font-black uppercase tracking-[0.3em] mb-6 text-text-tertiary">{t('EXPENSE_PROFILE')}</div>
               <DonutChart data={donutData.length > 0 ? donutData : [{ label: 'Empty', value: 1, color: 'var(--bg-tertiary)' }]} size={160} thickness={18} />
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                  {donutData.slice(0, 3).map((d, i) => (
@@ -224,7 +226,7 @@ export default function MoneyModule() {
                      </div>
                      <div>
                         <h4 className="text-sm font-black text-text-primary">{d.label}</h4>
-                        <p className="text-[10px] text-text-tertiary font-black uppercase tracking-widest mt-0.5">Expenses</p>
+                        <p className="text-[10px] text-text-tertiary font-black uppercase tracking-widest mt-0.5">{t('EXPENSES_LABEL')}</p>
                      </div>
                   </div>
                   <div className="text-right">
@@ -241,7 +243,7 @@ export default function MoneyModule() {
         <div className="space-y-6">
            <div className="flex items-center justify-between px-2">
               <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-                 Family Ledger
+                 {t('FAMILY_LEDGER')}
               </div>
               <div className="flex bg-bg-primary p-1 rounded-xl border border-border-light shadow-sm">
                  {(['all', 'income', 'expense'] as const).map(f => (
@@ -305,7 +307,7 @@ export default function MoneyModule() {
                    <div className="w-20 h-20 bg-bg-tertiary rounded-full flex items-center justify-center mb-6">
                       <IndianRupee size={32} className="text-text-tertiary" strokeWidth={1} />
                    </div>
-                   <p className="font-black uppercase tracking-[0.4em] text-[10px]">Vault Ledger Empty</p>
+                   <p className="font-black uppercase tracking-[0.4em] text-[10px]">{t('LEDGER_EMPTY')}</p>
                 </div>
               )}
            </div>
@@ -378,7 +380,7 @@ export default function MoneyModule() {
           
           <div className="p-10 space-y-8">
              <div>
-                <label className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em]">Particulars / Narration</label>
+                <label className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em]">{t('NARRATION_LABEL')}</label>
                 <div className="mt-2 text-base font-bold text-text-secondary p-4 bg-bg-tertiary rounded-2xl border border-border-light">
                    {activeVoucher.description}
                 </div>

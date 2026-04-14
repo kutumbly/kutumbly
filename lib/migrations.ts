@@ -31,7 +31,7 @@
  */
 
 /** Bump this whenever you add new tables or ALTER existing ones */
-export const CURRENT_SCHEMA_VERSION = 4;
+export const CURRENT_SCHEMA_VERSION = 6;
 
 /** What changed in each version — shown in the migration modal */
 export const MIGRATION_CHANGELOGS: Record<number, string[]> = {
@@ -49,9 +49,12 @@ export const MIGRATION_CHANGELOGS: Record<number, string[]> = {
     "Task manager category field support added.",
     "Investment transactions tracking added for robust ledger.",
   ],
-  4: [
-    "Advanced Diary features added: Title, Subtitle, Tags, Weather, Location.",
-    "Diary entry locking mechanism added for privacy.",
+  5: [
+    "Nevata Module schema hardening and repair.",
+    "Ensures all required tables for events, shagun, and family ledger are present.",
+  ],
+  6: [
+    "Event Operating System (EOS): Added Inventory Lifecycle, Vendor Management, and Activity Timeline logs.",
   ],
 };
 
@@ -193,7 +196,6 @@ const MIGRATIONS: Record<number, (db: any) => void> = {
     )`);
   },
 
-  // ── V4: Advanced Diary (Memoir) ──────────
   4: (db) => {
     // --- diary columns ---
     const addCol = (colDef: string) => {
@@ -209,6 +211,125 @@ const MIGRATIONS: Record<number, (db: any) => void> = {
     addCol('weather TEXT');
     addCol('location TEXT');
     addCol('is_locked INTEGER DEFAULT 0');
+  },
+
+  // ── V5: Nevata Module Schema Hardening ──────────
+  5: (db) => {
+    // Ensure all Nevata tables exist (idempotent repair)
+    db.run(`CREATE TABLE IF NOT EXISTS nevata_events (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      event_type TEXT NOT NULL,
+      direction TEXT NOT NULL,
+      family_name TEXT NOT NULL,
+      event_date TEXT NOT NULL,
+      location TEXT,
+      our_count INTEGER DEFAULT 1,
+      status TEXT DEFAULT 'upcoming',
+      notes TEXT,
+      created_at TEXT
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS nevata_shagun (
+      id TEXT PRIMARY KEY,
+      event_id TEXT NOT NULL,
+      direction TEXT NOT NULL,
+      amount REAL DEFAULT 0,
+      gift_desc TEXT,
+      given_by TEXT,
+      received_from TEXT,
+      is_confirmed INTEGER DEFAULT 0,
+      created_at TEXT,
+      FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS nevata_guest_list (
+      id TEXT PRIMARY KEY,
+      event_id TEXT NOT NULL,
+      guest_name TEXT NOT NULL,
+      family_tag TEXT,
+      guest_count INTEGER DEFAULT 1,
+      rsvp_status TEXT DEFAULT 'pending',
+      phone TEXT,
+      FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS nevata_gift_registry (
+      id TEXT PRIMARY KEY,
+      event_id TEXT NOT NULL,
+      item_name TEXT NOT NULL,
+      description TEXT,
+      estimated_price REAL,
+      status TEXT DEFAULT 'baaki',
+      source_url TEXT,
+      FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS nevata_family_ledger (
+      id TEXT PRIMARY KEY,
+      family_name TEXT NOT NULL,
+      event_id TEXT,
+      diya REAL DEFAULT 0,
+      mila REAL DEFAULT 0,
+      net REAL DEFAULT 0,
+      notes TEXT,
+      updated_at TEXT
+    )`);
+  },
+  6: (db: any) => {
+    // 1. Inventory Lifecycle Table
+    db.run(`CREATE TABLE IF NOT EXISTS nevata_inventory (
+      id TEXT PRIMARY KEY,
+      event_id TEXT NOT NULL,
+      item_name TEXT NOT NULL,
+      category TEXT NOT NULL,       -- 'Catering' | 'Decor' | 'Logistics' | 'Gift'
+      quantity_expected REAL DEFAULT 0,
+      quantity_received REAL DEFAULT 0,
+      quantity_used REAL DEFAULT 0,
+      unit TEXT DEFAULT 'pcs',      -- 'kg' | 'pcs' | 'sets'
+      status TEXT DEFAULT 'ORDERED', -- 'ORDERED' | 'DISPATCHED' | 'RECEIVED' | 'IN_USE' | 'RETURNED' | 'LOST'
+      vendor_id TEXT,
+      assigned_to_id TEXT,          -- linked to family_members.id or name
+      backup_person_id TEXT,
+      delivery_date_expected TEXT,
+      delivery_date_actual TEXT,
+      is_returnable INTEGER DEFAULT 0,
+      return_deadline TEXT,
+      cost_estimated REAL DEFAULT 0,
+      cost_actual REAL DEFAULT 0,
+      notes TEXT,
+      created_at TEXT,
+      FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+    )`);
+
+    // 2. Vendor Management Table
+    db.run(`CREATE TABLE IF NOT EXISTS nevata_vendors (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      service_type TEXT,            -- 'Catering' | 'Decor' | 'DJ' | 'Transport'
+      contact TEXT,
+      rating REAL DEFAULT 5,
+      reliability_score REAL DEFAULT 100,
+      advance_paid REAL DEFAULT 0,
+      total_amount REAL DEFAULT 0,
+      payment_status TEXT DEFAULT 'PENDING',
+      last_used_event TEXT,
+      notes TEXT
+    )`);
+
+    // 3. Activity Timeline Brain
+    db.run(`CREATE TABLE IF NOT EXISTS nevata_activity_log (
+      id TEXT PRIMARY KEY,
+      event_id TEXT NOT NULL,
+      type TEXT NOT NULL,           -- 'ITEM' | 'PAYMENT' | 'TASK' | 'ALERT'
+      action TEXT NOT NULL,         -- 'CREATED' | 'UPDATED' | 'RECEIVED' | 'PAID' | 'ASSIGNED'
+      item_id TEXT,                 -- optional link to inventory
+      vendor_id TEXT,               -- optional link to vendor
+      user_id TEXT,                 -- family member who did it
+      timestamp TEXT NOT NULL,
+      metadata TEXT,                -- JSON string for extra info
+      FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+    )`);
   },
 };
 

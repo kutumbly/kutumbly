@@ -24,12 +24,14 @@ import MetricCard from '../ui/MetricCard';
 import { Briefcase, UserCheck, CalendarDays, Wallet, UserMinus, UserPlus, Phone, History, MoreHorizontal, ArrowRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import RupeesDisplay from '../ui/RupeesDisplay';
+import { useTranslation, Language } from '@/lib/i18n';
 import { StaffMember, SalaryPayment, AttendanceRecord } from '@/types/db';
 
 type StaffView = 'overview' | 'staff-ledger';
 
 export default function HomeStaffModule() {
   const { lang } = useAppStore();
+  const t = useTranslation(lang as Language);
   const { staff, payments, attendance, addStaff, removeStaff, paySalary } = useStaff();
   
   const [showAddForm, setShowAddForm] = React.useState(false);
@@ -54,7 +56,7 @@ export default function HomeStaffModule() {
   const [activeStaff, setActiveStaff] = React.useState<StaffMember | null>(null);
 
   const getBreadcrumbs = () => {
-    const b = [lang === 'en' ? "Staff" : "Sahayak"];
+    const b = [t('SUPPORT_STAFF')];
     if (view === 'staff-ledger') b.push(activeStaff?.name || '');
     return b;
   };
@@ -66,12 +68,12 @@ export default function HomeStaffModule() {
   return (
     <ModuleShell 
       title={
-         view === 'overview' ? (lang === 'en' ? "HomeStaff Management" : "Ghar ka Staff") :
+         view === 'overview' ? t('SUPPORT_STAFF') :
          `${activeStaff?.name} Ledger`
       }
       subtitle={view === 'overview' ? (lang === 'en' ? "Managing household support and payroll" : "Ghar ke parivaar sam sahayakon ka hisab") : undefined}
       onAdd={showAddForm || view === 'staff-ledger' ? undefined : () => setShowAddForm(true)}
-      addLabel={view === 'overview' ? (lang === 'en' ? "Add Staff" : "Naya Staff") : undefined}
+      addLabel={view === 'overview' ? t('ONBOARD_STAFF') : undefined}
       breadcrumbs={view !== 'overview' && !showAddForm ? getBreadcrumbs() : undefined}
       onBack={showAddForm ? () => setShowAddForm(false) : (view !== 'overview' ? handleBack : undefined)}
     >
@@ -82,13 +84,13 @@ export default function HomeStaffModule() {
               <ArrowLeft className="w-5 h-5 text-text-tertiary" />
             </button>
             <h2 className="text-xl font-bold text-text-primary">
-              {lang === 'hi' ? 'Naya Member Jodein' : 'Register New Staff'}
+              {t('ONBOARD_STAFF')}
             </h2>
           </div>
 
           <div className="card p-6 flex flex-col gap-5">
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{lang === 'hi' ? 'Naam' : 'Full Name'}</label>
+              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{lang === 'bho' ? 'नाम' : 'Full Name'}</label>
               <input type="text" value={fName} onChange={e => setFName(e.target.value)} className="w-full bg-bg-secondary border border-border-light rounded-xl p-4 text-sm font-bold text-text-primary outline-none focus:border-gold" placeholder="e.g. Ramesh Kumar" />
             </div>
 
@@ -102,7 +104,7 @@ export default function HomeStaffModule() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{lang === 'hi' ? 'Mahine ki Tankha' : 'Monthly Salary (₹)'}</label>
+              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{lang === 'bho' ? 'महीना के तनख्वाह' : 'Monthly Salary (₹)'}</label>
               <input type="number" value={fSalary} onChange={e => setFSalary(e.target.value)} className="w-full bg-bg-secondary border border-border-light rounded-xl p-4 text-xl font-black text-text-primary outline-none focus:border-gold" placeholder="₹0.00" />
             </div>
 
@@ -112,7 +114,7 @@ export default function HomeStaffModule() {
             </div>
 
             <button onClick={handleAdd} disabled={!fName || !fSalary} className="w-full mt-4 bg-gold hover:opacity-90 text-white font-bold h-14 rounded-xl shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-              {lang === 'hi' ? 'Save Karein' : 'Onboard Staff'}
+              {t('SAVE_TO_VAULT')}
             </button>
           </div>
         </div>
@@ -129,16 +131,16 @@ export default function HomeStaffModule() {
         
         {/* Payroll & Attendance Dashboard */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-           <MetricCard label="Active Staff" value={staff.length} unit="Members" status="info" />
-           <MetricCard label="Present Today" value={`${presentToday}/${staff.length}`} status="success" />
-           <MetricCard label="Monthly Budget" value={totalMonthlyPayout} isCurrency status="default" />
+           <MetricCard label={t('SUPPORT_STAFF')} value={staff.length} unit="Members" status="info" />
+           <MetricCard label={t('PRESENT')} value={`${presentToday}/${staff.length}`} status="success" />
+           <MetricCard label={t('MONTHLY_PAYOUT')} value={totalMonthlyPayout} isCurrency status="default" />
            <MetricCard label="Avg Advance" value="2,400" isCurrency status="warning" />
         </div>
 
         {/* Staff Roster */}
         <section>
           <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4 px-1">
-             Support Team Roster
+             {t('STAFF_ROSTER')}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {staff.length > 0 ? staff.map((s: StaffMember, i: number) => {
@@ -175,13 +177,13 @@ export default function HomeStaffModule() {
 
                    <div className="grid grid-cols-2 gap-3 mb-6">
                       <div className="p-3 bg-bg-secondary rounded-xl border border-border-light/50">
-                         <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-1">Monthly Salary</div>
+                         <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-1">{t('MONTHLY_PAYOUT')}</div>
                          <div className="text-sm font-black text-text-primary tabular-nums">
                             <RupeesDisplay amount={s.salary} />
                          </div>
                       </div>
                       <div className="p-3 bg-bg-secondary rounded-xl border border-border-light/50">
-                         <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-1">Attendance</div>
+                         <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-1">{t('ATTENDANCE')}</div>
                          <div className="text-sm font-black text-text-success tabular-nums">{pPercentage.toFixed(0)}%</div>
                       </div>
                    </div>
@@ -209,10 +211,10 @@ export default function HomeStaffModule() {
         <section>
           <div className="flex items-center justify-between mb-4 px-1">
             <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em]">
-               Recent Payouts
+               {t('PAYMENT_HISTORY')}
             </div>
             <button className="text-[10px] font-bold text-gold uppercase tracking-widest flex items-center gap-1 hover:underline">
-               Full Ledger <ArrowRight size={12} />
+               {t('VIEW_HISTORY')} <ArrowRight size={12} />
             </button>
           </div>
           

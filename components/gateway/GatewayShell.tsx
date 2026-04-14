@@ -16,10 +16,11 @@
 
 "use client";
 
-import React from 'react';
-import { Globe, Lock, Cpu } from 'lucide-react';
+import React, { useState } from 'react';
+import { Globe, Lock } from 'lucide-react';
 import Image from 'next/image';
 import { useAppStore } from '@/lib/store';
+import LanguagePicker from '@/components/ui/LanguagePicker';
 
 interface GatewayShellProps {
   children: React.ReactNode;
@@ -27,7 +28,13 @@ interface GatewayShellProps {
 }
 
 export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
-  const { lang, setLang } = useAppStore();
+  const { lang } = useAppStore();
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+
+  const LANG_LABELS: Record<string, string> = {
+    en: 'EN', hi: 'हि', mr: 'मर', gu: 'ગુ', pa: 'ਪੰ',
+    ta: 'த', bho: 'भो', kn: 'ಕ', te: 'తె', ne: 'ने', bn: 'বা', mni: 'মৈ'
+  };
 
   return (
     <div className="flex flex-col min-h-[100dvh] bg-bg-tertiary relative overflow-hidden pt-safe">
@@ -38,7 +45,7 @@ export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
         <div className="h-16 md:h-14 border-b border-border-light bg-bg-primary flex items-center justify-between px-6 md:px-8 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 md:w-7 md:h-7 bg-bg-primary border border-border-light rounded-xl flex items-center justify-center p-1 shadow-sm">
-               <Image src="/favicon.svg" alt="Logo" width={20} height={20} className="brightness-110" />
+               <Image src="/favicon.svg" alt="Logo" width={20} height={20} className="brightness-110" style={{ height: 'auto' }} />
             </div>
             <div className="flex items-baseline gap-2">
                <span className="font-black text-text-primary tracking-tight text-base md:text-lg leading-none">Kutumbly</span>
@@ -48,10 +55,11 @@ export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
           
           <div className="flex items-center gap-6">
             <button 
-              onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
-              className="text-[10px] font-black tracking-[0.2em] uppercase text-text-tertiary hover:text-gold transition-colors"
+              onClick={() => setIsPickerOpen(true)}
+              className="flex items-center gap-2 text-[10px] font-black tracking-[0.2em] uppercase text-text-tertiary hover:text-gold transition-colors"
             >
-              {lang === 'en' ? 'हिन्दी' : 'English'}
+              <Globe size={13} className="opacity-60" />
+              {LANG_LABELS[lang] ?? lang.toUpperCase()}
             </button>
           </div>
         </div>
@@ -86,6 +94,11 @@ export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
           </div>
         </div>
       </div>
+
+      <LanguagePicker
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+      />
     </div>
   );
 }

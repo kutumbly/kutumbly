@@ -14,78 +14,227 @@
  * "Memory, Not Code."
  * ============================================================ */
 
-export type Language = 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho';
+export type Language = 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho' | 'kn' | 'te' | 'ne' | 'bn' | 'mni';
 
-export const UI_STRINGS: Record<string, Record<Language, string>> = {
-  // Navigation & General
-  'HOME': {
-    en: 'Home', hi: 'होम', mr: 'होम', gu: 'હોમ', pa: 'ਮੁੱਖ ਪੰਨਾ', ta: 'முகப்பு', bho: 'घर'
+export const UI_STRINGS: Record<string, Partial<Record<Language, string>>> = {
+  // Navigation & Branding
+  'NAV_HOME': { en: 'Home', hi: 'होम', mr: 'मुख्य', gu: 'હોમ', pa: 'ਹੋਮ', ta: 'முகப்பு', bho: 'घर', kn: 'ಮುಖಪುಟ', te: 'హోమ్', ne: 'गृह', bn: 'হোম', mni: 'য়ুম' },
+  'NAV_DIARY': { en: 'Diary', hi: 'डायरी', mr: 'दैनंदिनी', gu: 'ડાયરી', pa: 'ਡਾਇਰੀ', ta: 'டைரி', bho: 'डायरी', kn: 'ದಿನಚರಿ', te: 'డైరీ', ne: 'डायरी', bn: 'ডায়েরি', mni: 'ডায়েরি' },
+  'NAV_TASKS': { en: 'Tasks', hi: 'काम', mr: 'कामे', gu: 'કાર્યો', pa: 'ਕੰਮ', ta: 'பணிகள்', bho: 'काम', kn: 'ಕೆಲಸಗಳು', te: 'పనులు', ne: 'कामहरू', bn: 'কাজ', mni: 'থবকশিং' },
+  'NAV_MONEY': { en: 'Money', hi: 'पैसे', mr: 'पैसे', gu: 'પૈસા', pa: 'ਪੈਸે', ta: 'பணம்', bho: 'पइसा', kn: 'ಹಣ', te: 'డబ్బు', ne: 'पैसा', bn: 'টাকা', mni: 'শেল' },
+  'NAV_HEALTH': { en: 'Health', hi: 'स्वास्थ्य', mr: 'आरोग्य', gu: 'સ્વાસ્થ્ય', pa: 'ਸਿਹਤ', ta: 'சுகாதாரம்', bho: 'तबीयत', kn: 'ಆರೋಗ್ಯ', te: 'ఆరోగ్యం', ne: 'स्वास्थ्य', bn: 'স্বাস্থ্য', mni: 'হকশেল' },
+  'NAV_NEVATA': { en: 'Events', hi: 'नेवता', mr: 'कार्यक्रम', gu: 'કાર્યક્રમ', pa: 'ਸਮਾਗਮ', ta: 'நிகழ்வுகள்', bho: 'नेवता', kn: 'ಕಾರ್ಯಕ್ರಮಗಳು', te: 'కార్యక్రమాలు', ne: 'कार्यक्रम', bn: 'অনুষ্ঠান', mni: 'থাউরমশিং' },
+  'NAV_GROCERY': { en: 'Grocery', hi: 'राशन', mr: 'किराणा', gu: 'કરિયાણું', pa: 'ਰਾਸ਼ਨ', ta: 'மளிகை', bho: 'राशन', kn: 'ದಿನಸಿ', te: 'కిరాణా', ne: 'राशन', bn: 'মুদিখানা', mni: 'চাবাক থোতপা' },
+  'NAV_INVEST': { en: 'Invest', hi: 'निवेश', mr: 'गुंतवणूक', gu: 'રોકાण', pa: 'ਨਿਵੇਸ਼', ta: 'முதலீடு', bho: 'निवेश', kn: 'ಹೂಡಿಕೆ', te: 'పెట్టుబడి', ne: 'लगानी', bn: 'বিনিয়োগ', mni: 'ইনভেস্ট' },
+  'NAV_STAFF': { en: 'Staff', hi: 'स्टाफ', mr: 'कर्मचारी', gu: 'સ્ટાફ', pa: 'ਸਟਾਫ਼', ta: 'பணியாளர்கள்', bho: 'स्टाफ', kn: 'ಸಿಬ್ಬಂದಿ', te: 'సిబ్బంది', ne: 'स्टाफ', bn: 'স্টাফ', mni: 'থবক তৌবা' },
+  'NAV_SETUP': { en: 'Setup', hi: 'सेटिंग्स', mr: 'व्यवस्था', gu: 'સેટઅપ', pa: 'ਸੈਟਅਪ', ta: 'அமைப்பு', bho: 'व्यवस्था', kn: 'ಸಂರಚನೆ', te: 'సెటప్', ne: 'सेटअप', bn: 'সেটআপ', mni: 'সেতঅপ' },
+  'NAV_HOW_IT_WORKS': { en: 'How it works', hi: 'कैसे काम करता है', mr: 'हे कसे कार्य करते', gu: 'તે کیسے કામ કરે છે', pa: 'ਇਹ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ', ta: 'இது எப்படி வேலை செய்கிறது', bho: 'कइसे काम करेला', kn: 'ಇದು ಹೇಗೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ', te: 'ఇది ఎలా పనిచేస్తుంది', ne: 'यसले कसरी काम गर्छ', bn: 'এটি কিভাবে কাজ করে', mni: 'মসি করম্না থবক তৌবগে' },
+  'NAV_OPEN_APP': { en: 'Open App', hi: 'ऐप खोलें', mr: 'अ‍ॅप उघडा', gu: 'એપ ખોલો', pa: 'ਐਪ ਖੋਲ੍ਹੋ', ta: 'செயலியைத் திறக்கவும்', bho: 'ऐप खोलीं', kn: 'ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯಿರಿ', te: 'యాప్ తెరవండి', ne: 'एप खोल्नुहोस्', bn: 'অ্যাপ খুলুন', mni: 'অ্যাপ হাংদোকউ' },
+
+  // Landing Page
+  'HERO_TITLE_PART1': { en: 'Family OS', hi: 'परिवार का OS', mr: 'कुटुंबाचे OS', bho: 'परिवार के OS' },
+  'HERO_TITLE_GOLD': { en: 'Sovereign', hi: 'स्वतंत्र', mr: 'स्वतंत्र', bho: 'स्वतंत्र' },
+  'COMPLETELY_PRIVATE': { en: 'completely private', hi: 'पूरी तरह सुरक्षित', mr: 'पूर्णपणे खाजगी', bho: 'एकदम सुरक्षित' },
+  'HERO_DESC': { 
+    en: 'Organize your family memory, money, and events with 100% privacy. Zero cloud, absolute control.',
+    hi: 'अपने परिवार की यादें, पैसा और कार्यक्रम पूरी प्राइवेसी के साथ संभालें। ज़ीरो क्लाउड, पूरा कंट्रोल।',
+    mr: 'तुमच्या कुटुंबाच्या आठवणी, पैसा आणि कार्यक्रम १००% गोपनीयतेसह व्यवस्थापित करा. झीरो क्लाउड, पूर्ण नियंत्रण.',
+    bho: 'आपन परिवार के याद, पइसा अउर नेवता के १००% प्राइवेसी के साथ संभालें। जिरो क्लाउड, पूरा कंट्रोल।'
   },
-  'VYAVASTHA': {
-    en: 'Setup & Settings', hi: 'व्यवस्था', mr: 'सेटिंग्ज', gu: 'સેટિંગ્સ', pa: 'ਸੈਟਿੰਗਜ਼', ta: 'அமைப்புகள்', bho: 'व्यवस्था'
-  },
-  'SYSTEM_LANG': {
-    en: 'System Language', hi: 'सिस्टम की भाषा', mr: 'सिस्टमची भाषा', gu: 'સિસ્ટમની ભાષા', pa: 'ਸਿਸਟਮ ਦੀ ਭਾષા', ta: 'கணினி மொழி', bho: 'सिस्टम क भाषा'
-  },
-  'VAULT_SECURITY': {
-    en: 'Vault Security', hi: 'वॉल्ट सुरक्षा', mr: 'वॉल्ट सुरक्षा', gu: 'વોલ્ટ સુરક્ષા', pa: 'ਵਾਲਟ ਸੁਰੱਖਿਆ', ta: 'பெட்டக பாதுகாப்பு', bho: 'वॉल्ट सुरक्षा'
-  },
-  'CHOOSE_LANG': {
-    en: 'Choose Language', hi: 'भाषा चुनें', mr: 'भाषा निवडा', gu: 'ભાષા પસંદ કરો', pa: 'ਭਾષા ਚੁਣੋ', ta: 'மொழியைத் தேர்ந்தெடுக்கவும்', bho: 'भाषा चुनीं'
-  },
+  'FEAT_UP_IN_30': { en: 'Up in 30 seconds', hi: '30 सेकंड में शुरू', bho: '30 सेकंड में शुरू' },
+  'FEAT_STEP1_TITLE': { en: 'No Sign-up', hi: 'कोई साइन-अप नहीं', bho: 'कवनो साइन-अप नाहीं' },
+  'FEAT_STEP1_DESC': { en: 'No phone number, no email, no OTP. Just open and use.', hi: 'कोई फोन नंबर नहीं, कोई ईमेल नहीं, कोई ओटीपी नहीं। बस खोलें और इस्तेमाल करें।', bho: 'कवनो फोन नंबर नाहीं, कवनो ईमेल नाहीं, कवनो ओटीपी नाहीं। बस खोलीं अउर इस्तेमाल करीं।' },
+
+  // Gateway / Vault Panels
+  'VAULT_SECURITY': { en: 'Vault Security', hi: 'वॉल्ट सुरक्षा', bho: 'कोठरी के सुरक्षा' },
+  'CREATE_VAULT': { en: 'Create Vault', hi: 'वॉल्ट बनाएं', bho: 'कोठरी बनाईं' },
+  'IMPORT_VAULT': { en: 'Import Vault', hi: 'वॉल्ट इम्पोर्ट करें', bho: 'कोठरी ले आईं' },
+  'FIND_VAULT_TITLE': { en: 'Find Your Vault', hi: 'अपना वॉल्ट खोजें', bho: 'आपन कोठरी ढूँढीं' },
+  'EMAIL_DISCOVERY_SUB': { en: 'Authorized email to scan sources', hi: 'खोजने के लिए ईमेल डालें', bho: 'ई-मेल डालीं' },
+  'OR_SKIP': { en: 'Or Skip', hi: 'या छोड़ें', bho: 'या छोड़ दईं' },
+  'LOCAL': { en: 'Local', hi: 'लोकल', bho: 'फ़ोन से' },
+  'SCANNING_SOURCES': { en: 'Scanning 3 Sources...', hi: 'खोज जारी है...', bho: 'कोठरी खोजात बा...' },
+  'CHANGE_EMAIL': { en: 'Change', hi: 'बदलें', bho: 'बदलीं' },
+  'ENTER_PIN': { en: 'Enter PIN', hi: 'पिन डालें', bho: 'पिन डालीं' },
+  'WRONG_PIN_ERROR': { en: 'Wrong PIN — please try again', hi: 'गलत पिन — दोबारा कोशिश करें', bho: 'गलत पिन — दोबारा ट्राई करीं' },
+  'PERMISSION_DENIED_ERROR': { en: 'Permission Required — Please select Allow', hi: 'इजाजत जरूरी है — ब्राउज़र में Allow करें', bho: 'इजाजत चाही — Allow करीं' },
+  'INVALID_FILE_ERROR': { en: 'File error. Please remove and re-import', hi: 'फाइल गलत है। दोबारा इम्पोर्ट करें', bho: 'फाइल ना मिलल। दोबारा लाईं' },
+  'GENERIC_ERROR': { en: 'An error occurred', hi: 'एक गलती हुई', bho: 'एक गलती हो गइल' },
+  'TOO_MANY_ATTEMPTS': { en: 'Too many attempts. Wait 30s', hi: 'बहुत ज्यादा कोशिश। 30s वेट करें', bho: 'बहुत बार ट्राई हो गइल। 30s रुकीं' },
+
+  // Create Vault Panel
+  'CREATE_VAULT_TITLE': { en: 'Create Your New Vault', hi: 'अपना नया वॉल्ट बनाएं', bho: 'आपन नया कोठरी बनाईं' },
+  'CREATE_VAULT_SUB': { en: 'This will be your family\'s private digital safe.', hi: 'ये आपके परिवार का प्राइवेट डिजिटल घर होगा।', bho: 'ई राउर परिवार के प्राइवेट डिजिटल घर होई।' },
+  'VAULT_NAME_LABEL': { en: 'Vault Name', hi: 'वॉल्ट का नाम', bho: 'कोठरी के नाम' },
+  'VAULT_NAME_PH': { en: 'e.g. Mallah Family', hi: 'जैसे: मल्लाह परिवार', bho: 'जैसे: मल्लाह परिवार' },
+  'ERROR_ENTER_NAME': { en: 'Please enter a vault name', hi: 'कृपया नाम लिखें', bho: 'नाम लिखीं' },
+  'ERROR_PIN_REQ': { en: '4-digit PIN is required', hi: '4-अंक का पिन जरूरी है', bho: '4-अंक के पिन चाही' },
+  'ERROR_PIN_MATCH': { en: 'PINs do not match', hi: 'पिन मैच नहीं हुआ', bho: 'पिन ना मिलल' },
+  'BACKUP_EMAIL_LABEL': { en: 'Authorized Backup Email (G-Drive)', hi: 'बैकअप के लिए ईमेल', bho: 'बैकअप खातिर ई-मेल' },
+  'ICON_LABEL': { en: 'Identify with Icon', hi: 'आइकन चुनें', bho: 'आइकन चुनीं' },
+  'NEXT_STEP_BTN': { en: 'One More Step', hi: 'बस एक और स्टेप', bho: 'बस एक और स्टेप' },
+  'SET_PIN_TITLE': { en: 'Set Master PIN', hi: 'मास्टर पिन सेट करें', bho: 'मास्टर पिन सेट करीं' },
+  'SET_PIN_SUB': { en: 'Remember this well. It is the only key.', hi: 'इसे हमेशा याद रखें, ये वॉल्ट की चाबी है।', bho: 'ई कोठरी के चाबी ह, कबो ना भूलब।' },
+  'CHOOSE_PIN_LABEL': { en: 'Choose 4-Digit PIN', hi: '4-डिजिट पिन चुनें', bho: '4-अंक के पिन चुनीं' },
+  'CONFIRM_PIN_LABEL': { en: 'Confirm PIN', hi: 'पिन कन्फर्म करें', bho: 'पिन पक्की करीं' },
+  'FINALIZE_VAULT_BTN': { en: 'Finalize Vault', hi: 'वॉल्ट तैयार करें', bho: 'कोठरी तैयार करीं' },
+  'PREV_STEP_BTN': { en: 'Previous Step', hi: 'पिछला स्टेप', bho: 'पिछला पेज' },
+
+  // Dashboard / Vidya Module (Restored)
+  'STUDY_BUDDY': { en: 'Study Buddy', hi: 'पढ़ाई का साथी', mr: 'अभ्यास मित्र', bho: 'पढ़ाई के साथी' },
+  'SMART_LEARNING': { en: 'Smart Learning', hi: 'स्मार्ट पढ़ाई', mr: 'स्मार्ट अभ्यास', bho: 'आपन पढ़ाई' },
+  'NEW_LEARNER': { en: 'New Learner', hi: 'नया विद्यार्थी', bho: 'नया पढ़निहार' },
+  'LEARNERS': { en: 'Learners', hi: 'विद्यार्थी', bho: 'पढ़निहार लोग' },
+  'ATTENDANCE': { en: 'Log Session', hi: 'सत्र दर्ज करें', bho: 'सत्र दर्ज करीं' },
+
+  // Setup / Vyavastha
+  'VYAVASTHA': { en: 'Settings', hi: 'व्यवस्था', mr: 'व्यवस्था', bho: 'व्यवस्था' },
+  'CHOOSE_LANG': { en: 'App Language', hi: 'ऐप की भाषा', bho: 'ऐप के भाषा' },
+  'SYSTEM_LANG': { en: 'System Language', hi: 'सिस्टम की भाषा', bho: 'सिस्टम के भाषा' },
+  'APPEARANCE': { en: 'Appearance', hi: 'सजावट', bho: 'सजावट' },
+  'DARK_MODE': { en: 'Dark Mode', hi: 'डार्क मोड', bho: 'अन्हरिया मोड' },
+  'LIGHT_MODE': { en: 'Light Mode', hi: 'लाइट मोड', bho: 'इजोरिया मोड' },
+  'DARK_MODE_SHORT': { en: 'Dark', hi: 'अन्हरिया', bho: 'अन्हरिया' },
+  'LIGHT_MODE_SHORT': { en: 'Light', hi: 'इजोरिया', bho: 'इजोरिया' },
+  'SETUP_MODULES': { en: 'Modules Visibility', hi: 'मॉड्यूल की सेटिंग्स', bho: 'मॉड्यूल देखल' },
+  'SETUP_PREFERENCES': { en: 'Preferences', hi: 'पसंद', bho: 'पसंद' },
+  'CHANGE_PIN': { en: 'Change PIN', hi: 'पिन बदलें', bho: 'पिन बदलीं' },
+  'BIOMETRIC_ACTIVE': { en: 'Biometric Active', hi: 'बायोमेट्रिक चालू', bho: 'पहचान जुड़ल बा' },
+  'SCANNING': { en: 'Scanning...', hi: 'जांच जारी है...', bho: 'जांचत बा...' },
+  'NOT_SUPPORTED': { en: 'Not Supported', hi: 'सपोर्ट नहीं है', bho: 'ना चलल' },
+  'LINKED': { en: 'Linked!', hi: 'जुड़ गया!', bho: 'जुड़ गइल!' },
+  'LINK_DEVICE': { en: 'Link Device', hi: 'डिवाइस जोड़ें', bho: 'पहचान जोड़ीं' },
+  'DOWNLOAD': { en: 'Download', hi: 'डाउनलोड', bho: 'कोठरी के बैकअप' },
+  'LOGOUT_CLOUD': { en: 'Logout Cloud', hi: 'क्लाउड बंद करें', bho: 'क्लाउड बंद करीं' },
+  'DANGER_ZONE': { en: 'Danger Zone', hi: 'खतरा वाला काम', bho: 'खतरा वाला काम' },
+  'FACTORY_RESET': { en: 'System Burn', hi: 'सब साफ करें', bho: 'सब साफ करीं' },
+
+  // General
+  'CANCEL': { en: 'Cancel', hi: 'रद्द करें', bho: 'रद्द करीं' },
+  'SAVED': { en: 'Saved', hi: 'सुरक्षित', bho: 'बच गइल' },
+  'ERROR': { en: 'Error', hi: 'गलती', bho: 'गलती' },
+  'MORE': { en: 'More', hi: 'और', mr: 'अधिक', bho: 'अउर' },
+  'HOME_STAFF': { en: 'Home Staff', hi: 'स्टाफ', bho: 'स्टाफ' },
+  'GREETING': { en: 'Namaste,', hi: 'नमस्ते,', mr: 'नमस्कार,', gu: 'નમસ્તે,', pa: 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,', ta: 'வணக்கம்,', bho: 'प्रणाम,', kn: 'ನಮಸ್ಕಾರ,', te: 'నమస్కారం,', ne: 'नमस्ते,', bn: 'নমস্কার,', mni: 'ময়াম,' },
+  'STEP_INDICATOR': { en: 'Step {n} of 2', hi: 'चरण {n} / 2', bho: 'चरण {n} / 2' },
+  'BACKUP_EMAIL_HINT': { en: 'Comma separated Gmail IDs allowed to sync.', hi: 'कॉमा से अलग Gmail IDs जो Sync कर सकती हैं।', bho: 'Gmail ID डालीं जे vault sync करी।' },
   
-  // Dashboard Modules
-  'DIARY': {
-    en: 'Diary', hi: 'डायरी', mr: 'डायरी', gu: 'ડાયરી', pa: 'ਡਾਇਰੀ', ta: 'நாள்குறிப்பு', bho: 'डायरी'
-  },
-  'TASKS': {
-    en: 'Tasks', hi: 'कार्य', mr: 'कामे', gu: 'કાર્યો', pa: 'ਕੰਮ', ta: 'பணிகள்', bho: 'काम'
-  },
-  'MONEY': {
-    en: 'Money', hi: 'पैसा', mr: 'पैसे', gu: 'પૈસા', pa: 'ਪੈਸੇ', ta: 'பணம்', bho: 'पइसा'
-  },
-  'NEVATA': {
-    en: 'Nevata', hi: 'नेवता', mr: 'निमंत्रण', gu: 'આમંત્રણ', pa: 'ਸੱਦਾ', ta: 'அழைப்பு', bho: 'नेवता'
-  },
-  'HEALTH': {
-    en: 'Health', hi: 'स्वास्थ्य', mr: 'आरोग्य', gu: 'આરોગ્ય', pa: 'ਸਿਹਤ', ta: 'சுகாதாரம்', bho: 'तबीयत'
-  },
-  'INVEST': {
-    en: 'Invest', hi: 'निवेश', mr: 'गुंतवणूक', gu: 'રોકાણ', pa: 'ਨਿਵੇਸ਼', ta: 'முதலீடு', bho: 'निवेश'
-  },
-  'GROCERY': {
-    en: 'Grocery', hi: 'किराना', mr: 'किराणा', gu: 'કરિયાણું', pa: 'ਕਰਿਆਨਾ', ta: 'மளிகை', bho: 'किराना'
-  },
-  'HOME_STAFF': {
-    en: 'HomeStaff', hi: 'कर्मचारी', mr: 'कर्मचारी', gu: 'કર્મચારી', pa: 'ਕਰਮਚਾਰੀ', ta: 'பணியாளர்', bho: 'मजदूर/नौकर'
-  },
-  'NETWORK': {
-    en: 'Network', hi: 'नेटवर्क', mr: 'नेटवर्क', gu: 'નેટવર્ક', pa: 'ਨੈੱਟਵਰਕ', ta: 'நெட்வொர்க்', bho: 'नेटवर्क'
-  },
-  
-  // Vault & Gateway Info
-  'CREATE_VAULT': {
-    en: 'Create Vault', hi: 'नया वॉल्ट बनाएं', mr: 'नवीन वॉल्ट तयार करा', gu: 'નવું વોલ્ટ બનાવો', pa: 'ਨਵਾਂ ਵਾਲਟ ਬਣਾਓ', ta: 'புதிய பெட்டகத்தை உருவாக்கு', bho: 'नया वॉल्ट बनाईं'
-  },
-  'ENTER_PIN': {
-    en: 'Enter PIN', hi: 'पिन दर्ज करें', mr: 'पिन प्रविष्ट करा', gu: 'પિન દાખલ કરો', pa: 'ਪਿੰਨ ਦਰਜ ਕਰੋ', ta: 'பின்னை உள்ளிடவும்', bho: 'पिन डालीं'
-  },
-  'UNLOCK': {
-    en: 'Unlock', hi: 'खोलें', mr: 'उघडा', gu: 'ખોલો', pa: 'ਖੋਲ੍ਹੋ', ta: 'திற', bho: 'खोलीं'
-  },
+  // Dashboard Home Keys
+  'MONTHLY_BALANCE': { en: 'Monthly Balance', hi: 'मासिक बैलेंस', bho: 'महिना के कमाई' },
+  'TASKS_DUE': { en: 'Tasks Due', hi: 'बकाया काम', bho: 'बाकी काम' },
+  'LATEST_BP': { en: 'Latest BP', hi: 'ब्लड प्रेशर', bho: 'ब्लड प्रेशर' },
+  'EXPENSES': { en: 'Expenses', hi: 'खर्चे', bho: 'खर्चा' },
+  'SOVEREIGN_ACTIVITY': { en: 'Sovereign Activity', hi: 'हालिया हलचल', bho: 'हालिया हलचल' },
+  'VIEW_HISTORY': { en: 'View History', hi: 'इतिहास देखें', bho: 'इतिहास देखीं' },
+  'HEALTH_PULSE': { en: 'Health Pulse', hi: 'सेहत की जांच', bho: 'सेहत के जांच' },
+  'WELLNESS_PULSE': { en: 'Wellness Pulse', hi: 'वेलनेस पल्स', bho: 'वेलनेस पल्स' },
+  'AVG_WEIGHT': { en: 'Average Weight', hi: 'औसत वजन', bho: 'औसत वजन' },
+  'LATEST_SUGAR': { en: 'Latest Sugar', hi: 'शुगर लेवल', bho: 'शुगर लेवल' },
+  'FULL_VITALS_DATA': { en: 'Full Vitals Data', hi: 'पूरी रिपोर्ट', bho: 'पूरी रिपोर्ट' },
+  'SYNC_NOW': { en: 'Sync Now', hi: 'अभी सिंक करें', bho: 'अभी सिंक करीं' },
+  'OS_LOCKDOWN': { en: 'AES-256 Lockdown', hi: 'AES-256 सुरक्षा', bho: 'AES-256 सुरक्षा' },
+  'HARDWARE_ACTIVE': { en: 'Hardware Active', hi: 'हार्डवेयर चालू', bho: 'पहचान जुड़ल बा' },
+  'PIN_REQUIRED': { en: 'PIN Required', hi: 'पिन जरूरी', bho: 'पिन चाही' },
+  'LOCAL_DISCOVERY': { en: 'Local P2P Discovery', hi: 'लोकल P2P खोज', bho: 'लोकल P2P खोज' },
+  'NO_ACTIVITY': { en: 'Zero activity detected', hi: 'अभी कुछ नहीं', bho: 'अभी कुछ नाहीं' },
+  'ACTIVITY_EMPTY_SUB': { en: 'Your sovereign legacy starts here', hi: 'आपका सुरक्षित सफर यहाँ से शुरू होता है', bho: 'राउर सुरक्षित सफर इहवा से शुरू होला' },
+  'MONEY_SUBTITLE': { en: 'Tracking every rupee for the future', hi: 'भविष्य के लिए हर पैसे का हिसाब', bho: 'अगला कल खातिर हर पइसा के हिसाब' },
+  'AMOUNT_LABEL': { en: 'Amount (₹)', hi: 'रकम (₹)', bho: 'रकम (₹)' },
+  'CATEGORY_LABEL': { en: 'Category', hi: 'वर्ग', bho: 'वर्ग' },
+  'DESC_LABEL': { en: 'Description', hi: 'विवरण', bho: 'विवरण' },
+  'DESC_PH': { en: 'Where did it go?...', hi: 'कहाँ खर्चा हुआ?...', bho: 'कहाँ खर्चा भइल...' },
+  'EXPENSE_PROFILE': { en: 'Expense Profile', hi: 'खर्चों का ब्यौरा', bho: 'खर्चा के ब्यौरा' },
+  'FAMILY_LEDGER': { en: 'Family Ledger', hi: 'परिवार का बहीखाता', bho: 'परिवार के बहीखाता' },
+  'LEDGER_EMPTY': { en: 'Vault Ledger Empty', hi: 'बहीखाता खाली है', bho: 'बहीखाता खाली बा' },
+  'DELETE_VOUCHER': { en: 'Delete Voucher', hi: 'वाउचर हटाएं', bho: 'वाउचर हटा दईं' },
+  'EDIT_VOUCHER': { en: 'Edit Voucher', hi: 'बदलें', bho: 'बदलीं' },
+  'MONEY_EFFICIENCY': { en: 'Efficiency', hi: 'बचत दर', bho: 'बचत दर' },
+  'EXPENSES_LABEL': { en: 'Expenses', hi: 'खर्चे', bho: 'खर्च' },
+  'NARRATION_LABEL': { en: 'Particulars / Narration', hi: 'विवरण / नैरेशन', bho: 'विवरण / नैरेशन' },
+  'ALL': { en: 'All', hi: 'सभी', bho: 'सभ' },
+  'OPTIONAL': { en: 'optional', hi: 'वैकल्पिक', bho: 'वैकल्पिक' },
+  'LEARNER_NAME': { en: 'Learner Name', hi: 'विद्यार्थी का नाम', bho: 'विद्यार्थी के नाम' },
+  'LEARNER_NAME_PH': { en: 'e.g. Pushpa D', hi: 'जैसे: पुष्पा डी', bho: 'जैसे: पुष्पा डी' },
+  'SCHOOL_COLL': { en: 'School / College', hi: 'स्कूल / कॉलेज', bho: 'स्कूल / कॉलेज' },
+  'INSTITUTION_PH': { en: 'Institution name', hi: 'संस्था का नाम', bho: 'संस्था के नाम' },
+  'CLASS_STD': { en: 'Class / Standard', hi: 'कक्षा / क्लास', bho: 'कक्षा / क्लास' },
+  'CLASS_PH': { en: 'e.g. 10th / MCA', hi: 'जैसे: 10वीं / ग्रेजुएशन', bho: 'जैसे: 10वीं / ग्रेजुएशन' },
+  'BOARD_TYPE': { en: 'Board / University', hi: 'बोर्ड / यूनिवर्सिटी', bho: 'बोर्ड / यूनिवर्सिटी' },
+  'BOARD_PH': { en: 'e.g. CBSE / ICSE', hi: 'जैसे: CBSE / ICSE', bho: 'जैसे: CBSE / ICSE' },
+  'LEARNING_GOALS': { en: 'Learning Goals', hi: 'पढ़ाई का लक्ष्य', bho: 'पढ़ाई के लक्ष्य' },
+  'GOAL_PH': { en: 'What are you studying for?', hi: 'आप किस लिए पढ़ रहे हैं?', bho: 'काहे खातिर पढ़त बानी?' },
+  'GOAL_DEADLINE': { en: 'Goal Deadline', hi: 'लक्ष्य की तारीख', bho: 'लक्ष्य के तारीख' },
+  'NO_LEARNERS': { en: 'No learners found', hi: 'कोई विद्यार्थी नहीं मिला', bho: 'कवनो पढ़निहार ना मिलल' },
+  'LEARNER_EMPTY_SUB': { en: 'Add a student to start tracking progress', hi: 'प्रगति देखने के लिए विद्यार्थी जोड़ें', bho: 'प्रगति देखे खातिर पढ़निहार जोड़ीं' },
+  'LOG_SESSION': { en: 'Log Study Session', hi: 'पढ़ाई का सत्र दर्ज करें', bho: 'पढ़ाई के सत्र दर्ज करीं' },
+  'DURATION_MINS': { en: 'Duration (mins)', hi: 'समय (मिनट)', bho: 'समय (मिनट)' },
+  'MOOD': { en: 'Mood', hi: 'मूड', bho: 'मूड' },
+  'MOOD_FOCUSED': { en: 'Focused', hi: 'एकाग्र', bho: 'मन लगा के' },
+  'MOOD_NEUTRAL': { en: 'Neutral', hi: 'सामान्य', bho: 'ठीक ठाक' },
+  'MOOD_TIRED': { en: 'Tired', hi: 'थका हुआ', bho: 'थकल' },
+  'MOOD_DISTRACTED': { en: 'Distracted', hi: 'ध्यान भटकना', bho: 'मन नाहीं लागल' },
+  'NO_SUBJECTS': { en: 'No subjects added yet', hi: 'कोई विषय नहीं है', bho: 'कवनो विषय ना मिलल' },
+  'ADD_SUBJECT': { en: 'Add Subject', hi: 'विषय जोड़ें', bho: 'विषय जोड़ीं' },
+  'SUBJECT_NAME_PH': { en: 'e.g. Mathematics', hi: 'जैसे: गणित', bho: 'जैसे: गणित' },
+  'SUBJECT_CAT_PH': { en: 'e.g. Science / Arts', hi: 'जैसे: विज्ञान / कला', bho: 'जैसे: विज्ञान / कला' },
+  'RESOURCES': { en: 'Resources', hi: 'संसाधन', bho: 'साधन' },
+  'ADD_RESOURCE': { en: 'Add Resource', hi: 'साधन जोड़ें', bho: 'साधन जोड़ीं' },
+  'NO_RESOURCES': { en: 'No resources found', hi: 'कोई साधन नहीं मिला', bho: 'कवनो साधन ना मिलल' },
+  'RESOURCE_TYPE': { en: 'Resource Type', hi: 'साधन का प्रकार', bho: 'साधन के प्रकार' },
+  'DIFFICULTY': { en: 'Difficulty', hi: 'कठिनाई', bho: 'कठिन' },
+  'EASY': { en: 'Easy', hi: 'आसान', bho: 'आसान' },
+  'MEDIUM': { en: 'Medium', hi: 'मध्यम', bho: 'ठीक-ठाक' },
+  'HARD': { en: 'Hard', hi: 'कठिन', bho: 'कठिन' },
+  'DURATION_PH': { en: 'mins', hi: 'मिनट', bho: 'मिनट' },
+  'MARK_DONE': { en: 'Mark as Done', hi: 'पूरा हुआ', bho: 'पूरा भइल' },
+  'DONE': { en: 'Done', hi: 'हो गया', bho: 'हो गइल' },
+  'RESOURCE_LABELS_YT': { en: 'YouTube Video', hi: 'यूट्यूब वीडियो', bho: 'यूट्यूब वीडियो' },
+  'RESOURCE_LABELS_PDF': { en: 'PDF Document', hi: 'PDF डॉक्यूमेंट', bho: 'PDF डॉक्यूमेंट' },
+  'RESOURCE_LABELS_ARTICLE': { en: 'Article', hi: 'लेख', bho: 'लेख' },
+  'RESOURCE_LABELS_BOOK': { en: 'Book', hi: 'किताब', bho: 'किताब' },
+  'RESOURCE_LABELS_WEBSITE': { en: 'Website', hi: 'वेबसाइट', bho: 'वेबसाइट' },
+  'OFFLINE': { en: 'offline', hi: 'ऑफलाइन', bho: 'ऑफलाइन' },
+  'AES_256': { en: 'AES-256', hi: 'AES-256', bho: 'AES-256' },
+  'LOADING': { en: 'Loading...', hi: 'लोड हो रहा है...', bho: 'लोड हो रहल बा...' },
+  'COMING_SOON': { en: 'Feature coming in the next update', hi: 'अगले अपडेट में आ रहा है', bho: 'अगला अपडेट में आई' },
+  'DIARY_SUBTITLE': { en: 'Chronicles & personal reflections', hi: 'हर दिन की यादें, हमेशा के लिए', bho: 'हर दिन के याद, हमेशा खातिर' },
+  'NEW_ENTRY': { en: 'New Entry', hi: 'नयी डायरी', bho: 'नयी याद' },
+  'COMPOSE_MEMOIR': { en: 'Compose Memoir', hi: 'डायरी लिखें', bho: 'डायरी लिखीं' },
+  'DIARY_TITLE_PH': { en: 'Title of your entry...', hi: 'शिरोलेख...', bho: 'शुरुआत कइसे भइल...' },
+  'DIARY_CONTENT_PH': { en: 'Dear diary, today...', hi: 'आज क्या हुआ? अपने दिल की बात लिखें...', bho: 'आज का भइल? अपने मन के बात लिखीं...' },
+  'MOOD_LABEL': { en: 'Mood', hi: 'मूड', bho: 'मूड' },
+  'TAGS_LABEL': { en: 'Tags', hi: 'टैग', bho: 'जोड़ल शब्द' },
+  'LOCATION_LABEL': { en: 'Location', hi: 'जगह', bho: 'जगह' },
+  'WEATHER_LABEL': { en: 'Weather', hi: 'मौसम', bho: 'मौसम' },
+  'WEATHER_NONE': { en: 'None', hi: 'कोई नहीं', bho: 'कवनो नाहीं' },
+  'MARK_PRIVATE': { en: 'Mark as Private', hi: 'प्राइवेट रखें', bho: 'प्राइवेट राखीं' },
+  'PRIVATE_SUB': { en: 'Require Vault PIN to read', hi: 'पढ़ने के लिए पिन लगेगा', bho: 'पढ़े खातिर पिन चाही' },
+  'SEARCH_DIARY_PH': { en: 'Search tags, titles or contents...', hi: 'कुछ पुराना ढूँढें...', bho: 'कवनो पुरानी याद ढूँढीं...' },
+  'WEATHER_SUNNY': { en: 'Sunny', hi: 'धूप', bho: 'घाम' },
+  'WEATHER_CLOUDY': { en: 'Cloudy', hi: 'बादल', bho: 'बादल' },
+  'WEATHER_RAINY': { en: 'Rainy', hi: 'बारिश', bho: 'बरखा' },
+  'WEATHER_STORMY': { en: 'Stormy', hi: 'तूफान', bho: 'आँधी' },
+  'WEATHER_SNOWY': { en: 'Snowy', hi: 'बर्फ', bho: 'बर्फ' },
+  'TASKS_SUBTITLE': { en: 'Staying organized together', hi: 'मिल कर काम पूरे करें', bho: 'मिल कर काम पूरा करीं' },
+  'NEW_TASK': { en: 'New Task', hi: 'नया काम', bho: 'नया काम' },
+  'TASK_TITLE_LABEL': { en: 'Task Title', hi: 'काम का नाम', bho: 'काम के नाम' },
+  'TASK_DESC_LABEL': { en: 'Description', hi: 'विवरण', bho: 'विवरण' },
+  'PRIORITY_LABEL': { en: 'Priority', hi: 'जरूरी है?', bho: 'जरूरी बा?' },
+  'PRIORITY_LOW': { en: 'Routine / Low', hi: 'सामान्य', bho: 'ठीक ठाक' },
+  'PRIORITY_MEDIUM': { en: 'Planned / Medium', hi: 'जरूरी', bho: 'जरूरी बा' },
+  'PRIORITY_HIGH': { en: 'Urgent / High', hi: 'अत्यंत जरूरी', bho: 'बहुत जरूरी' },
+  'EVERYONE': { en: 'Everyone', hi: 'सब लोग', bho: 'सभ लोग' },
+  'NO_DUE_DATE': { en: 'No Due Date', hi: 'तारीख नहीं', bho: 'तारीख नाहीं' },
+  'ALL_CAUGHT_UP': { en: 'All caught up', hi: 'सब काम हो गया', bho: 'सभ काम पूरा भइल' },
+  'TASKS_EMPTY': { en: 'Task list is empty.', hi: 'कर्तव्य सूची खाली है।', bho: 'कर्तव्य सूची खाली बा।' },
+  'P2P_BEAM_GRID': { en: 'P2P Beam Grid', hi: 'P2P बीम ग्रिड', bho: 'P2P बीम ग्रिड' }
 };
 
-/**
- * Hook to use translations inside components
- * By default falls back to english if string is missing
- */
-export function getTranslation(key: string, lang: Language): string {
-  if (!UI_STRINGS[key]) return key;
-  return UI_STRINGS[key][lang] || UI_STRINGS[key]['en'];
-}
-
 export function useTranslation(lang: Language) {
-  return function t(key: string): string {
-    return getTranslation(key, lang);
+  return (key: string): string => {
+    const entry = UI_STRINGS[key];
+    if (!entry) return key;
+    // Try requested lang, fall back to English, then return key
+    return entry[lang] ?? entry['en'] ?? key;
   };
 }

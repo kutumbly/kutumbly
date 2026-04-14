@@ -21,14 +21,16 @@ import { useAppStore } from '@/lib/store';
 import ModuleShell from './ModuleShell';
 import { Network, QrCode, Cpu, ShieldCheck, Download, Zap } from 'lucide-react';
 import { P2PNode } from '@/lib/p2p';
+import { useTranslation, Language } from '@/lib/i18n';
 import { triggerManualBackup } from '@/lib/vault';
 
 export default function NetworkModule() {
   const { lang, db, activeVault, currentPin } = useAppStore();
+  const t = useTranslation(lang as Language);
   
   const [mode, setMode] = useState<'idle' | 'host' | 'guest'>('idle');
   const [node, setNode] = useState<P2PNode | null>(null);
-  const [status, setStatus] = useState<string>('Off-Grid');
+  const [status, setStatus] = useState<string>(t('OFF_GRID'));
   
   // HOST states
   const [hostOffer, setHostOffer] = useState('');
@@ -42,7 +44,7 @@ export default function NetworkModule() {
     if (node) node.pc.close();
     setNode(null);
     setMode('idle');
-    setStatus('Off-Grid');
+    setStatus(t('OFF_GRID'));
     setHostOffer('');
     setGuestAnswerInput('');
     setHostOfferInput('');
@@ -92,7 +94,7 @@ export default function NetworkModule() {
     setNode(p2p);
 
     p2p.onData = async (buffer) => {
-       setStatus('Receiving Encrypted Payload...');
+       setStatus(lang === 'bho' ? 'तिजोरी आवत बा...' : 'Receiving Encrypted Payload...');
        // In a real P2P, we would decrypt/verify this byte array
        // For this prototype, we'll prompt a download to prove it crossed the airgap!
        const blob = new Blob([buffer], { type: 'application/octet-stream' });
@@ -101,7 +103,7 @@ export default function NetworkModule() {
        a.href = url;
        a.download = `SYNCED_VAULT_${new Date().getTime()}.sqlite`;
        a.click();
-       setStatus('Vault Sync Complete & Downloaded!');
+       setStatus(lang === 'bho' ? 'तिजोरी मिल गइल!' : 'Vault Sync Complete & Downloaded!');
     };
 
     p2p.onConnected = () => {
@@ -119,8 +121,8 @@ export default function NetworkModule() {
 
   return (
     <ModuleShell 
-      title={lang === 'en' ? "P2P Network Sync" : "P2P Network Sync"}
-      subtitle={lang === 'en' ? "Air-gapped serverless replication" : "Bina server ke direct phone-to-phone sync"}
+      title={t('P2P_SYNC')}
+      subtitle={lang === 'en' ? "Air-gapped serverless replication" : "Bina server के सीधा फोन-से-फोन सिंक"}
     >
       <div className="space-y-6">
          
@@ -149,7 +151,7 @@ export default function NetworkModule() {
          <div className="card p-4 flex items-center justify-between border-l-[4px] border-l-gold">
             <div className="flex items-center gap-3">
                <Cpu size={20} className="text-gold" />
-               <div className="font-black text-xs uppercase tracking-widest text-text-secondary">Network Status</div>
+               <div className="font-black text-xs uppercase tracking-widest text-text-secondary">{t('NETWORK_STATUS')}</div>
             </div>
             <div className="text-xs font-bold font-mono bg-bg-secondary px-3 py-1.5 rounded-lg border border-border-light text-text-primary">
                {status}

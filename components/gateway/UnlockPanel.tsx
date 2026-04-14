@@ -23,6 +23,7 @@ import { openVault } from '@/lib/vault';
 import { isDevBypassEnabled } from '@/lib/dev';
 import { motion, AnimatePresence } from 'framer-motion';
 import { unlockBiometric, hasBiometricRegistered } from '@/lib/biometric';
+import { useTranslation, Language } from '@/lib/i18n';
 
 interface UnlockPanelProps {
   onSuccess: () => void;
@@ -33,6 +34,7 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
     activeVault, currentPin, setCurrentPin,
     setUnlocked, addRecentVault, lang,
   } = useAppStore();
+  const t = useTranslation(lang as Language);
 
   const [error, setError] = useState<string | null>(null);
   const [isDecrypting, setIsDecrypting] = useState(false);
@@ -94,19 +96,19 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
       setCurrentPin('');
 
       if (err.message === 'WRONG_PIN') {
-        setError(lang === 'hi' ? 'Galat PIN — dobara try karo' : 'Wrong PIN — please try again');
+        setError(t('WRONG_PIN_ERROR'));
       } else if (err.message === 'PERMISSION_DENIED') {
-        setError(lang === 'hi' ? 'File Access zaruri hai — Browser prompt me Allow karein' : 'Permission Required — Please select "Allow" in the browser prompt');
+        setError(t('PERMISSION_DENIED_ERROR'));
       } else if (err.message === 'INVALID_FILE' || err.name === 'NotFoundError') {
-        setError(lang === 'hi' ? 'File nahi mila. Remove karke dobara import karein' : 'File error. Please remove and re-import vault');
+        setError(t('INVALID_FILE_ERROR'));
       } else {
-        setError(lang === 'hi' ? 'Ek galti hui' : 'An error occurred');
+        setError(t('GENERIC_ERROR'));
       }
 
       if (newAttempts >= 5 && err.message !== 'PERMISSION_DENIED') {
         setWaitTimer(30);
         setAttempts(0);
-        setError(lang === 'hi' ? 'Bahut zyada koshish. 30s wait karein' : 'Too many attempts. Wait 30s');
+        setError(t('TOO_MANY_ATTEMPTS'));
       }
     } finally {
       setIsDecrypting(false);
@@ -144,7 +146,7 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
           <h2 className="text-xl font-black text-text-primary tracking-tight">{activeVault.name}</h2>
           <div className="flex items-center justify-center gap-1.5 mt-2 opacity-60">
              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-text-tertiary">
-               {lang === 'hi' ? 'VAULT SURAKSHA' : 'VAULT SECURITY'}
+               {t('VAULT_SECURITY')}
              </div>
           </div>
         </motion.div>

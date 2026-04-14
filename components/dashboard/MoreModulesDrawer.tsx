@@ -16,15 +16,13 @@
 
 "use client";
 
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X, LayoutGrid } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
+import { useTranslation, Language } from '@/lib/i18n';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface TabItem {
   id: string;
-  labelEn: string;
-  labelHi: string;
   icon: LucideIcon;
 }
 
@@ -45,6 +43,7 @@ export default function MoreModulesDrawer({
   onTabChange, 
   lang 
 }: MoreModulesDrawerProps) {
+  const t = useTranslation(lang as Language);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -75,7 +74,7 @@ export default function MoreModulesDrawer({
               <div className="flex items-center justify-between mb-6 sticky top-0 bg-bg-primary py-1 z-10">
                 <div>
                    <h3 className="text-xl font-bold text-text-primary">
-                     {lang === 'en' ? 'Sovereign Modules' : 'Saare Modules'}
+                     {lang === 'bho' ? 'सभे मॉड्यूल' : (lang === 'hi' ? 'सारे मॉड्यूल' : 'Sovereign Modules')}
                    </h3>
                    <p className="text-[10px] font-black uppercase tracking-widest text-text-tertiary mt-1">
                      Kutumbly OS v2.0
@@ -94,7 +93,7 @@ export default function MoreModulesDrawer({
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
-                  const label = lang === 'en' ? tab.labelEn : tab.labelHi;
+                  const label = t(`NAV_${tab.id.toUpperCase()}`);
 
                   return (
                     <button

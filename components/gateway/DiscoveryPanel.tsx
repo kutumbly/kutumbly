@@ -21,9 +21,11 @@ import { Search, Globe, ChevronRight, Cloud, FileUp, PlusCircle, Loader2, HardDr
 import { useAppStore } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { initTokenClient, requestAccessToken, listVaultBackups } from '@/lib/gdrive';
+import { useTranslation } from '@/lib/i18n';
 
 export default function DiscoveryPanel() {
   const { setGatewayPanel, setDiscoveryEmail, discoveryEmail, lang } = useAppStore();
+  const t = useTranslation(lang);
   
   const [email, setEmail] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -60,7 +62,7 @@ export default function DiscoveryPanel() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-bg-primary p-8 md:p-12">
+    <div className="flex flex-col h-full bg-bg-primary p-8 md:p-12 font-inter">
       <AnimatePresence mode="wait">
         {searchStep === 'input' ? (
           <motion.div 
@@ -75,10 +77,10 @@ export default function DiscoveryPanel() {
             </div>
             
             <h2 className="text-3xl font-black text-text-primary text-center tracking-tight mb-2">
-              {lang === 'hi' ? 'Sovereign Discovery' : 'Let\'s Find Your Vault'}
+              {t('FIND_VAULT_TITLE')}
             </h2>
-            <p className="text-sm text-text-tertiary text-center font-bold uppercase tracking-widest mb-10">
-              Enter authorized email to scan sources
+            <p className="text-xs text-text-tertiary text-center font-bold uppercase tracking-widest mb-10">
+               {t('EMAIL_DISCOVERY_SUB')}
             </p>
 
             <div className="w-full space-y-4">
@@ -102,7 +104,7 @@ export default function DiscoveryPanel() {
               
               <div className="flex items-center gap-4 px-2">
                  <div className="flex-1 h-px bg-border-light/50"></div>
-                 <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">Or Skip</span>
+                 <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('OR_SKIP')}</span>
                  <div className="flex-1 h-px bg-border-light/50"></div>
               </div>
 
@@ -111,13 +113,13 @@ export default function DiscoveryPanel() {
                   onClick={() => setGatewayPanel('create')}
                   className="h-14 bg-bg-secondary border border-border-light rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary hover:text-text-primary hover:border-text-primary transition-all"
                 >
-                  <PlusCircle size={14} /> New Vault
+                  <PlusCircle size={14} /> {t('CREATE_VAULT')}
                 </button>
                 <button 
                   onClick={() => setGatewayPanel('import')}
                   className="h-14 bg-bg-secondary border border-border-light rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary hover:text-text-primary hover:border-text-primary transition-all"
                 >
-                  <FileUp size={14} /> Local File
+                  <FileUp size={14} /> {t('LOCAL')}
                 </button>
               </div>
             </div>
@@ -137,9 +139,9 @@ export default function DiscoveryPanel() {
                 </div>
                 <div className="flex-1">
                   <div className="text-xs font-bold text-text-primary">{email}</div>
-                  <div className="text-[10px] text-text-tertiary uppercase font-black">Scanning 3 Sources...</div>
+                  <div className="text-[10px] text-text-tertiary uppercase font-black">{t('SCANNING_SOURCES')}</div>
                 </div>
-                <button onClick={() => setSearchStep('input')} className="text-[10px] font-bold text-gold uppercase hover:underline">Change</button>
+                <button onClick={() => setSearchStep('input')} className="text-[10px] font-bold text-gold uppercase hover:underline">{t('CHANGE_EMAIL')}</button>
               </div>
             </div>
 
@@ -154,7 +156,7 @@ export default function DiscoveryPanel() {
                     foundBackups.map(f => (
                       <button 
                         key={f.id}
-                        onClick={() => setGatewayPanel('import')} // In reality we pass state to ImportPanel
+                        onClick={() => setGatewayPanel('import')}
                         className="w-full bg-bg-primary border border-border-light rounded-2xl p-4 flex items-center justify-between hover:border-gold transition-all group"
                       >
                          <div className="flex items-center gap-4">
@@ -171,7 +173,7 @@ export default function DiscoveryPanel() {
                     ))
                   ) : (
                     <div className="p-6 bg-bg-secondary/50 rounded-2xl border border-dashed border-border-light text-center text-xs text-text-tertiary font-medium">
-                      No backups found in Google Drive for this email.
+                      No backups found.
                     </div>
                   )}
                 </div>
@@ -192,21 +194,6 @@ export default function DiscoveryPanel() {
                     </div>
                     <div className="text-left flex-1">
                        <div className="text-sm font-bold text-text-primary">Restore from Local Device</div>
-                       <div className="text-[10px] text-text-tertiary uppercase font-black">Scan Desktop / Downloads</div>
-                    </div>
-                    <ChevronRight size={18} className="text-text-tertiary" />
-                  </button>
-
-                  <button 
-                    onClick={() => setGatewayPanel('import')}
-                    className="w-full bg-bg-primary border border-border-light rounded-2xl p-4 flex items-center gap-4 hover:border-gold transition-all group"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-bg-secondary flex items-center justify-center">
-                       <Globe size={16} className="text-text-tertiary" />
-                    </div>
-                    <div className="text-left flex-1">
-                       <div className="text-sm font-bold text-text-primary">Restore from Other Media</div>
-                       <div className="text-[10px] text-text-tertiary uppercase font-black">USB / OTG / External Drive</div>
                     </div>
                     <ChevronRight size={18} className="text-text-tertiary" />
                   </button>
@@ -219,7 +206,7 @@ export default function DiscoveryPanel() {
                 onClick={() => setGatewayPanel('create')}
                 className="w-full h-14 bg-gold text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-gold/20 hover:opacity-90 active:scale-95 transition-all text-xs"
                >
-                 Create New Vault Instead
+                 {t('CREATE_VAULT')}
                </button>
             </div>
           </motion.div>

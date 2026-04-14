@@ -118,14 +118,35 @@
 
 /* ─── Base ─────────────────────────────────────────────────── */
 body {
-  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Outfit', var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
   background: var(--bg-tertiary);
   color: var(--text-primary);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Support for modern mobile safe areas */
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ─── Multilingual Typography ────────────────────────────── */
+
+/* Default Script Support (System Fallbacks) */
+.font-hindi { font-family: var(--font-noto-devanagari), 'Lohit Devanagari', 'Segoe UI Historic', sans-serif; }
+.font-bengali { font-family: var(--font-noto-bengali), 'Lohit Bengali', 'Segoe UI Historic', sans-serif; }
+.font-gujarati { font-family: var(--font-noto-gujarati), 'Shruti', 'Segoe UI Historic', sans-serif; }
+.font-punjabi { font-family: var(--font-noto-gurmukhi), 'Raavi', 'Segoe UI Historic', sans-serif; }
+.font-tamil { font-family: var(--font-noto-tamil), 'Latha', 'Segoe UI Historic', sans-serif; }
+.font-kannada { font-family: var(--font-noto-kannada), 'Tunga', 'Segoe UI Historic', sans-serif; }
+.font-telugu { font-family: var(--font-noto-telugu), 'Gautami', 'Segoe UI Historic', sans-serif; }
+
+/* Dynamic Native-like Rendering via :lang() */
+:lang(hi), :lang(mr), :lang(gu), :lang(pa), :lang(bho), :lang(ne), :lang(bn), :lang(mni), :lang(ta), :lang(kn), :lang(te) {
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+}
+
+[lang="bn"], [lang="mni"], [lang="ta"], [lang="kn"], [lang="te"] {
+  font-size: 1.05em; /* Some scripts appear smaller at same pt size */
 }
 
 /* Safe Area Utilities — Notch & Home Indicator Handling */
@@ -206,7 +227,7 @@ body {
 }
 
 .glass {
-  background: rgba(var(--bg-primary-rgb), 0.7);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
 }
@@ -243,7 +264,7 @@ input, select, textarea {
 
 /* Glass effect for mobile headers */
 .mobile-glass-header {
-  background: rgba(var(--bg-primary-rgb), 0.8);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
 }

@@ -141,6 +141,57 @@ CREATE TABLE IF NOT EXISTS nevata_family_ledger (
   updated_at TEXT
 );
 
+CREATE TABLE IF NOT EXISTS nevata_inventory (
+  id TEXT PRIMARY KEY,
+  event_id TEXT NOT NULL,
+  item_name TEXT NOT NULL,
+  category TEXT NOT NULL,       -- 'Catering' | 'Decor' | 'Logistics' | 'Gift'
+  quantity_expected REAL DEFAULT 0,
+  quantity_received REAL DEFAULT 0,
+  quantity_used REAL DEFAULT 0,
+  unit TEXT DEFAULT 'pcs',      -- 'kg' | 'pcs' | 'sets'
+  status TEXT DEFAULT 'ORDERED', -- 'ORDERED' | 'DISPATCHED' | 'RECEIVED' | 'IN_USE' | 'RETURNED' | 'LOST'
+  vendor_id TEXT,
+  assigned_to_id TEXT,          -- linked to family_members.id or name
+  backup_person_id TEXT,
+  delivery_date_expected TEXT,
+  delivery_date_actual TEXT,
+  is_returnable INTEGER DEFAULT 0,
+  return_deadline TEXT,
+  cost_estimated REAL DEFAULT 0,
+  cost_actual REAL DEFAULT 0,
+  notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+);
+
+CREATE TABLE IF NOT EXISTS nevata_vendors (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  service_type TEXT,            -- 'Catering' | 'Decor' | 'DJ' | 'Transport'
+  contact TEXT,
+  rating REAL DEFAULT 5,
+  reliability_score REAL DEFAULT 100,
+  advance_paid REAL DEFAULT 0,
+  total_amount REAL DEFAULT 0,
+  payment_status TEXT DEFAULT 'PENDING',
+  last_used_event TEXT,
+  notes TEXT
+);
+
+CREATE TABLE IF NOT EXISTS nevata_activity_log (
+  id TEXT PRIMARY KEY,
+  event_id TEXT NOT NULL,
+  type TEXT NOT NULL,           -- 'ITEM' | 'PAYMENT' | 'TASK' | 'ALERT'
+  action TEXT NOT NULL,         -- 'CREATED' | 'UPDATED' | 'RECEIVED' | 'PAID' | 'ASSIGNED'
+  item_id TEXT,                 -- optional link to inventory
+  vendor_id TEXT,               -- optional link to vendor
+  user_id TEXT,                 -- family member who did it
+  timestamp TEXT NOT NULL,
+  metadata TEXT,                -- JSON string for extra info
+  FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+);
+
 -- VIDYA MODULE TABLES
 -- Learner profile — one per studying person (self or family member)
 CREATE TABLE IF NOT EXISTS vidya_learners (

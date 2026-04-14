@@ -25,13 +25,14 @@ import {
   Star, CheckCircle2, Circle, Bookmark, BookMarked,
   Clock, Target, TrendingUp, Plus, ChevronRight, Trash2,
   Play, ExternalLink, ArrowUpRight, BarChart2, Flame,
-  School, Brain
+  School, Brain, ArrowRight, PlusCircle, Users
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation, Language } from '@/lib/i18n';
 import { VidyaLearner, VidyaSubject, VidyaResource, VidyaResourceType } from '@/types/db';
 
 /* ─── Types ────────────────────────────────────────────────── */
-type VidyaView = 'overview' | 'learner' | 'subject' | 'resource';
+type VidyaView = 'overview' | 'learner' | 'subject' | 'resource' | 'add-learner';
 
 /* ─── Helpers ──────────────────────────────────────────────── */
 const RESOURCE_ICONS: Record<VidyaResourceType, React.ElementType> = {
@@ -51,11 +52,11 @@ const RESOURCE_COLORS: Record<VidyaResourceType, string> = {
 };
 
 const RESOURCE_LABELS: Record<VidyaResourceType, string> = {
-  youtube:  'YouTube Video',
-  pdf:      'PDF Document',
-  article:  'Article / Link',
-  book:     'Book / Notes',
-  website:  'Website',
+  youtube:  'RESOURCE_LABELS_YT',
+  pdf:      'RESOURCE_LABELS_PDF',
+  article:  'RESOURCE_LABELS_ARTICLE',
+  book:     'RESOURCE_LABELS_BOOK',
+  website:  'RESOURCE_LABELS_WEBSITE',
 };
 
 const DIFF_COLORS: Record<string, string> = {
@@ -65,10 +66,10 @@ const DIFF_COLORS: Record<string, string> = {
 };
 
 const MOODS = [
-  { val: 'focused', label: 'Focused', emoji: '🧠' },
-  { val: 'neutral', label: 'OK', emoji: '😐' },
-  { val: 'tired', label: 'Tired', emoji: '😴' },
-  { val: 'distracted', label: 'Distracted', emoji: '😵' },
+  { val: 'focused', label: 'MOOD_FOCUSED', emoji: '🧠' },
+  { val: 'neutral', label: 'MOOD_NEUTRAL', emoji: '😐' },
+  { val: 'tired',   label: 'MOOD_TIRED',   emoji: '😴' },
+  { val: 'distracted', label: 'MOOD_DISTRACTED', emoji: '😵' },
 ];
 
 function fmtMins(m: number) {
@@ -79,6 +80,7 @@ function fmtMins(m: number) {
 /* ─── Main Component ────────────────────────────────────────── */
 export default function VidyaModule() {
   const { lang } = useAppStore();
+  const t = useTranslation(lang as Language);
   const vidya = useVidya();
 
   // Navigation state
@@ -88,38 +90,37 @@ export default function VidyaModule() {
   const [activeResource, setActiveResource] = useState<VidyaResource | null>(null);
 
   // Add Learner form
-  const [showAddLearner, setShowAddLearner] = useState(false);
-  const [lName, setLName]         = useState('');
-  const [lInst, setLInst]         = useState('');
-  const [lStd, setLStd]           = useState('');
-  const [lBoard, setLBoard]       = useState('CBSE');
-  const [lGoal, setLGoal]         = useState('');
-  const [lDeadline, setLDeadline] = useState('');
+  const [fLName, setFLName]               = useState('');
+  const [fLInstitution, setFLInstitution] = useState('');
+  const [fLGrade, setFLGrade]             = useState('');
+  const [fLBoard, setFLBoard]             = useState('CBSE');
+  const [fLGoal, setFLGoal]               = useState('');
+  const [fLDeadline, setFLDeadline]       = useState('');
 
   // Add Subject form
   const [showAddSubject, setShowAddSubject] = useState(false);
-  const [sName, setSName]   = useState('');
-  const [sCat, setSCat]     = useState('Science');
-  const [sColor, setSColor] = useState('#6366f1');
-  const [sScore, setSScore]  = useState('');
+  const [fSubName, setFSubName] = useState('');
+  const [fSubCat, setFSubCat]   = useState('Science');
+  const [sColor, setSColor]     = useState('#6366f1');
+  const [sScore, setSScore]     = useState('');
 
   // Add Resource form
   const [showAddResource, setShowAddResource] = useState(false);
-  const [rTitle, setRTitle]     = useState('');
-  const [rType, setRType]       = useState<VidyaResourceType>('youtube');
+  const [fResName, setFResName] = useState('');
+  const [fResType, setFResType] = useState<VidyaResourceType>('youtube');
   const [rUrl, setRUrl]         = useState('');
   const [rChapter, setRChapter] = useState('');
   const [rLesson, setRLesson]   = useState('');
   const [rDesc, setRDesc]       = useState('');
-  const [rDiff, setRDiff]       = useState<'easy' | 'medium' | 'hard'>('medium');
-  const [rDuration, setRDuration] = useState('');
+  const [fResDiff, setFResDiff] = useState<'easy' | 'medium' | 'hard'>('medium');
+  const [fResDur, setFResDur]   = useState('');
 
   // Log Session sheet
   const [showLogSession, setShowLogSession] = useState(false);
-  const [logDuration, setLogDuration] = useState('');
-  const [logSubjectId, setLogSubjectId] = useState('');
+  const [fSDur, setFSDur]   = useState('');
+  const [fSSub, setFSSub]   = useState('');
   const [logNotes, setLogNotes] = useState('');
-  const [logMood, setLogMood] = useState<'focused' | 'neutral' | 'tired' | 'distracted'>('focused');
+  const [fSMood, setFSMood] = useState<'focused' | 'neutral' | 'tired' | 'distracted'>('focused');
 
   /* ── Computed ─────────────────────────────────────────── */
   const learnerSubjects = activeLearner ? vidya.getSubjects(activeLearner.id) : [];
@@ -129,10 +130,10 @@ export default function VidyaModule() {
 
   /* ── Breadcrumbs ──────────────────────────────────────── */
   const getBreadcrumbs = (): string[] => {
-    const b = [lang === 'en' ? 'Vidya' : 'विद्या'];
+    const b = [t('STUDY_BUDDY')];
     if (activeLearner) b.push(activeLearner.name);
     if (activeSubject) b.push(activeSubject.name);
-    if (activeResource) b.push('Resource');
+    if (activeResource) b.push(activeResource.title);
     return b;
   };
 
@@ -143,156 +144,145 @@ export default function VidyaModule() {
   };
 
   /* ── Handlers ─────────────────────────────────────────── */
-  const handleSaveLearner = () => {
-    if (!lName.trim()) return;
-    vidya.addLearner(lName, lInst, lStd, lBoard, lGoal, lDeadline);
-    setLName(''); setLInst(''); setLStd(''); setLBoard('CBSE'); setLGoal(''); setLDeadline('');
-    setShowAddLearner(false);
+  const handleAddLearner = () => {
+    if (!fLName.trim()) return;
+    vidya.addLearner(fLName, fLInstitution, fLGrade, fLBoard, fLGoal, fLDeadline);
+    setFLName(''); setFLInstitution(''); setFLGrade(''); setFLBoard('CBSE'); setFLGoal(''); setFLDeadline('');
+    setView('overview');
   };
 
   const handleSaveSubject = () => {
-    if (!activeLearner || !sName.trim()) return;
-    vidya.addSubject(activeLearner.id, sName, sCat, sColor, sScore);
-    setSName(''); setSCat('Science'); setSColor('#6366f1'); setSScore('');
+    if (!activeLearner || !fSubName.trim()) return;
+    vidya.addSubject(activeLearner.id, fSubName, fSubCat, sColor, sScore);
+    setFSubName(''); setFSubCat('Science'); setSColor('#6366f1'); setSScore('');
     setShowAddSubject(false);
   };
 
   const handleSaveResource = () => {
-    if (!activeSubject || !activeLearner || !rTitle.trim()) return;
-    vidya.addResource(activeSubject.id, activeLearner.id, rTitle, rType, rUrl, rChapter, rLesson, rDesc, Number(rDuration) || undefined, rDiff);
-    setRTitle(''); setRType('youtube'); setRUrl(''); setRChapter(''); setRLesson(''); setRDesc(''); setRDuration('');
+    if (!activeSubject || !activeLearner || !fResName.trim()) return;
+    vidya.addResource(activeSubject.id, activeLearner.id, fResName, fResType, rUrl, rChapter, rLesson, rDesc, Number(fResDur) || undefined, fResDiff);
+    setFResName(''); setFResType('youtube'); setRUrl(''); setRChapter(''); setRLesson(''); setRDesc(''); setFResDur('');
     setShowAddResource(false);
   };
 
   const handleLogSession = () => {
-    if (!activeLearner || !logDuration) return;
-    vidya.logSession(activeLearner.id, Number(logDuration), logSubjectId || undefined, logNotes, logMood);
-    setLogDuration(''); setLogSubjectId(''); setLogNotes(''); setLogMood('focused');
+    if (!activeLearner || !fSDur) return;
+    vidya.logSession(activeLearner.id, Number(fSDur), fSSub || undefined, logNotes, fSMood);
+    setFSDur(''); setFSSub(''); setFSMood('focused'); setLogNotes('');
     setShowLogSession(false);
   };
-
-  /* ── Preview thumbnail for YouTube ───────────────────── */
-  const previewThumb = rType === 'youtube' && rUrl ? getYouTubeThumbnail(rUrl) : null;
 
   /* ══════════════════════════════════════════════════════════
      LEVEL 1 — Overview (All Learners)
   ══════════════════════════════════════════════════════════ */
   const renderOverview = () => (
     <motion.div key="overview" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 12 }} className="space-y-10">
+      {view === 'add-learner' && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}>
+          <div className="flex items-center gap-4">
+            <button onClick={() => setView('overview')} className="w-10 h-10 rounded-full bg-bg-primary border border-border-light flex items-center justify-center hover:text-gold transition-all shadow-sm">
+              <ArrowRight className="w-5 h-5 opacity-40 rotate-180" />
+            </button>
+            <h2 className="text-xl font-black text-text-primary tracking-tight">
+              {t('NEW_LEARNER')}
+            </h2>
+          </div>
 
-      {/* Add Learner Form */}
-      <AnimatePresence>
-        {showAddLearner && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-            className="bg-bg-primary border border-gold/30 rounded-[2.5rem] p-8 shadow-2xl space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">New Learner Profile</h3>
-              <button onClick={() => setShowAddLearner(false)} className="text-text-tertiary hover:text-text-danger font-bold">✕</button>
+          <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 flex flex-col gap-6 shadow-xl shadow-black/[0.02]">
+            <div className="flex flex-col gap-3">
+              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('LEARNER_NAME')}</label>
+              <input type="text" value={fLName} onChange={e => setFLName(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-xl font-black text-text-primary outline-none focus:border-gold transition-all" placeholder={t('LEARNER_NAME_PH')} />
             </div>
+
+            <div className="grid grid-cols-2 gap-6">
+                <div className="flex flex-col gap-3">
+                  <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('SCHOOL_COLL')}</label>
+                  <input type="text" value={fLInstitution} onChange={e => setFLInstitution(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary outline-none focus:border-gold transition-all" placeholder={t('INSTITUTION_PH')} />
+                </div>
+                <div className="flex flex-col gap-3">
+                  <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('CLASS_STD')}</label>
+                  <input type="text" value={fLGrade} onChange={e => setFLGrade(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary outline-none focus:border-gold transition-all" placeholder={t('CLASS_PH')} />
+                </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('BOARD_TYPE')}</label>
+              <input type="text" value={fLBoard} onChange={e => setFLBoard(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary outline-none focus:border-gold transition-all" placeholder={t('BOARD_PH')} />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-3">
+                <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('LEARNING_GOALS')}</label>
+                <input type="text" value={fLGoal} onChange={e => setFLGoal(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary outline-none focus:border-gold transition-all" placeholder={t('GOAL_PH')} />
+              </div>
+              <div className="flex flex-col gap-3">
+                <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('GOAL_DEADLINE')}</label>
+                <input type="date" value={fLDeadline} onChange={e => setFLDeadline(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary outline-none focus:border-gold transition-all" />
+              </div>
+            </div>
+
+            <button onClick={handleAddLearner} disabled={!fLName} className="w-full mt-2 bg-gold-text hover:opacity-90 text-white font-black tracking-[0.2em] h-14 rounded-2xl shadow-xl transition-all disabled:opacity-50 uppercase flex items-center justify-center gap-3">
+              <PlusCircle size={18} />
+              {t('ADD_LEARNER')}
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {view === 'overview' && (
+        <div className="space-y-10 md:space-y-12">
+          <section className="space-y-6">
+            <div className="flex items-center justify-between px-2">
+              <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
+                 {t('LEARNERS')}
+              </div>
+              <button 
+                onClick={() => setView('add-learner')}
+                className="text-[10px] font-black text-gold-text uppercase tracking-widest hover:underline flex items-center gap-1"
+              >
+                 <Plus size={14} /> {t('ADD_LEARNER')}
+              </button>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field label="Full Name *" value={lName} onChange={setLName} placeholder="e.g. Priya Mallah" />
-              <Field label="School / College / Platform" value={lInst} onChange={setLInst} placeholder="e.g. DPS, IIT Bombay, Coursera" />
-              <Field label="Class / Standard / Year" value={lStd} onChange={setLStd} placeholder="e.g. Class 10, B.Tech 2nd Year" />
-              <SelectField label="Board / Type" value={lBoard} onChange={setLBoard}
-                options={['CBSE', 'ICSE', 'State Board', 'IGCSE', 'University', 'Competitive Exam', 'Online Course', 'Self-Study']} />
-              <Field label="Learning Goal" value={lGoal} onChange={setLGoal} placeholder="e.g. Score 95%+, Crack JEE 2027" />
-              <Field label="Goal Deadline" value={lDeadline} onChange={setLDeadline} type="date" />
-            </div>
-            <SaveBtn label="Add Learner" onClick={handleSaveLearner} disabled={!lName.trim()} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Overall stats strip */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatPill icon={<GraduationCap size={18} />} label="Learners" value={vidya.learners.length} />
-        <StatPill icon={<BookOpen size={18} />} label="Subjects" value={vidya.learners.reduce((a, l) => a + vidya.getSubjects(l.id).length, 0)} />
-        <StatPill icon={<Brain size={18} />} label="Resources" value={vidya.learners.reduce((a, l) => a + vidya.getAllResourcesForLearner(l.id).length, 0)} />
-        <StatPill icon={<Flame size={18} className="text-gold" />} label="Study This Week" value={`${fmtMins(vidya.learners.reduce((a, l) => a + vidya.getStats(l.id).weekMins, 0))}`} />
-      </div>
-
-      {/* Learner Cards */}
-      {vidya.learners.length === 0 ? (
-        <EmptyState icon={<GraduationCap size={36} strokeWidth={1} />}
-          title={lang === 'en' ? 'No Learners Yet' : 'Koi Vidyarthi Nahi'}
-          subtitle={lang === 'en' ? 'Add yourself or a family member to start tracking studies.' : 'Parivaar ke kisi saathe ko jodein.'} />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {vidya.learners.map(learner => {
-            const stats = vidya.getStats(learner.id);
-            const subjects = vidya.getSubjects(learner.id);
-            return (
-              <motion.div key={learner.id} whileHover={{ y: -3 }}
-                onClick={() => { setActiveLearner(learner); setView('learner'); }}
-                className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 cursor-pointer hover:border-gold/40 hover:shadow-2xl transition-all group">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-[1.2rem] bg-gold/10 text-gold font-black text-lg flex items-center justify-center border border-gold/20 shadow-sm">
-                      {learner.avatar_initials}
-                    </div>
-                    <div>
-                      <h3 className="font-black text-text-primary text-base tracking-tight">{learner.name}</h3>
-                      <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] mt-0.5">{learner.standard} · {learner.board}</p>
-                      {learner.institution && (
-                        <p className="text-[11px] font-bold text-text-secondary mt-0.5 flex items-center gap-1">
-                          <School size={10} className="opacity-60" /> {learner.institution}
-                        </p>
+               {vidya.learners.length > 0 ? vidya.learners.map((l, i) => (
+                <div key={l.id} onClick={() => { setActiveLearner(l); setView('learner'); }} className="bg-bg-primary border border-border-light p-6 rounded-[2.5rem] flex items-center gap-5 shadow-black/[0.02] hover:border-gold/30 transition-all group cursor-pointer">
+                   <div className="w-16 h-16 rounded-2xl bg-gold/5 border border-gold/10 flex items-center justify-center font-black text-gold-text text-xl">
+                     {l.avatar_initials}
+                   </div>
+                   <div className="flex-1">
+                      <h4 className="text-base font-black text-text-primary tracking-tight">{l.name}</h4>
+                      <p className="text-[10px] text-text-tertiary font-black uppercase tracking-widest mt-1 opacity-80">
+                         {l.standard} · {l.institution}
+                      </p>
+                      {l.goal && (
+                        <div className="mt-3 flex items-center gap-1.5 text-[9px] font-black text-gold-text uppercase tracking-widest bg-gold/5 px-2 py-0.5 rounded-lg border border-gold/10 w-fit">
+                           <TrendingUp size={10} /> {l.goal}
+                        </div>
                       )}
-                    </div>
-                  </div>
-                  <ChevronRight size={20} className="text-text-tertiary group-hover:text-gold transition-colors mt-1" />
+                   </div>
                 </div>
-
-                {/* Goal */}
-                {learner.goal && (
-                  <div className="flex items-center gap-2 mb-5 bg-bg-tertiary border border-border-light rounded-2xl px-4 py-3">
-                    <Target size={14} className="text-gold flex-shrink-0" />
-                    <span className="text-[11px] font-bold text-text-secondary truncate">{learner.goal}</span>
-                    {learner.goal_deadline && (
-                      <span className="ml-auto text-[9px] font-black text-text-tertiary uppercase tracking-widest flex-shrink-0">{learner.goal_deadline}</span>
-                    )}
-                  </div>
-                )}
-
-                {/* Stats row */}
-                <div className="grid grid-cols-3 gap-3">
-                  <MiniStat label="Subjects" value={stats.subjectCount} />
-                  <MiniStat label="Resources" value={stats.resourceCount} />
-                  <MiniStat label="This Week" value={fmtMins(stats.weekMins)} color="text-gold" />
+               )) : (
+                <div className="md:col-span-2 bg-bg-primary border-2 border-dashed border-border-light rounded-[3rem] py-12 flex flex-col items-center justify-center text-center opacity-40">
+                   <Users size={32} className="text-text-tertiary mb-3" strokeWidth={1} />
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-1">{t('NO_LEARNERS')}</p>
+                    <p className="text-[8px] font-bold uppercase tracking-widest">{t('LEARNER_EMPTY_SUB')}</p>
                 </div>
-
-                {/* Subject pills */}
-                {subjects.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-5 pt-5 border-t border-border-light">
-                    {subjects.slice(0, 4).map(s => (
-                      <span key={s.id} className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border"
-                        style={{ color: s.color, borderColor: s.color + '33', background: s.color + '11' }}>
-                        {s.name}
-                      </span>
-                    ))}
-                    {subjects.length > 4 && (
-                      <span className="px-3 py-1 rounded-full text-[9px] font-black text-text-tertiary border border-border-light">+{subjects.length - 4}</span>
-                    )}
-                  </div>
-                )}
-              </motion.div>
-            );
-          })}
+               )}
+            </div>
+          </section>
         </div>
       )}
     </motion.div>
   );
 
   /* ══════════════════════════════════════════════════════════
-     LEVEL 2 — Learner Detail (Subjects + Sessions)
+     LEVEL 2 — Learner Detail
   ══════════════════════════════════════════════════════════ */
   const renderLearner = () => {
     if (!activeLearner) return null;
     return (
       <motion.div key="learner" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 12 }} className="space-y-10">
-
-        {/* Learner Hero */}
         <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8">
           <div className="flex items-center gap-5 mb-6">
             <div className="w-16 h-16 rounded-[1.5rem] bg-gold/10 text-gold font-black text-xl flex items-center justify-center border border-gold/20 shadow-lg">
@@ -301,295 +291,186 @@ export default function VidyaModule() {
             <div>
               <h2 className="text-xl font-black text-text-primary tracking-tight">{activeLearner.name}</h2>
               <p className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mt-1">{activeLearner.standard} · {activeLearner.board}</p>
-              {activeLearner.institution && <p className="text-[12px] font-bold text-text-secondary mt-1">{activeLearner.institution}</p>}
             </div>
             <button onClick={() => setShowLogSession(true)} className="ml-auto flex items-center gap-2 h-11 px-6 bg-gold-text text-white font-black text-[10px] uppercase tracking-widest rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-gold/10">
-              <Clock size={14} /> Log Study
+              <Clock size={14} /> {t('ATTENDANCE')}
             </button>
           </div>
-          {activeLearner.goal && (
-            <div className="flex items-center gap-3 bg-bg-tertiary border border-border-light rounded-2xl px-5 py-3">
-              <Target size={16} className="text-gold" />
-              <span className="text-[13px] font-bold text-text-primary">{activeLearner.goal}</span>
-              {activeLearner.goal_deadline && <span className="ml-auto text-[10px] font-black text-text-tertiary uppercase tracking-widest">{activeLearner.goal_deadline}</span>}
-            </div>
-          )}
         </div>
 
-        {/* Log Session sheet */}
         <AnimatePresence>
           {showLogSession && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-              className="bg-bg-primary border border-gold/30 rounded-[2.5rem] p-8 shadow-2xl space-y-5">
-              <div className="flex items-center justify-between">
-                <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">Log Study Session</h3>
-                <button onClick={() => setShowLogSession(false)} className="text-text-tertiary hover:text-text-danger font-bold">✕</button>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="Duration (minutes) *" value={logDuration} onChange={setLogDuration} type="number" placeholder="e.g. 45" />
-                <div className="flex flex-col gap-2">
-                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Subject (optional)</label>
-                  <select value={logSubjectId} onChange={e => setLogSubjectId(e.target.value)}
-                    className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold">
-                    <option value="">General Study</option>
-                    {learnerSubjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
-                </div>
-                <Field label="Notes" value={logNotes} onChange={setLogNotes} placeholder="What did you cover?" />
-                <div className="flex flex-col gap-2">
-                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Mood</label>
-                  <div className="flex flex-wrap gap-2">
-                    {MOODS.map(m => (
-                      <button key={m.val} onClick={() => setLogMood(m.val as any)}
-                        className={`px-3 py-2 rounded-xl text-[10px] font-black border transition-all ${logMood === m.val ? 'bg-gold/10 border-gold text-gold' : 'border-border-light text-text-tertiary'}`}>
-                        {m.emoji} {m.label}
-                      </button>
-                    ))}
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+              <div className="bg-bg-primary border border-border-light rounded-[32px] p-6 max-w-sm w-full mx-4 shadow-2xl">
+                <h3 className="text-lg font-black text-text-primary tracking-tight mb-6">{t('LOG_SESSION')}</h3>
+                <div className="space-y-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('DURATION_MINS')} *</label>
+                    <input type="number" value={fSDur} onChange={e => setFSDur(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-xl p-3 font-bold text-text-primary outline-none focus:border-gold" />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('SUBJECTS')} ({t('OPTIONAL')})</label>
+                    <select value={fSSub} onChange={e => setFSSub(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-xl p-3 font-bold text-text-primary outline-none focus:border-gold">
+                      <option value="">{t('ALL')}</option>
+                      {learnerSubjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('MOOD')}</label>
+                    <div className="grid grid-cols-4 gap-2">
+                       {MOODS.map(m => (
+                         <button key={m.val} onClick={() => setFSMood(m.val as any)} className={`p-2 rounded-xl border text-[10px] font-bold transition-all ${fSMood === m.val ? 'bg-gold-text text-white border-gold-text shadow-md' : 'bg-bg-tertiary text-text-tertiary border-border-light'}`}>
+                            {t(m.label)}
+                         </button>
+                       ))}
+                    </div>
+                  </div>
+                  <div className="flex gap-3 mt-6">
+                    <button onClick={() => setShowLogSession(false)} className="flex-1 h-12 rounded-xl font-black text-[10px] uppercase tracking-widest text-text-tertiary hover:bg-bg-tertiary transition-all">{t('CANCEL')}</button>
+                    <button onClick={handleLogSession} disabled={!fSDur} className="flex-1 h-12 rounded-xl bg-gold-text text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 disabled:opacity-50">{t('SAVE_TO_VAULT')}</button>
                   </div>
                 </div>
               </div>
-              <SaveBtn label="Save Session" onClick={handleLogSession} disabled={!logDuration} />
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
 
-        {/* Stats */}
-        {learnerStats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatPill icon={<Clock size={16} />} label="Total Study" value={fmtMins(learnerStats.totalMins)} />
-            <StatPill icon={<Flame size={16} className="text-gold" />} label="This Week" value={fmtMins(learnerStats.weekMins)} />
-            <StatPill icon={<BookOpen size={16} />} label="Resources" value={learnerStats.resourceCount} />
-            <StatPill icon={<CheckCircle2 size={16} className="text-text-success" />} label="Completed" value={learnerStats.completedCount} />
+        <section className="space-y-6">
+          <div className="flex items-center justify-between px-2">
+            <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
+               {t('SUBJECTS')}
+            </div>
+            <button onClick={() => setShowAddSubject(true)} className="text-[10px] font-black text-gold-text uppercase tracking-widest hover:underline flex items-center gap-1">
+               <Plus size={14} /> {t('ADD_SUBJECT')}
+            </button>
           </div>
-        )}
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+             {learnerSubjects.length > 0 ? learnerSubjects.map(s => {
+               const subSessions = learnerSessions.filter(sess => sess.subject_id === s.id);
+               const totalMins = subSessions.reduce((acc, curr) => acc + curr.duration_mins, 0);
+               return (
+                <div key={s.id} onClick={() => { setActiveSubject(s); setView('subject'); }} className="bg-bg-primary border border-border-light p-5 rounded-[2.5rem] flex flex-col items-center text-center shadow-black/[0.02] hover:border-gold/30 transition-all group cursor-pointer">
+                   <div className="w-12 h-12 rounded-2xl bg-gold/5 flex items-center justify-center text-gold-text mb-4">
+                      <GraduationCap size={24} />
+                   </div>
+                   <h4 className="text-xs font-black text-text-primary tracking-tight line-clamp-1">{s.name}</h4>
+                   <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mt-2">{fmtMins(totalMins)}</p>
+                </div>
+               );
+             }) : (
+              <div className="col-span-full md:col-span-4 bg-bg-primary border-2 border-dashed border-border-light rounded-[3rem] py-16 flex flex-col items-center justify-center text-center opacity-40">
+                 <BookOpen size={32} className="text-text-tertiary mb-3" strokeWidth={1} />
+                 <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-1">{t('NO_SUBJECTS')}</p>
+              </div>
+             )}
+          </div>
+        </section>
 
-        {/* Add Subject Form */}
         <AnimatePresence>
           {showAddSubject && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-              className="bg-bg-primary border border-gold/30 rounded-[2.5rem] p-8 shadow-2xl space-y-5">
-              <div className="flex items-center justify-between">
-                <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">Add Subject</h3>
-                <button onClick={() => setShowAddSubject(false)} className="text-text-tertiary hover:text-text-danger font-bold">✕</button>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="Subject Name *" value={sName} onChange={setSName} placeholder="e.g. Physics, Python" />
-                <SelectField label="Category" value={sCat} onChange={setSCat}
-                  options={['Science', 'Commerce', 'Arts', 'Tech', 'Language', 'Competitive', 'General']} />
-                <Field label="Target Score" value={sScore} onChange={setSScore} placeholder="e.g. 90%+" />
-                <div className="flex flex-col gap-2">
-                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Accent Color</label>
-                  <div className="flex gap-2 flex-wrap">
-                    {['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#c9971c', '#ec4899'].map(c => (
-                      <button key={c} onClick={() => setSColor(c)}
-                        className={`w-9 h-9 rounded-full border-4 transition-all ${sColor === c ? 'border-text-primary scale-110' : 'border-transparent'}`}
-                        style={{ background: c }} />
-                    ))}
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+              <div className="bg-bg-primary border border-border-light rounded-[32px] p-6 max-w-sm w-full mx-4 shadow-2xl">
+                <h3 className="text-lg font-black text-text-primary tracking-tight mb-6">{t('ADD_SUBJECT')}</h3>
+                <div className="space-y-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('SUBJECTS').slice(0, -1)} {t('ITEM_NAME')}</label>
+                    <input type="text" value={fSubName} onChange={e => setFSubName(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-xl p-3 font-bold text-text-primary outline-none focus:border-gold" placeholder={t('SUBJECT_NAME_PH')} />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('TASKS_CATEGORY')}</label>
+                    <input type="text" value={fSubCat} onChange={e => setFSubCat(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-xl p-3 font-bold text-text-primary outline-none focus:border-gold" placeholder={t('SUBJECT_CAT_PH')} />
+                  </div>
+                  <div className="flex gap-3 mt-6">
+                    <button onClick={() => setShowAddSubject(false)} className="flex-1 h-12 rounded-xl font-black text-[10px] uppercase tracking-widest text-text-tertiary hover:bg-bg-tertiary transition-all">{t('CANCEL')}</button>
+                    <button onClick={handleSaveSubject} disabled={!fSubName} className="flex-1 h-12 rounded-xl bg-gold-text text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 disabled:opacity-50">{t('SAVE_TO_VAULT')}</button>
                   </div>
                 </div>
               </div>
-              <SaveBtn label="Add Subject" onClick={handleSaveSubject} disabled={!sName.trim()} />
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
-
-        {/* Subjects Grid */}
-        <div>
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-              {lang === 'en' ? 'Subjects' : 'Vishay'} ({learnerSubjects.length})
-            </h3>
-            {!showAddSubject && (
-              <button onClick={() => setShowAddSubject(true)}
-                className="flex items-center gap-2 h-9 px-5 bg-bg-secondary border border-border-light rounded-xl text-[10px] font-black text-text-tertiary hover:text-gold hover:border-gold transition-all">
-                <Plus size={12} /> Add Subject
-              </button>
-            )}
-          </div>
-          {learnerSubjects.length === 0 ? (
-            <EmptyState icon={<BookOpen size={32} strokeWidth={1} />} title="No Subjects Yet" subtitle="Add subjects to organise your study resources." />
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {learnerSubjects.map(sub => {
-                const resources = vidya.getResources(sub.id);
-                const done = resources.filter(r => r.is_completed).length;
-                return (
-                  <motion.div key={sub.id} whileHover={{ y: -3 }}
-                    onClick={() => { setActiveSubject(sub); setView('subject'); }}
-                    className="bg-bg-primary border border-border-light rounded-[2rem] p-6 cursor-pointer hover:shadow-xl transition-all group"
-                    style={{ borderTopColor: sub.color, borderTopWidth: 3 }}>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: sub.color + '22' }}>
-                        <BookOpen size={18} style={{ color: sub.color }} />
-                      </div>
-                      <ChevronRight size={16} className="text-text-tertiary group-hover:text-gold transition-colors" />
-                    </div>
-                    <h4 className="font-black text-text-primary tracking-tight mb-1">{sub.name}</h4>
-                    <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mb-4">{sub.category}</p>
-                    <div className="flex items-center justify-between text-[10px] font-bold text-text-tertiary">
-                      <span>{resources.length} resources</span>
-                      <span className="text-text-success">{done} done</span>
-                    </div>
-                    {sub.target_score && (
-                      <div className="mt-3 flex items-center gap-1.5 text-[9px] font-black text-text-tertiary">
-                        <Target size={10} style={{ color: sub.color }} /> Target: {sub.target_score}
-                      </div>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Recent Sessions */}
-        {learnerSessions.length > 0 && (
-          <div>
-            <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-5">Recent Study Sessions</h3>
-            <div className="space-y-3">
-              {learnerSessions.slice(0, 5).map(s => {
-                const sub = learnerSubjects.find(x => x.id === s.subject_id);
-                const mood = MOODS.find(m => m.val === s.mood);
-                return (
-                  <div key={s.id} className="bg-bg-primary border border-border-light rounded-2xl px-5 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="text-lg">{mood?.emoji || '📖'}</div>
-                      <div>
-                        <div className="text-[12px] font-black text-text-primary">{sub?.name || 'General Study'}</div>
-                        <div className="text-[10px] font-bold text-text-tertiary">{s.date}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-[11px] font-black text-gold">{fmtMins(s.duration_mins)}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </motion.div>
     );
   };
 
   /* ══════════════════════════════════════════════════════════
-     LEVEL 3 — Subject Detail (Resources list)
+     LEVEL 3 — Subject Detail
   ══════════════════════════════════════════════════════════ */
   const renderSubject = () => {
     if (!activeSubject) return null;
-    const done = subjectResources.filter(r => r.is_completed).length;
     return (
       <motion.div key="subject" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 12 }} className="space-y-8">
-
-        {/* Subject Hero */}
-        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8" style={{ borderTopColor: activeSubject.color, borderTopWidth: 4 }}>
-          <div className="flex items-center gap-5 mb-4">
-            <div className="w-14 h-14 rounded-[1.2rem] flex items-center justify-center shadow-lg" style={{ background: activeSubject.color + '22' }}>
-              <BookOpen size={24} style={{ color: activeSubject.color }} />
+        <section className="space-y-6">
+          <div className="flex items-center justify-between px-2">
+            <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
+               {t('RESOURCES')}
             </div>
-            <div>
-              <h2 className="text-xl font-black text-text-primary">{activeSubject.name}</h2>
-              <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] mt-1">{activeSubject.category}{activeSubject.target_score ? ` · Target: ${activeSubject.target_score}` : ''}</p>
-            </div>
+            <button onClick={() => setShowAddResource(true)} className="text-[10px] font-black text-gold-text uppercase tracking-widest hover:underline flex items-center gap-1">
+               <Plus size={14} /> {t('ADD_RESOURCE')}
+            </button>
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <MiniStat label="Total" value={subjectResources.length} />
-            <MiniStat label="Done" value={done} color="text-text-success" />
-            <MiniStat label="Bookmarked" value={subjectResources.filter(r => r.is_bookmarked).length} color="text-gold" />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             {subjectResources.length > 0 ? subjectResources.map(r => (
+              <ResourceCard key={r.id} res={r} onOpen={() => { setActiveResource(r); setView('resource'); }} onBookmark={() => vidya.toggleBookmark(r.id, r.is_bookmarked)} onComplete={() => vidya.toggleComplete(r.id, r.is_completed)} onDelete={() => vidya.deleteResource(r.id)} />
+             )) : (
+              <div className="md:col-span-2 bg-bg-primary border-2 border-dashed border-border-light rounded-[3rem] py-16 flex flex-col items-center justify-center text-center opacity-40">
+                 <Play size={32} className="text-text-tertiary mb-3" strokeWidth={1} />
+                 <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-1">{t('NO_RESOURCES')}</p>
+              </div>
+             )}
           </div>
-        </div>
+        </section>
 
-        {/* Add Resource Form */}
         <AnimatePresence>
           {showAddResource && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-              className="bg-bg-primary border border-gold/30 rounded-[2.5rem] p-8 shadow-2xl space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">Add Study Resource</h3>
-                <button onClick={() => setShowAddResource(false)} className="text-text-tertiary hover:text-text-danger font-bold">✕</button>
-              </div>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+              <div className="bg-bg-primary border border-border-light rounded-[32px] p-6 max-w-sm w-full mx-4 shadow-2xl">
+                <h3 className="text-lg font-black text-text-primary tracking-tight mb-6">{t('RESOURCES').slice(0, -1)}</h3>
+                <div className="space-y-4 overflow-y-auto max-h-[70vh] scroller-hide">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('RESOURCE_TYPE')}</label>
+                    <div className="flex flex-wrap gap-2">
+                       {Object.keys(RESOURCE_LABELS).map(type => (
+                         <button key={type} onClick={() => setFResType(type as any)} className={`px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${fResType === type ? 'bg-gold-text text-white border-gold-text shadow-md' : 'bg-bg-tertiary text-text-tertiary border-border-light'}`}>
+                            {t(RESOURCE_LABELS[type as keyof typeof RESOURCE_LABELS])}
+                         </button>
+                       ))}
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('ITEM_NAME')} *</label>
+                    <input type="text" value={fResName} onChange={e => setFResName(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-xl p-3 font-bold text-text-primary outline-none focus:border-gold" placeholder={t('SUBJECT_NAME_PH')} />
+                  </div>
 
-              {/* Type selector */}
-              <div>
-                <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest block mb-3">Resource Type</label>
-                <div className="flex flex-wrap gap-2">
-                  {(Object.keys(RESOURCE_LABELS) as VidyaResourceType[]).map(t => {
-                    const Icon = RESOURCE_ICONS[t];
-                    return (
-                      <button key={t} onClick={() => setRType(t)}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black border transition-all ${rType === t ? 'border-gold bg-gold/10 text-gold' : 'border-border-light text-text-tertiary hover:border-gold/30'}`}>
-                        <Icon size={13} style={{ color: rType === t ? undefined : RESOURCE_COLORS[t] }} />
-                        {RESOURCE_LABELS[t]}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                  <div className="grid grid-cols-2 gap-4">
+                     <div className="flex flex-col gap-2">
+                        <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('DIFFICULTY')}</label>
+                        <div className="grid grid-cols-3 gap-1">
+                           {['easy', 'medium', 'hard'].map(d => (
+                             <button key={d} onClick={() => setFResDiff(d as any)} className={`p-1.5 rounded-lg border text-[8px] font-black uppercase tracking-widest transition-all ${fResDiff === d ? 'bg-bg-primary text-text-primary border-gold shadow-sm' : 'bg-bg-tertiary text-text-tertiary border-border-light opacity-60'}`}>
+                               {t(d.toUpperCase())}
+                             </button>
+                           ))}
+                        </div>
+                     </div>
+                     <div className="flex flex-col gap-2">
+                        <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('DURATION_MINS')}</label>
+                        <input type="number" value={fResDur} onChange={e => setFResDur(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-xl p-2 text-xs font-bold text-text-primary outline-none focus:border-gold" placeholder={t('DURATION_PH')} />
+                     </div>
+                  </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label="Title *" value={rTitle} onChange={setRTitle} placeholder="e.g. Chapter 5 — Optics (Khan Academy)" />
-                <Field label={rType === 'youtube' ? 'YouTube URL' : rType === 'pdf' ? 'PDF URL / Path' : 'Link URL'} value={rUrl} onChange={setRUrl} placeholder="https://..." />
-                <Field label="Chapter" value={rChapter} onChange={setRChapter} placeholder="e.g. Chapter 5" />
-                <Field label="Lesson / Topic" value={rLesson} onChange={setRLesson} placeholder="e.g. Lesson 2 — Refraction" />
-                <Field label="Duration (mins)" value={rDuration} onChange={setRDuration} type="number" placeholder={rType === 'youtube' ? 'Video length' : 'Estimated read time'} />
-                <div className="flex flex-col gap-2">
-                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Difficulty</label>
-                  <div className="flex gap-2">
-                    {(['easy', 'medium', 'hard'] as const).map(d => (
-                      <button key={d} onClick={() => setRDiff(d)}
-                        className={`flex-1 py-3 rounded-xl text-[10px] font-black border capitalize transition-all ${rDiff === d ? DIFF_COLORS[d] : 'border-border-light text-text-tertiary'}`}>
-                        {d}
-                      </button>
-                    ))}
+                  <div className="flex gap-3 mt-6">
+                    <button onClick={() => setShowAddResource(false)} className="flex-1 h-12 rounded-xl font-black text-[10px] uppercase tracking-widest text-text-tertiary hover:bg-bg-tertiary transition-all">{t('CANCEL')}</button>
+                    <button onClick={handleSaveResource} disabled={!fResName} className="flex-1 h-12 rounded-xl bg-gold-text text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 disabled:opacity-50">{t('SAVE_TO_VAULT')}</button>
                   </div>
                 </div>
-                <div className="md:col-span-2">
-                  <Field label="Description / Notes" value={rDesc} onChange={setRDesc} placeholder="Quick summary or what to focus on..." />
-                </div>
               </div>
-
-              {/* YouTube thumbnail preview */}
-              {previewThumb && (
-                <div className="flex items-center gap-4 bg-bg-secondary border border-border-light rounded-2xl p-4">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={previewThumb} alt="thumbnail" className="w-32 h-20 object-cover rounded-xl border border-border-light" />
-                  <div>
-                    <div className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mb-1">Thumbnail Preview</div>
-                    <div className="text-[11px] font-bold text-text-primary">{rTitle || 'YouTube Video'}</div>
-                  </div>
-                </div>
-              )}
-
-              <SaveBtn label="Save Resource" onClick={handleSaveResource} disabled={!rTitle.trim()} />
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
-
-        {/* Resource filter pills */}
-        <div className="flex items-center justify-between">
-          <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">Resources ({subjectResources.length})</h3>
-          {!showAddResource && (
-            <button onClick={() => setShowAddResource(true)}
-              className="flex items-center gap-2 h-9 px-5 bg-bg-secondary border border-border-light rounded-xl text-[10px] font-black text-text-tertiary hover:text-gold hover:border-gold transition-all">
-              <Plus size={12} /> Add Resource
-            </button>
-          )}
-        </div>
-
-        {subjectResources.length === 0 ? (
-          <EmptyState icon={<BookOpen size={32} strokeWidth={1} />} title="No Resources Yet" subtitle="Add YouTube videos, PDFs, articles or websites to study." />
-        ) : (
-          <div className="space-y-4">
-            {subjectResources.map(res => (
-              <ResourceCard key={res.id} res={res}
-                onOpen={() => { setActiveResource(res); setView('resource'); }}
-                onBookmark={() => vidya.toggleBookmark(res.id, res.is_bookmarked)}
-                onComplete={() => vidya.toggleComplete(res.id, res.is_completed)}
-                onDelete={() => vidya.deleteResource(res.id)}
-              />
-            ))}
-          </div>
-        )}
       </motion.div>
     );
   };
@@ -599,90 +480,21 @@ export default function VidyaModule() {
   ══════════════════════════════════════════════════════════ */
   const renderResource = () => {
     if (!activeResource) return null;
-    const Icon = RESOURCE_ICONS[activeResource.resource_type];
-    const color = RESOURCE_COLORS[activeResource.resource_type];
     return (
       <motion.div key="resource" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 12 }} className="space-y-8">
-
-        {/* Thumbnail / Hero */}
-        {activeResource.thumbnail_url ? (
-          <div className="relative rounded-[2.5rem] overflow-hidden border border-border-light shadow-2xl">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={activeResource.thumbnail_url} alt={activeResource.title} className="w-full h-52 md:h-72 object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
-              <div>
-                <div className="text-[9px] font-black text-white/80 uppercase tracking-[0.3em] mb-2">{RESOURCE_LABELS[activeResource.resource_type]}</div>
-                <h2 className="text-xl md:text-2xl font-black text-white tracking-tight leading-tight">{activeResource.title}</h2>
-              </div>
-            </div>
-            {activeResource.resource_type === 'youtube' && activeResource.url && (
-              <a href={activeResource.url} target="_blank" rel="noopener noreferrer"
-                className="absolute inset-0 flex items-center justify-center">
-                <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
-                  <Play size={26} className="text-white ml-1" fill="white" />
-                </div>
-              </a>
-            )}
+        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-10 flex items-center gap-6">
+          <div className="w-20 h-20 rounded-[1.5rem] flex items-center justify-center bg-gold/10">
+            <Play size={36} className="text-gold" />
           </div>
-        ) : (
-          <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-10 flex items-center gap-6">
-            <div className="w-20 h-20 rounded-[1.5rem] flex items-center justify-center" style={{ background: color + '22' }}>
-              <Icon size={36} style={{ color }} />
-            </div>
-            <div>
-              <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-2">{RESOURCE_LABELS[activeResource.resource_type]}</div>
-              <h2 className="text-xl font-black text-text-primary tracking-tight">{activeResource.title}</h2>
-            </div>
+          <div>
+            <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-2">{RESOURCE_LABELS[activeResource.resource_type]}</div>
+            <h2 className="text-xl font-black text-text-primary tracking-tight">{activeResource.title}</h2>
           </div>
-        )}
-
-        {/* Meta grid */}
-        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {activeResource.chapter && <MetaItem label="Chapter" value={activeResource.chapter} />}
-            {activeResource.lesson && <MetaItem label="Lesson / Topic" value={activeResource.lesson} />}
-            {activeResource.difficulty && (
-              <div className="flex flex-col gap-1">
-                <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Difficulty</span>
-                <span className={`text-[10px] font-black px-3 py-1 rounded-full border w-fit capitalize ${DIFF_COLORS[activeResource.difficulty]}`}>{activeResource.difficulty}</span>
-              </div>
-            )}
-            {activeResource.duration_mins && <MetaItem label="Duration" value={fmtMins(activeResource.duration_mins)} />}
-          </div>
-
-          {activeResource.description && (
-            <div>
-              <div className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mb-2">Notes</div>
-              <p className="text-[13px] font-bold text-text-secondary leading-relaxed">{activeResource.description}</p>
-            </div>
-          )}
-
-          {activeResource.tags && (
-            <div className="flex flex-wrap gap-2">
-              {activeResource.tags.split(',').map(tag => (
-                <span key={tag} className="px-3 py-1 bg-bg-tertiary border border-border-light rounded-full text-[9px] font-black text-text-tertiary uppercase tracking-widest">
-                  #{tag.trim()}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
-
-        {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-4">
-          {activeResource.url && (
-            <a href={activeResource.url} target="_blank" rel="noopener noreferrer"
-              className="flex-1 h-14 bg-gold-text text-white font-black text-[11px] uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-lg shadow-gold/10">
-              {activeResource.resource_type === 'youtube' ? <><Play size={16} fill="white" /> Watch on YouTube</> : <><ArrowUpRight size={16} /> Open Resource</>}
-            </a>
-          )}
           <button onClick={() => vidya.toggleComplete(activeResource.id, activeResource.is_completed)}
             className={`flex-1 h-14 font-black text-[11px] uppercase tracking-widest rounded-2xl flex items-center justify-center gap-3 border-2 transition-all ${activeResource.is_completed ? 'bg-text-success/10 border-text-success text-text-success' : 'border-border-light text-text-secondary hover:border-gold hover:text-gold'}`}>
-            {activeResource.is_completed ? <><CheckCircle2 size={16} /> Completed!</> : <><Circle size={16} /> Mark as Done</>}
-          </button>
-          <button onClick={() => vidya.toggleBookmark(activeResource.id, activeResource.is_bookmarked)}
-            className={`h-14 px-6 rounded-2xl border-2 flex items-center justify-center gap-2 font-black text-[11px] uppercase tracking-widest transition-all ${activeResource.is_bookmarked ? 'bg-gold/10 border-gold text-gold' : 'border-border-light text-text-tertiary hover:border-gold hover:text-gold'}`}>
-            {activeResource.is_bookmarked ? <BookMarked size={18} /> : <Bookmark size={18} />}
+            {activeResource.is_completed ? <><CheckCircle2 size={16} /> {t('DONE')}</> : <><Circle size={16} /> {t('MARK_DONE')}</>}
           </button>
         </div>
       </motion.div>
@@ -695,14 +507,14 @@ export default function VidyaModule() {
   return (
     <ModuleShell
       title={
-        view === 'overview' ? (lang === 'en' ? 'Vidya — Study Buddy' : 'विद्या — पारिवारिक पाठशाला') :
-        view === 'learner' ? activeLearner?.name ?? 'Learner' :
-        view === 'subject' ? activeSubject?.name ?? 'Subject' :
-        activeResource?.title ?? 'Resource'
+        view === 'overview' ? t('STUDY_BUDDY') :
+        view === 'learner' ? activeLearner?.name ?? t('LEARNERS').slice(0, -1) :
+        view === 'subject' ? activeSubject?.name ?? t('SUBJECTS').slice(0, -1) :
+        activeResource?.title ?? t('RESOURCES').slice(0, -1)
       }
-      subtitle={view === 'overview' ? (lang === 'en' ? 'Sovereign learning for every family member' : 'Har parivar ka apna adhyayan kendra') : undefined}
-      onAdd={view === 'overview' && !showAddLearner ? () => setShowAddLearner(true) : undefined}
-      addLabel={lang === 'en' ? 'Add Learner' : 'Vidyarthi Jodein'}
+      subtitle={view === 'overview' ? t('SMART_LEARNING') : undefined}
+      onAdd={view === 'overview' ? () => setView('add-learner') : undefined}
+      addLabel={t('ADD_LEARNER')}
       breadcrumbs={view !== 'overview' ? getBreadcrumbs() : undefined}
       onBack={view !== 'overview' ? handleBack : undefined}
     >
@@ -800,6 +612,8 @@ function ResourceCard({ res, onOpen, onBookmark, onComplete, onDelete }: {
   onComplete: () => void;
   onDelete: () => void;
 }) {
+  const { lang } = useAppStore();
+  const t = useTranslation(lang as Language);
   const Icon = RESOURCE_ICONS[res.resource_type];
   const color = RESOURCE_COLORS[res.resource_type];
   return (
@@ -822,10 +636,10 @@ function ResourceCard({ res, onOpen, onBookmark, onComplete, onDelete }: {
         <div className="flex-1 min-w-0 cursor-pointer" onClick={onOpen}>
           <div className="flex items-start gap-2 mb-1.5">
             <div className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full" style={{ color, background: color + '18' }}>
-              {RESOURCE_LABELS[res.resource_type]}
+              {t(RESOURCE_LABELS[res.resource_type])}
             </div>
             {res.difficulty && (
-              <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${DIFF_COLORS[res.difficulty]}`}>{res.difficulty}</span>
+              <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${DIFF_COLORS[res.difficulty]}`}>{t(res.difficulty.toUpperCase())}</span>
             )}
           </div>
           <h4 className={`font-black text-text-primary tracking-tight leading-tight line-clamp-2 ${res.is_completed ? 'line-through opacity-60' : ''}`}>{res.title}</h4>
@@ -846,7 +660,7 @@ function ResourceCard({ res, onOpen, onBookmark, onComplete, onDelete }: {
           <button onClick={onBookmark} className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${res.is_bookmarked ? 'text-gold bg-gold/10' : 'text-text-tertiary hover:text-gold hover:bg-gold/5'}`}>
             {res.is_bookmarked ? <BookMarked size={16} /> : <Bookmark size={16} />}
           </button>
-          <button onClick={onComplete} className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${res.is_completed ? 'text-text-success bg-text-success/10' : 'text-text-tertiary hover:text-text-success hover:bg-text-success/5'}`}>
+          <button onClick={onComplete} title={t('MARK_DONE')} className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${res.is_completed ? 'text-text-success bg-text-success/10' : 'text-text-tertiary hover:text-text-success hover:bg-text-success/5'}`}>
             {res.is_completed ? <CheckCircle2 size={16} /> : <Circle size={16} />}
           </button>
           <button onClick={onDelete} className="w-9 h-9 rounded-xl flex items-center justify-center text-text-tertiary hover:text-text-danger hover:bg-text-danger/5 transition-all opacity-0 group-hover:opacity-100">

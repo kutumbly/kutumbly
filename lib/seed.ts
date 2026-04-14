@@ -45,9 +45,9 @@ export function seedDatabase(db: any) {
 
   // Nevata seed
   db.run(`INSERT OR IGNORE INTO nevata_events VALUES
-    ('ne1','Rahul ki Shaadi','shaadi','aaya','Mallah Parivar','2026-04-22','Agra',4,'upcoming',NULL,'2026-04-13'),
-    ('ne2','Chotu ka Mundan','mundan','aaya','Verma Khaandaan','2026-02-02','Lucknow',3,'attended',NULL,'2026-02-03'),
-    ('ne3','Hamari Beti ki Sagai','sagai','bheja','Agarwal Parivar','2026-03-10','Ghar',0,'attended',NULL,'2026-03-11')`);
+    ('ne1','Rahul ki Shaadi','shaadi','they_invited','Mallah Parivar','2026-04-22','Agra',4,'upcoming',NULL,'2026-04-13'),
+    ('ne2','Chotu ka Mundan','mundan','they_invited','Verma Khaandaan','2026-02-02','Lucknow',3,'attended',NULL,'2026-02-03'),
+    ('ne3','Hamari Beti ki Sagai','sagai','we_hosted','Agarwal Parivar','2026-03-10','Ghar',0,'attended',NULL,'2026-03-11')`);
 
   db.run(`INSERT OR IGNORE INTO nevata_shagun VALUES
     ('ns1','ne1','diya',21000,'Cash envelope','Jawahar Mallah',NULL,0,'2026-04-13'),

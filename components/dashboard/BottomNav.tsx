@@ -20,11 +20,10 @@ import React, { useState } from 'react';
 import { LucideIcon, LayoutGrid } from 'lucide-react';
 import { motion } from 'framer-motion';
 import MoreModulesDrawer from './MoreModulesDrawer';
+import { useTranslation, Language } from '@/lib/i18n';
 
 interface TabItem {
   id: string;
-  labelEn: string;
-  labelHi: string;
   icon: LucideIcon;
 }
 
@@ -36,6 +35,7 @@ interface BottomNavProps {
 }
 
 export default function BottomNav({ tabs, activeTab, onTabChange, lang }: BottomNavProps) {
+  const t = useTranslation(lang as Language);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Show first 4 tabs + "More"
@@ -50,7 +50,7 @@ export default function BottomNav({ tabs, activeTab, onTabChange, lang }: Bottom
         {visibleTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
-          const label = lang === 'en' ? tab.labelEn : tab.labelHi;
+          const label = t(`NAV_${tab.id.toUpperCase()}`);
           
           return (
             <button
@@ -83,7 +83,7 @@ export default function BottomNav({ tabs, activeTab, onTabChange, lang }: Bottom
             <LayoutGrid size={20} strokeWidth={isMoreActive ? 3 : 2} />
           </div>
           <span className={`text-[8px] font-black uppercase tracking-[0.2em] leading-none ${isMoreActive ? 'text-gold-text' : 'text-text-tertiary'}`}>
-            {lang === 'en' ? 'More' : 'Aur'}
+            {t('MORE')}
           </span>
         </button>
       </nav>

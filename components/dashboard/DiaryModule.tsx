@@ -20,6 +20,7 @@ import React, { useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { useDiary } from '@/hooks/useDiary';
 import ModuleShell from './ModuleShell';
+import { useTranslation } from '@/lib/i18n';
 import { Search, Book, Trash2, Calendar, Smile, Heart, MessageSquare, ArrowRight, BookOpen, MapPin, Cloud, Tag, Lock, Unlock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DiaryEntry } from '@/types/db';
@@ -32,6 +33,7 @@ const WEATHER = ['Sunny', 'Cloudy', 'Rainy', 'Stormy', 'Snowy'];
 
 export default function DiaryModule() {
   const { lang, currentPin } = useAppStore();
+  const t = useTranslation(lang);
   const { entries, addEntry, deleteEntry } = useDiary();
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -79,21 +81,21 @@ export default function DiaryModule() {
                        String(e.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                        String(e.tags || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSearch = searchTerm ? textSearch : true;
-    const matchesMonth = selectedMonth ? new Date(String(e.date)).toLocaleString('en-US', { month: 'long', year: 'numeric' }) === selectedMonth : true;
+    const matchesMonth = selectedMonth ? new Date(String(e.date)).toLocaleString(lang === 'hi' || lang === 'bho' ? 'hi-IN' : 'en-US', { month: 'long', year: 'numeric' }) === selectedMonth : true;
     return matchesSearch && matchesMonth;
   });
 
   // Group entries by month for overview
   const monthGroups = entries.reduce((acc, entry) => {
-     const m = new Date(String(entry.date)).toLocaleString('en-US', { month: 'long', year: 'numeric' });
+     const m = new Date(String(entry.date)).toLocaleString(lang === 'hi' || lang === 'bho' ? 'hi-IN' : 'en-US', { month: 'long', year: 'numeric' });
      acc[m] = (acc[m] || 0) + 1;
      return acc;
   }, {} as Record<string, number>);
 
   const getBreadcrumbs = () => {
-    const b = [lang === 'en' ? "Memoir" : "Dastaan"];
-    if (view === 'timeline' || view === 'reading') b.push(selectedMonth || 'Timeline');
-    if (view === 'reading') b.push(activeEntry?.title || "Journal Entry");
+    const b = [t('DIARY')];
+    if (view === 'timeline' || view === 'reading') b.push(selectedMonth || (lang === 'en' ? 'Timeline' : (lang === 'hi' ? 'समय रेखा' : 'समय रेखा')));
+    if (view === 'reading') b.push(activeEntry?.title || (lang === 'en' ? "Journal Entry" : "डायरी एंट्री"));
     return b;
   };
 
@@ -130,13 +132,13 @@ export default function DiaryModule() {
   return (
     <ModuleShell 
       title={
-        view === 'overview' ? (lang === 'en' ? "Family Memoir" : "Dastaan-e-Parivar") :
+        view === 'overview' ? t('DIARY') :
         view === 'timeline' ? `${selectedMonth} Archive` :
-        "Journal Entry"
+        t('DIARY')
       }
-      subtitle={view === 'overview' ? (lang === 'en' ? "Chronicles & personal reflections" : "Har din ki yaadein, hamesha ke liye") : undefined}
+      subtitle={view === 'overview' ? t('DIARY_SUBTITLE') : undefined}
       onAdd={view === 'overview' && !showCompose ? () => setShowCompose(true) : undefined}
-      addLabel={lang === 'en' ? "New Entry" : "Nayi Yaad"}
+      addLabel={t('NEW_ENTRY')}
       breadcrumbs={view !== 'overview' ? getBreadcrumbs() : undefined}
       onBack={view !== 'overview' ? handleBack : undefined}
     >
@@ -161,7 +163,7 @@ export default function DiaryModule() {
             >
               <div className="flex items-center justify-between border-b border-border-light pb-4">
                 <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-                  {lang === 'en' ? 'Compose Memoir' : 'Nayi Diary Entry'}
+                  {t('COMPOSE_MEMOIR')}
                 </h3>
                 <button onClick={() => setShowCompose(false)} className="text-text-tertiary hover:text-text-danger text-xs font-bold uppercase tracking-widest">✕</button>
               </div>
@@ -169,14 +171,14 @@ export default function DiaryModule() {
               <div className="flex flex-col gap-5">
                 <input
                   autoFocus
-                  placeholder={lang === 'hi' ? "Shuruaat kya hui..." : "Title of your entry..."}
+                  placeholder={lang === 'hi' || lang === 'bho' ? (lang === 'bho' ? "शुरुआत कइसे भइल..." : "Shuruaat kya hui...") : "Title of your entry..."}
                   className="w-full bg-transparent border-none text-2xl font-black text-text-primary placeholder:text-text-tertiary focus:outline-none"
                   value={cTitle}
                   onChange={e => setCTitle(e.target.value)}
                 />
 
                 <textarea
-                  placeholder={lang === 'hi' ? "Aaj kya hua? Apne dil ki baat likhein..." : "Dear diary, today..."}
+                  placeholder={lang === 'hi' || lang === 'bho' ? (lang === 'bho' ? "आज का भइल? अपने मन के बात लिखीं..." : "Aaj kya hua? Apne dil ki baat likhein...") : "Dear diary, today..."}
                   className="w-full bg-bg-secondary border border-border-light rounded-2xl p-6 text-[14px] font-bold text-text-primary leading-[1.8] resize-none focus:outline-none focus:border-gold transition-all min-h-[200px]"
                   value={cContent}
                   onChange={e => setCContent(e.target.value)}
@@ -185,27 +187,27 @@ export default function DiaryModule() {
                 {/* Metadata Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex items-center gap-1.5"><Smile size={10} /> Mood</label>
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex items-center gap-1.5"><Smile size={10} /> {t('MOOD_LABEL')}</label>
                     <select value={cMood} onChange={e => setCMood(e.target.value)} className="bg-bg-secondary border border-border-light rounded-xl p-3 text-xs font-black uppercase text-text-primary focus:border-gold outline-none">
                       {MOODS.map(m => <option key={m} value={m}>{m}</option>)}
                     </select>
                   </div>
                   
                   <div className="flex flex-col gap-2">
-                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex items-center gap-1.5"><Tag size={10} /> Tags</label>
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex items-center gap-1.5"><Tag size={10} /> {t('TAGS_LABEL')}</label>
                     <input type="text" placeholder="Work, Travel..." value={cTags} onChange={e => setCTags(e.target.value)} className="bg-bg-secondary border border-border-light rounded-xl p-3 text-xs font-bold text-text-primary focus:border-gold outline-none" />
                   </div>
-
+ 
                   <div className="flex flex-col gap-2">
-                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex items-center gap-1.5"><MapPin size={10} /> Location</label>
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex items-center gap-1.5"><MapPin size={10} /> {t('LOCATION_LABEL')}</label>
                     <input type="text" placeholder="e.g Mumbai" value={cLocation} onChange={e => setCLocation(e.target.value)} className="bg-bg-secondary border border-border-light rounded-xl p-3 text-xs font-bold text-text-primary focus:border-gold outline-none" />
                   </div>
-
+ 
                   <div className="flex flex-col gap-2">
-                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex items-center gap-1.5"><Cloud size={10} /> Weather</label>
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex items-center gap-1.5"><Cloud size={10} /> {t('WEATHER_LABEL')}</label>
                     <select value={cWeather} onChange={e => setCWeather(e.target.value)} className="bg-bg-secondary border border-border-light rounded-xl p-3 text-xs font-black uppercase text-text-primary focus:border-gold outline-none">
-                      <option value="">None</option>
-                      {WEATHER.map(m => <option key={m} value={m}>{m}</option>)}
+                      <option value="">{t('WEATHER_NONE')}</option>
+                      {WEATHER.map(m => <option key={m} value={m}>{t(`WEATHER_${m.toUpperCase()}`)}</option>)}
                     </select>
                   </div>
                 </div>
@@ -216,8 +218,8 @@ export default function DiaryModule() {
                        <Lock size={16} />
                     </div>
                     <div>
-                      <h4 className="text-xs font-black uppercase tracking-widest">Mark as Private</h4>
-                      <p className="text-[10px] text-text-tertiary mt-0.5">Require Vault PIN to read</p>
+                      <h4 className="text-xs font-black uppercase tracking-widest">{t('MARK_PRIVATE')}</h4>
+                      <p className="text-[10px] text-text-tertiary mt-0.5">{t('PRIVATE_SUB')}</p>
                     </div>
                   </div>
                   <button onClick={() => setCLocked(!cLocked)} className={`w-12 h-6 rounded-full relative transition-colors ${cLocked ? 'bg-gold' : 'bg-bg-tertiary border border-border-light'}`}>
@@ -230,7 +232,7 @@ export default function DiaryModule() {
                   disabled={!cContent.trim()}
                   className="w-full h-14 bg-gold-text text-white font-black rounded-2xl text-[11px] uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-30 shadow-lg shadow-gold/10 mt-2"
                 >
-                  {lang === 'en' ? 'Seal the Memory' : 'Vault Mein Mehfooz Karein'}
+                  {t('SAVE_TO_VAULT')}
                 </button>
               </div>
             </motion.div>
@@ -243,7 +245,7 @@ export default function DiaryModule() {
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary group-focus-within:text-gold transition-colors" />
             <input 
               type="text"
-              placeholder={lang === 'hi' ? "Kuch purana dhundhein..." : "Search tags, titles or contents..."}
+              placeholder={lang === 'hi' || lang === 'bho' ? (lang === 'bho' ? "कवनो पुरानी याद ढूँढीं..." : "Kuch purana dhundhein...") : "Search tags, titles or contents..."}
               className="w-full pl-14 pr-5 py-5 bg-bg-primary border border-border-light rounded-2xl text-[13px] font-black tracking-tight shadow-sm focus:outline-none focus:border-gold transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -393,7 +395,7 @@ export default function DiaryModule() {
                <div className="w-24 h-24 bg-bg-tertiary rounded-full flex items-center justify-center mb-8">
                   <Book size={40} strokeWidth={1} className="text-text-tertiary" />
                </div>
-               <p className="font-black uppercase tracking-[0.4em] text-[11px]">{lang === 'hi' ? 'Diary Khaali Hai' : 'No entries found'}</p>
+               <p className="font-black uppercase tracking-[0.4em] text-[11px]">{lang === 'bho' ? 'डायरी खाली बा' : (lang === 'hi' ? 'Diary Khaali Hai' : 'No entries found')}</p>
             </div>
           )}
         </div>

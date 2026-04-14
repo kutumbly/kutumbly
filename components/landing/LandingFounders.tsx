@@ -60,10 +60,13 @@ export default function LandingFounders() {
                 "Real wisdom isn't inherited in a classroom; it’s forged in the village and tempered by raw experience."
               </p>
               <p>
-                Hailing from a small village in Gorakhpur, Pushpa formally attended school only up to the 1st standard. Yet, she possesses a profound, intuitive understanding of complex operational and financial processes that drive global corporations.
+                Hailing from Gorakhpur, Pushpa possesses a profound, intuitive understanding of complex operational and financial processes. Her "native intelligence" is the bedrock of Kutumbly's practical architecture.
               </p>
               <p>
-                As the Founder and primary financier, she provided the backbone for Kutumbly. She is deeply involved in guiding the "real-world" flow of every single module to ensure it genuinely serves Indian families.
+                As the Founder and primary financier, she provided the financial backbone and the moral compass for the project. She ensures that every module—from Money to Nevata—resonates with the authentic needs and cultural nuances of Indian families.
+              </p>
+              <p>
+                Her vision is simple: to bring elite-level data sovereignty to every household, ensuring that family memories and wealth remain private and protected for generations.
               </p>
             </div>
           </motion.div>

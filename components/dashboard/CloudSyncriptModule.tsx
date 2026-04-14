@@ -27,6 +27,7 @@ import {
   Database, Wifi, WifiOff, XCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation, Language } from '@/lib/i18n';
 
 export default function CloudSyncriptModule() {
   const { 
@@ -34,6 +35,7 @@ export default function CloudSyncriptModule() {
     lastSyncDate, isSyncing, gdriveToken, pendingSync,
     setGDriveToken, setSyncStatus, unlinkCloud
   } = useAppStore();
+  const t_hook = useTranslation(lang as Language);
 
   const [backups, setBackups] = useState<any[]>([]);
   const [isOnline, setIsOnline] = useState(true);
@@ -106,14 +108,14 @@ export default function CloudSyncriptModule() {
   };
 
   const t = {
-    title: lang === 'hi' ? 'Cloud-Syncript' : 'Cloud-Syncript',
-    subtitle: lang === 'hi' ? 'Sovereign Google Sync' : 'Sovereign Google Sync',
-    status: lang === 'hi' ? 'Status' : 'System Jaal Status',
-    syncNow: lang === 'hi' ? 'Cloud Par Bhejein' : 'Sync to Cloud',
-    authorized: lang === 'hi' ? 'Account Linked' : 'Google Identity Linked',
-    notAuthorized: lang === 'hi' ? 'Account Link Karein' : 'Link Google Account',
-    lastSync: lang === 'hi' ? 'Aakhri Sync' : 'Last Syncript',
-    history: lang === 'hi' ? 'Itihas' : 'Backup History',
+    title: t_hook('CLOUD_SYNC'),
+    subtitle: lang === 'en' ? 'Sovereign Google Sync' : (lang === 'bho' ? 'पइसा अउर याद के सुरक्षित सिंक' : 'Sovereign Google Sync'),
+    status: t_hook('NETWORK_STATUS'),
+    syncNow: t_hook('SYNC_NOW'),
+    authorized: lang === 'en' ? 'Account Linked' : (lang === 'bho' ? 'खाता जुड़ल बा' : 'Account Linked'),
+    notAuthorized: lang === 'en' ? 'Link Account' : (lang === 'bho' ? 'खाता जोड़ीं' : 'Link Account'),
+    lastSync: t_hook('LAST_SYNC'),
+    history: t_hook('BACKUP_HISTORY'),
   };
 
   return (
@@ -128,8 +130,8 @@ export default function CloudSyncriptModule() {
                 {isOnline ? <Wifi size={20} /> : <WifiOff size={20} />}
               </div>
               <div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-text-tertiary">Connectivity</div>
-                <div className="text-sm font-bold text-text-primary">{isOnline ? 'Active Link' : 'Offline Mode'}</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-text-tertiary">{t_hook('CONNECTIVITY')}</div>
+                <div className="text-sm font-bold text-text-primary">{isOnline ? t_hook('ACTIVE_LINK') : t_hook('OFFLINE_MODE')}</div>
               </div>
             </div>
             {pendingSync && (
@@ -149,9 +151,9 @@ export default function CloudSyncriptModule() {
                 {authStatus === 'unauthorized' ? <XCircle size={20} /> : <ShieldCheck size={20} />}
               </div>
               <div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-text-tertiary">Vault Identity</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-text-tertiary">{lang === 'bho' ? 'कोठरी के पहचान' : 'Vault Identity'}</div>
                 <div className="text-sm font-bold text-text-primary">
-                  {authStatus === 'authorized' ? 'Authenticated' : authStatus === 'unauthorized' ? 'Unauthorized' : 'Locked'}
+                  {authStatus === 'authorized' ? (lang === 'bho' ? 'जुड़ल बा' : 'Authenticated') : authStatus === 'unauthorized' ? (lang === 'bho' ? 'अनुमति नइखे' : 'Unauthorized') : (lang === 'bho' ? 'एकदम बंद' : 'Locked')}
                 </div>
                 {authStatus === 'unauthorized' && (
                   <div className="text-[9px] text-text-danger font-bold truncate max-w-[120px]">
@@ -191,10 +193,9 @@ export default function CloudSyncriptModule() {
                 </AnimatePresence>
              </div>
 
-             <h3 className="text-xl font-bold text-text-primary mb-2">Cloud-Syncript Engine</h3>
+             <h3 className="text-xl font-bold text-text-primary mb-2">{lang === 'bho' ? 'क्लाउड सिंक इंजन' : 'Cloud-Syncript Engine'}</h3>
              <p className="text-sm text-text-secondary max-w-sm mb-8">
-               Your encrypted .kutumb files are sent to your personal Google Drive. 
-               Zero data ever touches Kutumbly servers.
+               {lang === 'bho' ? 'राउर सब जानकारी (encrypted .kutumb files) गूगल ड्राइव पर एकदम सुरक्षित रही। ई जानकारी केहू अउर ना देख पाई।' : 'Your encrypted .kutumb files are sent to your personal Google Drive. Zero data ever touches Kutumbly servers.'}
              </p>
 
              <button 

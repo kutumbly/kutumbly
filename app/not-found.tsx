@@ -50,7 +50,7 @@ export default function NotFound() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <div className="w-16 h-16 bg-bg-primary border border-border-light rounded-[1.5rem] flex items-center justify-center shadow-xl shadow-black/[0.04]">
-            <Image src="/favicon.svg" alt="Kutumbly" width={36} height={36} />
+            <Image src="/favicon.svg" alt="Kutumbly" width={36} height={36} style={{ height: 'auto' }} />
           </div>
         </div>
 

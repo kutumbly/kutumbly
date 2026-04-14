@@ -24,12 +24,14 @@ import MetricCard from '../ui/MetricCard';
 import { ShoppingCart, Package, ListChecks, ArrowRight, MoreVertical, Plus, CheckCircle2, Circle, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import RupeesDisplay from '../ui/RupeesDisplay';
+import { useTranslation, Language } from '@/lib/i18n';
 import { GroceryItem } from '@/types/db';
 
 type GroceryView = 'overview' | 'category-items' | 'item-detail';
 
 export default function GroceryModule() {
   const { lang } = useAppStore();
+  const t = useTranslation(lang as Language);
   const { items, addItem, checkItem, deleteItem, clearChecked } = useGrocery();
   
   const [view, setView] = useState<GroceryView>('overview');
@@ -56,7 +58,7 @@ export default function GroceryModule() {
   const totalEstimated = items.filter(i => !i.checked).reduce((acc, i) => acc + i.estimated_price, 0);
 
   const getBreadcrumbs = () => {
-    const b = [lang === 'en' ? "Grocery" : "Kirana"];
+    const b = [t('FAMILY_GROCERY')];
     if (view === 'category-items' || view === 'item-detail') b.push(activeCategory || '');
     if (view === 'item-detail') b.push(activeItem?.name || '');
     return b;
@@ -70,13 +72,13 @@ export default function GroceryModule() {
   return (
     <ModuleShell 
       title={
-        view === 'overview' ? (lang === 'en' ? "Family Grocery" : "Parivar ka Kirana") :
+        view === 'overview' ? t('FAMILY_GROCERY') :
         view === 'category-items' ? `${activeCategory} List` :
         activeItem?.name || "Item Details"
       }
-      subtitle={view === 'overview' ? (lang === 'en' ? "Smart shopping lists with budget tracking" : "Rasoi ka saaman aur budget ka hisab") : undefined}
+      subtitle={view === 'overview' ? t('SMART_SHOPPING') : undefined}
       onAdd={view === 'overview' && !showAddForm ? () => setShowAddForm(true) : undefined}
-      addLabel={lang === 'en' ? "Add Item" : "Saaman Jodein"}
+      addLabel={t('ADD_SAAMAN')}
       breadcrumbs={view !== 'overview' ? getBreadcrumbs() : undefined}
       onBack={view !== 'overview' ? handleBack : undefined}
     >
@@ -100,18 +102,18 @@ export default function GroceryModule() {
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-                  {lang === 'en' ? 'Add to Shopping List' : 'Kirana Mein Jodein'}
+                  {t('KIRANA_ADD')}
                 </h3>
                 <button onClick={() => setShowAddForm(false)} className="text-text-tertiary hover:text-text-danger text-xs font-bold">✕</button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
-                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Item Name</label>
+                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('ITEM_NAME')}</label>
                   <input autoFocus value={fName} onChange={e => setFName(e.target.value)} placeholder="e.g. Basmati Rice"
                     className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold transition-all" />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Category</label>
+                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('STORE_CATEGORIES')}</label>
                   <select value={fCategory} onChange={e => setFCategory(e.target.value)}
                     className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold transition-all">
                     {['Staples', 'Vegetables', 'Fruits', 'Dairy', 'Spices', 'Snacks', 'Beverages', 'Personal Care', 'Cleaning', 'General'].map(c => (
@@ -121,12 +123,12 @@ export default function GroceryModule() {
                 </div>
                 <div className="flex gap-3">
                   <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Qty</label>
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('QTY')}</label>
                     <input value={fQty} onChange={e => setFQty(e.target.value)} placeholder="1"
                       className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold transition-all" />
                   </div>
                   <div className="flex flex-col gap-2 flex-1">
-                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Unit</label>
+                    <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('UNIT')}</label>
                     <select value={fUnit} onChange={e => setFUnit(e.target.value)}
                       className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold transition-all">
                       {['kg', 'g', 'L', 'ml', 'pcs', 'dozen', 'pack', 'bottle'].map(u => <option key={u} value={u}>{u}</option>)}
@@ -134,24 +136,24 @@ export default function GroceryModule() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Est. Price (₹)</label>
+                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('EST_PRICE')} (₹)</label>
                   <input type="number" value={fPrice} onChange={e => setFPrice(e.target.value)} placeholder="0"
                     className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold transition-all" />
                 </div>
               </div>
               <button onClick={handleAddItem} disabled={!fName.trim()}
                 className="w-full h-14 bg-gold-text text-white font-black rounded-2xl text-[11px] uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-30 shadow-lg shadow-gold/10">
-                {lang === 'en' ? 'Add to List' : 'List Mein Jodein'}
+                {t('KIRANA_ADD')}
               </button>
             </motion.div>
           )}
         </AnimatePresence>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-           <MetricCard label="Items to Buy" value={pendingCount} status="warning" />
-           <MetricCard label="Estimated Total" value={totalEstimated} isCurrency status="default" />
-           <MetricCard label="Store Categories" value={categories.length} status="info" />
-           <MetricCard label="Pantry Status" value={pendingCount > 0 ? (lang === 'hi' ? 'Baaki Hai' : 'Stocking') : (lang === 'hi' ? 'Poora Hai' : 'Full')} status={pendingCount > 0 ? 'warning' : 'success'} />
+           <MetricCard label={t('ITEMS_TO_BUY')} value={pendingCount} status="warning" />
+           <MetricCard label={t('ESTIMATED_TOTAL')} value={totalEstimated} isCurrency status="default" />
+           <MetricCard label={t('STORE_CATEGORIES')} value={categories.length} status="info" />
+           <MetricCard label={t('PANTRY_STATUS')} value={pendingCount > 0 ? (lang === 'bho' ? 'बांकी बा' : 'Stocking') : t('PANTRY_FULL')} status={pendingCount > 0 ? 'warning' : 'success'} />
         </div>
 
         {/* Categories Grid (replaces full list view) */}
@@ -187,7 +189,7 @@ export default function GroceryModule() {
                  <div className="w-20 h-20 bg-bg-tertiary rounded-full flex items-center justify-center mb-6">
                     <ShoppingCart size={36} strokeWidth={1} className="text-text-tertiary" />
                  </div>
-                 <h2 className="text-sm font-black uppercase tracking-[0.4em]">{lang === 'hi' ? 'Rasoi Bhari Hai' : 'Pantry is full!'}</h2>
+                 <h2 className="text-sm font-black uppercase tracking-[0.4em]">{t('PANTRY_FULL')}</h2>
               </div>
            )}
         </div>

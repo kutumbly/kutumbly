@@ -21,12 +21,15 @@ import { useAppStore } from '@/lib/store';
 import { useNevata } from '@/hooks/useNevata';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
+import { useTranslation, Language } from '@/lib/i18n';
 import RupeesDisplay from '../ui/RupeesDisplay';
 import {
   Calendar, Users, Gift, ArrowRight,
-  MapPin, CheckCircle2, Clock, Package2
+  MapPin, CheckCircle2, Clock, Package2, ArrowLeft, Settings
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import MissionControl from './nevata/MissionControl';
+import InventoryManager from './nevata/InventoryManager';
 import { NevataEvent, ShagunRecord, NevataLedgerEntry } from '@/types/db';
 
 const EVENT_TYPE_EMOJI: Record<string, string> = {
@@ -34,9 +37,9 @@ const EVENT_TYPE_EMOJI: Record<string, string> = {
   mundan: '✂️', janeu: '🙏', pooja: '🪔', other: '📅',
 };
 
-const DIRECTION_LABEL: Record<string, { label: string; color: string }> = {
-  bheja: { label: 'Hamari Shaadi', color: 'bg-bg-info text-text-info' },
-  aaya:  { label: 'Unki Shaadi',   color: 'bg-bg-success text-text-success' },
+const DIRECTION_LABEL: Record<string, { label: string; color: string; key: string }> = {
+  we_hosted:    { label: 'Hamari Shaadi', color: 'bg-bg-info text-text-info', key: 'OUR_SHADI' },
+  they_invited: { label: 'Unki Shaadi',   color: 'bg-bg-success text-text-success', key: 'THEIR_SHADI' },
 };
 
 function daysUntil(dateStr: string): number {
@@ -51,10 +54,13 @@ import { parseRichContent } from '@/lib/richContent';
 
 export default function NevataModule() {
   const { lang, db } = useAppStore();
+  const t = useTranslation(lang as Language);
   const { getEvents, getLedger, getUpcoming, suggestShagun } = useNevata();
 
-  const [direction, setDirection] = useState<'aaya' | 'bheja'>('aaya');
+  const [direction, setDirection] = useState<'they_invited' | 'we_hosted'>('they_invited');
   const [activeTab, setActiveTab] = useState<'events' | 'ledger' | 'upcoming' | 'registry'>('events');
+  const [selectedEvent, setSelectedEvent] = useState<NevataEvent | null>(null);
+  const [nevataMode, setNevataMode] = useState<'list' | 'control' | 'inventory'>('list');
 
   const events   = useMemo(() => getEvents(direction), [direction, db, getEvents]);
   const ledger   = useMemo(() => getLedger(),           [db, getLedger]);
@@ -78,19 +84,19 @@ export default function NevataModule() {
 
   type MetricStatus = "success" | "default" | "warning" | "danger" | "info";
   
-  const stats: { label: string; value: number; status: MetricStatus; isCurrency?: boolean }[] = direction === 'aaya'
+  const stats: { label: string; value: number; status: MetricStatus; isCurrency?: boolean }[] = direction === 'they_invited'
     ? [
-        { label: 'Upcoming',    value: upcoming.length,  status: 'warning' },
-        { label: 'Diya (Total)',value: totalDiya, isCurrency: true, status: 'danger' },
-        { label: 'Mila (Total)',value: totalMila, isCurrency: true, status: 'success' },
-        { label: 'Net Rivaaj',  value: (totalMila - totalDiya), isCurrency: true,
+        { label: t('UPCOMING'),    value: upcoming.length,  status: 'warning' },
+        { label: t('GIVEN_TOTAL'), value: totalDiya, isCurrency: true, status: 'danger' },
+        { label: t('RECEIVED_TOTAL'), value: totalMila, isCurrency: true, status: 'success' },
+        { label: t('NET_RIVAAJ'),  value: (totalMila - totalDiya), isCurrency: true,
           status: (totalMila - totalDiya >= 0 ? 'info' : 'warning') as MetricStatus },
       ]
     : [
-        { label: 'Invited',    value: 0,         status: 'info' },
-        { label: 'Mila Total', value: totalMila, isCurrency: true, status: 'success' },
-        { label: 'Diya Total', value: totalDiya, isCurrency: true, status: 'danger' },
-        { label: 'Shuddh Net', value: totalMila - totalDiya, isCurrency: true, status: 'info' },
+        { label: t('INVITED'),    value: 0,         status: 'info' },
+        { label: t('RECEIVED_TOTAL'), value: totalMila, isCurrency: true, status: 'success' },
+        { label: t('GIVEN_TOTAL'), value: totalDiya, isCurrency: true, status: 'danger' },
+        { label: t('NET_RIVAAJ'), value: totalMila - totalDiya, isCurrency: true, status: 'info' },
       ];
 
   // --- Tab content renderers ---
@@ -99,11 +105,15 @@ export default function NevataModule() {
     <div className="grid gap-4">
       {events.length > 0 ? events.map((e: NevataEvent) => {
         const emoji = EVENT_TYPE_EMOJI[String(e.event_type)] || '📅';
-        const dir   = DIRECTION_LABEL[String(e.direction)] || DIRECTION_LABEL['aaya'];
+        const dir   = DIRECTION_LABEL[String(e.direction)] || DIRECTION_LABEL['they_invited'];
         return (
           <div
             key={String(e.id)}
-            className="card p-5 flex flex-col md:flex-row gap-5 justify-between group hover:border-gold transition-all"
+            onClick={() => {
+              setSelectedEvent(e);
+              setNevataMode('control');
+            }}
+            className="card p-5 flex flex-col md:flex-row gap-5 justify-between group hover:border-gold transition-all cursor-pointer"
           >
             <div className="flex gap-4">
               <div className="w-14 h-14 rounded-2xl bg-bg-tertiary border border-border-light flex items-center justify-center text-2xl flex-shrink-0">
@@ -115,7 +125,7 @@ export default function NevataModule() {
                     {e.title}
                   </h4>
                   <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest ${dir.color}`}>
-                    {dir.label}
+                    {lang === 'bho' ? (e.direction === 'we_hosted' ? 'आपन शादी' : 'उनकर शादी') : t(dir.key as any)}
                   </span>
                 </div>
                 <p className="text-[11px] font-bold text-text-tertiary uppercase tracking-widest">
@@ -128,17 +138,17 @@ export default function NevataModule() {
                     </span>
                   )}
                   <span className="flex items-center gap-1 text-[10px] font-bold text-text-tertiary">
-                    <Users size={11} className="text-gold" /> {e.our_count} ja rahe
+                    <Users size={11} className="text-gold" /> {e.our_count} {t('PEOPLE_COUNT')}
                   </span>
                 </div>
               </div>
             </div>
 
             <div className="flex flex-col justify-between items-end gap-3">
-              {direction === 'aaya' && (
+              {direction === 'they_invited' && (
                 <div className="bg-gold/5 border border-gold/20 rounded-xl p-3 text-right min-w-[120px]">
                   <div className="text-[9px] font-black text-gold uppercase tracking-[0.2em] mb-1">
-                    Suggester Rivaaj
+                    {t('SUGGEST_RIVAAJ')}
                   </div>
                   <div className="text-base font-black text-gold tabular-nums">
                     <RupeesDisplay amount={suggestShagun(e.family_name)} />
@@ -152,7 +162,7 @@ export default function NevataModule() {
                   ? 'bg-bg-warning text-text-warning border-text-warning/10'
                   : 'bg-bg-tertiary text-text-tertiary border-border-light'
               }`}>
-                {e.status}
+                {t(`STATUS_${e.status.toUpperCase()}` as any)}
               </span>
             </div>
           </div>
@@ -160,7 +170,7 @@ export default function NevataModule() {
       }) : (
         <div className="py-24 flex flex-col items-center justify-center opacity-30">
           <Gift size={48} strokeWidth={1} />
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] mt-4">Koi events nahi</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] mt-4">{t('NO_EVENTS')}</p>
         </div>
       )}
     </div>
@@ -197,7 +207,7 @@ export default function NevataModule() {
               <RupeesDisplay amount={l.net} />
             </div>
             <div className="text-[9px] font-bold text-text-tertiary uppercase tracking-tighter mt-0.5">
-              {l.net >= 0 ? 'Hum aage hain' : 'Baaki hai'}
+              {l.net >= 0 ? t('WE_ARE_AHEAD') : t('BALANCE_DUE')}
             </div>
           </div>
         </div>
@@ -229,10 +239,10 @@ export default function NevataModule() {
                 </p>
                 <div className="flex items-center gap-2 mt-1.5">
                   <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${urgency}`}>
-                    {days === 0 ? 'Aaj!' : days < 0 ? 'Gaya' : `${days} din baaki`}
+                    {days === 0 ? t('TODAY') : days < 0 ? (lang === 'bho' ? 'पहलही भयल' : 'Passed') : `${days} ${t('DAYS_LEFT')}`}
                   </span>
                   <span className="text-[10px] font-bold text-gold">
-                    Suggest: <RupeesDisplay amount={suggested} />
+                    {t('SUGGESTED')}: <RupeesDisplay amount={suggested} />
                   </span>
                 </div>
               </div>
@@ -258,25 +268,58 @@ export default function NevataModule() {
   );
 
   const TABS = [
-    { id: 'events',   label: 'Kaaryakram' },
-    { id: 'ledger',   label: 'Hisaab' },
-    { id: 'upcoming', label: 'Aane Waale' },
-    { id: 'registry', label: 'Gift Registry' },
+    { id: 'events',   label: lang === 'bho' ? 'कार्यक्रम' : 'Kaaryakram' },
+    { id: 'ledger',   label: lang === 'bho' ? 'हिसाब-किताब' : 'Hisaab' },
+    { id: 'upcoming', label: lang === 'bho' ? 'आवे वाला' : 'Aane Waale' },
+    { id: 'registry', label: lang === 'bho' ? 'नेवता रजिस्टर' : 'Gift Registry' },
   ] as const;
 
   return (
     <ModuleShell
-      title={lang === 'en' ? "Nevata" : "Nevata"}
-      subtitle={lang === 'en' ? "Traditional hospitality & gifting log" : "Bhent aur vyavahar ka hisab"}
-      onAdd={() => {}}
-      addLabel={lang === 'en' ? "New Event" : "Naya Samaroh"}
+      title={t('NEVATA')}
+      subtitle={selectedEvent ? selectedEvent.title : t('NEVATA_SUBTITLE')}
+      onAdd={nevataMode === 'list' ? () => {} : undefined}
+      addLabel={t('NEW_EVENT')}
     >
       <div className="space-y-8">
+        {selectedEvent && (
+          <div className="flex items-center justify-between mb-4">
+            <button 
+              onClick={() => { setSelectedEvent(null); setNevataMode('list'); }}
+              className="flex items-center gap-2 text-[10px] font-black text-text-tertiary uppercase tracking-widest hover:text-gold transition-all"
+            >
+              <ArrowLeft size={14} /> {t('BACK_TO_LIST') || 'Back to List'}
+            </button>
+            <div className="flex items-center gap-1 p-1 bg-bg-secondary rounded-xl border border-border-light">
+               <button 
+                  onClick={() => setNevataMode('control')}
+                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${nevataMode === 'control' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
+               >
+                  Control
+               </button>
+               <button 
+                  onClick={() => setNevataMode('inventory')}
+                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${nevataMode === 'inventory' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
+               >
+                  Saamaan
+               </button>
+            </div>
+          </div>
+        )}
 
-        {/* ── Direction Toggle ──────────────────────────────── */}
+        <AnimatePresence mode="wait">
+          {!selectedEvent ? (
+            <motion.div
+              key="list-view"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              className="space-y-8"
+            >
+              {/* ── Direction Toggle ──────────────────────────────── */}
         <div className="flex justify-center">
           <div className="bg-bg-secondary p-1 rounded-2xl border border-border-light flex shadow-inner">
-            {(['aaya', 'bheja'] as const).map((d) => (
+            {(['they_invited', 'we_hosted'] as const).map((d) => (
               <button
                 key={d}
                 onClick={() => { setDirection(d); setActiveTab('events'); }}
@@ -286,7 +329,7 @@ export default function NevataModule() {
                     : 'text-text-tertiary hover:text-text-primary'
                 }`}
               >
-                {d === 'aaya' ? 'Nevata Aana' : 'Nevata Bhejna'}
+                {d === 'they_invited' ? t('THEIR_SHADI') : t('OUR_SHADI')}
               </button>
             ))}
           </div>
@@ -331,6 +374,22 @@ export default function NevataModule() {
             {activeTab === 'registry' && renderRegistry()}
           </motion.div>
         </div>
+      </motion.div>
+    ) : (
+        <motion.div
+          key="control-view"
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -10 }}
+        >
+          {nevataMode === 'control' ? (
+            <MissionControl event={selectedEvent} onNavigate={(v) => setNevataMode(v === 'inventory' ? 'inventory' : 'control' as any)} />
+          ) : (
+            <InventoryManager event={selectedEvent} />
+          )}
+        </motion.div>
+      )}
+      </AnimatePresence>
       </div>
     </ModuleShell>
   );

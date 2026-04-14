@@ -21,10 +21,11 @@ import { useAppStore } from '@/lib/store';
 import { useMoney } from '@/hooks/useMoney';
 import { useDiary } from '@/hooks/useDiary';
 import { useHealth } from '@/hooks/useHealth';
-import MetricCard from '../ui/MetricCard';
 import { Shield, Clock, Plus, ArrowRight, Fingerprint, HardDrive, Activity, Heart, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { hasBiometricRegistered } from '@/lib/biometric';
+import { useTranslation, Language } from '@/lib/i18n';
+import MetricCard from '../ui/MetricCard';
 
 type MetricStatus = "success" | "default" | "warning" | "danger" | "info";
 
@@ -32,6 +33,7 @@ import { parseRichContent } from '@/lib/richContent';
 
 export default function HomeModule() {
   const { db, lang, activeVault } = useAppStore();
+  const t = useTranslation(lang as Language);
   const { summary } = useMoney();
   const { entries } = useDiary();
   const { readings } = useHealth();
@@ -56,25 +58,25 @@ export default function HomeModule() {
 
   const stats: { label: string; value: string | number; status: MetricStatus; isCurrency?: boolean; trend?: number[] }[] = [
     { 
-      label: lang === 'en' ? "Monthly Balance" : "Kul Jama", 
+      label: t('MONTHLY_BALANCE'), 
       value: summary.balance, 
       isCurrency: true, 
       trend: [20000, 25000, 22000, 30000, summary.balance as number],
       status: 'success'
     },
     { 
-      label: lang === 'en' ? "Tasks Due" : "Baaki Kaam", 
+      label: t('TASKS_DUE'), 
       value: tasksPending, 
       status: Number(tasksPending) > 5 ? 'danger' : 'warning',
       trend: [2, 4, 3, 5, tasksPending]
     },
     { 
-      label: lang === 'en' ? "Latest BP" : "Blood Pressure", 
+      label: t('LATEST_BP'), 
       value: latestBP,
       status: 'info'
     },
     { 
-      label: lang === 'en' ? "Expenses" : "Kharcha", 
+      label: t('EXPENSES'), 
       value: summary.expense, 
       isCurrency: true, 
       status: 'danger',
@@ -105,9 +107,9 @@ export default function HomeModule() {
       {/* ── Sovereign Shield Hub ────────────────────────────── */}
       <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-4">
          {[
-           { icon: Shield, label: lang === 'en' ? "OS Security" : "OS Suraksha", value: "AES-256 Lockdown" },
-           { icon: Fingerprint, label: lang === 'en' ? "Biometric" : "Pehchan", value: bioActive ? (lang === 'en' ? 'Hardware Active' : 'Sajag') : (lang === 'en' ? 'PIN Required' : 'PIN Chahiye') },
-           { icon: HardDrive, label: lang === 'en' ? "Sync Grid" : "Sync Jaal", value: lang === 'en' ? "Local P2P Discovery" : "Sovereign Sync" }
+           { icon: Shield, label: t('OS_SECURITY'), value: t('OS_LOCKDOWN') },
+           { icon: Fingerprint, label: t('BIOMETRIC'), value: bioActive ? t('HARDWARE_ACTIVE') : t('PIN_REQUIRED') },
+           { icon: HardDrive, label: t('SYNC_GRID'), value: t('LOCAL_DISCOVERY') }
          ].map((sh, idx) => (
            <div key={idx} className="bg-bg-primary border border-border-light rounded-[2rem] p-6 flex items-center gap-5 shadow-black/[0.02] shadow-xl transition-all hover:border-gold/30">
               <div className="w-12 h-12 rounded-2xl bg-gold-light flex items-center justify-center text-gold-text border border-border-light shadow-sm">
@@ -133,10 +135,10 @@ export default function HomeModule() {
         <motion.section variants={item} className="md:col-span-2 space-y-6">
           <div className="flex items-center justify-between px-2">
             <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-              {lang === 'hi' ? 'Parivar ki Halchal' : 'Sovereign Activity'}
+              {t('SOVEREIGN_ACTIVITY')}
             </div>
             <button className="text-[10px] font-black text-gold-text uppercase tracking-[0.3em] flex items-center gap-1.5 hover:underline decoration-gold-text/30 underline-offset-4">
-              {lang === 'hi' ? 'Sab Dekhein' : 'View History'} <ArrowRight size={14} />
+              {t('VIEW_HISTORY')} <ArrowRight size={14} />
             </button>
           </div>
           
@@ -156,19 +158,20 @@ export default function HomeModule() {
                    </div>
                    <div className="flex items-center gap-3 mt-3">
                      <span className="text-[8px] font-black text-gold-text uppercase tracking-[0.2em] bg-gold/5 px-3 py-1 rounded-full border border-gold/10">
-                       {lang === 'hi' ? 'Diary' : 'Diary'}
+                       {t('DIARY')}
                      </span>
                      <span className="text-[9px] text-text-tertiary font-black uppercase tracking-[0.2em] opacity-60">
-                       {new Date(String(a.date)).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-IN', { day: 'numeric', month: 'short' })}
+                       {new Date(String(a.date)).toLocaleDateString(({ en: 'en-IN', hi: 'hi-IN', bho: 'hi-IN' } as any)[lang] ?? 'en-IN', { day: 'numeric', month: 'short' })}
                      </span>
                    </div>
                 </div>
               </motion.div>
             )) : (
-              <div className="bg-bg-primary border border-border-light border-dashed rounded-[3rem] py-20 flex flex-col items-center justify-center opacity-30">
-                 <Shield className="w-14 h-14 mb-6 text-text-tertiary" strokeWidth={1} />
-                 <p className="text-[10px] font-black uppercase tracking-[0.4em]">{lang === 'hi' ? 'Abhi Kuch Nahi' : 'Zero halchal detected'}</p>
-              </div>
+               <div className="bg-bg-primary border border-border-light border-dashed rounded-[3rem] py-20 flex flex-col items-center justify-center opacity-30">
+                  <Shield className="w-14 h-14 mb-6 text-text-tertiary" strokeWidth={1} />
+                  <p className="text-[10px] font-black uppercase tracking-[0.4em]">{t('NO_ACTIVITY')}</p>
+                  <p className="text-[8px] font-bold uppercase tracking-widest mt-1">{t('ACTIVITY_EMPTY_SUB')}</p>
+               </div>
             )}
           </div>
         </motion.section>
@@ -177,27 +180,27 @@ export default function HomeModule() {
         <div className="space-y-8">
            <motion.section variants={item} className="space-y-6">
               <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] px-2">
-                 {lang === 'hi' ? 'Sehat Pulse' : 'Health Pulse'}
+                 {t('HEALTH_PULSE')}
               </div>
               <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 space-y-8 shadow-xl shadow-black/[0.02]">
                  <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-text-danger/10 flex items-center justify-center text-text-danger border border-text-danger/20">
                        <Heart className="animate-pulse" size={20} />
                     </div>
-                    <div className="text-sm font-black text-text-primary uppercase tracking-wider">{lang === 'hi' ? 'Tandurusti Report' : 'Wellness Pulse'}</div>
+                    <div className="text-sm font-black text-text-primary uppercase tracking-wider">{t('WELLNESS_PULSE')}</div>
                  </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="bg-bg-tertiary p-4 rounded-2xl border border-border-light shadow-sm">
-                       <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">{lang === 'hi' ? 'Vajan' : 'Avg Weight'}</div>
+                       <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">{t('AVG_WEIGHT')}</div>
                        <div className="text-base font-black text-text-primary">{avgWeight > 0 ? `${avgWeight.toFixed(1)}kg` : '--'}</div>
                     </div>
                     <div className="bg-bg-tertiary p-4 rounded-2xl border border-border-light shadow-sm">
-                       <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">{lang === 'hi' ? 'Cheeni' : 'Latest Sugar'}</div>
+                       <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">{t('LATEST_SUGAR')}</div>
                        <div className="text-base font-black text-text-primary">{readings[0]?.blood_sugar || '--'}<span className="text-[10px] ml-1 opacity-40">mg</span></div>
                     </div>
                  </div>
                  <button className="w-full py-4 bg-bg-primary border border-border-light rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-text-tertiary hover:text-gold-text hover:border-gold-text transition-all">
-                    {lang === 'hi' ? 'Vitals Dekhein' : 'Full Vitals Data'}
+                    {t('FULL_VITALS_DATA')}
                  </button>
               </div>
            </motion.section>
@@ -209,8 +212,8 @@ export default function HomeModule() {
                       <Zap size={24} strokeWidth={3} />
                    </div>
                    <div className="text-left">
-                      <div className="text-[15px] font-black text-text-primary tracking-tight">{lang === 'hi' ? 'Sync Karein' : 'Sync Now'}</div>
-                      <div className="text-[9px] text-text-tertiary uppercase font-black tracking-[0.3em] opacity-60 mt-1">P2P Beam Grid</div>
+                      <div className="text-[15px] font-black text-text-primary tracking-tight">{t('SYNC_NOW')}</div>
+                      <div className="text-[9px] text-text-tertiary uppercase font-black tracking-[0.3em] opacity-60 mt-1">{t('P2P_BEAM_GRID')}</div>
                    </div>
                 </div>
                 <div className="w-10 h-10 rounded-full border border-border-light flex items-center justify-center group-hover:border-gold-text group-hover:bg-gold-text/5 transition-all">

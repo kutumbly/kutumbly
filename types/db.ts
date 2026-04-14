@@ -123,6 +123,7 @@ export interface NevataEvent {
   location: string;
   our_count: number;
   status: string;
+  budget?: number;
   notes: string;
   created_at: string;
 }
@@ -146,6 +147,58 @@ export interface NevataLedgerEntry {
   net: number;
   notes: string | null;
   updated_at: string;
+}
+
+/** 
+ * Nevata 2.0 (Event Operating System) High-Fidelity Models 
+ */
+export interface NevataInventoryItem {
+  id: string;
+  event_id: string;
+  item_name: string;
+  category: 'Catering' | 'Decor' | 'Logistics' | 'Gift' | string;
+  quantity_expected: number;
+  quantity_received: number;
+  quantity_used: number;
+  unit: string;
+  status: 'ORDERED' | 'DISPATCHED' | 'RECEIVED' | 'IN_USE' | 'RETURNED' | 'LOST';
+  vendor_id: string | null;
+  assigned_to_id: string | null;
+  backup_person_id: string | null;
+  delivery_date_expected: string | null;
+  delivery_date_actual: string | null;
+  is_returnable: boolean | number;
+  return_deadline: string | null;
+  cost_estimated: number;
+  cost_actual: number;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface NevataVendor {
+  id: string;
+  name: string;
+  service_type: 'Catering' | 'Decor' | 'DJ' | 'Transport' | string;
+  contact: string | null;
+  rating: number;
+  reliability_score: number;
+  advance_paid: number;
+  total_amount: number;
+  payment_status: 'PENDING' | 'PARTIAL' | 'PAID';
+  last_used_event: string | null;
+  notes: string | null;
+}
+
+export interface NevataActivityLog {
+  id: string;
+  event_id: string;
+  type: 'ITEM' | 'PAYMENT' | 'TASK' | 'ALERT';
+  action: 'CREATED' | 'UPDATED' | 'RECEIVED' | 'PAID' | 'ASSIGNED';
+  item_id?: string | null;
+  vendor_id?: string | null;
+  user_id?: string | null;
+  timestamp: string;
+  metadata?: string | null; // JSON string
 }
 
 /** 
