@@ -20,58 +20,65 @@ import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { 
-  ArrowLeft, Shield, Lock, Globe, Database, 
-  Smartphone, HardDrive, Cpu, Zap, 
+  ArrowLeft, Globe, Database, 
+  Cpu, Zap, 
   Wallet, Book, Activity, Calendar, CheckSquare, Users
 } from "lucide-react";
 import LandingHeader from "@/components/landing/LandingHeader";
+import LandingFooter from "@/components/landing/LandingFooter";
 
-const PRODUCT_MODULES = [
-  {
-    category: "Financial Sovereignty",
-    title: "Money (Aangan)",
-    desc: "A mission-grade financial ledger. Track every paisa across bank accounts, cash, and investments with Tally-Prime XML export capability.",
-    specs: ["AES-256 Ledger Encryption", "Real-time Cashflow Analysis", "Tally Bridge Enabled"],
-    icon: <Wallet className="text-gold" size={24} />
-  },
-  {
-    category: "Family Intelligence",
-    title: "Nevata",
-    desc: "Cultural event orchestration. Manage guest lists, gift ledgers (Lenden), and invitation payloads for weddings and family milestone missions.",
-    specs: ["Family Ledger Persistence", "QR Scanner Integration", "Guest Insight Engine"],
-    icon: <Calendar className="text-gold" size={24} />
-  },
-  {
-    category: "Legacy Preservation",
-    title: "Diary & Memories",
-    desc: "A private digital sanctuary for family chronicles. Store intimate journals and milestones with zero telemetry and total air-gapped security.",
-    specs: ["Rich Text Encryption", "Media-Vault Integration", "Timeline Persistence"],
-    icon: <Book className="text-gold" size={24} />
-  },
-  {
-    category: "Vitality Protocols",
-    title: "Health Pulse",
-    desc: "Encrypted health monitoring. Track vitals, medicine cycles, and family health history in a vault that never touches the cloud.",
-    specs: ["Vitals Data Hardening", "Prescription Vault", "Trend Analysis (Offline)"],
-    icon: <Activity className="text-gold" size={24} />
-  },
-  {
-    category: "Task Coordination",
-    title: "Sovereign To-Do",
-    desc: "Autonomous family logistics. From grocery missions to property tax deadlines — managed locally, synced privately.",
-    specs: ["P2P Sync Protocol", "Smart Recurring Missions", "Priority Isolation"],
-    icon: <CheckSquare className="text-gold" size={24} />
-  },
-  {
-    category: "Peer Connection",
-    title: "Kutumb Sync",
-    desc: "Encrypted data exchange via direct P2P pipelines. Share vaults with family members without ever passing data through a central server.",
-    specs: ["WebRTC Encrypted Bricks", "No Server Relay", "Biometric Validation"],
-    icon: <Users className="text-gold" size={24} />
-  }
-];
+import { useAppStore } from "@/lib/store";
+import { useTranslation } from "@/lib/i18n";
 
 export default function ProductPage() {
+  const { lang } = useAppStore();
+  const t = useTranslation(lang);
+
+  const PRODUCT_MODULES = [
+    {
+      category: t('product.category.financial'),
+      title: t('nav.money'),
+      desc: t('product.module.money.desc'),
+      specs: [t('product.spec.tally'), t('product.spec.air_gapped'), t('product.spec.ledger')],
+      icon: <Wallet className="text-gold" size={24} />
+    },
+    {
+      category: t('product.category.intelligence'),
+      title: t('nav.nevata'),
+      desc: t('product.module.nevata.desc'),
+      specs: [t('product.spec.ledger'), t('product.spec.qr_scanner'), t('product.spec.guest_insight')],
+      icon: <Calendar className="text-gold" size={24} />
+    },
+    {
+      category: t('product.category.legacy'),
+      title: t('nav.diary'),
+      desc: t('product.module.diary.desc'),
+      specs: [t('product.spec.rich_text'), t('product.spec.media_vault'), t('product.spec.timeline')],
+      icon: <Book className="text-gold" size={24} />
+    },
+    {
+      category: t('product.category.vitality'),
+      title: t('nav.health_up'),
+      desc: t('product.module.health.desc'),
+      specs: [t('product.spec.vitals'), t('product.spec.prescription'), t('product.spec.trends')],
+      icon: <Activity className="text-gold" size={24} />
+    },
+    {
+      category: t('product.category.tasks'),
+      title: t('nav.todo'),
+      desc: t('product.module.todo.desc'),
+      specs: [t('product.spec.p2p_sync'), t('product.spec.recurring'), t('product.spec.priority')],
+      icon: <CheckSquare className="text-gold" size={24} />
+    },
+    {
+      category: t('product.category.peer'),
+      title: t('nav.sync'),
+      desc: t('product.module.sync.desc'),
+      specs: [t('product.spec.webrtc'), t('product.spec.no_server'), t('product.spec.biometric')],
+      icon: <Users className="text-gold" size={24} />
+    }
+  ];
+
   return (
     <main className="min-h-screen bg-white">
       <LandingHeader />
@@ -85,15 +92,15 @@ export default function ProductPage() {
             className="max-w-4xl space-y-8"
           >
             <Link href="/" className="inline-flex items-center gap-2 text-text-tertiary hover:text-gold transition-colors text-[10px] font-black uppercase tracking-widest">
-              <ArrowLeft size={14} /> Back to Gateway
+              <ArrowLeft size={14} /> {t('common.return_home')}
             </Link>
             
             <h1 className="text-5xl md:text-8xl font-black text-text-primary tracking-tight font-inter-tight leading-none">
-              Technical <span className="text-gold">Manifesto.</span>
+               {t('product.manifesto.title')}
             </h1>
             
             <p className="text-xl md:text-2xl text-text-secondary font-medium leading-relaxed max-w-2xl">
-              An unvarnished breakdown of the Sovereign OS architecture and the modules designed to protect your family's digital sovereignty.
+              {t('product.manifesto.sub')}
             </p>
           </motion.div>
         </div>
@@ -104,10 +111,10 @@ export default function ProductPage() {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
             {[
-              { icon: <Database />, label: "SQLite WASM", value: "Local Persistence" },
-              { icon: <Cpu />, label: "AES-256-GCM", value: "Hardware Hardened" },
-              { icon: <Globe />, label: "Zero Cloud", value: "Offline Runtime" },
-              { icon: <Zap />, label: "Sub-5ms", value: "Latency Optimized" }
+              { icon: <Database />, label: t('product.badge.vault_core'), value: t('product.badge.local_persistence') },
+              { icon: <Cpu />, label: t('product.badge.aes_encryption'), value: t('product.badge.hardware_hardened') },
+              { icon: <Globe />, label: t('product.badge.offline_first'), value: t('product.badge.off_grid_runtime') },
+              { icon: <Zap />, label: t('product.badge.zero_telemetry'), value: t('product.spec.air_gapped') }
             ].map((spec, i) => (
               <div key={i} className="flex flex-col gap-3">
                  <div className="text-gold">{spec.icon}</div>
@@ -166,20 +173,21 @@ export default function ProductPage() {
         <div className="container mx-auto px-6 relative">
           <div className="max-w-4xl mx-auto text-center space-y-12">
             <h2 className="text-4xl md:text-7xl font-black text-text-primary tracking-tight font-inter-tight leading-none">
-               Ready to go <br className="hidden md:block" /> 
-               <span className="text-gold">Air-Gapped?</span>
+               {t('product.cta.title')}
             </h2>
             <p className="text-lg md:text-xl text-text-secondary font-medium italic opacity-80">
-               "Sovereignty is not given. It is taken through cryptography."
+               {t('product.cta.quote')}
             </p>
             <div className="flex justify-center">
                <button className="px-12 py-6 bg-text-primary text-white rounded-3xl text-sm font-black uppercase tracking-[0.3em] hover:bg-gold transition-all hover:shadow-2xl hover:shadow-gold/20 hover:-translate-y-1">
-                  Deploy Sovereign Vault
+                  {t('product.cta.btn')}
                </button>
             </div>
           </div>
         </div>
       </section>
+
+      <LandingFooter />
     </main>
   );
 }

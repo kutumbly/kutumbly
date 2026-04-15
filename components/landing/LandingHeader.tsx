@@ -48,13 +48,13 @@ export default function LandingHeader() {
         <div className="flex items-center gap-8">
            <div className="hidden lg:flex items-center gap-8 px-8 border-x border-border-light/40">
               <Link href="/product" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary hover:text-text-primary transition-colors">
-                Technical Manifesto
+                {t('nav.technical_manifesto')}
               </Link>
               <button 
                 onClick={() => window.location.pathname === '/' ? window.scrollTo({ top: 800, behavior: 'smooth' }) : window.location.href = '/'}
                 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary hover:text-text-primary transition-colors"
               >
-                Mission Architecture
+                {t('nav.mission_arch')}
               </button>
            </div>
            
@@ -68,7 +68,7 @@ export default function LandingHeader() {
               </button>
 
               <Link href="/os" className="px-8 py-3 bg-text-primary text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-gold transition-all shadow-lg shadow-black/5 active:scale-95">
-                 {t('NAV_OPEN_APP')}
+                 {t('nav.open_app')}
               </Link>
            </div>
         </div>

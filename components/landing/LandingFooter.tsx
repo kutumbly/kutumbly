@@ -28,15 +28,15 @@ export default function LandingFooter() {
   return (
     <footer className="py-12 border-t border-border-light bg-bg-primary text-center">
        <div className="text-[10px] font-bold text-text-tertiary uppercase tracking-[0.2em] flex flex-col items-center gap-4">
-          <span>Built with ❤️ by AITDL Network · Gorakhpur, India</span>
+          <span>{t('footer.built_by')}</span>
           <div className="flex gap-6">
-             <Link href="/privacy" className="hover:text-gold transition-colors">Privacy Policy</Link>
-             <Link href="/terms" className="hover:text-gold transition-colors">Terms of Service</Link>
-             <Link href="/founders" className="hover:text-gold transition-colors">{lang === 'en' ? 'Founders' : t('HOME')}</Link>
-             <Link href="/contact" className="hover:text-gold transition-colors">Contact</Link>
+             <Link href="/privacy" className="hover:text-gold transition-colors">{t('nav.privacy')}</Link>
+             <Link href="/terms" className="hover:text-gold transition-colors">{t('nav.terms')}</Link>
+             <Link href="/founders" className="hover:text-gold transition-colors">{t('nav.founders')}</Link>
+             <Link href="/contact" className="hover:text-gold transition-colors">{t('nav.contact')}</Link>
           </div>
           <div className="mt-4 opacity-50">
-             © 2026 Kutumbly Sovereign. India&apos;s Family OS.
+             {t('footer.copyright')}
           </div>
        </div>
     </footer>

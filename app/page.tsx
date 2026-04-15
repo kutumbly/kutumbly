@@ -23,12 +23,15 @@ import LandingFeatures from '@/components/landing/LandingFeatures';
 import LandingPrivacy from '@/components/landing/LandingPrivacy';
 import LandingFooter from '@/components/landing/LandingFooter';
 import LandingHeader from '@/components/landing/LandingHeader';
-import LandingFounders from '@/components/landing/LandingFounders';
 import { motion } from 'framer-motion';
 import { ArrowRight, Globe } from 'lucide-react';
 import Link from 'next/link';
+import { useAppStore } from '@/lib/store';
+import { useTranslation } from '@/lib/i18n';
 
 export default function LandingPage() {
+  const { lang } = useAppStore();
+  const t = useTranslation(lang);
   return (
     <main className="min-h-screen bg-bg-tertiary">
       <LandingHeader />
@@ -56,9 +59,9 @@ export default function LandingPage() {
                  </div>
               </div>
 
-              <h2 className="text-2xl font-black text-text-primary mb-4">Browser now · App soon</h2>
+              <h2 className="text-2xl font-black text-text-primary mb-4">{t('landing.waitlist.title')}</h2>
               <p className="text-text-secondary font-medium leading-relaxed max-w-xl mx-auto mb-10 text-sm md:text-base">
-                 Kutumbly runs fully in your browser today. Native installable apps for Android and iOS are on the way — your .kutumb vault file will work across both.
+                 {t('landing.waitlist.desc')}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
@@ -68,12 +71,12 @@ export default function LandingPage() {
                    className="flex-1 h-14 px-6 rounded-2xl bg-bg-tertiary border border-border-light focus:border-gold outline-none font-bold text-sm transition-all"
                  />
                  <button className="h-14 px-8 bg-gold text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-gold/20 hover:opacity-90 active:scale-95 transition-all">
-                    Notify me
+                    {t('landing.waitlist.btn')}
                  </button>
               </div>
 
               <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mt-8">
-                 Join the waitlist to get notified when the app launches
+                 {t('landing.waitlist.sub')}
               </p>
            </div>
         </div>
@@ -81,16 +84,15 @@ export default function LandingPage() {
 
       {/* Final CTA */}
       <section className="py-24 text-center px-6">
-         <h2 className="text-3xl md:text-5xl font-black text-text-primary mb-4 tracking-tighter">Start your family vault today</h2>
-         <p className="text-text-secondary font-medium text-base mb-12">Free forever. Works on any browser. No account needed.</p>
+         <h2 className="text-3xl md:text-5xl font-black text-text-primary mb-4 tracking-tighter">{t('landing.final_cta.title')}</h2>
+         <p className="text-text-secondary font-medium text-base mb-12">{t('landing.final_cta.sub')}</p>
          
          <Link href="/os" className="inline-flex h-16 px-10 bg-bg-primary border-2 border-border-light rounded-[2rem] items-center gap-3 font-black text-base text-text-primary hover:border-gold transition-all shadow-xl shadow-black/[0.02] mx-auto">
-            Open Kutumbly — Free
+            {t('landing.final_cta.btn')}
             <ArrowRight size={20} />
          </Link>
       </section>
 
-      <LandingFounders />
       <LandingFooter />
     </main>
   );

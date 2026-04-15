@@ -41,16 +41,16 @@ export default function LandingHero() {
           >
             <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/40 border border-gold/40 rounded-full shadow-sm backdrop-blur-md">
                <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-               <span className="text-[10px] font-black text-gold-text uppercase tracking-[0.3em]">Niyantran Protocol Active</span>
+               <span className="text-[10px] font-black text-gold-text uppercase tracking-[0.3em]">{t('landing.hero.tagline')}</span>
             </div>
 
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-text-primary leading-[1.05] tracking-tight font-inter-tight">
-              Sovereignty for the <br className="hidden md:block" />
-              <span className="text-gold selection:bg-gold selection:text-white transition-colors duration-700">Indian Family.</span>
+              {t('landing.hero.title_part1')} <br className="hidden md:block" />
+              <span className="text-gold selection:bg-gold selection:text-white transition-colors duration-700">{t('landing.hero.title_part2')}</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-text-secondary font-semibold leading-relaxed max-w-2xl mx-auto opacity-90 italic">
-              "Kutumbly is not software. It is a research-grade, agentic operating system that secures your legacy locally, forever. Zero cloud. Zero telemetry. Pure India."
+              {t('landing.hero.manifesto')}
             </p>
           </motion.div>
 
@@ -66,12 +66,12 @@ export default function LandingHero() {
             >
               <div className="absolute inset-0 bg-gold translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500 ease-in-out -z-10" />
               <span className="flex items-center gap-3">
-                Mission Overview <ArrowRight size={16} />
+                {t('landing.hero.mission_btn')} <ArrowRight size={16} />
               </span>
             </Link>
             
             <button className="px-10 py-5 bg-white/40 border border-border-light text-text-primary rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-sm backdrop-blur-md hover:bg-white/80 transition-all">
-              Initialize Local Vault
+              {t('landing.hero.init_btn')}
             </button>
           </motion.div>
 
@@ -82,10 +82,10 @@ export default function LandingHero() {
             className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto pt-10"
           >
             {[
-              { icon: <Shield size={18} />, label: "AES-256-GCM" },
-              { icon: <Globe size={18} />, label: "Air-Gapped Ready" },
-              { icon: <Lock size={18} />, label: "Local-First SQL" },
-              { icon: <Shield size={18} />, label: "Agentic Logic" }
+              { icon: <Shield size={18} />, label: t('landing.hero.specs.aes') },
+              { icon: <Globe size={18} />, label: t('landing.hero.specs.airgapped') },
+              { icon: <Lock size={18} />, label: t('landing.hero.specs.sql') },
+              { icon: <Shield size={18} />, label: t('landing.hero.specs.agentic') }
             ].map((item, i) => (
               <div key={i} className="flex flex-col items-center gap-3 p-6 bg-white/20 backdrop-blur-sm border border-white/40 rounded-[2rem] group hover:bg-white/40 transition-all cursor-default">
                  <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-gold shadow-sm group-hover:scale-110 transition-transform">

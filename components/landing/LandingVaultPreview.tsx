@@ -18,9 +18,14 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Lock } from 'lucide-react';
+import { Shield, Lock as LockIcon, Coins, Heart, Plus } from 'lucide-react';
+import { useAppStore } from '@/lib/store';
+import { useTranslation } from '@/lib/i18n';
 
 export default function LandingVaultPreview() {
+  const { lang } = useAppStore();
+  const t = useTranslation(lang);
+
   return (
     <div className="w-full max-w-6xl mx-auto px-6 py-32 relative">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gold/5 blur-[160px] pointer-events-none" />
@@ -41,12 +46,12 @@ export default function LandingVaultPreview() {
           </div>
           <div className="flex items-center gap-3 py-2.5 px-8 bg-clinical rounded-2xl border border-border-light shadow-inner">
              <Shield size={14} className="text-gold" />
-             <span className="text-[10px] font-black text-text-primary uppercase tracking-[0.25em]">Sovereign Gateway v2.4</span>
+             <span className="text-[10px] font-black text-text-primary uppercase tracking-[0.25em]">{t('landing.vault.version_label')}</span>
           </div>
           <div className="flex items-center gap-5">
              <div className="text-[9px] font-black text-text-success flex items-center gap-2 uppercase tracking-[0.2em]">
                 <div className="w-1.5 h-1.5 rounded-full bg-text-success animate-pulse" />
-                <span>Encrypted Session</span>
+                <span>{t('landing.vault.session_encrypted')}</span>
              </div>
           </div>
         </div>
@@ -55,7 +60,7 @@ export default function LandingVaultPreview() {
           {/* Sidebar — Clinical Minimalism */}
           <div className="w-full lg:w-80 bg-white/20 border-r border-border-light/40 p-10">
              <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-10 opacity-60">
-               MISSION VAULTS
+               {t('landing.vault.title')}
              </div>
              
              <div className="space-y-5">
@@ -63,32 +68,34 @@ export default function LandingVaultPreview() {
                    whileHover={{ x: 6 }}
                    className="flex items-center gap-5 p-5 bg-white border border-gold/10 rounded-[2.5rem] shadow-xl shadow-gold/5 cursor-default group/item"
                 >
-                   <div className="w-14 h-14 bg-clinical border border-border-light rounded-[1.5rem] flex items-center justify-center text-3xl shadow-sm group-hover/item:scale-110 transition-transform">🏛️</div>
+                   <div className="w-14 h-14 bg-clinical border border-border-light rounded-[1.5rem] flex items-center justify-center text-3xl shadow-sm group-hover/item:scale-110 transition-transform">🏘️</div>
                    <div className="flex-1">
-                      <div className="text-sm font-black text-text-primary leading-none mb-1 font-inter-tight">Mallah Parivar</div>
-                      <div className="text-[9px] text-text-success font-black uppercase tracking-widest">Master Vault</div>
+                      <div className="text-sm font-black text-text-primary leading-none mb-1 font-inter-tight">{t('landing.vault.demo.name')}</div>
+                      <div className="text-[9px] text-text-success font-black uppercase tracking-widest">{t('landing.vault.demo.status')}</div>
                    </div>
-                   <Lock size={14} className="text-gold" />
+                   <LockIcon size={14} className="text-gold" />
                 </motion.div>
 
                 {[
-                  { icon: "💰", name: "Family Savings", status: "Hardened" },
-                  { icon: "🩺", name: "Health Pulse", status: "Secure" }
+                  { icon: <Coins size={24} />, name: t('nav.money'), status: t('common.status.hardened'), color: "gold" },
+                  { icon: <Heart size={24} />, name: t('nav.health_up'), status: t('common.status.secure'), color: "border-medium" }
                 ].map((v, i) => (
                    <div key={i} className="flex items-center gap-5 p-5 opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
-                      <div className="w-14 h-14 bg-clinical border border-border-light rounded-[1.5rem] flex items-center justify-center text-3xl">{v.icon}</div>
+                      <div className="w-14 h-14 bg-clinical border border-border-light rounded-[1.5rem] flex items-center justify-center shadow-sm">
+                         <div className={`text-${v.color}`}>{v.icon}</div>
+                      </div>
                       <div className="flex-1">
                          <div className="text-sm font-black text-text-primary font-inter-tight">{v.name}</div>
                          <div className="text-[9px] text-text-tertiary font-black uppercase tracking-widest">{v.status}</div>
                       </div>
-                      <Lock size={14} className="text-border-medium" />
+                      <LockIcon size={14} className="text-border-medium" />
                    </div>
                 ))}
              </div>
 
              <div className="mt-16 border-t border-border-light/40 pt-10">
                 <button className="w-full py-5 text-[9px] font-black text-text-tertiary flex items-center justify-center gap-3 hover:text-text-primary transition-all uppercase tracking-[0.2em] border border-border-light/60 rounded-2xl hover:bg-white hover:shadow-sm">
-                   + Create New Vault
+                   <Plus size={14} /> {t('landing.vault.create')}
                 </button>
              </div>
           </div>
@@ -108,61 +115,61 @@ export default function LandingVaultPreview() {
                 whileInView={{ scale: 1, opacity: 1 }}
                 viewport={{ once: true }}
                 className="w-full max-w-[340px] text-center relative"
-             >
-                <div className="w-24 h-24 bg-white rounded-[3rem] border border-gold/30 flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-gold/10 relative">
-                   <div className="absolute inset-[-8px] border border-gold/10 rounded-[3.5rem] animate-pulse" />
-                   <Lock size={36} className="text-gold" />
-                </div>
+              >
+                 <div className="w-24 h-24 bg-white rounded-[3rem] border border-gold/30 flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-gold/10 relative">
+                    <div className="absolute inset-[-8px] border border-gold/10 rounded-[3.5rem] animate-pulse" />
+                    <LockIcon size={36} className="text-gold" />
+                 </div>
 
-                <h3 className="text-xl font-black text-text-primary mb-3 tracking-tight font-inter-tight">Vault Mission Logic</h3>
-                <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-12">Enter Master PIN to release decryption keys</p>
+                 <h3 className="text-xl font-black text-text-primary mb-3 tracking-tight font-inter-tight">{t('landing.vault.mission_logic.title')}</h3>
+                 <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-12">{t('landing.vault.mission_logic.sub')}</p>
 
-                <div className="flex justify-center gap-5 mb-12">
-                   {[1,2,3].map(i => (
-                      <motion.div 
-                        key={i} 
-                        initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.1 * i }}
-                        className="w-4 h-4 rounded-full bg-gold shadow-[0_0_20px_rgba(201,151,28,0.4)]" 
-                      />
-                   ))}
-                   <div className="w-4 h-4 rounded-full border-2 border-gold/20" />
-                </div>
+                 <div className="flex justify-center gap-5 mb-12">
+                    {[1,2,3].map(i => (
+                       <motion.div 
+                          key={i} 
+                          initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.1 * i }}
+                          className="w-4 h-4 rounded-full bg-gold shadow-[0_0_20px_rgba(201,151,28,0.4)]" 
+                       />
+                    ))}
+                    <div className="w-4 h-4 rounded-full border-2 border-gold/20" />
+                 </div>
 
-                <div className="grid grid-cols-3 gap-5">
-                   {[1,2,3,4,5,6,7,8,9].map(n => (
-                     <motion.div 
-                       key={n} 
-                       whileHover={{ scale: 1.05, backgroundColor: '#FFFFFF', borderColor: '#c9971c' }}
-                       whileTap={{ scale: 0.95 }}
-                       className="w-full aspect-square rounded-[1.8rem] border border-border-light bg-white/60 flex items-center justify-center text-base font-black text-text-primary shadow-sm cursor-default transition-all"
-                     >
-                       {n}
-                     </motion.div>
-                   ))}
-                   <div className="w-full aspect-square flex items-center justify-center text-text-tertiary text-[10px] font-black uppercase tracking-widest">BKSP</div>
-                   <div className="w-full aspect-square rounded-[1.8rem] border border-border-light bg-white/60 flex items-center justify-center text-base font-black text-text-primary shadow-sm transition-all hover:border-gold">0</div>
-                   <motion.div 
-                      whileHover={{ scale: 1.05, backgroundColor: '#c9971c', color: '#FFFFFF' }}
-                      className="w-full aspect-square rounded-[1.8rem] border border-gold text-gold flex items-center justify-center shadow-lg shadow-gold/5 transition-all"
-                   >
-                      ✓
-                   </motion.div>
-                </div>
-             </motion.div>
-          </div>
-        </div>
-
-        {/* Technical Metadata Footer */}
-        <div className="h-14 bg-clinical border-t border-border-light px-10 flex items-center justify-between">
-           <div className="flex items-center gap-6">
-              <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Pipeline: Local-Sync v2</span>
-              <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Latency: 0ms (Air-Gapped)</span>
+                 <div className="grid grid-cols-3 gap-5">
+                    {[1,2,3,4,5,6,7,8,9].map(n => (
+                       <motion.div 
+                         key={n} 
+                         whileHover={{ scale: 1.05, backgroundColor: '#FFFFFF', borderColor: '#c9971c' }}
+                         whileTap={{ scale: 0.95 }}
+                         className="w-full aspect-square rounded-[1.8rem] border border-border-light bg-white/60 flex items-center justify-center text-base font-black text-text-primary shadow-sm cursor-default transition-all"
+                       >
+                         {n}
+                       </motion.div>
+                    ))}
+                    <div className="w-full aspect-square flex items-center justify-center text-text-tertiary text-[10px] font-black uppercase tracking-widest">BKSP</div>
+                    <div className="w-full aspect-square rounded-[1.8rem] border border-border-light bg-white/60 flex items-center justify-center text-base font-black text-text-primary shadow-sm transition-all hover:border-gold">0</div>
+                    <motion.div 
+                       whileHover={{ scale: 1.05, backgroundColor: '#c9971c', color: '#FFFFFF' }}
+                       className="w-full aspect-square rounded-[1.8rem] border border-gold text-gold flex items-center justify-center shadow-lg shadow-gold/5 transition-all"
+                    >
+                       ✓
+                    </motion.div>
+                 </div>
+              </motion.div>
            </div>
-           <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-text-success shadow-[0_0_8px_rgba(6,95,70,0.4)]" />
-              <span className="text-[9px] font-black text-text-success uppercase tracking-widest">System Sovereign</span>
-           </div>
-        </div>
+         </div>
+
+         {/* Technical Metadata Footer */}
+         <div className="h-14 bg-clinical border-t border-border-light px-10 flex items-center justify-between">
+            <div className="flex items-center gap-6">
+               <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('landing.vault.tech.pipe')}</span>
+               <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('landing.vault.tech.latency')}</span>
+            </div>
+            <div className="flex items-center gap-3">
+               <div className="w-2 h-2 rounded-full bg-text-success shadow-[0_0_8px_rgba(6,95,70,0.4)]" />
+               <span className="text-[9px] font-black text-text-success uppercase tracking-widest">{t('landing.vault.tech.status')}</span>
+            </div>
+         </div>
       </motion.div>
     </div>
   );
