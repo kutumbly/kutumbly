@@ -140,7 +140,7 @@ kutumbly/
 
 ---
 
-## 7. Roadmap & Developer Advancement Opportunities
+## 8. Roadmap & Developer Advancement Opportunities
 
 While Kutumbly currently boasts a powerful, offline-first ecosystem, the following technical domains represent the next phase of our architectural evolution. These are key areas where developers and engineers can contribute to pushing the platform's boundaries:
 

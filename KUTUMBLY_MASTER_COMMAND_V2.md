@@ -16,9 +16,9 @@ Clone it, read every existing file, then build the complete app end-to-end.
 The existing `kutumbly-ui.html` in the repo root is the **reference UI** —
 replicate its exact look, feel, tab structure, and module layout in React/Next.js.
 
-**The new addition in v2:** The app must open with a **Tally-style Vault Gateway**
-as the default first screen (PIN lock + vault selection), exactly like Tally ERP's
-"Gateway of Tally". After unlocking, the user lands on the main kutumbly-ui.html
+**The new addition in v2:** The app must open with an **Enterprise-style Vault Gateway**
+as the default first screen (PIN lock + vault selection), exactly like a professional
+enterprise vault environment. After unlocking, the user lands on the main kutumbly-ui.html
 style interface. All data lives in an encrypted `.kutumb` file on the user's device.
 
 ---
@@ -78,7 +78,7 @@ User opens app
       │
       ▼
 ┌─────────────────┐
-│  VAULT GATEWAY  │  ← DEFAULT FIRST SCREEN (like Tally Gateway)
+│  VAULT GATEWAY  │  ← DEFAULT FIRST SCREEN (Enterprise-grade Gateway)
 │  (app/page.tsx) │
 │                 │
 │  Left: Vault    │  → Select existing vault → Enter PIN → Unlock
@@ -521,7 +521,9 @@ CREATE TABLE IF NOT EXISTS family_members (
 );
 CREATE TABLE IF NOT EXISTS diary_entries (
   id TEXT PRIMARY KEY, date TEXT, content TEXT,
-  mood INTEGER, mood_label TEXT, created_at TEXT
+  mood INTEGER, mood_label TEXT,
+  title TEXT, subtitle TEXT, tags TEXT, weather TEXT, location TEXT, is_locked INTEGER DEFAULT 0,
+  created_at TEXT
 );
 CREATE TABLE IF NOT EXISTS tasks (
   id TEXT PRIMARY KEY, title TEXT, description TEXT,

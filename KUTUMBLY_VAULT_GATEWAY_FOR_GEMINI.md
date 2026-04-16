@@ -1,15 +1,15 @@
 # KUTUMBLY LITE — VAULT GATEWAY IMPLEMENTATION PROMPT
 # For: Google Gemini / Gemini CLI / Gemini Code Assist
-# Purpose: Build the Tally-style Vault Selection + PIN screen for Kutumbly Lite
+# Purpose: Build the Enterprise-style Vault Selection + PIN screen for Kutumbly Lite
 # Paste this entire file as your first prompt to Gemini.
 
 ---
 
 ## CONTEXT & GOAL
 
-You are building **Kutumbly Lite** — an Indian family Personal OS that works like Tally ERP for data portability. The app stores ALL data in an AES-256-GCM encrypted `.kutumb` file on the user's local device — no cloud, no servers, zero tracking.
+You are building **Kutumbly Lite** — an Indian family Personal OS that provides enterprise-grade offline data portability. The app stores ALL data in an AES-256-GCM encrypted `.kutumb` file on the user's local device — no cloud, no servers, zero tracking.
 
-**Your specific task:** Build the **Vault Gateway Screen** — the first screen the user sees when they open the app. Think of it as Tally's "Gateway of Tally" / company selection screen, but for Indian families.
+**Your specific task:** Build the **Vault Gateway Screen** — the first screen the user sees when they open the app. Think of it as an enterprise vault selection screen, but for Indian families.
 
 After this screen, the rest of the app is already built in `kutumbly-ui.html` (the existing UI). Your job is ONLY this gateway layer.
 
@@ -228,7 +228,7 @@ export async function decryptDB(fileBytes: Uint8Array, pin: string): Promise<Uin
     const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encrypted);
     return new Uint8Array(decrypted);
   } catch {
-    throw new Error('WRONG_PIN'); // caller shows "Galat PIN" message
+    throw new Error('WRONG_PIN'); // caller uses i18n to show translation
   }
 }
 ```
@@ -386,6 +386,7 @@ CREATE TABLE IF NOT EXISTS diary_entries (
   content TEXT,
   mood INTEGER,
   mood_label TEXT,
+  title TEXT, subtitle TEXT, tags TEXT, weather TEXT, location TEXT, is_locked INTEGER DEFAULT 0,
   created_at TEXT
 );
 CREATE TABLE IF NOT EXISTS tasks (
@@ -473,8 +474,8 @@ UnlockPanel
   → user enters 4-digit PIN via numpad
   → on 4th digit: auto-attempt unlock
   → SUCCESS → decrypt DB → setUnlocked(db) → show SuccessPanel
-  → FAIL    → show "Galat PIN — dobara try karo" error, clear PIN dots
-  → after 5 wrong attempts → show "Bahut zyada galat PIN. 30 sec wait karo."
+  → FAIL    → show i18n error message, clear PIN dots
+  → after 5 wrong attempts → show cooldown timer
 
 CreateVaultPanel
   → vault name input (text)
@@ -531,7 +532,7 @@ export default nextConfig;
 
 2. **File System Access API fallback**: Always check `'showSaveFilePicker' in window` before using. On mobile/Firefox, fall back to `<a download>` for save and `<input type="file" accept=".kutumb">` for open.
 
-3. **FileSystemFileHandle persistence**: Store `handle` in Zustand (in-memory only). For "remember recent vaults", store only metadata (name, path string) in localStorage — NOT the handle itself (handles can't be serialized). User will need to re-pick the file on next session (this is the correct security behaviour, same as Tally requiring you to navigate to the data folder).
+3. **FileSystemFileHandle persistence**: Store `handle` in Zustand (in-memory only). For "remember recent vaults", store only metadata (name, path string) in localStorage — NOT the handle itself (handles can't be serialized). User will need to re-pick the file on next session (this is the correct security behaviour, same as enterprise systems requiring you to navigate to the data folder).
 
 4. **PIN security**: 
    - Never store PIN anywhere (not localStorage, not DB)
