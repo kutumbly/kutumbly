@@ -1,0 +1,117 @@
+import sys
+import os
+import json
+
+LANGUAGES = ["en", "hi", "mr", "gu", "pa", "ta", "bho", "kn", "te", "ne", "bn", "mni"]
+
+NEW_KEYS_DATA = {
+    # App Navigation
+    "NAV_HOME": { "en": "Home", "hi": "होम", "bho": "घर" },
+    "NAV_DIARY": { "en": "Diary", "hi": "डायरी", "bho": "डायरी" },
+    "NAV_TASKS": { "en": "Tasks", "hi": "कार्य", "bho": "काज-काम" },
+    "NAV_MONEY": { "en": "Money", "hi": "धन", "bho": "रुपिया-पइसा" },
+    "NAV_NEVATA": { "en": "Nevata", "hi": "नेवता", "bho": "नेवता" },
+    "NAV_HEALTH": { "en": "Health", "hi": "स्वास्थ्य", "bho": "सेहत" },
+    "NAV_INVEST": { "en": "Invest", "hi": "निवेश", "bho": "निवेश" },
+    "NAV_GROCERY": { "en": "Grocery", "hi": "किराना", "bho": "किराना" },
+    "NAV_STAFF": { "en": "Staff", "hi": "स्टाफ", "bho": "स्टाफ" },
+    "NAV_VIDYA": { "en": "Vidya", "hi": "विद्या", "bho": "विद्या" },
+    "NAV_SYNC": { "en": "Sync", "hi": "सिंक", "bho": "सिंक" },
+    "NAV_NETWORK": { "en": "Network", "hi": "नेटवर्क", "bho": "नेटवर्क" },
+    "NAV_SETUP": { "en": "Setup", "hi": "सेटअप", "bho": "सेटअप" },
+
+    # Dashboard ui
+    "GREETING": { "en": "Jai Hind", "hi": "जय हिंद", "bho": "जय हिंद" },
+    "MONTHLY_BALANCE": { "en": "Monthly Balance", "hi": "मासिक शेष", "bho": "महिना के बचत" },
+    "TASKS_DUE": { "en": "Tasks Due", "hi": "नियत कार्य", "bho": "बाकी काम" },
+    "LATEST_BP": { "en": "Latest BP", "hi": "नवीनतम बीपी", "bho": "बीपी चेक" },
+    "EXPENSES": { "en": "Expenses", "hi": "खर्च", "bho": "खर्चा" },
+    "MORE": { "en": "More", "hi": "अधिक", "bho": "अउरी" },
+
+    # Security & status
+    "OFFLINE": { "en": "Offline", "hi": "ऑफलाइन", "bho": "ऑफलाइन" },
+    "AES_256": { "en": "AES-256", "hi": "AES-256", "bho": "AES-256" },
+    "OS_SECURITY": { "en": "OS Security", "hi": "ओएस सुरक्षा", "bho": "ओएस सुरक्षा" },
+    "OS_LOCKDOWN": { "en": "OS Lockdown", "hi": "ओएस लॉकडाउन", "bho": "ओएस लॉकडाउन" },
+    "BIOMETRIC": { "en": "Biometric", "hi": "बायोमेट्रिक", "bho": "बायोमेट्रिक" },
+    "PIN_REQUIRED": { "en": "PIN Required", "hi": "पिन आवश्यक", "bho": "पिन चाहीं" },
+
+    # Gateway
+    "FIND_VAULT_TITLE": { "en": "Find Your Vault", "hi": "अपना वॉल्ट खोजें", "bho": "अपना तिजोरी खोजीं" },
+    "EMAIL_DISCOVERY_SUB": { "en": "Enter your encrypted identity", "hi": "अपनी एन्क्िप्टेड पहचान दर्ज करें", "bho": "आपन पँचान डारीं" },
+    "OR_SKIP": { "en": "or skip to setup", "hi": "या सेटअप पर जाएँ", "bho": "भा सेटअप पर जाईं" },
+    "CREATE_VAULT": { "en": "Create Local Vault", "hi": "लोकल वॉल्ट बनाएं", "bho": "लोकल तिजोरी बनाईं" },
+    "LOCAL": { "en": "Local", "hi": "लोकल", "bho": "लोकल" },
+
+    # Sync
+    "SYNC_GRID": { "en": "Sync Grid", "hi": "सिंक ग्रिड", "bho": "सिंक ग्रिड" },
+    "LOCAL_DISCOVERY": { "en": "Local Discovery", "hi": "स्थानीय खोज", "bho": "लोकल खोज" },
+    "SOVEREIGN_ACTIVITY": { "en": "Sovereign Activity", "hi": "सॉवरेन गतिविधि", "bho": "सॉवरेन काम-काज" },
+    "SYNC_NOW": { "en": "Sync Now", "hi": "अभी सिंक करें", "bho": "अभी सिंक करीं" },
+    "P2P_BEAM_GRID": { "en": "P2P Beam Grid", "hi": "P2P बीम ग्रिड", "bho": "P2P बीम ग्रिड" },
+}
+
+TARGET_PATHS = [
+    r'd:\IMP\GitHub\kutumbly\lib\i18n.ts',
+    r'd:\IMP\GitHub\kutumbly-lite\lib\i18n.ts'
+]
+
+def escape_str(s):
+    return "".join(c if ord(c) < 128 else f"\\u{ord(c):04x}" for c in s)
+
+def fix_file(file_path):
+    if not os.path.exists(file_path):
+        print(f"Skipping: {file_path} (does not exist)")
+        return
+
+    print(f"Fixing: {file_path}")
+    with open(file_path, 'rb') as f:
+        content = f.read().decode('utf-8')
+
+    # 1. Inject missing keys if not present
+    dict_start = content.find('const DICTIONARY')
+    if dict_start == -1:
+        print(f"  Error: const DICTIONARY not found in {file_path}")
+        return
+
+    dict_end_idx = content.find('};', dict_start)
+    last_entry_end = content.rfind('}', dict_start, dict_end_idx)
+
+    new_content_parts = []
+    for key, data in NEW_KEYS_DATA.items():
+        if f'"{key}"' in content or f"'{key}'" in content:
+            continue # Skip if already exists
+        langs_dict = {l: data.get(l, data.get('en', 'Missing')) for l in LANGUAGES}
+        lang_parts = [f'{l}: "{val}"' for l, val in langs_dict.items()]
+        full_entry = '  "{0}": {{ {1} }},'.format(key, ", ".join(lang_parts))
+        new_content_parts.append(full_entry)
+
+    if new_content_parts:
+        after_last_entry = content[last_entry_end+1:dict_end_idx].strip()
+        prefix = ",\n" if not after_last_entry.startswith(',') else "\n"
+        insertion_point = last_entry_end + 1
+        if after_last_entry.startswith(','):
+            insertion_point = content.find(',', last_entry_end) + 1
+        
+        content = (
+            content[:insertion_point].rstrip() + 
+            prefix + 
+            "\n".join(new_content_parts) + 
+            "\n" + 
+            content[dict_end_idx:]
+        )
+
+    # 2. Escape ALL non-ASCII characters
+    final_content = escape_str(content)
+    final_content = final_content.replace('\r\n', '\n')
+
+    with open(file_path, 'wb') as f:
+        f.write(final_content.encode('ascii'))
+    print(f"  Success: {file_path} is now ASCII-escaped and has all keys.")
+
+def main():
+    for path in TARGET_PATHS:
+        fix_file(path)
+
+if __name__ == "__main__":
+    main()
