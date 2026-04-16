@@ -215,7 +215,7 @@ export default function DashboardPage() {
         {renderModule()}
       </main>
 
-      {/* ── Mobile Navigation ──────────────────────────────────── */}
+      {/* -- Mobile Navigation ------------------------------------ */}
       <BottomNav 
         tabs={visibleTabs as any} 
         activeTab={activeModule} 

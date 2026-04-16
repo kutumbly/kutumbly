@@ -37,8 +37,8 @@ interface WhatsAppPayload {
 export function generateWhatsAppLink(payload: WhatsAppPayload): string {
   const { phone, name, missionType, missionTitle, bridgeUrl, customBody } = payload;
   
-  let greeting = `Pranam ${name} ji!`;
-  let intro = `Kutumbly Sovereign OS se aapko ek mission assign ki gayi hai.`;
+  const greeting = `Pranam ${name} ji!`;
+  const intro = `Kutumbly Sovereign OS se aapko ek mission assign ki gayi hai.`;
   
   let body = "";
   

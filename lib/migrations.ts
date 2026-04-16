@@ -31,7 +31,7 @@
  */
 
 /** Bump this whenever you add new tables or ALTER existing ones */
-export const CURRENT_SCHEMA_VERSION = 6;
+export const CURRENT_SCHEMA_VERSION = 7;
 
 /** What changed in each version — shown in the migration modal */
 export const MIGRATION_CHANGELOGS: Record<number, string[]> = {
@@ -55,6 +55,10 @@ export const MIGRATION_CHANGELOGS: Record<number, string[]> = {
   ],
   6: [
     "Event Operating System (EOS): Added Inventory Lifecycle, Vendor Management, and Activity Timeline logs.",
+  ],
+  7: [
+    "Added stock and expiry tracking capabilities to Saman Hub (Grocery Module).",
+    "Added KYC and advanced leave/salary tracking to Staff Management.",
   ],
 };
 
@@ -330,6 +334,33 @@ const MIGRATIONS: Record<number, (db: any) => void> = {
       metadata TEXT,                -- JSON string for extra info
       FOREIGN KEY (event_id) REFERENCES nevata_events(id)
     )`);
+  },
+  7: (db: any) => {
+    // --- Grocery Hub Updates ---
+    const addGroceryCol = (colDef: string) => {
+      try {
+        db.run(`ALTER TABLE grocery_items ADD COLUMN ${colDef}`);
+      } catch {
+        // column exists
+      }
+    };
+    addGroceryCol('current_stock REAL DEFAULT 0');
+    addGroceryCol('threshold REAL DEFAULT 1');
+    addGroceryCol('expiry_date TEXT');
+    addGroceryCol('last_purchased_date TEXT');
+
+    // --- Staff Management Updates ---
+    const addStaffCol = (colDef: string) => {
+      try {
+        db.run(`ALTER TABLE staff_members ADD COLUMN ${colDef}`);
+      } catch {
+        // column exists
+      }
+    };
+    addStaffCol('advance_balance REAL DEFAULT 0');
+    addStaffCol('paid_leaves_quota INTEGER DEFAULT 0');
+    addStaffCol(`kyc_status TEXT DEFAULT 'PENDING'`);
+    addStaffCol('gov_id_number TEXT');
   },
 };
 

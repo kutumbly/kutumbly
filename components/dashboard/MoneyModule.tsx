@@ -19,6 +19,7 @@
 import React, { useMemo, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { useMoney } from '@/hooks/useMoney';
+import { useVault } from '@/hooks/useVault';
 import ModuleShell from './ModuleShell';
 import { useTranslation } from '@/lib/i18n';
 import MetricCard from '../ui/MetricCard';
@@ -55,7 +56,10 @@ const CATEGORY_COLORS: Record<string, string> = {
 export default function MoneyModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
-  const { txns, summary, addTransaction, deleteTransaction } = useMoney();
+  const { txns, budgets, summary, addTransaction, deleteTransaction, setCategoryBudget } = useMoney();
+  const { getFamilyMembers } = useVault();
+  const members = getFamilyMembers();
+
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
   
   // Drill-Down States
@@ -63,6 +67,7 @@ export default function MoneyModule() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeVoucher, setActiveVoucher] = useState<Transaction | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showBudgetForm, setShowBudgetForm] = useState(false);
 
   // Form State
   const [fType, setFType] = useState<'income' | 'expense'>('expense');
@@ -70,13 +75,15 @@ export default function MoneyModule() {
   const [fCategory, setFCategory] = useState(EXPENSE_CATEGORIES[0]);
   const [fDesc, setFDesc] = useState('');
   const [fDate, setFDate] = useState(new Date().toISOString().split('T')[0]);
+  const [fMember, setFMember] = useState<string>('');
 
   const handleSave = () => {
     if (!fAmount || !fDesc || !fCategory) return;
-    addTransaction(fType, Number(fAmount), fCategory, fDesc, fDate);
+    addTransaction(fType, Number(fAmount), fCategory, fDesc, fDate, fMember || undefined);
     setShowAddForm(false);
     setFAmount('');
     setFDesc('');
+    setFMember('');
   };
 
   // 1. Prepare Donut Data
@@ -170,6 +177,16 @@ export default function MoneyModule() {
               <input type="text" value={fDesc} onChange={e => setFDesc(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-sm font-bold text-text-primary outline-none focus:border-gold transition-all" placeholder={t('DESC_PH')} />
             </div>
 
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">TAG FAMILY MEMBER</label>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => setFMember('')} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${!fMember ? 'bg-bg-tertiary text-gold-text border-gold/30 shadow-sm' : 'bg-bg-primary text-text-tertiary border-border-light hover:border-gold/30'}`}>General</button>
+                {members.map(m => (
+                  <button key={m.id} onClick={() => setFMember(m.id)} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${fMember === m.id ? 'bg-gold-text text-white border-gold-text shadow-md' : 'bg-bg-primary text-text-tertiary border-border-light hover:border-gold/30'}`}>{m.name}</button>
+                ))}
+              </div>
+            </div>
+
             <button onClick={handleSave} disabled={!fAmount || !fDesc || !fCategory} className="w-full mt-4 bg-gold-text hover:opacity-90 text-white font-black tracking-[0.2em] h-16 rounded-2xl shadow-xl transition-all disabled:opacity-50 uppercase flex items-center justify-center gap-3">
               <Shield size={20} />
               {t('SAVE_TO_VAULT')}
@@ -189,11 +206,24 @@ export default function MoneyModule() {
         
         {/* Top Stats Dashboard */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 grid grid-cols-2 gap-4">
               <MetricCard label={t('MONEY_BALANCE')} value={summary.balance} isCurrency status="default" trend={[15000, 20000, 18000, 25000, summary.balance]} />
               <MetricCard label={t('MONEY_INCOME')} value={summary.income} isCurrency status="success" />
               <MetricCard label={t('MONEY_EXPENSE')} value={summary.expense} isCurrency status="danger" trend={[5000, 12000, 8000, 15000, summary.expense]} />
-              <MetricCard label={t('MONEY_EFFICIENCY')} value={summary.income > 0 ? ((summary.balance / summary.income) * 100).toFixed(0) : 0} unit="%" status="info" />
+              <div className="bg-bg-primary rounded-[1.5rem] border border-border-light p-4 flex flex-col justify-between shadow-sm">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[9px] font-black text-text-tertiary uppercase tracking-wider">Sovereign Savings Rate</span>
+                  <span className="text-xs font-black text-success">{summary.income > 0 ? (((summary.income - summary.expense) / summary.income) * 100).toFixed(0) : 0}%</span>
+                </div>
+                <div className="w-full bg-bg-tertiary h-1.5 rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(100, summary.income > 0 ? ((summary.income - summary.expense) / summary.income) * 100 : 0)}%` }}
+                    className="h-full bg-success rounded-full"
+                  />
+                </div>
+              </div>
             </div>
            
            <div className="bg-bg-primary rounded-[2.5rem] p-6 flex flex-col items-center justify-center border border-border-light shadow-xl shadow-black/[0.02]">
@@ -208,6 +238,48 @@ export default function MoneyModule() {
                  ))}
               </div>
            </div>
+          </div>
+
+          {/* Budget Progress Tracking */}
+          <section className="space-y-6">
+            <div className="flex items-center justify-between px-2">
+              <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Monthly Budget Status</div>
+              <button 
+                onClick={() => {
+                  const cat = window.prompt("Enter Category (e.g., Grocery):");
+                  if (!cat) return;
+                  const amt = window.prompt("Enter Monthly Limit (₹):");
+                  if (!amt) return;
+                  setCategoryBudget(cat, Number(amt));
+                }}
+                className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline"
+              >
+                + Define Budget
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+               {budgets.length > 0 ? budgets.map((b) => {
+                 const spent = txns.filter(t => t.category === b.category && t.type === 'expense').reduce((s, curr) => s + curr.amount, 0);
+                 const perc = Math.min(100, (spent / b.monthly_limit) * 100);
+                 return (
+                   <div key={b.id} className="bg-bg-primary border border-border-light p-4 rounded-2xl shadow-sm">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-[10px] font-black text-text-primary uppercase tracking-wider">{b.category}</span>
+                        <span className="text-[9px] font-bold text-text-tertiary">₹{spent} / ₹{b.monthly_limit}</span>
+                      </div>
+                      <div className="w-full bg-bg-tertiary h-1.5 rounded-full overflow-hidden">
+                        <div className={`h-full transition-all duration-500 rounded-full ${perc > 90 ? 'bg-red-500' : perc > 70 ? 'bg-orange-400' : 'bg-gold'}`} style={{ width: `${perc}%` }} />
+                      </div>
+                   </div>
+                 );
+               }) : (
+                 <div className="col-span-full py-8 text-center bg-bg-primary border border-border-light border-dashed rounded-2xl opacity-40">
+                    <p className="text-[9px] font-black uppercase tracking-widest">No budgets defined for this month</p>
+                 </div>
+               )}
+            </div>
+          </section>
          </div>
          
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -284,13 +356,24 @@ export default function MoneyModule() {
                               </span>
                            </div>
                            <div className="flex items-center justify-between mt-2.5">
-                              <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2">
                                    <Icon size={14} className="text-text-tertiary" />
                                    <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">
                                       {String(t.category)}
                                    </span>
                                 </div>
+                                {t.member_id && (
+                                  <>
+                                    <span className="text-[10px] font-black text-text-tertiary opacity-40">·</span>
+                                    <div className="flex items-center gap-1.5">
+                                      <div className="w-4 h-4 rounded-full bg-gold-light flex items-center justify-center text-[7px] font-black text-gold-text border border-gold/20">
+                                         {members.find(m => m.id === t.member_id)?.avatar_initials || '?'}
+                                      </div>
+                                      <span className="text-[9px] font-black text-text-tertiary uppercase tracking-wider">{members.find(m => m.id === t.member_id)?.name}</span>
+                                    </div>
+                                  </>
+                                )}
                                 <span className="text-[10px] font-black text-text-tertiary opacity-40">·</span>
                                 <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">
                                    {new Date(String(t.date)).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-US', { day: 'numeric', month: 'short' })}

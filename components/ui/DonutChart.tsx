@@ -39,7 +39,15 @@ export default function DonutChart({
   const radius = (size - thickness) / 2;
   const circumference = 2 * Math.PI * radius;
   
-  let currentAngle = -90; // Start at top
+  // Pre-compute cumulative start angles so we don't mutate across renders
+  const segments = data.reduce<{ segment: DonutData; rotation: number; strokeDasharray: string }[]>(
+    (acc, segment) => {
+      const prevAngle = acc.length > 0 ? acc[acc.length - 1].rotation + (acc[acc.length - 1].segment.value / total) * 360 : -90;
+      const strokeDasharray = `${(segment.value / total) * circumference} ${circumference}`;
+      return [...acc, { segment, rotation: prevAngle, strokeDasharray }];
+    },
+    []
+  );
 
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
@@ -55,13 +63,7 @@ export default function DonutChart({
         />
         
         {/* Segments */}
-        {data.map((segment, i) => {
-          const sliceAngle = (segment.value / total) * 360;
-          const strokeDasharray = `${(segment.value / total) * circumference} ${circumference}`;
-          const rotation = currentAngle;
-          currentAngle += sliceAngle;
-
-          return (
+        {segments.map(({ segment, rotation, strokeDasharray }, i) => (
             <circle
               key={i}
               cx={size / 2}
@@ -76,8 +78,7 @@ export default function DonutChart({
               className="transition-all duration-500 ease-in-out"
               strokeLinecap="round"
             />
-          );
-        })}
+        ))}
       </svg>
       
       <div className="absolute flex flex-col items-center justify-center text-center">

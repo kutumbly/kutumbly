@@ -42,12 +42,12 @@ export function useVidya() {
   const { db, currentPin, fileHandle } = useAppStore();
   const [tick, setTick] = useState(0);
 
-  const persist = () => {
+  const persist = useCallback(() => {
     if (fileHandle && currentPin) {
       saveVault(db, currentPin, fileHandle).catch(() => {});
     }
     setTick(t => t + 1);
-  };
+  }, [db, currentPin, fileHandle]);
 
   /* ── LEARNERS ────────────────────────────────────────────── */
   const learners = useMemo<VidyaLearner[]>(() => {
@@ -73,7 +73,7 @@ export function useVidya() {
     );
     persist();
     return id;
-  }, [db, currentPin, fileHandle]);
+  }, [db, persist]);
 
   /* ── SUBJECTS ────────────────────────────────────────────── */
   const getSubjects = useCallback((learner_id: string): VidyaSubject[] => {
@@ -95,7 +95,7 @@ export function useVidya() {
     );
     persist();
     return id;
-  }, [db, currentPin, fileHandle]);
+  }, [db, persist]);
 
   /* ── RESOURCES ───────────────────────────────────────────── */
   const getResources = useCallback((subject_id: string): VidyaResource[] => {
@@ -149,25 +149,25 @@ export function useVidya() {
     );
     persist();
     return id;
-  }, [db, currentPin, fileHandle]);
+  }, [db, persist]);
 
   const toggleBookmark = useCallback((id: string, current: number) => {
     if (!db) return;
     db.run("UPDATE vidya_resources SET is_bookmarked = ? WHERE id = ?", [current ? 0 : 1, id]);
     persist();
-  }, [db, currentPin, fileHandle]);
+  }, [db, persist]);
 
   const toggleComplete = useCallback((id: string, current: number) => {
     if (!db) return;
     db.run("UPDATE vidya_resources SET is_completed = ? WHERE id = ?", [current ? 0 : 1, id]);
     persist();
-  }, [db, currentPin, fileHandle]);
+  }, [db, persist]);
 
   const deleteResource = useCallback((id: string) => {
     if (!db) return;
     db.run("DELETE FROM vidya_resources WHERE id = ?", [id]);
     persist();
-  }, [db, currentPin, fileHandle]);
+  }, [db, persist]);
 
   /* ── SESSIONS ────────────────────────────────────────────── */
   const getSessions = useCallback((learner_id: string, limit = 30): VidyaSession[] => {
@@ -193,29 +193,89 @@ export function useVidya() {
       [id, learner_id, subject_id || null, date, duration_mins, notes || null, mood || 'neutral', new Date().toISOString()]
     );
     persist();
-  }, [db, currentPin, fileHandle]);
+  }, [db, persist]);
 
-  /* ── STATS ───────────────────────────────────────────────── */
+  /* ── ANALYTICS & STREAKS ─────────────────────────────────── */
+  const getStreak = useCallback((learner_id: string): number => {
+    if (!db) return 0;
+    // Get unique dates of sessions for this learner, descending
+    const res = db.exec(
+      "SELECT DISTINCT date FROM vidya_sessions WHERE learner_id = ? ORDER BY date DESC",
+      [learner_id]
+    );
+
+    if (!res[0]?.values?.length) return 0;
+
+    const dates = res[0].values.map((v: (string | number)[]) => v[0] as string);
+    let streak = 0;
+    const expectedDate = new Date(); // Start checking from today
+    
+    // Normalize expected date to YYYY-MM-DD
+    const toDateStr = (d: Date) => d.toISOString().split('T')[0];
+
+    // If they haven't logged today, they might have logged yesterday (streak still alive)
+    if (dates[0] !== toDateStr(expectedDate)) {
+      expectedDate.setDate(expectedDate.getDate() - 1);
+      if (dates[0] !== toDateStr(expectedDate)) return 0; // Missed today and yesterday
+    }
+
+    for (const dStr of dates) {
+      if (dStr === toDateStr(expectedDate)) {
+        streak++;
+        expectedDate.setDate(expectedDate.getDate() - 1);
+      } else {
+        break; // Gap found
+      }
+    }
+
+    return streak;
+  }, [db, tick]);
+
+  const getAnalytics = useCallback((learner_id: string) => {
+    if (!db) return [];
+    
+    // Get last 7 days of dates
+    const days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i)); // 6 days ago to today
+      return d.toISOString().split('T')[0];
+    });
+
+    const res = db.exec(
+      `SELECT date, SUM(duration_mins) as total 
+       FROM vidya_sessions 
+       WHERE learner_id = ? AND date >= ? 
+       GROUP BY date`,
+      [learner_id, days[0]]
+    );
+
+    const map = new Map<string, number>();
+    res[0]?.values?.forEach((v: (string | number)[]) => {
+      map.set(v[0] as string, Number(v[1] || 0));
+    });
+
+    return days.map(day => ({
+      date: day,
+      mins: map.get(day) || 0,
+      label: new Date(day).toLocaleDateString(undefined, { weekday: 'short' })
+    }));
+  }, [db, tick]);
+
   const getStats = useCallback((learner_id: string) => {
-    if (!db) return { totalMins: 0, weekMins: 0, subjectCount: 0, resourceCount: 0, completedCount: 0 };
+    if (!db) return { totalMins: 0, completedCount: 0, resourceCount: 0 };
+    try {
+      const sessionRes = db.exec("SELECT SUM(duration_mins) FROM vidya_sessions WHERE learner_id = ?", [learner_id]);
+      const completedRes = db.exec("SELECT COUNT(*) FROM vidya_resources WHERE learner_id = ? AND is_completed = 1", [learner_id]);
+      const resourceRes = db.exec("SELECT COUNT(*) FROM vidya_resources WHERE learner_id = ?", [learner_id]);
 
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    const weekStr = weekAgo.toISOString().split('T')[0];
-
-    const totalRes = db.exec("SELECT SUM(duration_mins) FROM vidya_sessions WHERE learner_id = ?", [learner_id]);
-    const weekRes  = db.exec("SELECT SUM(duration_mins) FROM vidya_sessions WHERE learner_id = ? AND date >= ?", [learner_id, weekStr]);
-    const subjRes  = db.exec("SELECT COUNT(*) FROM vidya_subjects WHERE learner_id = ?", [learner_id]);
-    const rscRes   = db.exec("SELECT COUNT(*) FROM vidya_resources WHERE learner_id = ?", [learner_id]);
-    const doneRes  = db.exec("SELECT COUNT(*) FROM vidya_resources WHERE learner_id = ? AND is_completed = 1", [learner_id]);
-
-    return {
-      totalMins:      Number(totalRes[0]?.values?.[0]?.[0] || 0),
-      weekMins:       Number(weekRes[0]?.values?.[0]?.[0] || 0),
-      subjectCount:   Number(subjRes[0]?.values?.[0]?.[0] || 0),
-      resourceCount:  Number(rscRes[0]?.values?.[0]?.[0] || 0),
-      completedCount: Number(doneRes[0]?.values?.[0]?.[0] || 0),
-    };
+      return {
+        totalMins: Number(sessionRes[0]?.values?.[0]?.[0] || 0),
+        completedCount: Number(completedRes[0]?.values?.[0]?.[0] || 0),
+        resourceCount: Number(resourceRes[0]?.values?.[0]?.[0] || 0)
+      };
+    } catch {
+      return { totalMins: 0, completedCount: 0, resourceCount: 0 };
+    }
   }, [db, tick]);
 
   return {
@@ -232,5 +292,7 @@ export function useVidya() {
     getSessions,
     logSession,
     getStats,
+    getStreak,
+    getAnalytics,
   };
 }

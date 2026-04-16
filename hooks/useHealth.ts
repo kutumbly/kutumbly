@@ -51,5 +51,30 @@ export function useHealth() {
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
-  return { readings, medications, addReading };
+  const addMedication = useCallback((member_id: string, name: string, dosage: string, frequency: string) => {
+    if (!db) return;
+    const id = crypto.randomUUID();
+    const start_date = new Date().toISOString().split('T')[0];
+    
+    db.run(
+      "INSERT INTO medications (id, member_id, name, dosage, frequency, start_date) VALUES (?, ?, ?, ?, ?, ?)",
+      [id, member_id, name, dosage, frequency, start_date]
+    );
+
+    if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle).catch(console.error);
+    setTick(t => t + 1);
+  }, [db, currentPin, fileHandle]);
+
+  const stopMedication = useCallback((id: string) => {
+    if (!db) return;
+    const end_date = new Date().toISOString().split('T')[0];
+    db.run(
+      "UPDATE medications SET end_date = ? WHERE id = ?",
+      [end_date, id]
+    );
+    if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle).catch(console.error);
+    setTick(t => t + 1);
+  }, [db, currentPin, fileHandle]);
+
+  return { readings, medications, addReading, addMedication, stopMedication };
 }

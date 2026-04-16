@@ -20,7 +20,7 @@ import React, { useEffect, useState } from 'react';
 import ModuleShell from './ModuleShell';
 import { useAppStore } from '@/lib/store';
 import { initTokenClient, requestAccessToken, listVaultBackups, fetchUserEmail } from '@/lib/gdrive';
-import { performCloudSync, isSyncDue } from '@/lib/sync';
+import { performCloudSync } from '@/lib/sync';
 import { 
   Cloud, CloudOff, RefreshCcw, ShieldCheck, 
   ExternalLink, Key, AlertCircle, History,
@@ -37,10 +37,17 @@ export default function CloudSyncriptModule() {
   } = useAppStore();
   const t_hook = useTranslation(lang as Language);
 
-  const [backups, setBackups] = useState<any[]>([]);
+  const [backups, setBackups] = useState<{ id: string; name: string; createdTime: string; size: number }[]>([]);
   const [isOnline, setIsOnline] = useState(true);
   const [authStatus, setAuthStatus] = useState<'idle' | 'auth_checking' | 'authorized' | 'unauthorized' | 'error'>('idle');
   const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  const fetchBackups = React.useCallback(async (token: string) => {
+    try {
+      const list = await listVaultBackups(token);
+      setBackups(list);
+    } catch {}
+  }, []);
 
   useEffect(() => {
     setIsOnline(navigator.onLine);
@@ -49,14 +56,14 @@ export default function CloudSyncriptModule() {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    initTokenClient(async (res: any) => {
+    initTokenClient(async (res: { access_token: string }) => {
       if (res.access_token) {
         const email = await fetchUserEmail(res.access_token);
         setUserEmail(email);
 
         // Check against vault's authorized list
         const authListRaw = db.exec("SELECT value FROM settings WHERE key = 'gdrive_auth_emails'");
-        const authorizedEmails: string[] = authListRaw.length > 0 ? JSON.parse(authListRaw[0].values[0][0]) : [];
+        const authorizedEmails: string[] = authListRaw.length > 0 ? JSON.parse(authListRaw[0].values[0][0] as string) : [];
 
         if (authorizedEmails.length > 0 && (!email || !authorizedEmails.includes(email.toLowerCase()))) {
           setAuthStatus('unauthorized');
@@ -75,14 +82,7 @@ export default function CloudSyncriptModule() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
-
-  const fetchBackups = async (token: string) => {
-    try {
-      const list = await listVaultBackups(token);
-      setBackups(list);
-    } catch {}
-  };
+  }, [db, fetchBackups, setGDriveToken]);
 
   const handleManualSync = async () => {
     if (!gdriveToken) {

@@ -52,7 +52,7 @@ export default function LandingPrivacy() {
           <div className="w-1.5 h-16 bg-gold/20 mx-auto rounded-full mb-12" />
           
           <blockquote className="text-2xl md:text-3xl font-black text-text-primary tracking-tight font-inter-tight leading-snug">
-             "{t('landing.privacy.quote')}"
+             &quot;{t('landing.privacy.quote')}&quot;
           </blockquote>
         </div>
 

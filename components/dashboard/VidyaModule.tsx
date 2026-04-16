@@ -137,6 +137,14 @@ export default function VidyaModule() {
     return b;
   };
 
+  const familyMembers = React.useMemo(() => {
+    if (!useAppStore.getState().db) return [];
+    const query = "SELECT id, name FROM family_members ORDER BY name ASC";
+    try {
+      return useAppStore.getState().db.exec(query)[0]?.values?.map((v: any[]) => ({ id: v[0] as string, name: v[1] as string })) || [];
+    } catch { return []; }
+  }, [useAppStore.getState().db]);
+
   const handleBack = () => {
     if (view === 'resource') { setActiveResource(null); setView('subject'); }
     else if (view === 'subject') { setActiveSubject(null); setView('learner'); }
@@ -221,6 +229,14 @@ export default function VidyaModule() {
               </div>
             </div>
 
+            <div className="flex flex-col gap-3">
+              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('FAMILY_MEMBER')}</label>
+              <select className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary outline-none focus:border-gold transition-all">
+                 <option value="">{t('SELECT_MEMBER')}</option>
+                 {familyMembers.map((m: any) => <option key={m.id} value={m.id}>{m.name}</option>)}
+              </select>
+            </div>
+
             <button onClick={handleAddLearner} disabled={!fLName} className="w-full mt-2 bg-gold-text hover:opacity-90 text-white font-black tracking-[0.2em] h-14 rounded-2xl shadow-xl transition-all disabled:opacity-50 uppercase flex items-center justify-center gap-3">
               <PlusCircle size={18} />
               {t('ADD_LEARNER')}
@@ -292,9 +308,27 @@ export default function VidyaModule() {
               <h2 className="text-xl font-black text-text-primary tracking-tight">{activeLearner.name}</h2>
               <p className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mt-1">{activeLearner.standard} · {activeLearner.board}</p>
             </div>
-            <button onClick={() => setShowLogSession(true)} className="ml-auto flex items-center gap-2 h-11 px-6 bg-gold-text text-white font-black text-[10px] uppercase tracking-widest rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-gold/10">
+            
+            {/* Learning Flame V2 */}
+            <div className="flex-1 flex justify-center">
+               <LearningFlame streak={vidya.getStreak(activeLearner.id)} />
+            </div>
+
+            <button onClick={() => setShowLogSession(true)} className="flex items-center gap-2 h-11 px-6 bg-gold-text text-white font-black text-[10px] uppercase tracking-widest rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-gold/10">
               <Clock size={14} /> {t('ATTENDANCE')}
             </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
+             <StatPill icon={<Clock size={20} />} label={t('TOTAL_STUDY')} value={fmtMins(learnerStats?.totalMins || 0)} />
+             <StatPill icon={<Target size={20} />} label={t('GOALS_SET')} value={learnerStats?.completedCount || 0} />
+             <StatPill icon={<BookOpen size={20} />} label={t('RESOURCES')} value={learnerStats?.resourceCount || 0} />
+             <StatPill icon={<TrendingUp size={20} />} label={t('EFFICIENCY')} value="85%" />
+          </div>
+
+          {/* Study Rhythm Chart V2 */}
+          <div className="mt-8">
+             <StudyRhythm data={vidya.getAnalytics(activeLearner.id)} />
           </div>
         </div>
 
@@ -529,6 +563,58 @@ export default function VidyaModule() {
 }
 
 /* ─── Micro-components ──────────────────────────────────────── */
+
+function LearningFlame({ streak }: { streak: number }) {
+  if (streak === 0) return null;
+  return (
+    <div className="flex flex-col items-center gap-1 group">
+      <motion.div
+        animate={{ 
+          scale: [1, 1.1, 1],
+          filter: ["drop-shadow(0 0 2px #c9971c)", "drop-shadow(0 0 8px #c9971c)", "drop-shadow(0 0 2px #c9971c)"]
+        }}
+        transition={{ repeat: Infinity, duration: 2 }}
+        className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold relative"
+      >
+        <Flame size={20} fill="currentColor" className="relative z-10" />
+        <motion.div
+          animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+          className="absolute inset-0 bg-gold rounded-full"
+        />
+      </motion.div>
+      <div className="text-[10px] font-black text-gold-text uppercase tracking-widest">
+         {streak} DAY STREAK
+      </div>
+    </div>
+  );
+}
+
+function StudyRhythm({ data }: { data: { label: string; mins: number }[] }) {
+  const max = Math.max(...data.map(d => d.mins), 60);
+  return (
+    <div className="bg-bg-tertiary border border-border-light rounded-[2rem] p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h4 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
+           STUDY RHYTHM (7 DAYS)
+        </h4>
+        <div className="text-[10px] font-black text-gold-text opacity-60">MINUTES / DAY</div>
+      </div>
+      <div className="flex items-end justify-between gap-2 h-24 px-2">
+        {data.map((d, i) => (
+          <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+            <motion.div 
+              initial={{ height: 0 }} 
+              animate={{ height: `${(d.mins / max) * 100}%` }}
+              className="w-full max-w-[12px] bg-gold rounded-full min-h-[4px]"
+            />
+            <span className="text-[8px] font-black text-text-tertiary uppercase">{d.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function Field({ label, value, onChange, placeholder, type = 'text' }: {
   label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string;

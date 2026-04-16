@@ -22,7 +22,7 @@ import { useInvest } from '@/hooks/useInvest';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
 import SparkLine from '../ui/SparkLine';
-import { TrendingUp, PieChart, ArrowUpRight, ArrowDownRight, Briefcase, Landmark, Target, FileText, CalendarDays } from 'lucide-react';
+import { TrendingUp, PieChart, ArrowUpRight, ArrowDownRight, Briefcase, Landmark, Target, FileText, CalendarDays, ShieldCheck, Zap, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation, Language } from '@/lib/i18n';
 import { Investment } from '@/types/db';
@@ -32,7 +32,7 @@ type InvestView = 'overview' | 'asset-list' | 'ledger';
 export default function InvestModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang as Language);
-  const { investments, summary, addInvestment, addTransaction, getTransactions, updateValuation } = useInvest();
+  const { investments, summary, addInvestment, addTransaction, getTransactions, updateValuation, getWealthProjection } = useInvest();
   
   const [view, setView] = useState<InvestView>('overview');
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -189,11 +189,46 @@ export default function InvestModule() {
         
         {/* Wealth Dashboard */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-           <MetricCard label={t('TOTAL_VALUE')} value={summary.currentValue} isCurrency status="success" trend={[summary.currentValue * 0.9, summary.currentValue * 0.95, summary.currentValue]} />
+           <MetricCard label={t('TOTAL_VALUE')} value={summary.currentValue} isCurrency status="success"  />
            <MetricCard label={t('TOTAL_PROFIT')} value={summary.profit} isCurrency status={summary.profit >= 0 ? 'success' : 'danger'} />
            <MetricCard label={t('PNL_PERCENT')} value={summary.pnlPercent.toFixed(1)} unit="%" status={summary.pnlPercent >= 0 ? 'success' : 'danger'} />
-           <MetricCard label={t('SIP_VOLUME')} value={investments.reduce((acc: number, i: Investment) => acc + (Number(i.monthly_sip) || 0), 0)} isCurrency status="info" />
+           <MetricCard label={t('DIVERSIFICATION')} value={summary.diversificationScore} unit="%" status="info" />
         </div>
+
+        {/* Wealth Projection Chart (SVG) */}
+        <section className="bg-bg-primary border border-border-light rounded-[3rem] p-10 overflow-hidden relative">
+           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+              <div>
+                 <h3 className="text-xl font-black text-text-primary tracking-tight">{lang === 'hi' ? 'Bhavishya ki Dhanrashi' : 'Wealth Trajectory'}</h3>
+                 <p className="text-[10px] text-text-tertiary font-black uppercase tracking-[0.2em] mt-1 opacity-60">10-Year Growth Projection @ 12% Avg.</p>
+              </div>
+              <div className="flex items-center gap-3 bg-bg-tertiary px-6 py-3 rounded-2xl border border-border-light">
+                 <Zap size={16} className="text-gold" />
+                 <span className="text-xs font-black text-text-primary">₹{(getWealthProjection?.(10)?.slice(-1)[0]?.estimatedValue || 0).toLocaleString()} <span className="text-[10px] opacity-40 uppercase ml-1">By 2036</span></span>
+              </div>
+           </div>
+           
+           <div className="h-48 w-full flex items-end gap-2 px-2">
+              {(getWealthProjection?.(10) || []).map((p, i) => {
+                 const max = Math.max(...getWealthProjection(10).map(x => x.estimatedValue));
+                 const height = (p.estimatedValue / max) * 100;
+                 return (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-3 group">
+                       <motion.div 
+                         initial={{ height: 0 }}
+                         animate={{ height: `${height}%` }}
+                         className="w-full bg-gold/10 rounded-t-xl hover:bg-gold/30 transition-all relative"
+                       >
+                          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-8 opacity-0 group-hover:opacity-100 transition-all bg-bg-primary border border-border-light px-2 py-1 rounded text-[8px] font-black text-gold whitespace-nowrap shadow-xl">
+                             ₹{Math.round(p.estimatedValue / 100000)}L
+                          </div>
+                       </motion.div>
+                       <span className="text-[9px] font-black text-text-tertiary opacity-40">{p.year}</span>
+                    </div>
+                 );
+              })}
+           </div>
+        </section>
 
         {/* Portfolio Classes */}
         <section>
@@ -253,7 +288,7 @@ export default function InvestModule() {
               </div>
               <div className="flex-1 text-center md:text-left">
                  <h3 className="text-base font-black text-text-primary tracking-tight">{t('FIRE_TARGET')}</h3>
-                 <p className="text-xs font-bold text-text-secondary mt-1 max-w-md">Your current portfolio covers approximately 4% of your family's FIRE target. Consistent SIPs will accelerate this.</p>
+                 <p className="text-xs font-bold text-text-secondary mt-1 max-w-md">Your current portfolio covers approximately 4% of your family&apos;s FIRE target. Consistent SIPs will accelerate this.</p>
               </div>
               <button className="btn bg-gold text-white text-[10px] font-black px-6 py-3 rounded-xl uppercase tracking-[0.2em] border-none shadow-lg shadow-gold/20 hover:scale-105 active:scale-95 transition-all">
                  {t('REVIEW_ANALYSIS')}
@@ -281,14 +316,27 @@ export default function InvestModule() {
                      key={String(h.id)}
                      whileHover={{ y: -2 }}
                      onClick={() => { setSelectedHold(h); setView('ledger'); }}
-                     className="card p-6 flex flex-col gap-4 group hover:border-gold/30 hover:shadow-xl transition-all cursor-pointer"
+                     className="card p-6 flex flex-col gap-4 group hover:border-gold/30 hover:shadow-xl transition-all cursor-pointer relative overflow-hidden"
                    >
+                     {h.isLTCG && (
+                       <div className="absolute top-4 right-4 text-text-success" title="Long Term Capital Gains Qualified">
+                         <ShieldCheck size={18} />
+                       </div>
+                     )}
+                     
                      <div className="flex justify-between items-start">
                         <div>
-                          <h4 className="text-base font-black text-text-primary tracking-tight leading-tight mb-1">{h.name}</h4>
-                          <p className="text-[10px] text-text-tertiary font-black uppercase tracking-widest flex items-center gap-2">
-                            <span>SIP: ₹{(Number(h.monthly_sip) || 0).toLocaleString()}</span>
-                          </p>
+                          <h4 className="text-lg font-black text-text-primary tracking-tight leading-tight mb-1">{h.name}</h4>
+                          <div className="flex items-center gap-2 mt-2">
+                             <div className="text-[10px] font-black text-gold uppercase tracking-widest bg-gold/5 px-2 py-0.5 rounded border border-gold/10">
+                               {h.cagr}% CAGR
+                             </div>
+                             {h.isLTCG && (
+                               <div className="text-[10px] font-black text-text-success uppercase tracking-widest bg-bg-success px-2 py-0.5 rounded border border-text-success/10">
+                                 LTCG
+                               </div>
+                             )}
+                          </div>
                         </div>
                      </div>
                      <div className="flex justify-between items-end border-t border-border-light/30 pt-4 mt-2">
@@ -298,7 +346,7 @@ export default function InvestModule() {
                         </div>
                         <div className="text-right">
                            <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-0.5">{t('MARKET_VALUE')}</div>
-                           <div className={`text-sm font-black ${isProfit ? 'text-text-success' : 'text-text-danger'}`}>
+                           <div className={`text-xl font-black ${isProfit ? 'text-text-success' : 'text-text-danger'}`}>
                              ₹{h.current_value.toLocaleString('en-IN')}
                            </div>
                         </div>

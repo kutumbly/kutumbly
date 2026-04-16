@@ -28,6 +28,13 @@ export interface Transaction {
   created_at?: string;
 }
 
+export interface CategoryBudget {
+  id: string;
+  category: string;
+  monthly_limit: number;
+  month: string; // YYYY-MM
+}
+
 /** 
  * Task Module Models 
  */
@@ -108,6 +115,10 @@ export interface GroceryItem {
   category: string;
   estimated_price: number;
   checked: boolean | number;
+  current_stock: number;
+  threshold?: number;
+  expiry_date?: string | null;
+  last_purchased_date?: string | null;
 }
 
 /** 

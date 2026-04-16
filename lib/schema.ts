@@ -79,7 +79,8 @@ CREATE TABLE IF NOT EXISTS grocery_lists (
 );
 CREATE TABLE IF NOT EXISTS grocery_items (
   id TEXT PRIMARY KEY, list_id TEXT, name TEXT,
-  quantity TEXT, unit TEXT, estimated_price REAL, checked INTEGER DEFAULT 0, category TEXT
+  quantity TEXT, unit TEXT, estimated_price REAL, checked INTEGER DEFAULT 0, category TEXT,
+  current_stock REAL DEFAULT 0, threshold REAL DEFAULT 1, expiry_date TEXT, last_purchased_date TEXT
 );
 
 CREATE TABLE IF NOT EXISTS events (

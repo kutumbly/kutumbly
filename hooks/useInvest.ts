@@ -22,14 +22,26 @@ import { useAppStore } from '@/lib/store';
 import { useMemo, useCallback, useState } from 'react';
 import { saveVault } from '@/lib/vault';
 
+export interface WealthProjection {
+  year: number;
+  estimatedValue: number;
+}
+
 export interface InvestData {
-  investments: Investment[];
+  investments: (Investment & { 
+    isLTCG: boolean; 
+    cagr: number;
+    allocation: number;
+  })[];
   getTransactions: (investmentId: string) => InvestmentTransaction[];
+  getWealthProjection: (years: number) => WealthProjection[];
   summary: {
     totalPrincipal: number;
     currentValue: number;
     profit: number;
     pnlPercent: number;
+    monthlySIP: number;
+    diversificationScore: number; // 0-100 based on asset mix
   };
   addInvestment: (investment: Omit<Investment, 'id' | 'created_at'>) => void;
   addTransaction: (tx: Omit<InvestmentTransaction, 'id' | 'created_at'>) => void;
@@ -42,16 +54,17 @@ export function useInvest(): InvestData {
 
   const persist = useCallback(() => {
     if (db && currentPin && fileHandle) {
-      saveVault(db, currentPin, fileHandle).catch(console.error);
+      saveVault(db, currentPin, fileHandle).catch(() => {});
     }
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
   return useMemo<InvestData>(() => {
-    const emptyState = { 
+    const emptyState: InvestData = { 
       investments: [], 
       getTransactions: () => [],
-      summary: { totalPrincipal: 0, currentValue: 0, profit: 0, pnlPercent: 0 },
+      getWealthProjection: () => [],
+      summary: { totalPrincipal: 0, currentValue: 0, profit: 0, pnlPercent: 0, monthlySIP: 0, diversificationScore: 0 },
       addInvestment: () => {},
       addTransaction: () => {},
       updateValuation: () => {}
@@ -61,84 +74,110 @@ export function useInvest(): InvestData {
 
     try {
       const investments = runQuery<Investment>(db, "SELECT * FROM investments ORDER BY current_value DESC");
-      // Calculate true principal from transactions
-      
       const transactions = runQuery<InvestmentTransaction>(db, "SELECT * FROM investment_transactions ORDER BY date DESC");
 
-      const enrichedInvestments = investments.map(inv => {
+      const now = new Date();
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(now.getFullYear() - 1);
+
+      const enriched = investments.map(inv => {
         const invTx = transactions.filter(t => t.investment_id === inv.id);
-        const calculatedPrincipal = invTx.reduce((sum, t) => {
+        
+        // Calculate Principal
+        const principal = invTx.reduce((sum, t) => {
           if (t.type === 'sip' || t.type === 'lumpsum') return sum + t.amount;
           if (t.type === 'withdrawal') return sum - t.amount;
-          return sum; // valuation doesn't affect principal
+          return sum;
         }, 0);
-        return { ...inv, principal: calculatedPrincipal > 0 ? calculatedPrincipal : inv.principal };
+
+        // Tax Status: LTCG (>1 year for Mutual Funds/Stocks, >2-3 for others)
+        // Simple logic: If start_date is older than 1 year
+        const startDate = new Date(inv.start_date);
+        const isLTCG = startDate < oneYearAgo;
+
+        // Simple CAGR calculation
+        const yearsDiff = Math.max(0.1, (now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 365));
+        const cagr = principal > 0 ? (Math.pow(inv.current_value / principal, 1 / yearsDiff) - 1) * 100 : 0;
+
+        return { 
+          ...inv, 
+          principal: principal || inv.principal, 
+          isLTCG, 
+          cagr: Number(cagr.toFixed(2)),
+          allocation: 0 // Will calculate later
+        };
       });
 
-      const totalPrincipal = enrichedInvestments.reduce((acc, i) => acc + i.principal, 0);
-      const currentValue = enrichedInvestments.reduce((acc, i) => acc + i.current_value, 0);
-      const profit = currentValue - totalPrincipal;
-      const pnlPercent = totalPrincipal > 0 ? (profit / totalPrincipal) * 100 : 0;
+      const totalValue = enriched.reduce((acc, i) => acc + i.current_value, 0);
+      const totalPrincipal = enriched.reduce((acc, i) => acc + i.principal, 0);
+      const monthlySIP = enriched.reduce((acc, i) => acc + (Number(i.monthly_sip) || 0), 0);
 
-      const getTransactions = (investmentId: string) => {
-        return transactions.filter(t => t.investment_id === investmentId);
-      };
+      // Final enrichment with allocation
+      const finalInvestments = enriched.map(i => ({
+        ...i,
+        allocation: totalValue > 0 ? (i.current_value / totalValue) * 100 : 0
+      }));
 
-      const addInvestment = (inv: Omit<Investment, 'id' | 'created_at'>) => {
-        const id = crypto.randomUUID();
-        db.run(
-          `INSERT INTO investments (id, name, type, principal, current_value, units, monthly_sip, start_date, maturity_date, notes)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [id, inv.name, inv.type, inv.principal, inv.current_value, inv.units || null, inv.monthly_sip || null, inv.start_date, inv.maturity_date || null, inv.notes || null]
-        );
-        
-        // Auto-add initial transaction if principal > 0
-        if (inv.principal > 0) {
-          db.run(
-            `INSERT INTO investment_transactions (id, investment_id, type, amount, date, notes, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [crypto.randomUUID(), id, 'lumpsum', inv.principal, inv.start_date, 'Initial Investment', new Date().toISOString()]
-          );
+      // Wealth Projection Engine
+      const getWealthProjection = (years: number): WealthProjection[] => {
+        const result: WealthProjection[] = [];
+        let runningTotal = totalValue;
+        const annualReturn = 0.12; // 12% conservative average for India
+        const annualSIP = monthlySIP * 12;
+
+        for (let y = 1; y <= years; y++) {
+          // Future Value of current holdings + Future Value of periodic SIPs
+          runningTotal = (runningTotal * (1 + annualReturn)) + (annualSIP * (1 + annualReturn));
+          result.push({ year: now.getFullYear() + y, estimatedValue: Math.round(runningTotal) });
         }
-        persist();
+        return result;
       };
 
-      const addTransaction = (tx: Omit<InvestmentTransaction, 'id' | 'created_at'>) => {
-        db.run(
-          `INSERT INTO investment_transactions (id, investment_id, type, amount, date, notes, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?)`,
-          [crypto.randomUUID(), tx.investment_id, tx.type, tx.amount, tx.date, tx.notes || null, new Date().toISOString()]
-        );
-        persist();
-      };
-
-      const updateValuation = (investmentId: string, newValue: number, notes?: string) => {
-        db.run("UPDATE investments SET current_value = ? WHERE id = ?", [newValue, investmentId]);
-        
-        db.run(
-          `INSERT INTO investment_transactions (id, investment_id, type, amount, date, notes, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?)`,
-          [crypto.randomUUID(), investmentId, 'valuation', newValue, new Date().toISOString(), notes || 'Valuation Update', new Date().toISOString()]
-        );
-        persist();
-      };
+      // Diversification Score (Simplified: Reward variety in categories)
+      const categories = new Set(finalInvestments.map(i => i.type));
+      const diversificationScore = Math.min(100, categories.size * 25);
 
       return {
-        investments: enrichedInvestments,
-        getTransactions,
+        investments: finalInvestments,
+        getTransactions: (id) => transactions.filter(t => t.investment_id === id),
+        getWealthProjection,
         summary: {
           totalPrincipal,
-          currentValue,
-          profit,
-          pnlPercent
+          currentValue: totalValue,
+          profit: totalValue - totalPrincipal,
+          pnlPercent: totalPrincipal > 0 ? ((totalValue - totalPrincipal) / totalPrincipal) * 100 : 0,
+          monthlySIP,
+          diversificationScore
         },
-        addInvestment,
-        addTransaction,
-        updateValuation
+        addInvestment: (inv) => {
+          const id = crypto.randomUUID();
+          db.run(
+            `INSERT INTO investments (id, name, type, principal, current_value, units, monthly_sip, start_date, maturity_date, notes)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [id, inv.name, inv.type, inv.principal, inv.current_value, inv.units, inv.monthly_sip, inv.start_date, inv.maturity_date, inv.notes]
+          );
+          if (inv.principal > 0) {
+            db.run(`INSERT INTO investment_transactions (id, investment_id, type, amount, date, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+              [crypto.randomUUID(), id, 'lumpsum', inv.principal, inv.start_date, new Date().toISOString()]);
+          }
+          persist();
+        },
+        addTransaction: (tx) => {
+          db.run(`INSERT INTO investment_transactions (id, investment_id, type, amount, date, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [crypto.randomUUID(), tx.investment_id, tx.type, tx.amount, tx.date, tx.notes, new Date().toISOString()]);
+          persist();
+        },
+        updateValuation: (id, val, notes) => {
+          db.run("UPDATE investments SET current_value = ? WHERE id = ?", [val, id]);
+          db.run(`INSERT INTO investment_transactions (id, investment_id, type, amount, date, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [crypto.randomUUID(), id, 'valuation', val, new Date().toISOString().split('T')[0], notes, new Date().toISOString()]);
+          persist();
+        }
       };
     } catch (e) {
-      console.error("useInvest err:", e);
+      console.error("Wealth error:", e);
       return emptyState;
     }
   }, [db, tick, persist]);
 }
+

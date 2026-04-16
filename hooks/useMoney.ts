@@ -18,7 +18,7 @@
 
 import { useAppStore } from '@/lib/store';
 import { saveVault } from '@/lib/vault';
-import { Transaction } from '@/types/db';
+import { Transaction, CategoryBudget } from '@/types/db';
 import { runQuery } from '@/lib/db';
 import { useMemo, useCallback, useState } from 'react';
 
@@ -28,7 +28,7 @@ export function useMoney(month?: string) {
   const [tick, setTick] = useState(0);
 
   const data = useMemo(() => {
-    if (!db) return { txns: [], summary: { income: 0, expense: 0, balance: 0 } };
+    if (!db) return { txns: [], budgets: [], summary: { income: 0, expense: 0, balance: 0 } };
 
     // 1. Fetch Transactions for the month
     const txns = runQuery<Transaction>(db, `
@@ -36,8 +36,13 @@ export function useMoney(month?: string) {
       WHERE strftime('%Y-%m', date) = ? 
       ORDER BY date DESC
     `, [currentMonth]);
+
+    // 2. Fetch Budgets for the month
+    const budgets = runQuery<CategoryBudget>(db, `
+      SELECT * FROM budgets WHERE month = ?
+    `, [currentMonth]);
     
-    // 2. Calculate Summary
+    // 3. Calculate Summary
     const income = txns
       .filter(t => t.type === 'income')
       .reduce((sum, t) => sum + Number(t.amount), 0);
@@ -48,6 +53,7 @@ export function useMoney(month?: string) {
 
     return {
       txns,
+      budgets,
       summary: {
         income,
         expense,
@@ -56,31 +62,44 @@ export function useMoney(month?: string) {
     };
   }, [db, currentMonth, tick]);
 
-  const addTransaction = useCallback((type: 'income'|'expense', amount: number, category: string, description: string, date: string) => {
+  const addTransaction = useCallback((type: 'income'|'expense', amount: number, category: string, description: string, date: string, member_id?: string) => {
     if (!db) return;
     const id = crypto.randomUUID();
     const created_at = new Date().toISOString();
     
     db.run(
-      "INSERT INTO transactions (id, date, amount, type, category, description, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [id, date, amount, type, category, description, created_at]
+      "INSERT INTO transactions (id, date, amount, type, category, description, member_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      [id, date, amount, type, category, description, member_id || null, created_at]
     );
 
-    if (fileHandle && currentPin) {
-      saveVault(db, currentPin, fileHandle).catch(console.error);
-    }
+    if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle).catch(console.error);
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
+
+  const setCategoryBudget = useCallback((category: string, limit: number) => {
+    if (!db) return;
+    
+    // Upsert logic for budget
+    const existing = runQuery<CategoryBudget>(db, "SELECT * FROM budgets WHERE category = ? AND month = ?", [category, currentMonth]);
+    
+    if (existing.length > 0) {
+      db.run("UPDATE budgets SET monthly_limit = ? WHERE id = ?", [limit, existing[0].id]);
+    } else {
+      const id = crypto.randomUUID();
+      db.run("INSERT INTO budgets (id, category, monthly_limit, month) VALUES (?, ?, ?, ?)", [id, category, limit, currentMonth]);
+    }
+
+    if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle).catch(console.error);
+    setTick(t => t + 1);
+  }, [db, currentMonth, currentPin, fileHandle]);
 
   const deleteTransaction = useCallback((id: string) => {
     if (!db) return;
     db.run("DELETE FROM transactions WHERE id = ?", [id]);
     
-    if (fileHandle && currentPin) {
-      saveVault(db, currentPin, fileHandle).catch(console.error);
-    }
+    if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle).catch(console.error);
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
-  return { ...data, addTransaction, deleteTransaction };
+  return { ...data, addTransaction, deleteTransaction, setCategoryBudget };
 }

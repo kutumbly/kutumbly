@@ -68,7 +68,7 @@ export default function NotFound() {
           Yeh Raasta Nahi Mila
         </h2>
         <p className="text-[13px] font-bold text-text-secondary leading-relaxed mb-10 max-w-xs mx-auto">
-          The page you're looking for does not exist in the Kutumbly Sovereign OS.
+          The page you&apos;re looking for does not exist in the Kutumbly Sovereign OS.
           It may have moved, been removed, or never existed.
         </p>
 

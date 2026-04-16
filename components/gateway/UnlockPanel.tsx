@@ -17,7 +17,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Delete, Check, Lock, AlertCircle, Loader2, Fingerprint } from 'lucide-react';
+import { Delete, Check, Lock, AlertCircle, Loader2, Fingerprint, ShieldCheck } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { openVault } from '@/lib/vault';
 import { isDevBypassEnabled } from '@/lib/dev';
@@ -41,36 +41,35 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
   const [attempts, setAttempts] = useState(0);
   const [waitTimer, setWaitTimer] = useState(0);
 
-  // Removed async useEffect to preserve user action context.
-
   useEffect(() => {
     if (waitTimer <= 0) return;
-    const t = setTimeout(() => setWaitTimer(w => w - 1), 1000);
-    return () => clearTimeout(t);
+    const interval = setInterval(() => setWaitTimer(w => w - 1), 1000);
+    return () => clearInterval(interval);
   }, [waitTimer]);
 
-  const hapticFeedback = () => {
+  const hapticFeedback = (intensity: number | number[] = 15) => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
-      navigator.vibrate(12); // Short pulse
+      navigator.vibrate(intensity); 
     }
   };
 
   const handleDigit = (digit: string) => {
     if (waitTimer > 0 || isDecrypting) return;
-    hapticFeedback();
+    hapticFeedback(15);
     if (currentPin.length < 4) {
       const newPin = currentPin + digit;
       setCurrentPin(newPin);
       setError(null);
       if (newPin.length === 4) {
-        handleUnlock(newPin); // Synchronous call preserves user-activation for Permissions API
+        // Shorter delay for premium feel
+        setTimeout(() => handleUnlock(newPin), 50);
       }
     }
   };
 
   const handleDelete = () => {
     if (!isDecrypting) {
-      hapticFeedback();
+      hapticFeedback(20);
       setCurrentPin(currentPin.slice(0, -1));
     }
   };
@@ -83,6 +82,9 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
 
     try {
       const { db, handle } = await openVault(targetPin, activeVault.fileHandle);
+      // Success Haptic
+      hapticFeedback([20, 50, 20]);
+      
       setUnlocked(db, handle ?? undefined);
       addRecentVault({
         ...activeVault,
@@ -94,6 +96,7 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
       setCurrentPin('');
+      hapticFeedback([50, 100]); // Error vibration
 
       if (err.message === 'WRONG_PIN') {
         setError(t('WRONG_PIN_ERROR'));
@@ -118,7 +121,7 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
   if (!activeVault) return null;
 
   const handleBiometricClick = async () => {
-    hapticFeedback();
+    hapticFeedback(10);
     const pin = await unlockBiometric(activeVault.id);
     if (pin) {
       setCurrentPin(pin);
@@ -131,104 +134,130 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
   const bioActive = activeVault && hasBiometricRegistered(activeVault.id);
 
   return (
-    <div className="flex flex-col min-h-full p-6 md:p-8 overflow-y-auto scroller-hide pt-10 pb-20">
-      <div className="w-full max-w-[320px] flex flex-col items-center mx-auto my-auto">
+    <div className="flex flex-col min-h-full p-6 md:p-8 overflow-y-auto scroller-hide pt-10 pb-20 select-none">
+      <div className="w-full max-w-[340px] flex flex-col items-center mx-auto my-auto">
 
-        {/* Vault Profile */}
+        {/* Sovereign Vault Profile */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center mb-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
         >
-          <div className="w-20 h-20 bg-bg-tertiary rounded-[2.5rem] flex items-center justify-center mx-auto mb-4 border border-border-light shadow-inner">
-            <span className="text-4xl filter drop-shadow-sm">{activeVault.icon || '🛡️'}</span>
+          <div className="relative">
+             <div className="w-24 h-24 bg-gradient-to-br from-bg-tertiary to-bg-primary rounded-[3rem] flex items-center justify-center mx-auto mb-6 border border-border-light shadow-2xl relative z-10">
+               <span className="text-5xl filter drop-shadow-xl">{activeVault.icon || '🛡️'}</span>
+             </div>
+             {/* Subtle background glow */}
+             <div className="absolute inset-0 bg-gold/5 blur-3xl rounded-full scale-150 -z-0"></div>
           </div>
-          <h2 className="text-xl font-black text-text-primary tracking-tight">{activeVault.name}</h2>
-          <div className="flex items-center justify-center gap-1.5 mt-2 opacity-60">
-             <div className="text-[10px] font-black uppercase tracking-[0.3em] text-text-tertiary">
+          <h2 className="text-2xl font-black text-text-primary tracking-tight">{activeVault.name}</h2>
+          <div className="flex items-center justify-center gap-2 mt-3">
+             <ShieldCheck size={12} className="text-gold" />
+             <div className="text-[10px] font-black uppercase tracking-[0.4em] text-text-tertiary opacity-60">
                {t('VAULT_SECURITY')}
              </div>
           </div>
         </motion.div>
 
-        {/* PIN Indicators */}
-        <div className="flex gap-5 mb-14">
+        {/* Jeweler PIN Indicators */}
+        <div className="flex gap-6 mb-16 h-4">
           {[0, 1, 2, 3].map((i) => (
             <motion.div
               key={i}
               initial={false}
               animate={{
-                scale: currentPin.length > i ? [1, 1.1, 1] : 1,
+                scale: currentPin.length > i ? [1, 1.2, 1] : 1,
+                backgroundColor: currentPin.length > i ? "var(--gold)" : "transparent",
+                boxShadow: currentPin.length > i ? "0 0 15px rgba(201,151,28,0.4)" : "none",
               }}
-              className={`w-3.5 h-3.5 rounded-full border-2 transition-all duration-300 ${
+              className={`w-4 h-4 rounded-sm border-2 rotate-45 transition-all duration-300 ${
                 currentPin.length > i 
-                  ? 'bg-gold border-gold/20 shadow-[0_0_15px_rgba(201,151,28,0.2)]' 
-                  : 'bg-transparent border-border-light'
+                  ? 'border-gold/20' 
+                  : 'border-border-light/30'
               }`}
             />
           ))}
         </div>
 
-        {/* Numpad */}
-        <div className="grid grid-cols-3 gap-4 w-full max-w-[280px]">
+        {/* Tactile Numpad */}
+        <div className="grid grid-cols-3 gap-6 w-full px-4">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-            <button
+            <motion.button
               key={n}
+              whileTap={{ scale: 0.9, backgroundColor: "rgba(201,151,28,0.05)" }}
               disabled={isDecrypting || waitTimer > 0}
               onClick={() => handleDigit(n.toString())}
-              className="w-full aspect-[4/3] rounded-[1.5rem] bg-bg-primary border border-border-light flex items-center justify-center text-xl font-black text-text-primary active:scale-95 active:bg-gold active:text-white transition-all shadow-sm hover:border-gold/30"
+              className="w-full aspect-square rounded-2xl bg-bg-primary border border-border-light flex items-center justify-center text-2xl font-black text-text-primary transition-colors shadow-sm hover:border-gold/20 active:border-gold"
             >
               {n}
-            </button>
+            </motion.button>
           ))}
-          {/* Backspace */}
-          <button
-            disabled={isDecrypting}
-            onClick={handleDelete}
-            className="w-full aspect-[4/3] flex items-center justify-center text-text-tertiary hover:text-text-danger transition-colors active:scale-95"
-          >
-            <Delete size={20} />
-          </button>
           
-          <button
+          {/* Biometric/Action Section */}
+          <div className="flex items-center justify-center">
+            {bioActive ? (
+              <motion.button 
+                whileTap={{ scale: 0.8 }}
+                onClick={handleBiometricClick}
+                className="w-16 h-16 rounded-full flex items-center justify-center text-gold relative"
+              >
+                <div className="absolute inset-0 bg-gold/10 rounded-full animate-ping opacity-20"></div>
+                <Fingerprint size={28} strokeWidth={2.5} />
+              </motion.button>
+            ) : (
+              <div className="w-full h-full" />
+            )}
+          </div>
+          
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             disabled={isDecrypting || waitTimer > 0}
             onClick={() => handleDigit('0')}
-            className="w-full aspect-[4/3] rounded-[1.5rem] bg-bg-primary border border-border-light flex items-center justify-center text-xl font-black text-text-primary active:scale-95 active:bg-gold active:text-white transition-all shadow-sm hover:border-gold/30"
+            className="w-full aspect-square rounded-2xl bg-bg-primary border border-border-light flex items-center justify-center text-2xl font-black text-text-primary transition-colors shadow-sm hover:border-gold/20 active:border-gold"
           >
             0
-          </button>
+          </motion.button>
 
-          {bioActive ? (
-            <button 
-              onClick={handleBiometricClick}
-              className="w-full aspect-[4/3] flex items-center justify-center text-gold active:scale-95 transition-all"
-            >
-              <Fingerprint size={24} />
-            </button>
-          ) : (
-            <div className="w-full aspect-[4/3]" />
-          )}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            disabled={isDecrypting}
+            onClick={handleDelete}
+            className="w-full aspect-square flex items-center justify-center text-text-tertiary hover:text-text-danger transition-colors"
+          >
+            <Delete size={24} />
+          </motion.button>
         </div>
 
-        {/* Footer Actions */}
-        <div className="mt-12 w-full flex flex-col gap-4 items-center">
+        {/* Secure Entry Footer */}
+        <div className="mt-16 w-full flex flex-col gap-6 items-center">
           <AnimatePresence mode="wait">
-            {error && (
+            {error ? (
               <motion.div
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0 }}
-                className="flex items-center gap-2 text-text-danger text-[11px] font-bold"
+                className="flex items-center gap-2 text-text-danger text-[11px] font-black uppercase tracking-widest bg-text-danger/5 px-4 py-2 rounded-full border border-text-danger/10"
               >
-                <AlertCircle className="w-3.5 h-3.5" />
+                <AlertCircle size={14} />
                 {error} {waitTimer > 0 && `(${waitTimer}s)`}
               </motion.div>
+            ) : isDecrypting ? (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center gap-3 text-gold text-xs font-black uppercase tracking-[0.2em]"
+              >
+                <Loader2 className="animate-spin" size={16} />
+                Unlocking Vault...
+              </motion.div>
+            ) : (
+              <div className="h-8" /> 
             )}
           </AnimatePresence>
 
           {isDevBypassEnabled() && (
-            <button onClick={() => setCurrentPin('0000')} className="text-[10px] text-gold font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">
-              Dev Bypass (0000)
+            <button onClick={() => setCurrentPin('1234')} className="text-[10px] text-gold font-bold uppercase tracking-widest opacity-20 hover:opacity-100 transition-opacity">
+               Sovereign Bypass Enabled
             </button>
           )}
         </div>

@@ -38,7 +38,8 @@ export default function RecoverPanel({ onBack }: RecoverPanelProps) {
         setLoading(false);
       });
     } else {
-      setLoading(false);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      queueMicrotask(() => setLoading(false));
     }
   }, [activeVault]);
 

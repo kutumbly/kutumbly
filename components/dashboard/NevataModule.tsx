@@ -57,32 +57,24 @@ import { parseRichContent } from '@/lib/richContent';
 export default function NevataModule() {
   const { lang, db } = useAppStore();
   const t = useTranslation(lang as Language);
-  const { getEvents, getLedger, getUpcoming, suggestShagun } = useNevata();
+  const { getEvents, getLedger, getUpcoming, suggestShagun, totalDiya, totalMila, addEvent } = useNevata();
 
   const [direction, setDirection] = useState<'they_invited' | 'we_hosted'>('they_invited');
   const [activeTab, setActiveTab] = useState<'events' | 'ledger' | 'upcoming' | 'registry'>('events');
   const [selectedEvent, setSelectedEvent] = useState<NevataEvent | null>(null);
   const [nevataMode, setNevataMode] = useState<'list' | 'control' | 'inventory' | 'ledger' | 'guests'>('list');
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  // Form State
+  const [fTitle, setFTitle] = useState('');
+  const [fEType, setFEType] = useState('shaadi');
+  const [fFamily, setFFamily] = useState('');
+  const [fDate, setFDate] = useState(new Date().toISOString().split('T')[0]);
+  const [fLoc, setFLoc] = useState('');
 
   const events   = useMemo(() => getEvents(direction), [direction, db, getEvents]);
   const ledger   = useMemo(() => getLedger(),           [db, getLedger]);
   const upcoming = useMemo(() => getUpcoming(),          [db, getUpcoming]);
-
-  // Real stats from DB
-  const totalDiya = useMemo(() => {
-    if (!db) return 0;
-    try {
-      const r = db.exec(`SELECT SUM(amount) FROM nevata_shagun WHERE direction='diya'`);
-      return Number(r[0]?.values[0]?.[0] || 0);
-    } catch { return 0; }
-  }, [db]);
-  const totalMila = useMemo(() => {
-    if (!db) return 0;
-    try {
-      const r = db.exec(`SELECT SUM(amount) FROM nevata_shagun WHERE direction='mila'`);
-      return Number(r[0]?.values[0]?.[0] || 0);
-    } catch { return 0; }
-  }, [db]);
 
   type MetricStatus = "success" | "default" | "warning" | "danger" | "info";
   
@@ -100,6 +92,24 @@ export default function NevataModule() {
         { label: t('GIVEN_TOTAL'), value: totalDiya, isCurrency: true, status: 'danger' },
         { label: t('NET_PARAM'), value: totalMila - totalDiya, isCurrency: true, status: 'info' },
       ];
+
+  const handleCreateEvent = () => {
+    if (!fTitle || !fFamily) return;
+    addEvent({
+      title: fTitle,
+      event_type: fEType,
+      direction,
+      family_name: fFamily,
+      event_date: fDate,
+      location: fLoc,
+      our_count: 1,
+      notes: ''
+    });
+    setShowAddForm(false);
+    setFTitle('');
+    setFFamily('');
+    setFLoc('');
+  };
 
   // --- Tab content renderers ---
 
@@ -280,8 +290,9 @@ export default function NevataModule() {
     <ModuleShell
       title={t('NEVATA')}
       subtitle={selectedEvent ? selectedEvent.title : t('NEVATA_SUBTITLE')}
-      onAdd={nevataMode === 'list' ? () => {} : undefined}
+      onAdd={nevataMode === 'list' && !showAddForm ? () => setShowAddForm(true) : undefined}
       addLabel={t('NEW_EVENT')}
+      onBack={showAddForm ? () => setShowAddForm(false) : undefined}
     >
       <div className="space-y-8">
         {selectedEvent && (
@@ -322,7 +333,64 @@ export default function NevataModule() {
         )}
 
         <AnimatePresence mode="wait">
-          {!selectedEvent ? (
+          {showAddForm ? (
+            <motion.div
+              key="add-event-form"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-2xl mx-auto"
+            >
+              <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 space-y-6 shadow-xl shadow-black/[0.02]">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xl font-black text-text-primary">Event Blueprint</h3>
+                  <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${direction === 'we_hosted' ? 'bg-bg-info text-text-info' : 'bg-bg-success text-text-success'}`}>
+                    {direction === 'we_hosted' ? 'Our Event' : 'Their Event'}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-1">Title / Event Name</label>
+                    <input type="text" value={fTitle} onChange={e => setFTitle(e.target.value)} placeholder="e.g. Rahul ki Shaadi" className="bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold outline-none focus:border-gold" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-1">Event Type</label>
+                      <select value={fEType} onChange={e => setFEType(e.target.value)} className="bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold outline-none focus:border-gold appearance-none">
+                        {Object.keys(EVENT_TYPE_EMOJI).map(k => (
+                          <option key={k} value={k}>{EVENT_TYPE_EMOJI[k]} {k.toUpperCase()}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-1">Date</label>
+                      <input type="date" value={fDate} onChange={e => setFDate(e.target.value)} className="bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold outline-none focus:border-gold" />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-1">Family Name</label>
+                    <input type="text" value={fFamily} onChange={e => setFFamily(e.target.value)} placeholder="e.g. Mishra Pariwar" className="bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold outline-none focus:border-gold" />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-1">Location</label>
+                    <input type="text" value={fLoc} onChange={e => setFLoc(e.target.value)} placeholder="Venue details..." className="bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold outline-none focus:border-gold" />
+                  </div>
+                </div>
+
+                <button 
+                  onClick={handleCreateEvent}
+                  disabled={!fTitle || !fFamily}
+                  className="w-full h-16 bg-gold-text text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:opacity-90 disabled:opacity-30 transition-all flex items-center justify-center gap-2"
+                >
+                  <Calendar size={20} /> Deploy Blueprint
+                </button>
+              </div>
+            </motion.div>
+          ) : !selectedEvent ? (
             <motion.div
               key="list-view"
               initial={{ opacity: 0, x: -10 }}

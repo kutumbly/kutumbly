@@ -33,7 +33,7 @@ export default function HealthModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
   const { getFamilyMembers } = useVault();
-  const { readings, medications, addReading } = useHealth();
+  const { readings, medications, addReading, addMedication, stopMedication } = useHealth();
   
   const members = getFamilyMembers();
 
@@ -43,18 +43,37 @@ export default function HealthModule() {
   const [fSys, setFSys] = React.useState('');
   const [fDia, setFDia] = React.useState('');
   const [fSugar, setFSugar] = React.useState('');
+  const [fPulse, setFPulse] = React.useState('');
   const [fWeight, setFWeight] = React.useState('');
+  const [fNotes, setFNotes] = React.useState('');
 
   const handleAdd = () => {
     if (!fMem) return;
-    addReading(fMem, Number(fSys)||0, Number(fDia)||0, Number(fSugar)||0, 0, Number(fWeight)||0, '');
+    addReading(
+      fMem, 
+      Number(fSys)||0, 
+      Number(fDia)||0, 
+      Number(fSugar)||0, 
+      Number(fPulse)||0, 
+      Number(fWeight)||0, 
+      fNotes
+    );
     setShowAddForm(false);
-    setFSys(''); setFDia(''); setFSugar(''); setFWeight('');
+    setFSys(''); setFDia(''); setFSugar(''); setFWeight(''); setFPulse(''); setFNotes('');
   };
 
   // Summary Metrics
-  const activeMedsCount = medications.length;
+  const activeMedsCount = medications.filter(m => !m.end_date).length;
   const recentCriticals = readings.filter((r: HealthReading) => (r.bp_systolic && r.bp_systolic > 140) || (r.blood_sugar && r.blood_sugar > 140)).length;
+  
+  const wellnessPulse = React.useMemo(() => {
+    if (readings.length === 0) return 100;
+    const criticals = readings.filter((r) => 
+      (r.bp_systolic && (r.bp_systolic > 140 || r.bp_systolic < 90)) || 
+      (r.blood_sugar && (r.blood_sugar > 140 || r.blood_sugar < 70))
+    ).length;
+    return Math.max(0, Math.round(((readings.length - criticals) / readings.length) * 100));
+  }, [readings]);
 
   const [view, setView] = React.useState<HealthView>('overview');
   const [activeMember, setActiveMember] = React.useState<FamilyMember | null>(null);
@@ -123,8 +142,19 @@ export default function HealthModule() {
                  <input type="number" value={fSugar} onChange={e => setFSugar(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-2xl font-black text-text-primary outline-none focus:border-gold transition-all" placeholder="mg/dL" />
                </div>
                <div className="flex flex-col gap-3">
+                 <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('PULSE')}</label>
+                 <input type="number" value={fPulse} onChange={e => setFPulse(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-2xl font-black text-text-primary outline-none focus:border-gold transition-all" placeholder="bpm" />
+               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-6">
+               <div className="flex flex-col gap-3">
                  <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('WEIGHT')}</label>
                  <input type="number" value={fWeight} onChange={e => setFWeight(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-2xl font-black text-text-primary outline-none focus:border-gold transition-all" placeholder="kg" />
+               </div>
+               <div className="flex flex-col gap-3">
+                 <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">Notes</label>
+                 <input type="text" value={fNotes} onChange={e => setFNotes(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-5 text-base font-black text-text-secondary outline-none focus:border-gold transition-all" placeholder="Any symptoms?" />
                </div>
             </div>
 
@@ -150,7 +180,7 @@ export default function HealthModule() {
            <MetricCard label={t('HEALTH_MEDS')} value={activeMedsCount} status="default" />
            <MetricCard label={t('SOVEREIGN_ACTIVITY')} value={readings.length} status="success" trend={[10, 12, 11, 15, readings.length]} />
            <MetricCard label={t('CRITICAL_ALERTS')} value={recentCriticals} status={recentCriticals > 0 ? 'danger' : 'success'} />
-           <MetricCard label={t('WELLNESS_PULSE')} value="94" unit="%" status="success" />
+           <MetricCard label={t('WELLNESS_PULSE')} value={wellnessPulse} unit="%" status={wellnessPulse < 80 ? 'warning' : 'success'} />
         </div>
 
         {/* Family Member Profiles */}
@@ -218,7 +248,7 @@ export default function HealthModule() {
           </div>
           
           <div className="space-y-4">
-             {medications.length > 0 ? medications.map((med: Medication, i: number) => (
+             {medications.filter((m) => !m.end_date).length > 0 ? medications.filter((m) => !m.end_date).map((med: Medication, i: number) => (
                 <motion.div 
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -246,10 +276,11 @@ export default function HealthModule() {
                         </div>
                      </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex flex-col items-end gap-2">
                      <span className="text-[9px] font-black bg-red-500/5 text-red-500 px-4 py-2 rounded-full uppercase tracking-[0.2em] border border-red-500/10">
                         {t('CRITICAL_STOCK')}
                      </span>
+                     <button onClick={() => stopMedication(med.id)} className="text-[9px] text-danger font-black uppercase hover:underline opacity-60 hover:opacity-100">Stop</button>
                   </div>
                 </motion.div>
              )) : (
@@ -303,7 +334,7 @@ export default function HealthModule() {
                         <tr className="border-b border-border-light bg-bg-tertiary">
                            <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] rounded-tl-xl">Date</th>
                            <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em]">BP (Sys/Dia)</th>
-                           <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em]">Sugar</th>
+                           <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em]">Sugar/Pulse</th>
                            <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] rounded-tr-xl text-right">Weight</th>
                         </tr>
                      </thead>
@@ -312,14 +343,17 @@ export default function HealthModule() {
                            <tr key={i} className="border-b border-border-light/50 hover:bg-bg-tertiary transition-colors group">
                               <td className="p-4 text-xs font-bold text-text-secondary">{new Date(String(r.created_at)).toLocaleDateString()}</td>
                               <td className="p-4">
-                                 <span className={`text-sm font-black ${r.bp_systolic && r.bp_systolic > 140 ? 'text-red-500' : 'text-text-primary'}`}>
+                                 <span className={`text-sm font-black ${r.bp_systolic && (r.bp_systolic > 140 || r.bp_systolic < 90) ? 'text-red-500' : 'text-text-primary'}`}>
                                     {r.bp_systolic || '--'} / {r.bp_diastolic || '--'}
                                  </span>
                               </td>
                               <td className="p-4">
-                                 <span className={`text-sm font-black tabular-nums ${r.blood_sugar && r.blood_sugar > 140 ? 'text-red-500' : 'text-text-primary'}`}>
+                                 <div className={`text-sm font-black tabular-nums ${r.blood_sugar && (r.blood_sugar > 140 || r.blood_sugar < 70) ? 'text-red-500' : 'text-text-primary'}`}>
                                     {r.blood_sugar || '--'} mg
-                                 </span>
+                                 </div>
+                                 <div className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mt-0.5 opacity-60">
+                                    {r.pulse ? `${r.pulse} bpm` : '--'}
+                                 </div>
                               </td>
                               <td className="p-4 text-sm font-black text-text-primary text-right">{r.weight || '--'} kg</td>
                            </tr>
@@ -338,10 +372,21 @@ export default function HealthModule() {
                      <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] flex items-center gap-2">
                         <PillIcon size={16} className="text-gold" /> {t('CURRENT_MEDS')}
                      </h3>
-                     <button className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline">+ {t('PROVIDE_MEDS')}</button>
+                     <button 
+                        onClick={() => {
+                           const mName = window.prompt("Enter Medication Name (e.g., Paracetamol):");
+                           if (!mName) return;
+                           const mDose = window.prompt("Enter Dosage (e.g., 500mg):") || "Standard";
+                           const mFreq = window.prompt("Enter Frequency (e.g., Twice a day):") || "Daily";
+                           addMedication(activeMember.id, mName, mDose, mFreq);
+                        }}
+                        className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline"
+                     >
+                        + {t('PROVIDE_MEDS')}
+                     </button>
                   </div>
                   <div className="space-y-3">
-                     {medications.filter(m => m.member_id === activeMember.id).map((m, i) => (
+                     {medications.filter(m => m.member_id === activeMember.id && !m.end_date).map((m, i) => (
                         <div key={i} className="flex items-center justify-between p-4 bg-bg-tertiary border border-border-light rounded-2xl">
                            <div className="flex gap-4 items-center">
                               <div className="w-10 h-10 rounded-xl bg-bg-primary border border-border-light flex items-center justify-center text-gold-text">
@@ -352,10 +397,13 @@ export default function HealthModule() {
                                  <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.1em] mt-1">{m.dosage} • {m.frequency}</div>
                               </div>
                            </div>
-                           <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest bg-bg-primary px-3 py-1.5 rounded-lg border border-border-light">Active</span>
+                           <div className="flex items-center gap-2">
+                              <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest bg-bg-primary px-3 py-1.5 rounded-lg border border-border-light">Active</span>
+                              <button onClick={() => stopMedication(m.id)} className="text-[9px] text-danger font-black uppercase hover:underline opacity-80">Stop</button>
+                           </div>
                         </div>
                      ))}
-                     {medications.filter(m => m.member_id === activeMember.id).length === 0 && (
+                     {medications.filter(m => m.member_id === activeMember.id && !m.end_date).length === 0 && (
                         <div className="text-center py-8 text-[10px] font-black text-text-tertiary uppercase tracking-widest opacity-50">
                            No active medications
                         </div>

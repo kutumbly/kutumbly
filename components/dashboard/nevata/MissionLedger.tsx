@@ -163,7 +163,7 @@ export default function MissionLedger({ event }: MissionLedgerProps) {
                  </div>
                  {l.notes && (
                    <div className="mt-4 p-3 bg-bg-secondary rounded-xl border border-border-light text-[10px] italic text-text-tertiary">
-                     "{l.notes}"
+                      &quot;{l.notes}&quot;
                    </div>
                  )}
               </div>

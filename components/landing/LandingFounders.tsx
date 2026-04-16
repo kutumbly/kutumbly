@@ -57,7 +57,7 @@ export default function LandingFounders() {
 
               <div className="mt-12 pt-12 border-t border-border-light/40">
                 <p className="text-xl font-black text-text-primary leading-relaxed font-inter-tight italic">
-                "{t('landing.founders.pd.quote')}"
+                &quot;{t('landing.founders.pd.quote')}&quot;
                 </p>
               </div>
            </motion.div>
@@ -82,7 +82,7 @@ export default function LandingFounders() {
 
               <div className="mt-12 pt-12 border-t border-border-light/40">
                 <p className="text-xl font-black text-text-primary leading-relaxed font-inter-tight italic">
-                "{t('landing.founders.jm.quote')}"
+                &quot;{t('landing.founders.jm.quote')}&quot;
                 </p>
               </div>
            </motion.div>

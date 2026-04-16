@@ -21,7 +21,7 @@ import { useAppStore } from '@/lib/store';
 import { useGrocery } from '@/hooks/useGrocery';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
-import { ShoppingCart, Package, ListChecks, ArrowRight, MoreVertical, Plus, CheckCircle2, Circle, Clock } from 'lucide-react';
+import { ShoppingCart, Package, ListChecks, ArrowRight, MoreVertical, Plus, CheckCircle2, Circle, Clock, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import RupeesDisplay from '../ui/RupeesDisplay';
 import { useTranslation, Language } from '@/lib/i18n';
@@ -32,24 +32,39 @@ type GroceryView = 'overview' | 'category-items' | 'item-detail';
 export default function GroceryModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang as Language);
-  const { items, addItem, checkItem, deleteItem, clearChecked } = useGrocery();
-  
+  const { items, addItem, checkItem, deleteItem, clearChecked, applyBaseline } = useGrocery();
+
   const [view, setView] = useState<GroceryView>('overview');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeItem, setActiveItem] = useState<GroceryItem | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  
   const [fName, setFName] = useState('');
   const [fCategory, setFCategory] = useState('Staples');
-  const [fQty, setFQty] = useState('1');
+  const [fQty, setFQty] = useState('');
   const [fUnit, setFUnit] = useState('kg');
   const [fPrice, setFPrice] = useState('');
 
   const handleAddItem = () => {
     if (!fName.trim()) return;
-    addItem(fName, fCategory, fQty, fUnit, Number(fPrice) || 0);
-    setFName('');
-    setFPrice('');
+    addItem(
+      fName,
+      fCategory,
+      fQty || '1',
+      fUnit,
+      Number(fPrice) || 0,
+      0,
+      1
+    );
+    setFName(''); setFQty(''); setFPrice('');
     setShowAddForm(false);
+  };
+
+  const handleApplyBaseline = () => {
+    if (window.confirm("Initialize your kitchen with standard Indian essentials (Atta, Dal, Oil)?")) {
+      applyBaseline();
+      setShowAddForm(false);
+    }
   };
 
   // Group items by category
@@ -194,20 +209,26 @@ export default function GroceryModule() {
            )}
         </div>
 
-        {/* Quick Add Shortcut */}
+        {/* Quick Baseline Action */}
         <motion.div 
-          whileHover={{ y: -4 }}
-          className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 flex items-center justify-between group hover:border-gold-text hover:shadow-2xl shadow-black/[0.02] transition-all cursor-pointer"
+           onClick={handleApplyBaseline}
+           whileHover={{ y: -4 }}
+           className="bg-gold/5 border border-gold/20 rounded-[2.5rem] p-8 flex items-center justify-between group hover:bg-gold/10 transition-all cursor-pointer"
         >
            <div className="flex items-center gap-6">
-              <div className="w-16 h-16 rounded-2xl bg-gold-light text-gold-text flex items-center justify-center border border-border-light group-hover:bg-gold-text group-hover:text-white transition-all shadow-sm">
-                 <Plus size={32} strokeWidth={3} />
+              <div className="w-16 h-16 rounded-2xl bg-gold-text text-white flex items-center justify-center shadow-lg">
+                 <Package size={32} />
               </div>
               <div>
-                 <h4 className="text-lg font-black text-text-primary tracking-tight">{lang === 'hi' ? 'Kuch aur chahiye?' : 'Need anything else?'}</h4>
-                 <p className="text-[11px] text-text-tertiary font-black uppercase tracking-[0.2em] mt-1 opacity-80">{lang === 'hi' ? 'Kirana list me jodein' : 'Quickly add to your items'}</p>
+                 <h4 className="text-lg font-black text-text-primary tracking-tight">
+                   {lang === 'hi' ? 'Rasoi ki Taiyari?' : 'Initialize Kitchen?'}
+                 </h4>
+                 <p className="text-[11px] text-text-tertiary font-black uppercase tracking-[0.2em] mt-1 opacity-80">
+                   {lang === 'hi' ? 'Indian Essentials ek-saath jodein' : 'Add 20+ Indian Household Essentials'}
+                 </p>
               </div>
            </div>
+           <ChevronRight className="text-gold-text group-hover:translate-x-1 transition-all" />
         </motion.div>
 
         </motion.div>
@@ -227,38 +248,56 @@ export default function GroceryModule() {
                 <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Item List</div>
              </div>
              
-             {items.filter(it => it.category === activeCategory).map((item, idx) => (
-                <motion.div 
-                  layout
-                  onClick={() => { setActiveItem(item); setView('item-detail'); }}
-                  key={String(item.id)}
-                  initial={{ opacity: 0, scale: 0.98, x: -5 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
-                  className={`p-4 rounded-[2rem] flex items-center gap-6 group hover:bg-bg-tertiary transition-all duration-300 cursor-pointer ${item.checked ? 'opacity-40 grayscale select-none' : ''}`}
-                >
-                   <button className={`p-1 rounded-full transition-all transform active:scale-75 ${item.checked ? 'text-gold-text' : 'text-border-medium hover:text-gold-text'}`}>
-                      {item.checked ? <CheckCircle2 size={26} strokeWidth={3} /> : <Circle size={26} strokeWidth={2} />}
-                   </button>
-                   
-                   <div className="flex-1">
-                      <div className="flex justify-between items-start">
-                         <div>
-                            <h4 className={`text-base font-black tracking-tight leading-tight ${item.checked ? 'line-through text-text-tertiary' : 'text-text-primary'}`}>
-                               {String(item.name)}
-                            </h4>
-                            <p className="text-[10px] text-text-tertiary font-black uppercase tracking-[0.15em] mt-1.5 opacity-80">
-                               {String(item.quantity)} {String(item.unit)}
-                            </p>
-                         </div>
-                         <div className="text-right">
-                            <div className={`text-lg font-black tracking-tighter tabular-nums ${item.checked ? 'text-text-tertiary' : 'text-text-primary'}`}>
-                               <RupeesDisplay amount={item.estimated_price} />
-                            </div>
-                         </div>
-                      </div>
-                   </div>
-                </motion.div>
-             ))}
+             {items.filter(it => it.category === activeCategory).map((item, idx) => {
+                const stockHealth = Math.min(100, (item.current_stock / (item.threshold || 1)) * 100);
+                const isLow = item.current_stock <= (item.threshold || 1);
+                return (
+                  <motion.div 
+                    layout
+                    onClick={() => { setActiveItem(item); setView('item-detail'); }}
+                    key={String(item.id)}
+                    initial={{ opacity: 0, scale: 0.98, x: -5 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    className={`p-4 rounded-[2rem] flex items-center gap-6 group hover:bg-bg-tertiary transition-all duration-300 cursor-pointer ${item.checked ? 'opacity-40 grayscale select-none' : ''}`}
+                  >
+                     <div className="flex flex-col items-center gap-2">
+                       <button className={`p-1 rounded-full transition-all transform active:scale-75 ${item.checked ? 'text-gold-text' : 'text-border-medium hover:text-gold-text'}`}>
+                          {item.checked ? <CheckCircle2 size={26} strokeWidth={3} /> : <Circle size={26} strokeWidth={2} />}
+                       </button>
+                       {isLow && !item.checked && (
+                         <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" title="Low Stock" />
+                       )}
+                     </div>
+                     
+                     <div className="flex-1">
+                        <div className="flex justify-between items-start mb-2">
+                           <div>
+                              <h4 className={`text-base font-black tracking-tight leading-tight ${item.checked ? 'line-through text-text-tertiary' : 'text-text-primary'}`}>
+                                 {String(item.name)}
+                              </h4>
+                              <p className="text-[10px] text-text-tertiary font-black uppercase tracking-[0.15em] mt-1.5 opacity-80">
+                                 {String(item.quantity)} {String(item.unit)}
+                              </p>
+                           </div>
+                           <div className="text-right">
+                              <div className={`text-lg font-black tracking-tighter tabular-nums ${item.checked ? 'text-text-tertiary' : 'text-text-primary'}`}>
+                                 <RupeesDisplay amount={item.estimated_price} />
+                              </div>
+                           </div>
+                        </div>
+                        
+                        {/* Stock Health Bar */}
+                        <div className="w-full h-1 bg-bg-secondary rounded-full overflow-hidden flex">
+                           <motion.div 
+                             initial={{ width: 0 }}
+                             animate={{ width: `${stockHealth}%` }}
+                             className={`h-full ${isLow ? 'bg-red-500' : 'bg-gold-text'}`}
+                           />
+                        </div>
+                     </div>
+                  </motion.div>
+                );
+             })}
           </div>
         </motion.div>
         )}
@@ -301,6 +340,18 @@ export default function GroceryModule() {
                        <td className="p-6 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Estimate</td>
                        <td className="p-6 text-xl font-black text-text-primary">
                           ₹{activeItem.estimated_price.toLocaleString()}
+                       </td>
+                    </tr>
+                    <tr className="border-b border-border-light/50">
+                       <td className="p-6 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Current Stock</td>
+                       <td className="p-6 text-sm font-black text-text-primary">
+                          {activeItem.current_stock} {activeItem.unit}
+                       </td>
+                    </tr>
+                    <tr className="border-b border-border-light/50">
+                       <td className="p-6 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Low Threshold</td>
+                       <td className="p-6 text-sm font-black text-text-danger">
+                          {activeItem.threshold} {activeItem.unit}
                        </td>
                     </tr>
                  </tbody>

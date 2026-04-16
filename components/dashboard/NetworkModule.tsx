@@ -180,7 +180,7 @@ export default function NetworkModule() {
                     </div>
 
                     <div className="pt-4 border-t border-border-light/50">
-                        <label className="text-[10px] font-bold uppercase text-text-tertiary tracking-widest block mb-2">2. Paste Guest's Answer Here</label>
+                        <label className="text-[10px] font-bold uppercase text-text-tertiary tracking-widest block mb-2">2. Paste Guest&apos;s Answer Here</label>
                         <textarea 
                            value={guestAnswerInput} 
                            onChange={e => setGuestAnswerInput(e.target.value)}
@@ -204,7 +204,7 @@ export default function NetworkModule() {
                  
                  <div className="space-y-4">
                     <div>
-                        <label className="text-[10px] font-bold uppercase text-text-tertiary tracking-widest block mb-2">1. Paste Host's Offer Here</label>
+                        <label className="text-[10px] font-bold uppercase text-text-tertiary tracking-widest block mb-2">1. Paste Host&apos;s Offer Here</label>
                         <textarea 
                            value={hostOfferInput} 
                            onChange={e => setHostOfferInput(e.target.value)}

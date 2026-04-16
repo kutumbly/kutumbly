@@ -427,7 +427,7 @@ export default function DiaryModule() {
               </h2>
               {activeEntry.subtitle && (
                 <h3 className="text-lg font-medium text-text-tertiary italic max-w-xl mx-auto">
-                  "{activeEntry.subtitle}"
+                   &quot;{activeEntry.subtitle}&quot;
                 </h3>
               )}
            </div>

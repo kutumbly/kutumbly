@@ -16,7 +16,7 @@
 
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { CheckCircle2, ArrowRight, ShieldCheck, Database } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
@@ -29,13 +29,7 @@ export default function SuccessPanel() {
   const router = useRouter();
 
   // Check if migration is needed right after the vault is in memory
-  const [migrationNeeded, setMigrationNeeded] = useState(false);
-
-  useEffect(() => {
-    if (db) {
-      setMigrationNeeded(needsMigration(db));
-    }
-  }, [db]);
+  const migrationNeeded = useMemo(() => (db ? needsMigration(db) : false), [db]);
 
   const handleEnter = () => {
     router.push('/dashboard');
@@ -47,7 +41,6 @@ export default function SuccessPanel() {
       <MigrationModal
         onComplete={() => {
           // Re-check — after migration user_version is bumped, so this will be false
-          setMigrationNeeded(false);
           // Auto-navigate to dashboard
           router.push('/dashboard');
         }}
