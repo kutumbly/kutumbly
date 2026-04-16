@@ -151,9 +151,9 @@ While Kutumbly currently boasts a powerful, offline-first ecosystem, the followi
 * **Current State:** Local Data is highly isolated in OPFS, but backups are stored raw in the user's Drive.
 * **Advancement:** Encrypt the entire `.kutumb` blob string using AES-256 (derived from the vault PIN/Password) *before* pushing it to Google Drive or transferring via P2P.
 
-### 📱 3. Native PWA & UI/UX Mobile Refactoring
+### 📱 3. Native PWA Strictness & UI/UX Mobile Refactoring
 * **Current State:** Application is fully responsive and installable via browser.
-* **Advancement:** Deepen the Progressive Web App (PWA) capabilities through aggressive Service Worker asset caching. Refactor core dashboards to be heavily mobile-centric, resembling fluid native applications with intelligent touch gestures (swipe-to-delete, pull-to-refresh).
+* **Advancement:** Design the PWA strictly to look and behave 100% like a native application, completely eliminating any "website" feel (using aggressive caching and fluid touch gestures). If any external web pages or links are clicked from within the app, they must be completely excluded from the app shell and forced to open in a separate, isolated external browser. The user must never feel they are browsing the web while inside Kutumbly.
 
 ### 🧬 4. Advanced DB Migrations Engine
 * **Current State:** Schema is created securely on init. Next-gen schema updates apply via basic SQL scripts.
