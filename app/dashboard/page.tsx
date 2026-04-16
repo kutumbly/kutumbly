@@ -70,7 +70,7 @@ export default function DashboardPage() {
   const t = useTranslation(lang as Language);
 
   useEffect(() => {
-    if (!isUnlocked) router.replace("/");
+    if (!isUnlocked) router.replace("/os");
   }, [isUnlocked, router]);
 
   if (!isUnlocked) return null;
@@ -82,7 +82,7 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     lockVault();
-    router.replace("/");
+    router.replace("/os");
   };
 
   const renderModule = () => {

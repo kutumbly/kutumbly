@@ -77,11 +77,11 @@ export function seedDatabase(db: any) {
     ('d1','2026-04-12','Aaj family ke saath nashta kiya. Priya ke exam results aye — 94% in Maths. Bahut khushi hui aaj. Shaam ko puja karni chahiye.',4,'Happy','2026-04-12')`);
 
   // Tasks (V2 — completed task added)
-  db.run(`INSERT OR IGNORE INTO tasks VALUES
-    ('tk1','Renew car insurance','Expires May 1 — call agent','high','pending','jm','2026-04-28','2026-04-12',NULL),
-    ('tk2','Book dentist for Mom',NULL,'medium','pending','sm','2026-05-05','2026-04-12',NULL),
-    ('tk3','File ITR FY 2025-26',NULL,'medium','pending','jm','2026-07-31','2026-04-12',NULL),
-    ('tk4','Pay society maintenance',NULL,'high','done','jm','2026-04-10','2026-04-10','2026-04-10')`);
+  db.run(`INSERT OR IGNORE INTO tasks (id, title, description, priority, status, category, assigned_to, due_date, created_at, completed_at) VALUES
+    ('tk1','Renew car insurance','Expires May 1 — call agent','high','pending','Finance','jm','2026-04-28','2026-04-12',NULL),
+    ('tk2','Book dentist for Mom',NULL,'medium','pending','Health','sm','2026-05-05','2026-04-12',NULL),
+    ('tk3','File ITR FY 2025-26',NULL,'medium','pending','Legal','jm','2026-07-31','2026-04-12',NULL),
+    ('tk4','Pay society maintenance',NULL,'high','done','Home','jm','2026-04-10','2026-04-10','2026-04-10')`);
 
   // Grocery (V2 — 8 items)
   db.run(`INSERT OR IGNORE INTO grocery_lists VALUES ('gl1','Kirana List','2026-04-12','active')`);
