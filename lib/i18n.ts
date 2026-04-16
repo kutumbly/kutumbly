@@ -595,6 +595,71 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
   "legal.terms.acceptance.title": { en: "Acceptance", hi: "स्वीकृति", mr: "Acceptance", gu: "Acceptance", pa: "Acceptance", ta: "Acceptance", bho: "स्वीकृति", kn: "Acceptance", te: "Acceptance", ne: "Acceptance", bn: "Acceptance", mni: "Acceptance" },
   "legal.terms.acceptance.content": { en: "By using Kutumbly, you accept these terms.", hi: "कुटुंबली का उपयोग करके, आप इन शर्तों को स्वीकार करते हैं।", mr: "By using Kutumbly, you accept these terms.", gu: "By using Kutumbly, you accept these terms.", pa: "By using Kutumbly, you accept these terms.", ta: "By using Kutumbly, you accept these terms.", bho: "कुटुंबली इस्तेमाल क के रउवा इन शर्तन से राजी बानी।", kn: "By using Kutumbly, you accept these terms.", te: "By using Kutumbly, you accept these terms.", ne: "By using Kutumbly, you accept these terms.", bn: "By using Kutumbly, you accept these terms.", mni: "By using Kutumbly, you accept these terms." },
 
+
+  // Event status labels (used dynamically as STATUS_${status.toUpperCase()})
+  "STATUS_ATTENDED": {
+    en: "Attended", hi: "हाजिर हुए", mr: "उपस्थित", gu: "હાજર", pa: "ਹਾਜ਼ਰ ਹੋਏ",
+    ta: "கலந்தார்", bho: "पहुँचनी भइल", kn: "ಹಾಜರಾದರು", te: "హాజరయ్యారు",
+    ne: "उपस्थित", bn: "উপস্থিত ছিলেন", mni: "হাজির লৈখ্রে"
+  },
+  "STATUS_UPCOMING": {
+    en: "Upcoming", hi: "आगामी", mr: "आगामी", gu: "આગામી", pa: "ਆਉਣ ਵਾਲਾ",
+    ta: "வரவிருக்கும்", bho: "आवे वाला", kn: "ಮುಂಬರುವ", te: "రానున్న",
+    ne: "आगामी", bn: "আসন্ন", mni: "মথৌ লৈবা"
+  },
+  "STATUS_PLANNED": {
+    en: "Planned", hi: "निर्धारित", mr: "नियोजित", gu: "આયોજિત", pa: "ਯੋਜਨਾਬੱਧ",
+    ta: "திட்டமிட்டது", bho: "तय बा", kn: "ಯೋಜಿಸಲಾಗಿದೆ", te: "ప్లాన్ చేయబడింది",
+    ne: "योजनाबद्ध", bn: "পরিকল্পিত", mni: "থৈনবা তাকখিবা"
+  },
+  "STATUS_MISSED": {
+    en: "Missed", hi: "चूक गए", mr: "चुकले", gu: "ચૂક ગયા", pa: "ਖੁੰਝ ਗਏ",
+    ta: "தவறிவிட்டார்கள்", bho: "छूट गइल", kn: "ತಪ್ಪಿಹೋಯಿತು", te: "మిస్సయ్యారు",
+    ne: "चुकिए", bn: "মিস হয়েছে", mni: "মখোয়বা"
+  },
+  // Module shortname keys (used as t(m.id.toUpperCase()) in SetupModule)
+  "GROCERY": {
+    en: "Grocery", hi: "किराना", mr: "किराणा", gu: "કરિયાણા", pa: "ਕਰਿਆਨਾ",
+    ta: "மளிகை", bho: "किराना", kn: "ದಿನಸಿ", te: "కిరాణాసరకులు",
+    ne: "किराना", bn: "মুদিখানা", mni: "ৱারি শিংনা থবক"
+  },
+  "INVEST": {
+    en: "Invest", hi: "निवेश", mr: "गुंतवणूक", gu: "રોકાણ", pa: "ਨਿਵੇਸ਼",
+    ta: "முதலீடு", bho: "निवेश", kn: "ಹೂಡಿಕೆ", te: "పెట్టుబడి",
+    ne: "लगानी", bn: "বিনিয়োগ", mni: "পাইসা থোকপা"
+  },
+  "STAFF": {
+    en: "Home Staff", hi: "घरेलू कर्मचारी", mr: "घरगुती कर्मचारी", gu: "ઘરેલુ કર્મચારી", pa: "ਘਰੇਲੂ ਕਰਮਚਾਰੀ",
+    ta: "வீட்டு ஊழியர்கள்", bho: "घर के स्टाफ", kn: "ಮನೆ ಸಿಬ್ಬಂದಿ", te: "ఇంటి సిబ్బంది",
+    ne: "घरेलु कर्मचारी", bn: "গৃহস্থালি কর্মী", mni: "ইম্ফাল ওইবা থবক"
+  },
+  "HOME_STAFF": {
+    en: "Home Staff", hi: "घरेलू कर्मचारी", mr: "घरगुती कर्मचारी", gu: "ઘરેલુ કર્મચારી", pa: "ਘਰੇਲੂ ਕਰਮਚਾਰੀ",
+    ta: "வீட்டு ஊழியர்கள்", bho: "घर के स्टाफ", kn: "ಮನೆ ಸಿಬ್ಬಂದಿ", te: "ఇంటి సిబ్బంది",
+    ne: "घरेलु कर्मचारी", bn: "গৃহস্থালি কর্মী", mni: "ইম্ফাল ওইবা থবক"
+  },
+  "NETWORK": {
+    en: "Network", hi: "नेटवर्क", mr: "नेटवर्क", gu: "નેટવર્ક", pa: "ਨੈੱਟਵਰਕ",
+    ta: "நெட்வொர்க்", bho: "नेटवर्क", kn: "ನೆಟ್‌ವರ್ಕ್", te: "నెట్‌వర్క్",
+    ne: "नेटवर्क", bn: "নেটওয়ার্ক", mni: "নেটৱার্ক"
+  },
+  // Weather conditions (used as WEATHER_${condition.toUpperCase()})
+  "WEATHER_SUNNY": {
+    en: "Sunny", hi: "धूप", mr: "ऊन", gu: "તડકો", pa: "ਧੁੱਪ",
+    ta: "வெயில்", bho: "धूप बा", kn: "ಬಿಸಿಲು", te: "ఎండ",
+    ne: "घाम", bn: "রোদ", mni: "নোংথাং"
+  },
+  "WEATHER_CLOUDY": {
+    en: "Cloudy", hi: "बादल", mr: "ढगाळ", gu: "વાદળછાયું", pa: "ਬੱਦਲਵਾਈ",
+    ta: "மேகமூட்டம்", bho: "बादल बा", kn: "ಮೋಡ", te: "మేఘావృతం",
+    ne: "बादलियो", bn: "মেঘলা", mni: "মখোল"
+  },
+  "WEATHER_RAINY": {
+    en: "Rainy", hi: "बारिश", mr: "पावसाळी", gu: "વરસાદ", pa: "ਮੀਂਹ",
+    ta: "மழை", bho: "बरखा बा", kn: "ಮಳೆ", te: "వర్షం",
+    ne: "वर्षा", bn: "বৃষ্টি", mni: "লাংথেং"
+  },
+
 };
 
 /**

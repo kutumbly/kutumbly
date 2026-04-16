@@ -113,7 +113,7 @@ export default function CreateVaultPanel({ onBack, onSuccess }: CreateVaultPanel
           <ArrowLeft size={20} />
         </button>
         <div className="text-[10px] font-black uppercase tracking-[0.3em] text-gold opacity-50">
-          {t('STEP_INDICATOR').replace('{n}', step === 'details' ? '1' : '2')}
+          {t('STEP_INDICATOR').replace('{current}', step === 'details' ? '1' : '2').replace('{total}', '2')}
         </div>
         <div className="w-10" /> {/* Spacer */}
       </div>
