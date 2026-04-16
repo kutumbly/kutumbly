@@ -137,5 +137,33 @@ kutumbly/
 
 ---
 
+---
+
+## 7. Roadmap & Developer Advancement Opportunities
+
+While Kutumbly currently boasts a powerful, offline-first ecosystem, the following technical domains represent the next phase of our architectural evolution. These are key areas where developers and engineers can contribute to pushing the platform's boundaries:
+
+### 📡 1. True P2P Sync (WebRTC)
+* **Current State:** Cloud Syncript Engine backs up the `.kutumb` vault to a user's Google Drive. 
+* **Advancement:** Implement WebRTC-based local syncing. If a husband and wife are on the same WiFi network, their devices should sync ledger updates purely via P2P, bypassing the cloud entirely.
+
+### 🔐 2. Cryptographic Hardening (AES-256 E2EE)
+* **Current State:** Local Data is highly isolated in OPFS, but backups are stored raw in the user's Drive.
+* **Advancement:** Encrypt the entire `.kutumb` blob string using AES-256 (derived from the vault PIN/Password) *before* pushing it to Google Drive or transferring via P2P.
+
+### 📱 3. Native PWA & UI/UX Mobile Refactoring
+* **Current State:** Application is fully responsive and installable via browser.
+* **Advancement:** Deepen the Progressive Web App (PWA) capabilities through aggressive Service Worker asset caching. Refactor core dashboards to be heavily mobile-centric, resembling fluid native applications with intelligent touch gestures (swipe-to-delete, pull-to-refresh).
+
+### 🧬 4. Advanced DB Migrations Engine
+* **Current State:** Schema is created securely on init. Next-gen schema updates apply via basic SQL scripts.
+* **Advancement:** Build a robust, bulletproof local-first database migration engine. When the core OS upgrades, the user's `.kutumb` file should instantly parse migration logic asynchronously within Web Workers without locking the main thread.
+
+### 🖐️ 5. WebAuthn (Biometric Vault Unlocking)
+* **Current State:** The user accesses their vault using a numeric, securely-hashed PIN.
+* **Advancement:** Integrate the `Web Authentication API (WebAuthn)` to allow users to unlock their vault using hardware-level biometrics (FaceID, Fingerprint).
+
+---
+
 > **For Collaborators & Reviewers:**  
 > We maintain a strict focus on maximizing performance while minimizing external dependencies. Any future feature PRs or improvements should respect the architectural boundaries: Local First, Multi-lingual by Default, and Zero Cloud.
