@@ -47,7 +47,7 @@ export default function ModuleShell({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
-      className="space-y-6 md:space-y-8"
+      className="space-y-4 md:space-y-8"
     >
       {/* ── Module Header ─────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-4">
@@ -79,7 +79,7 @@ export default function ModuleShell({
             )}
 
             {/* Title */}
-            <h2 className="text-xl md:text-2xl font-black text-text-primary tracking-tight truncate leading-tight">
+            <h2 className="text-lg md:text-2xl font-black text-text-primary tracking-tight truncate leading-tight">
               {title}
             </h2>
 
@@ -109,7 +109,7 @@ export default function ModuleShell({
       </div>
 
       {/* ── Content ─────────────────────────────────────────────── */}
-      <div className="min-h-[300px] md:min-h-[400px]">
+      <div>
         {children}
       </div>
     </motion.div>

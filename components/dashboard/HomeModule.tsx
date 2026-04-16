@@ -102,16 +102,16 @@ export default function HomeModule() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-8 md:space-y-12"
+      className="space-y-5 md:space-y-10"
     >
       {/* ── Sovereign Shield Hub ────────────────────────────── */}
-      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
          {[
            { icon: Shield, label: t('OS_SECURITY'), value: t('OS_LOCKDOWN') },
            { icon: Fingerprint, label: t('BIOMETRIC'), value: bioActive ? t('HARDWARE_ACTIVE') : t('PIN_REQUIRED') },
            { icon: HardDrive, label: t('SYNC_GRID'), value: t('LOCAL_DISCOVERY') }
          ].map((sh, idx) => (
-           <div key={idx} className="bg-bg-primary border border-border-light rounded-[2rem] p-6 flex items-center gap-5 shadow-black/[0.02] shadow-xl transition-all hover:border-gold/30">
+           <div key={idx} className="bg-bg-primary border border-border-light rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 flex items-center gap-4 shadow-black/[0.02] shadow-xl transition-all hover:border-gold/30 tap-highlight">
               <div className="w-12 h-12 rounded-2xl bg-gold-light flex items-center justify-center text-gold-text border border-border-light shadow-sm">
                  <sh.icon size={22} />
               </div>
@@ -130,9 +130,9 @@ export default function HomeModule() {
         ))}
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* Activity Feed */}
-        <motion.section variants={item} className="md:col-span-2 space-y-6">
+        <motion.section variants={item} className="lg:col-span-2 space-y-4 md:space-y-6">
           <div className="flex items-center justify-between px-2">
             <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
               {t('SOVEREIGN_ACTIVITY')}

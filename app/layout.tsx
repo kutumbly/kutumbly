@@ -74,10 +74,14 @@ const notoTelugu = Noto_Sans_Telugu({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#FAF9F6",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FAF9F6" },
+    { media: "(prefers-color-scheme: dark)",  color: "#111827" },
+  ],
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  viewportFit: "cover",      // enables safe-area-inset on notched devices
+  userScalable: true,        // WCAG 1.4.4: users must be able to zoom
 };
 
 export const metadata: Metadata = {

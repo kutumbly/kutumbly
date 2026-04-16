@@ -121,7 +121,7 @@ export default function DashboardPage() {
     <div className="flex flex-col min-h-screen bg-bg-tertiary">
 
       {/* ── App Header ─────────────────────────────────────────── */}
-      <header className="bg-bg-primary border-b border-border-light px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm shadow-black/[0.02]">
+      <header className="bg-bg-primary border-b border-border-light px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm shadow-black/[0.02] pt-safe">
         <div className="flex items-center gap-4">
           <div className="w-8 h-8 md:w-7 md:h-7 bg-bg-primary border border-border-light rounded-xl flex items-center justify-center p-1 shadow-sm">
              <Image src="/favicon.svg" alt="Logo" width={20} height={20} className="brightness-110" style={{ height: 'auto' }} />
@@ -169,7 +169,7 @@ export default function DashboardPage() {
       </header>
 
       {/* ── Tab Navigation (Desktop Only) ─────────────────────────── */}
-      <nav className="hidden md:flex bg-bg-primary border-b border-border-light sticky top-[57px] z-40 overflow-x-auto scroller-hide items-center px-4">
+      <nav className="hidden md:flex bg-bg-primary border-b border-border-light sticky top-[var(--header-height,57px)] z-40 overflow-x-auto scroller-hide items-center px-4">
         {visibleTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeModule === tab.id;
@@ -197,7 +197,7 @@ export default function DashboardPage() {
       </nav>
 
       {/* ── Main Content ───────────────────────────────────────── */}
-      <main className="flex-1 p-4 md:p-6 pb-24 md:pb-8 max-w-5xl mx-auto w-full">
+      <main className="flex-1 p-4 md:p-6 pb-nav-safe md:pb-8 max-w-5xl mx-auto w-full overscroll-contain">
         {activeModule === "home" && (
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-text-primary">
