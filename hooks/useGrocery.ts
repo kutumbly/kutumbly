@@ -104,8 +104,38 @@ export function useGrocery() {
   const checkItem = useCallback((id: string, currentChecked: boolean | number) => {
     if (!db) return;
     const newVal = currentChecked ? 0 : 1;
-    // If checking (marking as bought), we should ideally update stock, but we keep it simple for now
-    db.run("UPDATE grocery_items SET checked = ? WHERE id = ?", [newVal, id]);
+    // When marking as bought, update the last_purchased_date
+    if (newVal === 1) {
+      db.run("UPDATE grocery_items SET checked = ?, last_purchased_date = ? WHERE id = ?", [newVal, new Date().toISOString(), id]);
+    } else {
+      db.run("UPDATE grocery_items SET checked = ? WHERE id = ?", [newVal, id]);
+    }
+    persist();
+  }, [db, persist]);
+
+  const editItem = useCallback((id: string, updates: {
+    name?: string, category?: string, quantity?: string, unit?: string, 
+    estimated_price?: number, current_stock?: number, threshold?: number
+  }) => {
+    if (!db) return;
+    
+    // Construct dynamic query
+    const setChunks = [];
+    const values = [];
+    
+    for (const [key, val] of Object.entries(updates)) {
+      if (val !== undefined && key !== 'id') {
+        setChunks.push(`${key} = ?`);
+        values.push(val);
+      }
+    }
+    
+    if (setChunks.length === 0) return;
+    
+    values.push(id);
+    const query = `UPDATE grocery_items SET ${setChunks.join(', ')} WHERE id = ?`;
+    
+    db.run(query, values);
     persist();
   }, [db, persist]);
 
@@ -128,5 +158,5 @@ export function useGrocery() {
     });
   }, [addItem, db]);
 
-  return { items, addItem, updateStock, decrementStock, checkItem, deleteItem, clearChecked, applyBaseline };
+  return { items, addItem, updateStock, decrementStock, checkItem, deleteItem, clearChecked, applyBaseline, editItem };
 }

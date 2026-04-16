@@ -48,6 +48,8 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
   }, [waitTimer]);
 
   const hapticFeedback = (intensity: number | number[] = 15) => {
+    // Note: iOS Safari PWA does not fully support navigator.vibrate.
+    // This will degrade gracefully on iOS and provide native feel on Android/wrapped apps.
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
       navigator.vibrate(intensity); 
     }
@@ -184,10 +186,11 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
             <motion.button
               key={n}
-              whileTap={{ scale: 0.9, backgroundColor: "rgba(201,151,28,0.05)" }}
+              whileTap={{ scale: 0.94, backgroundColor: "var(--bg-secondary)", opacity: 0.8 }}
+              transition={{ duration: 0.1, ease: 'easeOut' }}
               disabled={isDecrypting || waitTimer > 0}
               onClick={() => handleDigit(n.toString())}
-              className="w-full aspect-square rounded-2xl bg-bg-primary border border-border-light flex items-center justify-center text-2xl font-black text-text-primary transition-colors shadow-sm hover:border-gold/20 active:border-gold"
+              className="w-full aspect-square rounded-[1.75rem] bg-bg-primary flex items-center justify-center text-[26px] font-black text-text-primary transition-colors shadow-sm shadow-black/[0.02] border border-border-light hover:border-gold/30 user-select-none"
             >
               {n}
             </motion.button>
@@ -210,21 +213,23 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
           </div>
           
           <motion.button
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.94, backgroundColor: "var(--bg-secondary)", opacity: 0.8 }}
+            transition={{ duration: 0.1, ease: 'easeOut' }}
             disabled={isDecrypting || waitTimer > 0}
             onClick={() => handleDigit('0')}
-            className="w-full aspect-square rounded-2xl bg-bg-primary border border-border-light flex items-center justify-center text-2xl font-black text-text-primary transition-colors shadow-sm hover:border-gold/20 active:border-gold"
+            className="w-full aspect-square rounded-[1.75rem] bg-bg-primary flex items-center justify-center text-[26px] font-black text-text-primary transition-colors shadow-sm shadow-black/[0.02] border border-border-light hover:border-gold/30 user-select-none"
           >
             0
           </motion.button>
 
           <motion.button
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.94, opacity: 0.7 }}
+            transition={{ duration: 0.1 }}
             disabled={isDecrypting}
             onClick={handleDelete}
-            className="w-full aspect-square flex items-center justify-center text-text-tertiary hover:text-text-danger transition-colors"
+            className="w-full aspect-square flex items-center justify-center text-text-tertiary hover:text-text-danger transition-colors user-select-none"
           >
-            <Delete size={24} />
+            <Delete size={26} strokeWidth={2.5} />
           </motion.button>
         </div>
 

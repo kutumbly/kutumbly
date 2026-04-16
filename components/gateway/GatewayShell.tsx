@@ -72,7 +72,7 @@ export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
           </aside>
 
           {/* Right Panel: Dynamic Content */}
-          <main className="flex-1 bg-bg-primary overflow-y-auto scroller-hide flex flex-col pt-safe">
+          <main className="flex-1 bg-bg-primary overflow-y-auto scroller-hide flex flex-col">
             {children}
           </main>
         </div>

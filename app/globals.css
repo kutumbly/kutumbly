@@ -232,7 +232,11 @@ body {
 
 /* Hide scrollbar but keep scroll */
 .scroller-hide::-webkit-scrollbar { display: none; }
-.scroller-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scroller-hide { 
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+  -webkit-overflow-scrolling: touch; /* Momentum scrolling for iOS */
+}
 
 /* App shell — 880px max, centered */
 .app-shell {
@@ -254,11 +258,11 @@ body {
 
 /* Active feedback for list rows on mobile */
 .tap-highlight {
-  transition: background-color 0.1s ease, transform 0.1s ease;
+  transition: background-color 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
 }
 .tap-highlight:active {
   background-color: var(--bg-secondary);
-  transform: scale(0.99);
+  transform: scale(0.98);
 }
 
 .glass {
@@ -287,7 +291,6 @@ input, select, textarea {
 
 @media (max-width: 768px) {
   .btn {
-    min-height: 48px;  /* 48px > 44px Apple minimum; matches Material Design */
     padding: 12px 20px;
   }
 
@@ -295,6 +298,14 @@ input, select, textarea {
   .rounded-\[2rem\],
   .rounded-\[3rem\] {
     border-radius: 20px;
+  }
+}
+
+/* Enforce Apple HIG 44px min hit targets on touch devices directly */
+@media (pointer: coarse) {
+  .btn, .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
   }
 }
 
@@ -392,6 +403,11 @@ input, select, textarea {
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+}
+
+/* Eliminate 300ms tap delay on ancient WebKit / general best practice */
+button, a, input, select, textarea, .tap-highlight {
+  touch-action: manipulation;
 }
 
 /* Allow text selection on content elements */

@@ -32,32 +32,62 @@ type GroceryView = 'overview' | 'category-items' | 'item-detail';
 export default function GroceryModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang as Language);
-  const { items, addItem, checkItem, deleteItem, clearChecked, applyBaseline } = useGrocery();
+  const { items, addItem, checkItem, deleteItem, clearChecked, applyBaseline, editItem } = useGrocery();
 
   const [view, setView] = useState<GroceryView>('overview');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeItem, setActiveItem] = useState<GroceryItem | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   
   const [fName, setFName] = useState('');
   const [fCategory, setFCategory] = useState('Staples');
   const [fQty, setFQty] = useState('');
   const [fUnit, setFUnit] = useState('kg');
   const [fPrice, setFPrice] = useState('');
+  const [fStock, setFStock] = useState('');
+  const [fThreshold, setFThreshold] = useState('');
 
   const handleAddItem = () => {
     if (!fName.trim()) return;
+    const price = Math.max(0, Number(fPrice) || 0); // Validation: No negative prices
+    const qv = Math.max(0, Number(fQty) || 1); // Validation: Minimum 0
+    
     addItem(
       fName,
       fCategory,
-      fQty || '1',
+      qv.toString(),
       fUnit,
-      Number(fPrice) || 0,
+      price,
       0,
       1
     );
-    setFName(''); setFQty(''); setFPrice('');
+    setFName(''); setFQty(''); setFPrice(''); setFStock(''); setFThreshold('');
     setShowAddForm(false);
+  };
+
+  const handleUpdateItem = () => {
+    if (!activeItem || !fName.trim()) return;
+    const price = Math.max(0, Number(fPrice) || 0);
+    const qv = Math.max(0, Number(fQty) || 1);
+    
+    // Using the scoped editItem functionality
+    if (activeItem.id) {
+       editItem(activeItem.id, {
+          name: fName,
+          category: fCategory,
+          quantity: qv.toString(),
+          unit: fUnit,
+          estimated_price: price,
+          current_stock: Number(fStock) || 0,
+          threshold: Number(fThreshold) || 1
+       });
+       setFName(''); setFQty(''); setFPrice(''); setFStock(''); setFThreshold('');
+       setIsEditing(false);
+       setShowAddForm(false);
+       setView('category-items');
+       setActiveItem(null); // Return to default
+    }
   };
 
   const handleApplyBaseline = () => {
@@ -360,10 +390,33 @@ export default function GroceryModule() {
            
            <div className="p-6 space-y-4">
               <button 
-                onClick={() => {}}
-                className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-border-light text-text-primary font-black text-[11px] uppercase tracking-widest hover:bg-gold-text hover:text-white transition-all shadow-sm"
+                onClick={() => {
+                   setFName(String(activeItem.name));
+                   setFCategory(String(activeItem.category));
+                   setFQty(String(activeItem.quantity));
+                   setFUnit(String(activeItem.unit));
+                   setFPrice(String(activeItem.estimated_price));
+                   setFStock(String(activeItem.current_stock));
+                   setFThreshold(String(activeItem.threshold || 1));
+                   setIsEditing(true);
+                   setShowAddForm(true);
+                   setView('overview'); 
+                }}
+                className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-border-light text-text-primary font-black text-[11px] uppercase tracking-widest hover:bg-gold-text hover:text-white transition-all shadow-sm active:scale-[0.98] focus:outline-none"
               >
                  Edit Item
+              </button>
+              <button 
+                onClick={() => {
+                   if (window.confirm(t('CONFIRM_DELETE') || "Delete this item permanently?")) {
+                      deleteItem(activeItem.id);
+                      setView('category-items');
+                      setActiveItem(null);
+                   }
+                }}
+                className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-text-danger/10 text-text-danger font-black text-[11px] uppercase tracking-widest hover:bg-text-danger hover:text-white transition-all shadow-sm active:scale-[0.98] focus:outline-none"
+              >
+                 Delete Item
               </button>
            </div>
         </motion.div>

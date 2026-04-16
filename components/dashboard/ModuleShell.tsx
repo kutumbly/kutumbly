@@ -56,7 +56,7 @@ export default function ModuleShell({
           {onBack && (
             <button 
               onClick={onBack}
-              className="w-10 h-10 flex flex-shrink-0 items-center justify-center rounded-2xl bg-bg-primary border border-border-light hover:border-gold hover:text-gold text-text-tertiary transition-all shadow-sm active:scale-90"
+              className="w-11 h-11 md:w-10 md:h-10 flex flex-shrink-0 items-center justify-center rounded-2xl bg-bg-primary border border-border-light hover:border-gold hover:text-gold text-text-tertiary transition-all shadow-sm active:scale-90"
               aria-label="Go Back"
             >
               <ArrowLeft size={17} />
@@ -98,10 +98,10 @@ export default function ModuleShell({
           {onAdd && (
             <button 
               onClick={onAdd}
-              className="h-10 px-4 bg-gold text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:opacity-90 transition-all shadow-md shadow-gold/20 active:scale-95 flex items-center gap-2"
+              className="h-11 md:h-10 px-4 md:px-5 bg-gold text-white rounded-2xl md:rounded-[1rem] font-black text-[10px] md:text-[11px] uppercase tracking-widest hover:opacity-90 transition-all shadow-md shadow-gold/20 active:scale-95 flex items-center justify-center gap-2"
               aria-label={addLabel}
             >
-              <Plus size={14} strokeWidth={3} />
+              <Plus size={15} strokeWidth={3} className="flex-shrink-0" />
               <span className="hidden sm:inline">{addLabel}</span>
             </button>
           )}
