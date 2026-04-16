@@ -163,6 +163,13 @@ While Kutumbly currently boasts a powerful, offline-first ecosystem, the followi
 * **Current State:** The user accesses their vault using a numeric, securely-hashed PIN.
 * **Advancement:** Integrate the `Web Authentication API (WebAuthn)` to allow users to unlock their vault using hardware-level biometrics (FaceID, Fingerprint).
 
+### 💫 6. OS-Level Transparency & Joyful Onboarding
+* **Current State:** The setup flow is functional but standard.
+* **Advancement:** Make the `.kutumb` creation and loading sequence a highly engaging, joyful experience. Provide full real-time visibility into what Kutumbly is doing behind the scenes.
+  - **Conversational Setup:** When creating a vault, use warm, personalized prompts like, "Add your Name or your Sweet Family Name".
+  - **File Sovereignty:** Give users clear storage control with prompts like, "Save this database where you want on this device".
+  - **Transparent Permissions:** During creation and saving, display a summary popup explaining exactly *what* permissions Kutumbly needs (e.g., File System Access) and *why*. Include a "More Details" button navigating to a comprehensive technical overview. This paradigm of transparent, step-by-step visibility should be actively enforced across all major OS-level operations.
+
 ---
 
 > **For Collaborators & Reviewers:**  
