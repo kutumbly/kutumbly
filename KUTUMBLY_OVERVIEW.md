@@ -11,6 +11,7 @@
 * **Zero Cloud:** The application runs entirely in the user's browser. Data never leaves the device unless explicitly exported or backed up by the user.
 * **Local-First & OPFS:** Data is stored as an encrypted **`.kutumb`** file in the browser's Origin Private File System (OPFS), meaning the OS works offline forever with zero latency.
 * **Sovereignty & Privacy:** Built on the belief that "Uncompromising privacy is a fundamental human right."
+* **Zero-Cost Inertia:** Absoutely frictionless onboarding. No email signups, no cloud accounts, no subscription fees, and no complex server setups. The app launches and works instantly in the browser with zero barriers to entry.
 * **Bharat Focus:** Ships with built-in, culturally resonant support for 12 Indian languages including deep regional dialects like Bhojpuri.
 
 ---
@@ -42,7 +43,7 @@ Kutumbly is heavily modularized, mimicking a complete OS for managing a househol
 A deeply specialized module for managing Indian weddings, functions, and social reciprocation.
 * **Ledgers:** Track *Shagun* mapping (Diya/Mila - Given/Received).
 * **Guest Lists & RSVP:** Log attendees from different sides (Ladke waale, Ladki waale).
-* **Inventory & Vendors:** Caterers, decorators, item tracking (status from 'ORDERED' to 'USED').
+* **Inventory & Vendors:** Caterers, decorators, item tracking (status from 'ORDERED' to 'USED'), alongside a robust **Vendor Rating & Reliability Scoring** system to track trusted service providers across generations.
 
 ### 📚 4. Education (Vidya / Study Buddy)
 * Dedicated profiles for learners (kids or self-studying adults).
