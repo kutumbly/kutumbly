@@ -178,6 +178,15 @@ While Kutumbly currently boasts a powerful, offline-first ecosystem, the followi
   - **Proactive 'One-Tap' Prompts:** Instead of asking users to navigate to the Finance module, the dashboard should intelligently ask: "Did you pay the Electricity Bill this month?" with a simple "Yes/No" one-tap logger.
   - **OS-Level 'Share To' Intent:** Allow users to simply share a screenshot of a payment receipt from WhatsApp directly into the Kutumbly PWA without manually opening the app or typing details.
 
+### 🤖 8. Conversational Data Engine (The Local Chat Mode)
+* **Current State:** Users must navigate through multiple module menus (Finance, Nevata, Health) to view reports or log data.
+* **Advancement:** Introduce an intent-based "Chat Mode" powered by a lightweight, browser-native NLP engine (ensuring data stays offline). A user can simply open the Chat screen and talk to the OS:
+  - *User Input:* "Is mahine grocery par kitna kharcha hua?" (How much did we spend on groceries this month?)
+  - *Kutumbly Output:* "Aapne is mahine 4,500 रुपये groceries par kharch kiye hain. Yahan list hai..." (Shows a dynamic mini-report right inside the chat).
+  - *User Input:* "Record kar lo ki Ramesh ko 2,000 rupaye udhaar diye hain."
+  - *Kutumbly Output:* "Done. 2,000 rupaye aapke Finance ledger (Receivables) mein add kar diye gaye hain."
+  This flips the entire UI paradigm from "Navigation-based" to "Conversation-based", making data entry and report-viewing as easy as sending a WhatsApp message.
+
 ---
 
 > **For Collaborators & Reviewers:**  
