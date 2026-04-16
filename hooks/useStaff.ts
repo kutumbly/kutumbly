@@ -64,6 +64,55 @@ export function useStaff() {
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
+  const calculatePayout = useCallback((staff_id: string, month: string) => {
+    // 1. Get staff info
+    const staffMember = staff.find(s => s.id === staff_id);
+    if (!staffMember) return { gross: 0, deductions: 0, net: 0, advanceRecovered: 0 };
+    
+    // 2. Count absent days for the target month
+    const absentDays = attendance.filter(a => a.staff_id === staff_id && a.date.startsWith(month) && a.status === 'absent_unpaid').length;
+    
+    // 3. Math
+    const perDayWage = staffMember.salary / 30;
+    const leaveDeductions = absentDays * perDayWage;
+    const advanceToRecover = staffMember.advance_balance;
+    
+    let net = staffMember.salary - leaveDeductions - advanceToRecover;
+    if (net < 0) net = 0; // Prevent negative payouts conceptually
+
+    return { 
+      gross: staffMember.salary, 
+      deductions: leaveDeductions, 
+      advanceRecovered: advanceToRecover, 
+      net 
+    };
+  }, [staff, attendance]);
+
+  const grantAdvance = useCallback((staff_id: string, amount: number) => {
+    if (!db) return;
+    db.run(
+      "UPDATE staff_members SET advance_balance = advance_balance + ? WHERE id = ?",
+      [amount, staff_id]
+    );
+    if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle).catch(console.error);
+    setTick(t => t + 1);
+  }, [db, currentPin, fileHandle]);
+
+  const markAttendance = useCallback((staff_id: string, date: string, status: string) => {
+    if (!db) return;
+    const id = crypto.randomUUID();
+    db.run(
+      "DELETE FROM attendance WHERE staff_id = ? AND date = ?", 
+      [staff_id, date]
+    );
+    db.run(
+      "INSERT INTO attendance (id, staff_id, date, status, notes) VALUES (?, ?, ?, ?, ?)",
+      [id, staff_id, date, status, ""]
+    );
+    if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle).catch(console.error);
+    setTick(t => t + 1);
+  }, [db, currentPin, fileHandle]);
+
   const paySalary = useCallback((staff_id: string, month: string, gross: number, net: number, advance: number) => {
     if (!db) return;
     const id = crypto.randomUUID();
@@ -72,11 +121,15 @@ export function useStaff() {
       "INSERT INTO salary_payments (id, staff_id, month, gross, deductions, net, paid_on, advance) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
       [id, staff_id, month, gross, gross - net, net, paid_on, advance]
     );
+    // Reset their advance_balance if we recovered it during this pay cycle
+    if (advance > 0) {
+      db.run("UPDATE staff_members SET advance_balance = MAX(0, advance_balance - ?) WHERE id = ?", [advance, staff_id]);
+    }
     if (fileHandle && currentPin) {
       saveVault(db, currentPin, fileHandle).catch(console.error);
     }
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
-  return { staff, payments, attendance, addStaff, removeStaff, paySalary };
+  return { staff, payments, attendance, addStaff, removeStaff, paySalary, grantAdvance, markAttendance, calculatePayout };
 }

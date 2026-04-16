@@ -243,6 +243,10 @@ export interface StaffMember {
   salary: number;
   join_date: string;
   phone: string;
+  advance_balance: number;
+  paid_leaves_quota: number;
+  kyc_status: string;
+  gov_id_number: string | null;
 }
 
 export interface SalaryPayment {
@@ -260,7 +264,7 @@ export interface AttendanceRecord {
   id: string;
   staff_id: string;
   date: string;
-  status: 'present' | 'absent' | 'leave';
+  status: 'present' | 'absent' | 'leave' | 'absent_unpaid' | 'leave_paid' | 'half_day';
   notes: string;
 }
 

@@ -50,7 +50,11 @@ CREATE TABLE IF NOT EXISTS medications (
 );
 CREATE TABLE IF NOT EXISTS staff_members (
   id TEXT PRIMARY KEY, name TEXT, role TEXT,
-  monthly_salary REAL, join_date TEXT, phone TEXT
+  monthly_salary REAL, join_date TEXT, phone TEXT,
+  advance_balance REAL DEFAULT 0,
+  paid_leaves_quota INTEGER DEFAULT 0,
+  kyc_status TEXT DEFAULT 'PENDING',
+  gov_id_number TEXT
 );
 CREATE TABLE IF NOT EXISTS attendance (
   id TEXT PRIMARY KEY, staff_id TEXT, date TEXT, status TEXT, notes TEXT

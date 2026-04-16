@@ -1,0 +1,8 @@
+{
+  "chat.promptPrefix": "Follow aiprotocol.md strictly. Do not skip any rule.",
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "text": "You must follow aiprotocol.md and AGENTS.md strictly."
+    }
+  ]
+}

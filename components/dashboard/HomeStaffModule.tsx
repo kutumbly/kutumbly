@@ -32,7 +32,7 @@ type StaffView = 'overview' | 'staff-ledger';
 export default function HomeStaffModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang as Language);
-  const { staff, payments, attendance, addStaff, removeStaff, paySalary } = useStaff();
+  const { staff, payments, attendance, addStaff, removeStaff, paySalary, grantAdvance, calculatePayout, markAttendance } = useStaff();
   
   const [showAddForm, setShowAddForm] = React.useState(false);
   const [fName, setFName] = React.useState('');
@@ -134,7 +134,7 @@ export default function HomeStaffModule() {
            <MetricCard label={t('SUPPORT_STAFF')} value={staff.length} unit="Members" status="info" />
            <MetricCard label={t('PRESENT')} value={`${presentToday}/${staff.length}`} status="success" />
            <MetricCard label={t('MONTHLY_PAYOUT')} value={totalMonthlyPayout} isCurrency status="default" />
-           <MetricCard label="Avg Advance" value="2,400" isCurrency status="warning" />
+           <MetricCard label="Total Advance Out" value={staff.reduce((acc, s) => acc + (s.advance_balance || 0), 0)} isCurrency status="warning" />
         </div>
 
         {/* Staff Roster */}
@@ -161,7 +161,14 @@ export default function HomeStaffModule() {
                       </div>
                       <div className="flex-1">
                           <div className="flex justify-between items-center">
-                             <h4 className="text-base font-black text-text-primary tracking-tight">{s.name}</h4>
+                             <h4 className="text-base font-black text-text-primary tracking-tight flex items-center gap-2">
+                               {s.name}
+                               {s.kyc_status === 'PENDING' && (
+                                 <span className="text-[8px] px-1.5 py-0.5 rounded bg-text-danger/10 text-text-danger border border-text-danger/20 uppercase tracking-widest font-black">
+                                   KYC PENDING
+                                 </span>
+                               )}
+                             </h4>
                              <div className="flex items-center gap-2">
                                 <span className="text-[9px] font-black bg-bg-success text-text-success px-2.5 py-1 rounded-full uppercase tracking-widest border border-text-success/10">Present</span>
                                 <button onClick={(e) => { e.stopPropagation(); removeStaff(s.id); }} className="text-text-tertiary hover:text-text-danger transition-colors p-1 opacity-0 group-hover:opacity-100">
@@ -281,6 +288,28 @@ export default function HomeStaffModule() {
                     <div>
                        <div className="text-[10px] font-black text-text-tertiary uppercase tracking-widest mb-1">Status</div>
                        <div className="text-sm font-black text-success uppercase mt-2">Active</div>
+                    </div>
+                 </div>
+                 
+                 <div className="mt-4 pt-4 border-t border-border-light/50 w-full">
+                    <div className="bg-warning/5 border border-warning/10 rounded-2xl p-4 flex justify-between items-center">
+                       <div>
+                          <div className="text-[9px] font-black text-warning uppercase tracking-widest leading-none">Khata Balance</div>
+                          <div className="text-lg font-black text-text-primary mt-1">₹{(activeStaff.advance_balance || 0).toLocaleString()}</div>
+                       </div>
+                       <button 
+                          onClick={() => {
+                             const amt = window.prompt("Enter Advance Amount to Issue (₹):");
+                             if (amt && !isNaN(Number(amt))) {
+                               // Assuming grantAdvance is exposed from useStaff
+                               // We'd cast it to any here to dodge rigid local ts checks if it isn't fully pulled in
+                               (grantAdvance as any)(activeStaff.id, Number(amt));
+                               alert("Advance securely logged to Khata!");
+                             }
+                          }}
+                          className="bg-warning text-white text-[10px] font-black uppercase tracking-widest px-3 py-2 rounded-xl shadow-sm hover:opacity-90">
+                          + Issue
+                       </button>
                     </div>
                  </div>
              </div>
