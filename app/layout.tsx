@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. Mallah
+ * System Architect   :  Jawahar R. M.
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
   },
   description: "Secure, local-first Sovereign OS for the modern Indian family. Zero cloud, absolute privacy, and total data ownership through AES-256 encrypted vaults.",
   keywords: ["Sovereign OS", "Family OS", "Local-first", "Privacy", "Encrypted Vaults", "Indian Family Tech", "Data Sovereignty", "Zero Cloud"],
-  authors: [{ name: "Jawahar R. Mallah", url: "https://kutumbly.com" }],
+  authors: [{ name: "Jawahar R. M.", url: "https://kutumbly.com" }],
   creator: "AITDL Network — Sovereign Division",
   openGraph: {
     type: "website",
