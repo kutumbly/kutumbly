@@ -66,9 +66,9 @@ A deeply specialized module for managing Indian weddings, functions, and social 
 
 ---
 
-## 4. Enterprise-Grade Reporting & Drill-Down Mechanics (Tally-Style Navigation)
+## 4. Enterprise-Grade Reporting & Drill-Down Mechanics
 
-Kutumbly brings enterprise software behavior (inspired by systems like TallyPrime) to the family level. Users never look at flat lists; instead, they navigate data through hierarchical drill-down paradigms from the Dashboard all the way to atomic transactions.
+Kutumbly brings enterprise software behavior to the family level. Users never look at flat lists; instead, they navigate data through hierarchical drill-down paradigms from the Dashboard all the way to atomic transactions.
 
 ### 📊 A. Finance & Accounting Drill-Down
 * **Level 1 (Dashboard Summary):** High-level view of "Net Household Balance" or "Total Monthly Expense".

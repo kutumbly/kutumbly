@@ -25,5 +25,6 @@ Every NEW file created by the agent MUST start with the following official signa
 ```
 ## Terminology & Branding Protocol
 * **Database File:** Internally, the database is SQLite. However, for any external-facing content, documentation, or user communication (unless strictly discussing internal technical implementation details), the database file MUST be referred to as a **`.kutumb`** file. Example: "Kutumbly data is saved as an encrypted `.kutumb` file."
+* **Standalone Identity:** Kutumbly is a unique, sovereign product. Never mention or compare it to external software or inspirations (e.g., TallyPrime, Notion, etc.) in documentation, project overviews, or branding. Focus strictly on Kutumbly's own ecosystem and merits.
 
 <!-- END:nextjs-agent-rules -->
