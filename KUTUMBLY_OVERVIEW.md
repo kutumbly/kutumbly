@@ -170,6 +170,14 @@ While Kutumbly currently boasts a powerful, offline-first ecosystem, the followi
   - **File Sovereignty:** Give users clear storage control with prompts like, "Save this database where you want on this device".
   - **Transparent Permissions:** During creation and saving, display a summary popup explaining exactly *what* permissions Kutumbly needs (e.g., File System Access) and *why*. Include a "More Details" button navigating to a comprehensive technical overview. This paradigm of transparent, step-by-step visibility should be actively enforced across all major OS-level operations.
 
+### 🎤 7. Hyper-Accessible & Voice-First UX (For Non-Technical Elders)
+* **Current State:** Interactions rely heavily on traditional touch (forms, keyboards, buttons).
+* **Advancement:** Drastically lower the barrier to entry so even the most non-technical family member (e.g., a grandparent) can effortlessly operate the OS.
+  - **Voice-to-Ledger:** Integrate the browser's native `SpeechRecognition API` to allow users to just tap a mic and speak in their mother tongue (e.g., "Aaj subah doodh wale को 500 रुपये दिए"). The app should auto-parse this into an expense transaction.
+  - **Visual-Heavy Symbology:** Replace text-heavy tables with bold, hyper-visual, color-coded iconography (e.g., a big Tomato for Groceries, a Stethoscope for Health) so reading proficiency is not a bottleneck.
+  - **Proactive 'One-Tap' Prompts:** Instead of asking users to navigate to the Finance module, the dashboard should intelligently ask: "Did you pay the Electricity Bill this month?" with a simple "Yes/No" one-tap logger.
+  - **OS-Level 'Share To' Intent:** Allow users to simply share a screenshot of a payment receipt from WhatsApp directly into the Kutumbly PWA without manually opening the app or typing details.
+
 ---
 
 > **For Collaborators & Reviewers:**  
