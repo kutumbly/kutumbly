@@ -1,0 +1,110 @@
+Hardcoded bho string bypasses: 36
+
+components\dashboard\CloudSyncriptModule.tsx:112
+  subtitle: lang === 'en' ? 'Sovereign Google Sync' : (lang === 'bho' ? 'पइसा अउर याद के सुरक्षित सिंक' : 'Sovereign Google Sync'),
+
+components\dashboard\CloudSyncriptModule.tsx:115
+  authorized: lang === 'en' ? 'Account Linked' : (lang === 'bho' ? 'खाता जुड़ल बा' : 'Account Linked'),
+
+components\dashboard\CloudSyncriptModule.tsx:116
+  notAuthorized: lang === 'en' ? 'Link Account' : (lang === 'bho' ? 'खाता जोड़ीं' : 'Link Account'),
+
+components\dashboard\CloudSyncriptModule.tsx:154
+  <div className="text-[10px] font-black uppercase tracking-widest text-text-tertiary">{lang === 'bho' ? 'कोठरी के पहचान' : 'Vault Identity'}</div>
+
+components\dashboard\CloudSyncriptModule.tsx:156
+  {authStatus === 'authorized' ? (lang === 'bho' ? 'जुड़ल बा' : 'Authenticated') : authStatus === 'unauthorized' ? (lang === 'bho' ? 'अनुमति नइखे' : 'Unauthorized') : (lang === 'bho' ? 'एकदम बंद' : 'Lock
+
+components\dashboard\CloudSyncriptModule.tsx:196
+  <h3 className="text-xl font-bold text-text-primary mb-2">{lang === 'bho' ? 'क्लाउड सिंक इंजन' : 'Cloud-Syncript Engine'}</h3>
+
+components\dashboard\CloudSyncriptModule.tsx:198
+  {lang === 'bho' ? 'राउर सब जानकारी (encrypted .kutumb files) गूगल ड्राइव पर एकदम सुरक्षित रही। ई जानकारी केहू अउर ना देख पाई।' : 'Your encrypted .kutumb files are sent to your personal Google Drive. Z
+
+components\dashboard\DiaryModule.tsx:84
+  const matchesMonth = selectedMonth ? new Date(String(e.date)).toLocaleString(lang === 'hi' || lang === 'bho' ? 'hi-IN' : 'en-US', { month: 'long', year: 'numeric' }) === selectedMonth : true;
+
+components\dashboard\DiaryModule.tsx:90
+  const m = new Date(String(entry.date)).toLocaleString(lang === 'hi' || lang === 'bho' ? 'hi-IN' : 'en-US', { month: 'long', year: 'numeric' });
+
+components\dashboard\DiaryModule.tsx:174
+  placeholder={lang === 'hi' || lang === 'bho' ? (lang === 'bho' ? "शुरुआत कइसे भइल..." : "Shuruaat kya hui...") : "Title of your entry..."}
+
+components\dashboard\DiaryModule.tsx:181
+  placeholder={lang === 'hi' || lang === 'bho' ? (lang === 'bho' ? "आज का भइल? अपने मन के बात लिखीं..." : "Aaj kya hua? Apne dil ki baat likhein...") : "Dear diary, today..."}
+
+components\dashboard\DiaryModule.tsx:248
+  placeholder={lang === 'hi' || lang === 'bho' ? (lang === 'bho' ? "कवनो पुरानी याद ढूँढीं..." : "Kuch purana dhundhein...") : "Search tags, titles or contents..."}
+
+components\dashboard\DiaryModule.tsx:398
+  <p className="font-black uppercase tracking-[0.4em] text-[11px]">{lang === 'bho' ? 'डायरी खाली बा' : (lang === 'hi' ? 'Diary Khaali Hai' : 'No entries found')}</p>
+
+components\dashboard\GroceryModule.tsx:156
+  <MetricCard label={t('PANTRY_STATUS')} value={pendingCount > 0 ? (lang === 'bho' ? 'बांकी बा' : 'Stocking') : t('PANTRY_FULL')} status={pendingCount > 0 ? 'warning' : 'success'} />
+
+components\dashboard\HomeStaffModule.tsx:93
+  <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{lang === 'bho' ? 'नाम' : 'Full Name'}</label>
+
+components\dashboard\HomeStaffModule.tsx:107
+  <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{lang === 'bho' ? 'महीना के तनख्वाह' : 'Monthly Salary (₹)'}</label>
+
+components\dashboard\InvestModule.tsx:382
+  <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{lang === 'bho' ? 'तारीख' : 'Date'}</th>
+
+components\dashboard\InvestModule.tsx:383
+  <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{lang === 'bho' ? 'विवरण' : 'Particulars'}</th>
+
+components\dashboard\InvestModule.tsx:384
+  <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">{lang === 'bho' ? 'प्रकार' : 'Type'}</th>
+
+components\dashboard\InvestModule.tsx:385
+  <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">{lang === 'bho' ? 'रुपिया' : 'Amount'}</th>
+
+components\dashboard\MoreModulesDrawer.tsx:56
+  lang === 'bho' ? 'सभे मॉड्यूल' :
+
+components\dashboard\NetworkModule.tsx:97
+  setStatus(lang === 'bho' ? 'तिजोरी आवत बा...' : 'Receiving Encrypted Payload...');
+
+components\dashboard\NetworkModule.tsx:106
+  setStatus(lang === 'bho' ? 'तिजोरी मिल गइल!' : 'Vault Sync Complete & Downloaded!');
+
+components\dashboard\NevataModule.tsx:130
+  {lang === 'bho' ? (e.direction === 'we_hosted' ? 'आपन शादी' : 'उनकर शादी') : t(dir.key as any)}
+
+components\dashboard\NevataModule.tsx:244
+  {days === 0 ? t('TODAY') : days < 0 ? (lang === 'bho' ? 'पहलही भयल' : 'Passed') : `${days} ${t('DAYS_LEFT')}`}
+
+components\dashboard\NevataModule.tsx:273
+  { id: 'events',   label: lang === 'bho' ? 'कार्यक्रम' : 'Kaaryakram' },
+
+components\dashboard\NevataModule.tsx:274
+  { id: 'ledger',   label: lang === 'bho' ? 'लेखा-जोखा' : 'Lekha-Jokha' },
+
+components\dashboard\NevataModule.tsx:275
+  { id: 'upcoming', label: lang === 'bho' ? 'आवे वाला' : 'Aane Waale' },
+
+components\dashboard\NevataModule.tsx:276
+  { id: 'registry', label: lang === 'bho' ? 'नेवता रजिस्टर' : 'Gift Registry' },
+
+components\dashboard\SetupModule.tsx:276
+  <div className="text-sm font-bold text-text-primary">{lang === 'bho' ? 'कोठरी के बैकअप' : 'Export Vault'}</div>
+
+components\dashboard\SetupModule.tsx:278
+  {lang === 'bho' ? 'सुरक्षित फ़ाइल डाउनलोड करीं' : 'Download encrypted .kutumb file'}
+
+components\dashboard\SetupModule.tsx:314
+  <div className="text-sm font-bold text-text-primary">{lang === 'bho' ? 'क्लाउड के इजाजत' : 'Cloud Authorization'}</div>
+
+components\dashboard\SetupModule.tsx:316
+  {lang === 'bho' ? 'बैकअप खातिर ई-मेल' : 'Allowed sync email addresses'}
+
+components\dashboard\SetupModule.tsx:429
+  {lang === 'bho' ? 'ई कइला से राउर सभ याद अउर कोठरी एकदम साफ हो जाई। दोबारा वापस ना आई।' : 'This will wipe ALL device memory and handles. This is irreversible but does not affect cloud files.'}
+
+components\dashboard\SetupModule.tsx:430
+  {lang === 'bho' ? ' नीचे ' : ' Type '} <span className="text-text-danger">BURN</span> {lang === 'bho' ? ' लिखीं।' : ' below to confirm.'}
+
+components\dashboard\SetupModule.tsx:447
+  {lang === 'bho' ? 'साफ करे खातिर पक्की करीं' : 'Confirm Destroy'}
+

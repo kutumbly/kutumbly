@@ -90,7 +90,7 @@ export default function HomeStaffModule() {
 
           <div className="card p-6 flex flex-col gap-5">
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{lang === 'bho' ? 'नाम' : 'Full Name'}</label>
+              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{t('FULL_NAME')}</label>
               <input type="text" value={fName} onChange={e => setFName(e.target.value)} className="w-full bg-bg-secondary border border-border-light rounded-xl p-4 text-sm font-bold text-text-primary outline-none focus:border-gold" placeholder="e.g. Ramesh Kumar" />
             </div>
 
@@ -104,7 +104,7 @@ export default function HomeStaffModule() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{lang === 'bho' ? 'महीना के तनख्वाह' : 'Monthly Salary (₹)'}</label>
+              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{t('MONTHLY_SALARY')}</label>
               <input type="number" value={fSalary} onChange={e => setFSalary(e.target.value)} className="w-full bg-bg-secondary border border-border-light rounded-xl p-4 text-xl font-black text-text-primary outline-none focus:border-gold" placeholder="₹0.00" />
             </div>
 

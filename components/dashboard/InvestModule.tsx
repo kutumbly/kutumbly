@@ -379,10 +379,10 @@ export default function InvestModule() {
                <table className="w-full text-left border-collapse">
                   <thead>
                      <tr className="border-b border-border-light bg-bg-primary">
-                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{lang === 'bho' ? 'तारीख' : 'Date'}</th>
-                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{lang === 'bho' ? 'विवरण' : 'Particulars'}</th>
-                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">{lang === 'bho' ? 'प्रकार' : 'Type'}</th>
-                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">{lang === 'bho' ? 'रुपिया' : 'Amount'}</th>
+                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{t('COL_DATE')}</th>
+                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{t('COL_PARTICULARS')}</th>
+                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">{t('COL_TYPE')}</th>
+                        <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] text-right">{t('COL_AMOUNT')}</th>
                      </tr>
                   </thead>
                   <tbody>

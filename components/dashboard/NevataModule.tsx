@@ -270,10 +270,10 @@ export default function NevataModule() {
   );
 
   const TABS = [
-    { id: 'events',   label: lang === 'bho' ? 'कार्यक्रम' : 'Kaaryakram' },
-    { id: 'ledger',   label: lang === 'bho' ? 'लेखा-जोखा' : 'Lekha-Jokha' },
-    { id: 'upcoming', label: lang === 'bho' ? 'आवे वाला' : 'Aane Waale' },
-    { id: 'registry', label: lang === 'bho' ? 'नेवता रजिस्टर' : 'Gift Registry' },
+    { id: 'events',   label: t('NEVATA_TAB_EVENTS') },
+    { id: 'ledger',   label: t('NEVATA_TAB_LEDGER') },
+    { id: 'upcoming', label: t('NEVATA_TAB_UPCOMING') },
+    { id: 'registry', label: t('NEVATA_TAB_REGISTRY') },
   ] as const;
 
   return (
