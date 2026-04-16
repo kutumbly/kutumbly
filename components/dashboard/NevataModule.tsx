@@ -127,7 +127,7 @@ export default function NevataModule() {
                     {e.title}
                   </h4>
                   <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest ${dir.color}`}>
-                    {lang === 'bho' ? (e.direction === 'we_hosted' ? 'आपन शादी' : 'उनकर शादी') : t(dir.key as any)}
+                    {t(e.direction === 'we_hosted' ? 'NEVATA_WE_HOSTED' : 'NEVATA_THEY_HOSTED')}
                   </span>
                 </div>
                 <p className="text-[11px] font-bold text-text-tertiary uppercase tracking-widest">
@@ -241,7 +241,7 @@ export default function NevataModule() {
                 </p>
                 <div className="flex items-center gap-2 mt-1.5">
                   <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${urgency}`}>
-                    {days === 0 ? t('TODAY') : days < 0 ? (lang === 'bho' ? 'पहलही भयल' : 'Passed') : `${days} ${t('DAYS_LEFT')}`}
+                    {days === 0 ? t('TODAY') : days < 0 ? t('NEVATA_PASSED') : `${days} ${t('DAYS_LEFT')}`}
                   </span>
                   <span className="text-[10px] font-bold text-gold">
                     {t('SUGGESTED')}: <RupeesDisplay amount={suggested} />

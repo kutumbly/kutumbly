@@ -153,7 +153,7 @@ export default function GroceryModule() {
            <MetricCard label={t('ITEMS_TO_BUY')} value={pendingCount} status="warning" />
            <MetricCard label={t('ESTIMATED_TOTAL')} value={totalEstimated} isCurrency status="default" />
            <MetricCard label={t('STORE_CATEGORIES')} value={categories.length} status="info" />
-           <MetricCard label={t('PANTRY_STATUS')} value={pendingCount > 0 ? (lang === 'bho' ? 'बांकी बा' : 'Stocking') : t('PANTRY_FULL')} status={pendingCount > 0 ? 'warning' : 'success'} />
+           <MetricCard label={t('PANTRY_STATUS')} value={pendingCount > 0 ? t('PANTRY_STOCKING') : t('PANTRY_FULL')} status={pendingCount > 0 ? 'warning' : 'success'} />
         </div>
 
         {/* Categories Grid (replaces full list view) */}

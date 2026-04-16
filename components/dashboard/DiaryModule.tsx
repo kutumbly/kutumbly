@@ -395,7 +395,7 @@ export default function DiaryModule() {
                <div className="w-24 h-24 bg-bg-tertiary rounded-full flex items-center justify-center mb-8">
                   <Book size={40} strokeWidth={1} className="text-text-tertiary" />
                </div>
-               <p className="font-black uppercase tracking-[0.4em] text-[11px]">{lang === 'bho' ? 'डायरी खाली बा' : (lang === 'hi' ? 'Diary Khaali Hai' : 'No entries found')}</p>
+               <p className="font-black uppercase tracking-[0.4em] text-[11px]">{t('DIARY_EMPTY')}</p>
             </div>
           )}
         </div>
