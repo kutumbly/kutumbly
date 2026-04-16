@@ -73,7 +73,7 @@ export function seedDatabase(db: any) {
     ('h3','pj','2026-04-12',108,70,88,68,NULL,NULL,'2026-04-12')`);
 
   // Diary (V2 — richer entry)
-  db.run(`INSERT OR IGNORE INTO diary_entries VALUES
+  db.run(`INSERT OR IGNORE INTO diary_entries (id, date, content, mood, mood_label, created_at) VALUES
     ('d1','2026-04-12','Aaj family ke saath nashta kiya. Priya ke exam results aye — 94% in Maths. Bahut khushi hui aaj. Shaam ko puja karni chahiye.',4,'Happy','2026-04-12')`);
 
   // Tasks (V2 — completed task added)

@@ -59,6 +59,10 @@ export function loadGisScript(): Promise<void> {
 export async function initTokenClient(onTokenResponse: (token: any) => void) {
   await loadGisScript();
   if (!(window as any).google) return null;
+  if (!CLIENT_ID) {
+    console.warn("Google Drive: Missing required parameter client_id (NEXT_PUBLIC_GOOGLE_CLIENT_ID).");
+    return null;
+  }
 
   tokenClient = (window as any).google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID,

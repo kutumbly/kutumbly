@@ -9,7 +9,7 @@
 
 ## 1. Core Philosophy & Value Proposition
 * **Zero Cloud:** The application runs entirely in the user's browser. Data never leaves the device unless explicitly exported or backed up by the user.
-* **Local-First & OPFS:** Data is stored using highly optimized SQLite in the browser's Origin Private File System (OPFS), meaning the OS works offline forever with zero latency.
+* **Local-First & OPFS:** Data is stored as an encrypted **`.kutumb`** file in the browser's Origin Private File System (OPFS), meaning the OS works offline forever with zero latency.
 * **Sovereignty & Privacy:** Built on the belief that "Uncompromising privacy is a fundamental human right."
 * **Bharat Focus:** Ships with built-in, culturally resonant support for 12 Indian languages including deep regional dialects like Bhojpuri.
 
@@ -18,7 +18,7 @@
 ## 2. Technical Stack
 * **Framework:** Next.js (App Router), React, TypeScript.
 * **Styling & UI:** Tailwind CSS, Framer Motion (for premium micro-animations), Lucide React (for iconography).
-* **Database Layer:** `sqlocal` offering SQLite running in isolation via WebAssembly (Wasm) inside Web Workers, persisting to OPFS.
+* **Database Layer:** `sqlocal` powering the proprietary `.kutumb` file format, running in isolation via WebAssembly (Wasm) inside Web Workers, persisting to OPFS.
 * **State Management:** Zustand (`lib/store.ts`) for reactive, lightweight global state sharing.
 * **Localization (i18n):** Custom-built hook and dictionary (`lib/i18n.ts`) for instant, client-side language switching without page reloads.
 * **Backup/Sync:** Google Drive API integration (`lib/gdrive.ts`) for encrypted, user-controlled backups (Cloud Syncript Engine).
@@ -96,7 +96,7 @@ kutumbly/
 
 1. **Client-Side Encryption:** No centralized database exists. The master database is stored locally.
 2. **Volatile Memory:** By leveraging local OPFS, memory structures are cleared efficiently. 
-3. **Cloud Syncript Engine:** If a user chooses to back up data, the SQLite file is bundled and pushed directly to a private *Kutumbly_Sovereign_Backups* folder in their personal Google Drive. AITDL (The Creators) have zero access to this data.
+3. **Cloud Syncript Engine:** If a user chooses to back up data, their `.kutumb` digital vault file is bundled and pushed directly to a private *Kutumbly_Sovereign_Backups* folder in their personal Google Drive. AITDL (The Creators) have zero access to this data.
 
 ---
 

@@ -23,4 +23,7 @@ Every NEW file created by the agent MUST start with the following official signa
  * "Memory, Not Code."
  * ============================================================ */
 ```
+## Terminology & Branding Protocol
+* **Database File:** Internally, the database is SQLite. However, for any external-facing content, documentation, or user communication (unless strictly discussing internal technical implementation details), the database file MUST be referred to as a **`.kutumb`** file. Example: "Kutumbly data is saved as an encrypted `.kutumb` file."
+
 <!-- END:nextjs-agent-rules -->
