@@ -109,11 +109,11 @@ export default function CloudSyncriptModule() {
 
   const t = {
     title: t_hook('CLOUD_SYNC'),
-    subtitle: lang === 'en' ? 'Sovereign Google Sync' : (lang === 'bho' ? 'पइसा अउर याद के सुरक्षित सिंक' : 'Sovereign Google Sync'),
+    subtitle: t_hook('CLOUD_SYNC_SUBTITLE'),
     status: t_hook('NETWORK_STATUS'),
     syncNow: t_hook('SYNC_NOW'),
-    authorized: lang === 'en' ? 'Account Linked' : (lang === 'bho' ? 'खाता जुड़ल बा' : 'Account Linked'),
-    notAuthorized: lang === 'en' ? 'Link Account' : (lang === 'bho' ? 'खाता जोड़ीं' : 'Link Account'),
+    authorized: t_hook('ACCOUNT_LINKED'),
+    notAuthorized: t_hook('LINK_ACCOUNT'),
     lastSync: t_hook('LAST_SYNC'),
     history: t_hook('BACKUP_HISTORY'),
   };
@@ -151,9 +151,9 @@ export default function CloudSyncriptModule() {
                 {authStatus === 'unauthorized' ? <XCircle size={20} /> : <ShieldCheck size={20} />}
               </div>
               <div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-text-tertiary">{lang === 'bho' ? 'कोठरी के पहचान' : 'Vault Identity'}</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-text-tertiary">{t_hook('VAULT_IDENTITY')}</div>
                 <div className="text-sm font-bold text-text-primary">
-                  {authStatus === 'authorized' ? (lang === 'bho' ? 'जुड़ल बा' : 'Authenticated') : authStatus === 'unauthorized' ? (lang === 'bho' ? 'अनुमति नइखे' : 'Unauthorized') : (lang === 'bho' ? 'एकदम बंद' : 'Locked')}
+                  {authStatus === 'authorized' ? t_hook('AUTH_AUTHENTICATED') : authStatus === 'unauthorized' ? t_hook('AUTH_UNAUTHORIZED') : t_hook('AUTH_LOCK')}
                 </div>
                 {authStatus === 'unauthorized' && (
                   <div className="text-[9px] text-text-danger font-bold truncate max-w-[120px]">
@@ -193,9 +193,9 @@ export default function CloudSyncriptModule() {
                 </AnimatePresence>
              </div>
 
-             <h3 className="text-xl font-bold text-text-primary mb-2">{lang === 'bho' ? 'क्लाउड सिंक इंजन' : 'Cloud-Syncript Engine'}</h3>
+             <h3 className="text-xl font-bold text-text-primary mb-2">{t_hook('CLOUD_ENGINE')}</h3>
              <p className="text-sm text-text-secondary max-w-sm mb-8">
-               {lang === 'bho' ? 'राउर सब जानकारी (encrypted .kutumb files) गूगल ड्राइव पर एकदम सुरक्षित रही। ई जानकारी केहू अउर ना देख पाई।' : 'Your encrypted .kutumb files are sent to your personal Google Drive. Zero data ever touches Kutumbly servers.'}
+               {t_hook('CLOUD_DESC')}
              </p>
 
              <button 

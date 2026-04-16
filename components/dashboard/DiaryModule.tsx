@@ -171,14 +171,14 @@ export default function DiaryModule() {
               <div className="flex flex-col gap-5">
                 <input
                   autoFocus
-                  placeholder={lang === 'hi' || lang === 'bho' ? (lang === 'bho' ? "शुरुआत कइसे भइल..." : "Shuruaat kya hui...") : "Title of your entry..."}
+                  placeholder={t('DIARY_PLACEHOLDER_TITLE')}
                   className="w-full bg-transparent border-none text-2xl font-black text-text-primary placeholder:text-text-tertiary focus:outline-none"
                   value={cTitle}
                   onChange={e => setCTitle(e.target.value)}
                 />
 
                 <textarea
-                  placeholder={lang === 'hi' || lang === 'bho' ? (lang === 'bho' ? "आज का भइल? अपने मन के बात लिखीं..." : "Aaj kya hua? Apne dil ki baat likhein...") : "Dear diary, today..."}
+                  placeholder={t('DIARY_PLACEHOLDER_CONTENT')}
                   className="w-full bg-bg-secondary border border-border-light rounded-2xl p-6 text-[14px] font-bold text-text-primary leading-[1.8] resize-none focus:outline-none focus:border-gold transition-all min-h-[200px]"
                   value={cContent}
                   onChange={e => setCContent(e.target.value)}
@@ -245,7 +245,7 @@ export default function DiaryModule() {
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary group-focus-within:text-gold transition-colors" />
             <input 
               type="text"
-              placeholder={lang === 'hi' || lang === 'bho' ? (lang === 'bho' ? "कवनो पुरानी याद ढूँढीं..." : "Kuch purana dhundhein...") : "Search tags, titles or contents..."}
+              placeholder={t('DIARY_PLACEHOLDER_SEARCH')}
               className="w-full pl-14 pr-5 py-5 bg-bg-primary border border-border-light rounded-2xl text-[13px] font-black tracking-tight shadow-sm focus:outline-none focus:border-gold transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

@@ -94,7 +94,7 @@ export default function NetworkModule() {
     setNode(p2p);
 
     p2p.onData = async (buffer) => {
-       setStatus(lang === 'bho' ? 'तिजोरी आवत बा...' : 'Receiving Encrypted Payload...');
+       setStatus(t('NETWORK_RECEIVING'));
        // In a real P2P, we would decrypt/verify this byte array
        // For this prototype, we'll prompt a download to prove it crossed the airgap!
        const blob = new Blob([buffer], { type: 'application/octet-stream' });
@@ -103,7 +103,7 @@ export default function NetworkModule() {
        a.href = url;
        a.download = `SYNCED_VAULT_${new Date().getTime()}.sqlite`;
        a.click();
-       setStatus(lang === 'bho' ? 'तिजोरी मिल गइल!' : 'Vault Sync Complete & Downloaded!');
+       setStatus(t('NETWORK_DOWNLOADED'));
     };
 
     p2p.onConnected = () => {

@@ -273,9 +273,9 @@ export default function SetupModule() {
               <div className="flex items-center gap-3">
                 <Download size={18} className="text-text-tertiary" />
                 <div>
-                  <div className="text-sm font-bold text-text-primary">{lang === 'bho' ? 'कोठरी के बैकअप' : 'Export Vault'}</div>
+                  <div className="text-sm font-bold text-text-primary">{t('SETUP_EXPORT_VAULT')}</div>
                   <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
-                    {lang === 'bho' ? 'सुरक्षित फ़ाइल डाउनलोड करीं' : 'Download encrypted .kutumb file'}
+                    {t('SETUP_DOWNLOAD_ENCRYPTED')}
                   </div>
                 </div>
               </div>
@@ -311,9 +311,9 @@ export default function SetupModule() {
                   <div className="flex items-center gap-3 overflow-hidden">
                     <Globe size={18} className="text-gold" />
                     <div className="overflow-hidden">
-                      <div className="text-sm font-bold text-text-primary">{lang === 'bho' ? 'क्लाउड के इजाजत' : 'Cloud Authorization'}</div>
+                      <div className="text-sm font-bold text-text-primary">{t('SETUP_CLOUD_AUTH')}</div>
                       <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest">
-                        {lang === 'bho' ? 'बैकअप खातिर ई-मेल' : 'Allowed sync email addresses'}
+                        {t('SETUP_ALLOWED_EMAILS')}
                       </div>
                     </div>
                   </div>
@@ -426,8 +426,8 @@ export default function SetupModule() {
                 Burn Protocol
               </h3>
               <p className="text-xs font-bold text-center text-text-tertiary mb-6 leading-relaxed">
-                {lang === 'bho' ? 'ई कइला से राउर सभ याद अउर कोठरी एकदम साफ हो जाई। दोबारा वापस ना आई।' : 'This will wipe ALL device memory and handles. This is irreversible but does not affect cloud files.'}
-                {lang === 'bho' ? ' नीचे ' : ' Type '} <span className="text-text-danger">BURN</span> {lang === 'bho' ? ' लिखीं।' : ' below to confirm.'}
+                {t('SETUP_WIPE_WARNING')}
+                {t('SETUP_TYPE')} <span className="text-text-danger">BURN</span> {t('SETUP_BELOW_TO_CONFIRM')}
               </p>
               
               <input 
@@ -444,7 +444,7 @@ export default function SetupModule() {
                   onClick={factoryReset}
                   className="w-full h-14 bg-text-danger text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-text-danger/20 active:scale-95 transition-all disabled:opacity-50"
                 >
-                  {lang === 'bho' ? 'साफ करे खातिर पक्की करीं' : 'Confirm Destroy'}
+                  {t('SETUP_CONFIRM_DESTROY')}
                 </button>
                 <button 
                   onClick={() => { setShowBurnConfirm(false); setBurnConfirmText(''); }}
