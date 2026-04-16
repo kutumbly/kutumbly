@@ -87,10 +87,10 @@ export default function FoundersPage() {
                     &quot;Real wisdom isn&apos;t inherited in a classroom or a boardroom; it’s forged in the village and tempered by raw experience.&quot;
                   </p>
                   <p>
-                    Hailing from a small village in Gorakhpur, Pushpa formally attended school only up to the 1st standard. Yet, she shattered conventional corporate barriers by possessing a profound, intuitive understanding of the complex operational and financial processes that drive major global corporations today. 
+                    Hailing from Gorakhpur, Pushpa has consistently shattered conventional corporate barriers. She possesses a profound, intuitive understanding of the complex operational, logistical, and financial processes that drive major global enterprises. Her sharp business acumen and raw strategic foresight uniquely guide the trajectory of Kutumbly. 
                   </p>
                   <p>
-                    As the Founder, primary financier, and head of Sales & Marketing, Pushpa single-handedly provided the financial backbone that made Kutumbly a reality.
+                    As the Founder, primary financier, and head of Sales & Marketing, Pushpa single-handedly provided the unyielding financial backbone and marketing vision that propelled Kutumbly from an ambitious concept into a sovereign reality. She relentlessly leads the mission to empower and secure families worldwide.
                   </p>
                </div>
             </motion.div>
@@ -125,10 +125,10 @@ export default function FoundersPage() {
                     &quot;Bridging elite, heavy-duty enterprise technology with uncompromising family software sovereignty.&quot;
                   </p>
                   <p>
-                    With over 19 years of deep, hands-on engineering experience in Software as a Service (SaaS), Jawahar is the technical mastermind behind the Sovereign OS.
+                    With over 19 years of deep, hands-on engineering experience in complex Software as a Service (SaaS) and scalable enterprise architectures, Jawahar is the technical mastermind behind the Kutumbly Sovereign OS. His core philosophy is rooted in building zero-cloud, local-first technologies where uncompromising privacy is a fundamental human right.
                   </p>
                   <p>
-                    His enterprise portfolio boasts core architectural and integrations work for <strong>Tally Solutions</strong>, the <strong>Aditya Birla Group, Titan Eye Plus, Madura Garments</strong>, <strong>Raymond, Adidas, Nike</strong>, and <strong>Ram Fashion Export</strong>.
+                    His distinguished enterprise portfolio spans intensive core architectural design, high-stakes data security, and systemic integrations for industry giants including <strong>Tally Solutions</strong>, the <strong>Aditya Birla Group, Titan Eye Plus, Madura Garments</strong>, <strong>Raymond, Adidas, Nike</strong>, and <strong>Ram Fashion Export</strong>. Drawing from this elite, heavy-duty enterprise background, he has meticulously engineered Kutumbly to be an impenetrable digital vault for the modern family.
                   </p>
                </div>
             </motion.div>
