@@ -21,7 +21,8 @@ import { useAppStore } from '@/lib/store';
 import { useMoney } from '@/hooks/useMoney';
 import { useDiary } from '@/hooks/useDiary';
 import { useHealth } from '@/hooks/useHealth';
-import { Shield, Clock, Plus, ArrowRight, Fingerprint, HardDrive, Activity, Heart, Zap } from 'lucide-react';
+import { useSuvidha } from '@/hooks/useSuvidha';
+import { Shield, Clock, Plus, ArrowRight, Fingerprint, HardDrive, Activity, Heart, Zap, Milk, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { hasBiometricRegistered } from '@/lib/biometric';
 import { useTranslation, Language } from '@/lib/i18n';
@@ -37,6 +38,7 @@ export default function HomeModule() {
   const { summary } = useMoney();
   const { entries } = useDiary();
   const { readings } = useHealth();
+  const { vendors, logs, logDaily } = useSuvidha();
 
   // 1. Calculate Custom Stats
   let tasksPending = 0;
@@ -205,7 +207,39 @@ export default function HomeModule() {
               </div>
            </motion.section>
 
-           <motion.section variants={item} className="grid grid-cols-1 gap-4">
+            <motion.section variants={item} className="grid grid-cols-1 gap-4">
+              {vendors.length > 0 && (
+                <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-6 shadow-xl shadow-black/[0.02]">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Milk size={18} className="text-gold" />
+                    <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Suvidha Today</span>
+                  </div>
+                  <div className="space-y-3">
+                    {vendors.slice(0, 3).map(v => {
+                      const todayDate = new Date().toISOString().split('T')[0];
+                      const logged = logs.find(l => l.vendor_id === v.id && l.date === todayDate);
+                      return (
+                        <div key={v.id} className="flex items-center justify-between p-3 bg-bg-tertiary rounded-xl border border-border-light">
+                          <span className="text-[11px] font-bold text-text-primary">{v.name}</span>
+                          {logged ? (
+                            <span className="text-[9px] font-black text-success uppercase tracking-widest flex items-center gap-1">
+                              <CheckCircle2 size={10} /> {logged.quantity} {v.type === 'milk' ? 'L' : 'Units'}
+                            </span>
+                          ) : (
+                            <button 
+                              onClick={() => logDaily(v.id, todayDate, v.type === 'helper' ? 1 : 1)}
+                              className="text-[9px] font-black text-gold-text uppercase tracking-widest border border-gold/20 px-3 py-1 rounded-lg hover:bg-gold/5 transition-all"
+                            >
+                              Log Now
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <button className="flex items-center justify-between p-6 bg-bg-primary border border-border-light rounded-[2rem] hover:border-gold-text transition-all group shadow-xl shadow-black/[0.02] active:scale-[0.98]">
                 <div className="flex items-center gap-5">
                    <div className="w-14 h-14 rounded-2xl bg-gold/5 text-gold-text flex items-center justify-center border border-gold/10 group-hover:bg-gold-text group-hover:text-white transition-all shadow-sm">

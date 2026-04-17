@@ -75,6 +75,28 @@ export function useVidya() {
     return id;
   }, [db, persist]);
 
+  const editLearner = useCallback((id: string, updates: Partial<VidyaLearner>) => {
+    if (!db) return;
+    const sets: string[] = [];
+    const vals: any[] = [];
+    Object.entries(updates).forEach(([k, v]) => {
+      if (k === 'id') return;
+      sets.push(`${k} = ?`);
+      vals.push(v);
+    });
+    if (sets.length === 0) return;
+    vals.push(id);
+    db.run(`UPDATE vidya_learners SET ${sets.join(', ')} WHERE id = ?`, vals);
+    persist();
+  }, [db, persist]);
+
+  const deleteLearner = useCallback((id: string) => {
+    if (!db) return;
+    // Soft delete
+    db.run("UPDATE vidya_learners SET is_active = 0 WHERE id = ?", [id]);
+    persist();
+  }, [db, persist]);
+
   /* ── SUBJECTS ────────────────────────────────────────────── */
   const getSubjects = useCallback((learner_id: string): VidyaSubject[] => {
     return runQuery<VidyaSubject>(db, "SELECT * FROM vidya_subjects WHERE learner_id = ? ORDER BY name ASC", [learner_id]);
@@ -95,6 +117,28 @@ export function useVidya() {
     );
     persist();
     return id;
+  }, [db, persist]);
+
+  const editSubject = useCallback((id: string, updates: Partial<VidyaSubject>) => {
+    if (!db) return;
+    const sets: string[] = [];
+    const vals: any[] = [];
+    Object.entries(updates).forEach(([k, v]) => {
+      if (k === 'id' || k === 'learner_id') return;
+      sets.push(`${k} = ?`);
+      vals.push(v);
+    });
+    if (sets.length === 0) return;
+    vals.push(id);
+    db.run(`UPDATE vidya_subjects SET ${sets.join(', ')} WHERE id = ?`, vals);
+    persist();
+  }, [db, persist]);
+
+  const deleteSubject = useCallback((id: string) => {
+    if (!db) return;
+    db.run("DELETE FROM vidya_resources WHERE subject_id = ?", [id]);
+    db.run("DELETE FROM vidya_subjects WHERE id = ?", [id]);
+    persist();
   }, [db, persist]);
 
   /* ── RESOURCES ───────────────────────────────────────────── */
@@ -151,6 +195,28 @@ export function useVidya() {
     return id;
   }, [db, persist]);
 
+  const editResource = useCallback((id: string, updates: Partial<VidyaResource>) => {
+    if (!db) return;
+    const sets: string[] = [];
+    const vals: any[] = [];
+    Object.entries(updates).forEach(([k, v]) => {
+      if (['id', 'subject_id', 'learner_id', 'created_at'].includes(k)) return;
+      sets.push(`${k} = ?`);
+      vals.push(v);
+    });
+    
+    // Update thumbnail if URL changed
+    if (updates.url && updates.resource_type === 'youtube') {
+      sets.push(`thumbnail_url = ?`);
+      vals.push(getYouTubeThumbnail(updates.url));
+    }
+
+    if (sets.length === 0) return;
+    vals.push(id);
+    db.run(`UPDATE vidya_resources SET ${sets.join(', ')} WHERE id = ?`, vals);
+    persist();
+  }, [db, persist]);
+
   const toggleBookmark = useCallback((id: string, current: number) => {
     if (!db) return;
     db.run("UPDATE vidya_resources SET is_bookmarked = ? WHERE id = ?", [current ? 0 : 1, id]);
@@ -195,10 +261,15 @@ export function useVidya() {
     persist();
   }, [db, persist]);
 
+  const deleteSession = useCallback((id: string) => {
+    if (!db) return;
+    db.run("DELETE FROM vidya_sessions WHERE id = ?", [id]);
+    persist();
+  }, [db, persist]);
+
   /* ── ANALYTICS & STREAKS ─────────────────────────────────── */
   const getStreak = useCallback((learner_id: string): number => {
     if (!db) return 0;
-    // Get unique dates of sessions for this learner, descending
     const res = db.exec(
       "SELECT DISTINCT date FROM vidya_sessions WHERE learner_id = ? ORDER BY date DESC",
       [learner_id]
@@ -208,15 +279,12 @@ export function useVidya() {
 
     const dates = res[0].values.map((v: (string | number)[]) => v[0] as string);
     let streak = 0;
-    const expectedDate = new Date(); // Start checking from today
-    
-    // Normalize expected date to YYYY-MM-DD
+    const expectedDate = new Date();
     const toDateStr = (d: Date) => d.toISOString().split('T')[0];
 
-    // If they haven't logged today, they might have logged yesterday (streak still alive)
     if (dates[0] !== toDateStr(expectedDate)) {
       expectedDate.setDate(expectedDate.getDate() - 1);
-      if (dates[0] !== toDateStr(expectedDate)) return 0; // Missed today and yesterday
+      if (dates[0] !== toDateStr(expectedDate)) return 0;
     }
 
     for (const dStr of dates) {
@@ -224,7 +292,7 @@ export function useVidya() {
         streak++;
         expectedDate.setDate(expectedDate.getDate() - 1);
       } else {
-        break; // Gap found
+        break;
       }
     }
 
@@ -233,11 +301,9 @@ export function useVidya() {
 
   const getAnalytics = useCallback((learner_id: string) => {
     if (!db) return [];
-    
-    // Get last 7 days of dates
     const days = Array.from({ length: 7 }, (_, i) => {
       const d = new Date();
-      d.setDate(d.getDate() - (6 - i)); // 6 days ago to today
+      d.setDate(d.getDate() - (6 - i));
       return d.toISOString().split('T')[0];
     });
 
@@ -278,21 +344,37 @@ export function useVidya() {
     }
   }, [db, tick]);
 
+  const getSubjectProgress = useCallback((subject_id: string) => {
+    if (!db) return 0;
+    const res = db.exec(
+      "SELECT (SUM(is_completed) * 100.0 / COUNT(*)) FROM vidya_resources WHERE subject_id = ?",
+      [subject_id]
+    );
+    return Math.round(Number(res[0]?.values?.[0]?.[0] || 0));
+  }, [db, tick]);
+
   return {
     learners,
     addLearner,
+    editLearner,
+    deleteLearner,
     getSubjects,
     addSubject,
+    editSubject,
+    deleteSubject,
     getResources,
     getAllResourcesForLearner,
     addResource,
+    editResource,
     toggleBookmark,
     toggleComplete,
     deleteResource,
     getSessions,
     logSession,
+    deleteSession,
     getStats,
     getStreak,
     getAnalytics,
+    getSubjectProgress
   };
 }

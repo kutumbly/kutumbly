@@ -22,6 +22,9 @@ import { useAppStore } from '@/lib/store';
 import { saveVault } from '@/lib/vault';
 import { useCallback, useMemo, useState } from 'react';
 
+// Standard Indian Shagun Tiers
+const AUSPICIOUS_TIERS = [51, 101, 251, 501, 1001, 1100, 2100, 5100, 11000, 21000, 51000, 100001];
+
 export function useNevata() {
   const { db, currentPin, fileHandle } = useAppStore();
   const [tick, setTick] = useState(0);
@@ -116,18 +119,32 @@ export function useNevata() {
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
-  const suggestShagun = useCallback((familyName: string): number => {
+  const suggestShagun = useCallback((familyName: string, rishtaIntensity: 'KHAAS' | 'NORMAL' = 'NORMAL'): number => {
     if (!db) return 501;
     try {
       const res = db.exec(
-        "SELECT mila FROM nevata_family_ledger WHERE family_name = ? ORDER BY updated_at DESC LIMIT 1",
+        "SELECT diya, mila FROM nevata_family_ledger WHERE family_name = ? LIMIT 1",
         [familyName]
       );
-      if (!res[0]?.values[0]) return 501;
-      const lastMila = Number(res[0].values[0][0]);
-      // Inflation 15% + Roundup to nearest 100 + add ₹1 for shagun
-      const inflation = Math.ceil((lastMila * 1.15) / 100) * 100;
-      return inflation + 1;
+      if (!res[0]?.values[0]) return rishtaIntensity === 'KHAAS' ? 2100 : 501;
+      
+      const diya = Number(res[0].values[0][0] || 0);
+      const mila = Number(res[0].values[0][1] || 0);
+      
+      const historicalDebt = mila - diya;
+      let baseline = 0;
+      
+      if (historicalDebt > 0) {
+        baseline = historicalDebt + (rishtaIntensity === 'KHAAS' ? 1000 : 500);
+      } else {
+        baseline = rishtaIntensity === 'KHAAS' ? 2100 : 501;
+      }
+
+      for (const tier of AUSPICIOUS_TIERS) {
+        if (tier >= baseline) return tier;
+      }
+
+      return Math.ceil(baseline / 1000) * 1000 + 1;
     } catch { return 501; }
   }, [db]);
 

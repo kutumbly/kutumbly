@@ -64,7 +64,10 @@ CREATE TABLE IF NOT EXISTS salary_payments (
   gross REAL, deductions REAL, net REAL, paid_on TEXT, advance REAL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS investments (
-  id TEXT PRIMARY KEY, name TEXT, type TEXT,
+  id TEXT PRIMARY KEY, 
+  member_id TEXT,                       -- Link to family_member
+  goal_id TEXT,                         -- ID of invest_goals if linked
+  name TEXT, type TEXT,
   principal REAL, current_value REAL, units REAL,
   monthly_sip REAL, start_date TEXT, maturity_date TEXT, notes TEXT
 );
@@ -74,6 +77,18 @@ CREATE TABLE IF NOT EXISTS investment_transactions (
   created_at TEXT,
   FOREIGN KEY (investment_id) REFERENCES investments(id)
 );
+
+CREATE TABLE IF NOT EXISTS invest_goals (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  target_amount REAL NOT NULL,
+  member_id TEXT,                       -- Goal for whom?
+  deadline TEXT,
+  category TEXT,                        -- 'Retirement' | 'Education' | 'Marriage' | 'Home' | 'Vehicle'
+  is_completed INTEGER DEFAULT 0,
+  created_at TEXT
+);
+
 CREATE TABLE IF NOT EXISTS grocery_lists (
   id TEXT PRIMARY KEY, name TEXT, created_at TEXT, status TEXT DEFAULT 'active'
 );
@@ -198,17 +213,17 @@ CREATE TABLE IF NOT EXISTS nevata_activity_log (
 );
 
 -- VIDYA MODULE TABLES
--- Learner profile — one per studying person (self or family member)
+-- Learner profile
 CREATE TABLE IF NOT EXISTS vidya_learners (
   id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,                   -- learner name (can match family_members.name)
-  family_member_id TEXT,                -- optional FK to family_members.id
-  institution TEXT,                     -- school / college / online platform name
-  standard TEXT,                        -- "Class 10", "B.Tech 3rd Year", "Self-Study" etc.
-  board TEXT,                           -- CBSE | ICSE | State Board | University | Self
+  name TEXT NOT NULL,
+  family_member_id TEXT,
+  institution TEXT,
+  standard TEXT,
+  board TEXT,
   avatar_initials TEXT,
-  goal TEXT,                            -- e.g. "JEE 2027", "UPSC 2028", "Class 10 95%+"
-  goal_deadline TEXT,                   -- YYYY-MM-DD
+  goal TEXT,
+  goal_deadline TEXT,
   is_active INTEGER DEFAULT 1,
   created_at TEXT
 );
@@ -217,32 +232,32 @@ CREATE TABLE IF NOT EXISTS vidya_learners (
 CREATE TABLE IF NOT EXISTS vidya_subjects (
   id TEXT PRIMARY KEY,
   learner_id TEXT NOT NULL,
-  name TEXT NOT NULL,                   -- "Physics", "History", "React.js"
-  category TEXT DEFAULT 'General',      -- "Science" | "Commerce" | "Arts" | "Tech" | "Language" | "General"
-  color TEXT DEFAULT '#c9971c',         -- accent color for UI
-  target_score TEXT,                    -- "90%", "Full Marks" etc.
+  name TEXT NOT NULL,
+  category TEXT DEFAULT 'General',
+  color TEXT DEFAULT '#c9971c',
+  target_score TEXT,
   notes TEXT,
   created_at TEXT,
   FOREIGN KEY (learner_id) REFERENCES vidya_learners(id)
 );
 
--- Study resource — PDF / Article / YouTube / Website
+-- Study resource
 CREATE TABLE IF NOT EXISTS vidya_resources (
   id TEXT PRIMARY KEY,
   subject_id TEXT NOT NULL,
-  learner_id TEXT NOT NULL,             -- denormalized for fast query
+  learner_id TEXT NOT NULL,
   title TEXT NOT NULL,
-  resource_type TEXT NOT NULL,          -- 'youtube' | 'pdf' | 'article' | 'book' | 'website'
-  url TEXT,                             -- for youtube/article/website
-  thumbnail_url TEXT,                   -- YouTube thumbnail or article OG image
+  resource_type TEXT NOT NULL,
+  url TEXT,
+  thumbnail_url TEXT,
   description TEXT,
-  chapter TEXT,                         -- e.g. "Chapter 5 — Newton's Laws"
-  lesson TEXT,                          -- e.g. "Lesson 3 — Force and Motion"
-  tags TEXT,                            -- comma-separated
+  chapter TEXT,
+  lesson TEXT,
+  tags TEXT,
   is_bookmarked INTEGER DEFAULT 0,
   is_completed INTEGER DEFAULT 0,
-  difficulty TEXT DEFAULT 'medium',     -- 'easy' | 'medium' | 'hard'
-  duration_mins INTEGER,                -- video length or estimated read time
+  difficulty TEXT DEFAULT 'medium',
+  duration_mins INTEGER,
   created_at TEXT,
   FOREIGN KEY (subject_id) REFERENCES vidya_subjects(id)
 );
@@ -252,12 +267,104 @@ CREATE TABLE IF NOT EXISTS vidya_sessions (
   id TEXT PRIMARY KEY,
   learner_id TEXT NOT NULL,
   subject_id TEXT,
-  resource_id TEXT,                     -- optional — which resource was studied
-  date TEXT NOT NULL,                   -- YYYY-MM-DD
+  resource_id TEXT,
+  date TEXT NOT NULL,
   duration_mins INTEGER NOT NULL,
   notes TEXT,
-  mood TEXT DEFAULT 'neutral',          -- 'focused' | 'tired' | 'neutral' | 'distracted'
+  mood TEXT DEFAULT 'neutral',
   created_at TEXT,
   FOREIGN KEY (learner_id) REFERENCES vidya_learners(id)
+);
+
+CREATE TABLE IF NOT EXISTS medical_profiles (
+  id TEXT PRIMARY KEY,
+  member_id TEXT NOT NULL,
+  blood_group TEXT,
+  allergies TEXT,
+  chronic_conditions TEXT,
+  primary_doctor TEXT,
+  emergency_contact TEXT,
+  insurance_details TEXT,
+  updated_at TEXT,
+  FOREIGN KEY (member_id) REFERENCES family_members(id)
+);
+
+CREATE TABLE IF NOT EXISTS vaccinations (
+  id TEXT PRIMARY KEY,
+  member_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  date TEXT,
+  provider TEXT,
+  next_due_date TEXT,
+  notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (member_id) REFERENCES family_members(id)
+);
+
+-- SUVIDHA HUB (UTILITY & DAILY TALLY) TABLES
+CREATE TABLE IF NOT EXISTS utility_vendors (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,           -- 'milk' | 'water' | 'paper' | 'internet' | 'trash' | 'helper'
+  rate_per_unit REAL DEFAULT 0, -- price for 1L milk or monthly fixed salary
+  billing_cycle_day INTEGER DEFAULT 1,
+  member_id TEXT,               -- family member who handles this
+  is_active INTEGER DEFAULT 1,
+  created_at TEXT,
+  FOREIGN KEY (member_id) REFERENCES family_members(id)
+);
+
+CREATE TABLE IF NOT EXISTS utility_logs (
+  id TEXT PRIMARY KEY,
+  vendor_id TEXT NOT NULL,
+  date TEXT NOT NULL,           -- YYYY-MM-DD
+  quantity REAL DEFAULT 1,      -- 2L milk, 1 paper, or attendance (1/0)
+  quality INTEGER DEFAULT 5,    -- 1-10 rating
+  notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (vendor_id) REFERENCES utility_vendors(id)
+);
+
+CREATE TABLE IF NOT EXISTS utility_payments (
+  id TEXT PRIMARY KEY,
+  vendor_id TEXT NOT NULL,
+  amount REAL NOT NULL,
+  date TEXT NOT NULL,           -- Payment date
+  period_month TEXT NOT NULL,    -- '01' to '12'
+  period_year TEXT NOT NULL,     -- '2024'
+  notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (vendor_id) REFERENCES utility_vendors(id)
+);
+
+CREATE TABLE IF NOT EXISTS health_advanced_profiles (
+  member_id TEXT PRIMARY KEY,
+  prakriti TEXT,
+  agni TEXT,
+  diet TEXT,
+  surgical_history TEXT,
+  family_history TEXT,
+  current_treatment TEXT,
+  updated_at TEXT,
+  FOREIGN KEY (member_id) REFERENCES family_members(id)
+);
+
+CREATE TABLE IF NOT EXISTS medical_prescriptions (
+  id TEXT PRIMARY KEY,
+  member_id TEXT NOT NULL,
+  doctor_name TEXT,
+  generic_name TEXT NOT NULL,
+  brand_name TEXT,
+  medicine_type TEXT NOT NULL,
+  dosage TEXT,
+  schedule_code TEXT NOT NULL,
+  meal_instruction TEXT,
+  purpose TEXT,
+  start_date TEXT NOT NULL,
+  end_date TEXT,
+  stock_remaining INTEGER DEFAULT 0,
+  notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (member_id) REFERENCES family_members(id)
 );
 `;

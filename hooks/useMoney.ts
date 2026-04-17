@@ -93,6 +93,17 @@ export function useMoney(month?: string) {
     setTick(t => t + 1);
   }, [db, currentMonth, currentPin, fileHandle]);
 
+  const editTransaction = useCallback((id: string, type: 'income'|'expense', amount: number, category: string, description: string, date: string, member_id?: string) => {
+    if (!db) return;
+    db.run(
+      "UPDATE transactions SET date = ?, amount = ?, type = ?, category = ?, description = ?, member_id = ? WHERE id = ?",
+      [date, amount, type, category, description, member_id || null, id]
+    );
+
+    if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle).catch(console.error);
+    setTick(t => t + 1);
+  }, [db, currentPin, fileHandle]);
+
   const deleteTransaction = useCallback((id: string) => {
     if (!db) return;
     db.run("DELETE FROM transactions WHERE id = ?", [id]);
@@ -101,5 +112,5 @@ export function useMoney(month?: string) {
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
-  return { ...data, addTransaction, deleteTransaction, setCategoryBudget };
+  return { ...data, addTransaction, deleteTransaction, setCategoryBudget, editTransaction };
 }

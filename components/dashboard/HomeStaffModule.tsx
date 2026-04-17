@@ -25,27 +25,27 @@ import { Briefcase, UserCheck, CalendarDays, Wallet, UserMinus, UserPlus, Phone,
 import { motion, AnimatePresence } from 'framer-motion';
 import RupeesDisplay from '../ui/RupeesDisplay';
 import { useTranslation, Language } from '@/lib/i18n';
-import { StaffMember, SalaryPayment, AttendanceRecord } from '@/types/db';
+import { StaffMember, VetanPayment, AttendanceRecord } from '@/types/db';
 
 type StaffView = 'overview' | 'staff-ledger';
 
 export default function HomeStaffModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang as Language);
-  const { staff, payments, attendance, addStaff, removeStaff, paySalary, grantAdvance, calculatePayout, markAttendance } = useStaff();
+  const { staff, payments, attendance, addStaff, removeStaff, payVetan, grantAdvance, calculatePayout, markAttendance } = useStaff();
   
   const [showAddForm, setShowAddForm] = React.useState(false);
   const [fName, setFName] = React.useState('');
-  const [fRole, setFRole] = React.useState('Housemaid');
-  const [fSalary, setFSalary] = React.useState('');
+  const [fRole, setFRole] = React.useState('Ghar Sahayak (Maid)');
+  const [fVetan, setFVetan] = React.useState('');
   const [fPhone, setFPhone] = React.useState('');
 
   const handleAdd = () => {
-    if (!fName || !fSalary) return;
-    addStaff(fName, fRole, Number(fSalary), fPhone);
+    if (!fName || !fVetan) return;
+    addStaff(fName, fRole, Number(fVetan), fPhone);
     setShowAddForm(false);
     setFName('');
-    setFSalary('');
+    setFVetan('');
     setFPhone('');
   };
 
@@ -65,13 +65,38 @@ export default function HomeStaffModule() {
     if (view === 'staff-ledger') setView('overview');
   };
 
+  const handleMarkAttendance = (staff_id: string, status: 'present' | 'absent' | 'absent_unpaid') => {
+    const today = new Date().toISOString().slice(0, 10);
+    markAttendance(staff_id, today, status);
+  };
+
+  const handleProcessPay = (staff_id: string) => {
+    const targetMonth = window.prompt("Enter exact month to pay (YYYY-MM):", new Date().toISOString().slice(0, 7));
+    if (!targetMonth) return;
+    
+    // Execute Hook Calculation Matrix
+    const totals = calculatePayout(staff_id, targetMonth);
+    const breakdownMsg = 
+      `Payroll Breakdown for ${targetMonth}:\n\n` +
+      `Gross Vetan: Rs ${totals.gross.toFixed(2)}\n` +
+      `Bin-vetan (Unpaid) Leave Deductions: -Rs ${totals.deductions.toFixed(2)}\n` +
+      `Khata (Advance) Recovery: -Rs ${totals.advanceRecovered.toFixed(2)}\n\n` +
+      `NET VETAN: Rs ${totals.net.toFixed(2)}\n\n` +
+      `Process this formally?`;
+
+    if (window.confirm(breakdownMsg)) {
+       payVetan(staff_id, targetMonth, totals.gross, totals.net, totals.advanceRecovered);
+       alert("Vetan documented into ledger successfully!");
+    }
+  };
+
   return (
     <ModuleShell 
       title={
          view === 'overview' ? t('SUPPORT_STAFF') :
          `${activeStaff?.name} Ledger`
       }
-      subtitle={view === 'overview' ? (lang === 'en' ? "Managing household support and payroll" : "Ghar ke parivaar sam sahayakon ka hisab") : undefined}
+      subtitle={view === 'overview' ? (lang === 'en' ? "Managing household Karmcharis and payroll" : "Ghar ke parivaar sam sahayakon ka hisab") : undefined}
       onAdd={showAddForm || view === 'staff-ledger' ? undefined : () => setShowAddForm(true)}
       addLabel={view === 'overview' ? t('ONBOARD_STAFF') : undefined}
       breadcrumbs={view !== 'overview' && !showAddForm ? getBreadcrumbs() : undefined}
@@ -97,7 +122,7 @@ export default function HomeStaffModule() {
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{lang === 'hi' ? 'Kaam (Role)' : 'Role'}</label>
               <div className="flex flex-wrap gap-2">
-                {['Housemaid', 'Cook', 'Driver', 'Gardener', 'Nanny', 'Other'].map(r => (
+                {['Ghar Sahayak (Maid)', 'Rasoiya (Cook)', 'Driver', 'Mali (Gardener)', 'Nanny', 'Other'].map(r => (
                   <button key={r} onClick={() => setFRole(r)} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border ${fRole === r ? 'bg-gold/10 text-gold border-gold/30' : 'bg-bg-secondary text-text-tertiary border-border-light'}`}>{r}</button>
                 ))}
               </div>
@@ -105,7 +130,7 @@ export default function HomeStaffModule() {
 
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{t('MONTHLY_SALARY')}</label>
-              <input type="number" value={fSalary} onChange={e => setFSalary(e.target.value)} className="w-full bg-bg-secondary border border-border-light rounded-xl p-4 text-xl font-black text-text-primary outline-none focus:border-gold" placeholder="₹0.00" />
+              <input type="number" value={fVetan} onChange={e => setFVetan(e.target.value)} className="w-full bg-bg-secondary border border-border-light rounded-xl p-4 text-xl font-black text-text-primary outline-none focus:border-gold" placeholder="₹0.00" />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -113,7 +138,7 @@ export default function HomeStaffModule() {
               <input type="tel" value={fPhone} onChange={e => setFPhone(e.target.value)} className="w-full bg-bg-secondary border border-border-light rounded-xl p-4 text-sm font-bold text-text-primary outline-none focus:border-gold" placeholder="+91" />
             </div>
 
-            <button onClick={handleAdd} disabled={!fName || !fSalary} className="w-full mt-4 bg-gold hover:opacity-90 text-white font-bold h-14 rounded-xl shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+            <button onClick={handleAdd} disabled={!fName || !fVetan} className="w-full mt-4 bg-gold hover:opacity-90 text-white font-bold h-14 rounded-xl shadow-md transition-all disabled:opacity-50 flex items-center justify-center gap-2">
               {t('SAVE_TO_VAULT')}
             </button>
           </div>
@@ -196,11 +221,18 @@ export default function HomeStaffModule() {
                    </div>
 
                    <div className="flex gap-2">
-                       <button className="flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-bg-primary border border-border-light hover:border-gold hover:text-gold transition-all shadow-sm">
-                          Mark Attendance
+                       <button 
+                          onClick={(e) => { e.stopPropagation(); handleMarkAttendance(s.id, 'present'); }}
+                          className="flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-bg-primary border border-border-light hover:border-success hover:text-success hover:bg-success/5 transition-all shadow-sm active:scale-95"
+                       >
+                          + Mark Upasthit
                        </button>
-                       <button className="px-3 py-2 rounded-xl text-text-tertiary border border-border-light hover:bg-bg-tertiary transition-all">
-                          <History size={16} />
+                       <button 
+                          onClick={(e) => { e.stopPropagation(); handleMarkAttendance(s.id, 'absent_unpaid'); }}
+                          className="px-3 py-2 rounded-xl text-text-danger border border-border-light hover:bg-danger/10 hover:border-danger/30 transition-all active:scale-95 shadow-sm"
+                          title="Mark Anupasthit (Unpaid)"
+                       >
+                          <UserMinus size={16} />
                        </button>
                    </div>
                 </motion.div>
@@ -208,13 +240,13 @@ export default function HomeStaffModule() {
              }) : (
                <div className="col-span-2 py-24 flex flex-col items-center justify-center opacity-20 border-2 border-dashed border-border-light rounded-2xl">
                   <Briefcase size={48} strokeWidth={1} />
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-4 text-center">No staff members enrolled</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-4 text-center">No karmcharis members enrolled</p>
                </div>
              )}
           </div>
         </section>
 
-        {/* Salary History */}
+        {/* Vetan History */}
         <section>
           <div className="flex items-center justify-between mb-4 px-1">
             <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em]">
@@ -226,7 +258,7 @@ export default function HomeStaffModule() {
           </div>
           
           <div className="card divide-y divide-border-light/30">
-             {payments.length > 0 ? payments.map((p: SalaryPayment, i: number) => (
+             {payments.length > 0 ? payments.map((p: VetanPayment, i: number) => (
                 <div key={p.id} className="p-5 flex justify-between items-center group hover:bg-bg-secondary transition-all">
                    <div className="flex gap-4 items-center">
                       <div className="w-10 h-10 rounded-xl bg-bg-success/5 text-text-success flex items-center justify-center border border-text-success/10 group-hover:bg-text-success group-hover:text-white transition-all shadow-inner">
@@ -247,7 +279,7 @@ export default function HomeStaffModule() {
                       </div>
                       {p.advance > 0 && (
                         <div className="text-[8px] font-bold text-text-danger uppercase tracking-tighter">
-                           -₹{p.advance} Advance Adj.
+                           -₹{p.advance} Khata Adj.
                         </div>
                       )}
                    </div>
@@ -282,7 +314,7 @@ export default function HomeStaffModule() {
                  <p className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em] mt-2 opacity-80">{activeStaff.role} • {activeStaff.phone}</p>
                  <div className="mt-8 pt-8 border-t border-border-light/50 w-full grid grid-cols-2 gap-4 divide-x divide-border-light/50">
                     <div>
-                       <div className="text-[10px] font-black text-text-tertiary uppercase tracking-widest mb-1">Salary</div>
+                       <div className="text-[10px] font-black text-text-tertiary uppercase tracking-widest mb-1">Vetan</div>
                        <div className="text-xl font-black text-text-primary tabular-nums">₹{activeStaff.salary.toLocaleString()}</div>
                     </div>
                     <div>
@@ -320,7 +352,12 @@ export default function HomeStaffModule() {
                      <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] flex items-center gap-2">
                         <Wallet size={16} className="text-gold" /> Payout History
                      </h3>
-                     <button className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline">+ Process Pay</button>
+                     <button
+                        onClick={() => handleProcessPay(activeStaff.id)}
+                        className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline px-3 py-1.5 rounded-lg active:scale-95 border border-gold-text/20 bg-gold-text/5"
+                     >
+                        + Process Vetan
+                     </button>
                   </div>
                   <table className="w-full text-left">
                      <thead>
@@ -352,7 +389,12 @@ export default function HomeStaffModule() {
                      <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] flex items-center gap-2">
                         <CalendarDays size={16} className="text-info" /> Attendance History
                      </h3>
-                     <button className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline">+ Mark Present</button>
+                     <button 
+                        onClick={() => handleMarkAttendance(activeStaff.id, 'present')}
+                        className="text-[9px] font-black text-info uppercase tracking-widest hover:underline px-3 py-1.5 rounded-lg active:scale-95 border border-info/20 bg-info/5"
+                     >
+                        + Mark Upasthit
+                     </button>
                   </div>
                   <div className="space-y-3">
                      {attendance.filter(a => a.staff_id === activeStaff.id).map((a, i) => (

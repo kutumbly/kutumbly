@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import {
   Home, Book, CheckSquare, IndianRupee,
   Settings, LogOut, Shield, Heart, Users,
-  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap, Cloud
+  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap, Cloud, Milk
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation, Language } from "@/lib/i18n";
@@ -40,6 +40,7 @@ import SetupModule from "@/components/dashboard/SetupModule";
 import NetworkModule from "@/components/dashboard/NetworkModule";
 import CloudSyncriptModule from "@/components/dashboard/CloudSyncriptModule";
 import VidyaModule from "@/components/dashboard/VidyaModule";
+import SuvidhaModule from "@/components/dashboard/SuvidhaModule";
 import BottomNav from "@/components/dashboard/BottomNav";
 import ModuleShell from "@/components/dashboard/ModuleShell";
 
@@ -48,6 +49,7 @@ const ALL_TABS = [
   { id: "diary",   icon: Book },
   { id: "tasks",   icon: CheckSquare },
   { id: "money",   icon: IndianRupee },
+  { id: "suvidha", icon: Milk },
   { id: "nevata",  icon: Calendar },
   { id: "health",  icon: Heart },
   { id: "invest",  icon: TrendingUp },
@@ -97,6 +99,7 @@ export default function DashboardPage() {
       case "grocery": return <GroceryModule />;
       case "staff":   return <HomeStaffModule />;
       case "vidya":   return <VidyaModule />;
+      case "suvidha": return <SuvidhaModule />;
       case "sync":    return <CloudSyncriptModule />;
       case "network": return <NetworkModule />;
       case "setup":   return <SetupModule />;

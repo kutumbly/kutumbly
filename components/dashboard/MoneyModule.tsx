@@ -56,7 +56,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 export default function MoneyModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
-  const { txns, budgets, summary, addTransaction, deleteTransaction, setCategoryBudget } = useMoney();
+  const { txns, budgets, summary, addTransaction, deleteTransaction, setCategoryBudget, editTransaction } = useMoney();
   const { getFamilyMembers } = useVault();
   const members = getFamilyMembers();
 
@@ -67,6 +67,7 @@ export default function MoneyModule() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeVoucher, setActiveVoucher] = useState<Transaction | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [showBudgetForm, setShowBudgetForm] = useState(false);
 
   // Form State
@@ -79,11 +80,22 @@ export default function MoneyModule() {
 
   const handleSave = () => {
     if (!fAmount || !fDesc || !fCategory) return;
-    addTransaction(fType, Number(fAmount), fCategory, fDesc, fDate, fMember || undefined);
+    
+    // Strict numeric validation parsing to drop NaN anomalies
+    const validatedAmount = Math.max(0, Number(fAmount));
+
+    if (isEditing && activeVoucher) {
+       editTransaction(String(activeVoucher.id), fType, validatedAmount, fCategory, fDesc, fDate, fMember || undefined);
+       setIsEditing(false);
+    } else {
+       addTransaction(fType, validatedAmount, fCategory, fDesc, fDate, fMember || undefined);
+    }
+
     setShowAddForm(false);
     setFAmount('');
     setFDesc('');
     setFMember('');
+    setActiveVoucher(null);
   };
 
   // 1. Prepare Donut Data
@@ -128,7 +140,7 @@ export default function MoneyModule() {
       onAdd={showAddForm || view === 'voucher-view' ? undefined : () => setShowAddForm(true)}
       addLabel={view === 'overview' ? t('MONEY_INCOME') : undefined}
       breadcrumbs={view !== 'overview' && !showAddForm ? getBreadcrumbs() : undefined}
-      onBack={showAddForm ? () => setShowAddForm(false) : (view !== 'overview' ? handleBack : undefined)}
+      onBack={showAddForm ? () => { setShowAddForm(false); setIsEditing(false); } : (view !== 'overview' ? handleBack : undefined)}
     >
       {showAddForm ? (
         <motion.div 
@@ -137,11 +149,11 @@ export default function MoneyModule() {
           className="flex flex-col gap-6"
         >
           <div className="flex items-center gap-4">
-            <button onClick={() => setShowAddForm(false)} className="w-10 h-10 rounded-full bg-bg-primary border border-border-light flex items-center justify-center hover:text-gold transition-colors shadow-sm">
+            <button onClick={() => { setShowAddForm(false); setIsEditing(false); }} className="w-10 h-10 rounded-full bg-bg-primary border border-border-light flex items-center justify-center hover:text-gold transition-colors shadow-sm">
               <ArrowLeft size={20} />
             </button>
             <h2 className="text-xl font-black text-text-primary tracking-tight">
-              {t('MONEY_INCOME')}
+              {isEditing ? "Edit Voucher Details" : t('MONEY_INCOME')}
             </h2>
           </div>
           
@@ -479,9 +491,18 @@ export default function MoneyModule() {
                 >
                    <Trash2 size={16} /> Delete Voucher
                 </button>
-                <button 
-                  onClick={() => {}}
-                  className="flex-1 h-14 flex items-center justify-center gap-2 rounded-2xl bg-border-light/50 text-text-tertiary font-black text-[11px] uppercase tracking-widest opacity-50 cursor-not-allowed"
+                 <button 
+                  onClick={() => {
+                     setFType(activeVoucher.type as 'income' | 'expense');
+                     setFAmount(String(activeVoucher.amount));
+                     setFCategory(activeVoucher.category);
+                     setFDesc(activeVoucher.description);
+                     setFDate(String(activeVoucher.date));
+                     setFMember(activeVoucher.member_id || '');
+                     setIsEditing(true);
+                     setShowAddForm(true);
+                  }}
+                  className="flex-1 h-14 flex items-center justify-center gap-2 rounded-2xl border border-border-light text-text-primary font-black text-[11px] uppercase tracking-widest hover:bg-bg-tertiary transition-all"
                 >
                    Edit Voucher
                 </button>

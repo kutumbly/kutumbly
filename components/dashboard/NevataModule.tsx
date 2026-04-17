@@ -71,6 +71,7 @@ export default function NevataModule() {
   const [fFamily, setFFamily] = useState('');
   const [fDate, setFDate] = useState(new Date().toISOString().split('T')[0]);
   const [fLoc, setFLoc] = useState('');
+  const [fRishta, setFRishta] = useState<'KHAAS' | 'NORMAL'>('NORMAL');
 
   const events   = useMemo(() => getEvents(direction), [direction, db, getEvents]);
   const ledger   = useMemo(() => getLedger(),           [db, getLedger]);
@@ -103,12 +104,13 @@ export default function NevataModule() {
       event_date: fDate,
       location: fLoc,
       our_count: 1,
-      notes: ''
+      notes: direction === 'they_invited' ? fRishta : 'NORMAL'
     });
     setShowAddForm(false);
     setFTitle('');
     setFFamily('');
     setFLoc('');
+    setFRishta('NORMAL');
   };
 
   // --- Tab content renderers ---
@@ -163,7 +165,7 @@ export default function NevataModule() {
                     PARAM-PRASAD
                   </div>
                   <div className="text-base font-black text-gold tabular-nums">
-                    <RupeesDisplay amount={suggestShagun(e.family_name)} />
+                    <RupeesDisplay amount={suggestShagun(e.family_name, (e.notes as 'KHAAS' | 'NORMAL') || 'NORMAL')} />
                   </div>
                 </div>
               )}
@@ -345,7 +347,7 @@ export default function NevataModule() {
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-xl font-black text-text-primary">Event Blueprint</h3>
                   <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${direction === 'we_hosted' ? 'bg-bg-info text-text-info' : 'bg-bg-success text-text-success'}`}>
-                    {direction === 'we_hosted' ? 'Our Event' : 'Their Event'}
+                    {direction === 'we_hosted' ? 'APNA KAAJ (HOST)' : 'VYAVAHAR (ATTEND)'}
                   </div>
                 </div>
 
@@ -374,6 +376,17 @@ export default function NevataModule() {
                     <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-1">Family Name</label>
                     <input type="text" value={fFamily} onChange={e => setFFamily(e.target.value)} placeholder="e.g. Mishra Pariwar" className="bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold outline-none focus:border-gold" />
                   </div>
+
+                  {direction === 'they_invited' && (
+                    <div className="flex flex-col gap-2">
+                      <label className="text-[10px] font-black text-gold uppercase tracking-[0.3em] pl-1">Rishta Intensity (रिश्ता)</label>
+                      <select value={fRishta} onChange={e => setFRishta(e.target.value as any)} className="bg-bg-tertiary border border-gold rounded-2xl p-4 text-sm font-bold text-gold outline-none focus:border-gold appearance-none">
+                        <option value="NORMAL">Vyavahar / Normal (Aam)</option>
+                        <option value="KHAAS">Khaas / Close Family (Sangha)</option>
+                      </select>
+                      <p className="text-[9px] text-text-tertiary pl-1">*Khaas activates the high-tier Vyavahar Shagun engine.</p>
+                    </div>
+                  )}
 
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-1">Location</label>
@@ -411,7 +424,7 @@ export default function NevataModule() {
                     : 'text-text-tertiary hover:text-text-primary'
                 }`}
               >
-                {d === 'they_invited' ? t('THEIR_SHADI') : t('OUR_SHADI')}
+                {d === 'they_invited' ? 'VYAVAHAR (ATTEND)' : 'APNA KAAJ (HOST)'}
               </button>
             ))}
           </div>

@@ -96,6 +96,58 @@ export interface Medication {
   status?: 'active' | 'completed' | 'paused';
 }
 
+export interface MedicalProfile {
+  id: string;
+  member_id: string;
+  blood_group: string | null;
+  allergies: string | null;
+  chronic_conditions: string | null;
+  primary_doctor: string | null;
+  emergency_contact: string | null;
+  insurance_details: string | null;
+  updated_at: string;
+}
+
+export interface HealthAdvancedProfile {
+  member_id: string;
+  prakriti: string | null;
+  agni: string | null;
+  diet: string | null;
+  surgical_history: string | null;
+  family_history: string | null;
+  current_treatment: string | null;
+  updated_at: string;
+}
+
+export interface MedicalPrescription {
+  id: string;
+  member_id: string;
+  doctor_name: string | null;
+  generic_name: string;
+  brand_name: string | null;
+  medicine_type: 'Tablet' | 'Syrup' | 'Injection' | 'Ointment' | 'Drops' | 'Other' | string;
+  dosage: string | null;
+  schedule_code: string;
+  meal_instruction: 'AC' | 'PC' | 'ANY' | string | null;
+  purpose: string | null;
+  start_date: string;
+  end_date: string | null;
+  stock_remaining: number;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface Vaccination {
+  id: string;
+  member_id: string;
+  name: string;
+  date: string | null;
+  provider: string | null;
+  next_due_date: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
 /** 
  * Grocery Module Models 
  */
@@ -284,15 +336,28 @@ export interface AttendanceRecord {
  */
 export interface Investment {
   id: string;
+  member_id?: string | null;           // Link to family member
+  goal_id?: string | null;             // Link to specific goal
   name: string;
   type: string;
   principal: number;
   current_value: number;
-  units: string | null;
+  units: number | string | null;       // Grams for gold, units for MF
   monthly_sip: number | null;
   start_date: string;
   maturity_date: string | null;
   notes: string | null;
+}
+
+export interface InvestmentGoal {
+  id: string;
+  name: string;
+  target_amount: number;
+  member_id: string | null;
+  deadline: string | null;
+  category: 'Retirement' | 'Education' | 'Marriage' | 'Home' | 'Vehicle' | string;
+  is_completed: number;                // 0 | 1
+  created_at?: string;
 }
 
 export interface InvestmentTransaction {
@@ -364,4 +429,39 @@ export interface VidyaSession {
   notes: string | null;
   mood: 'focused' | 'tired' | 'neutral' | 'distracted';
   created_at: string;
+}
+
+/**
+ * Suvidha (Utility & Daily Tally) Module Models
+ */
+export interface UtilityVendor {
+  id: string;
+  name: string;
+  type: 'milk' | 'water' | 'paper' | 'internet' | 'trash' | 'helper' | string;
+  rate_per_unit: number;       // Price for 1L milk or fixed monthly salary
+  billing_cycle_day: number;   // 1 to 31
+  member_id: string | null;    // Who manages this vendor
+  is_active: number;           // 1 | 0
+  created_at?: string;
+}
+
+export interface UtilityLog {
+  id: string;
+  vendor_id: string;
+  date: string;                // YYYY-MM-DD
+  quantity: number;            // 2 for 2L milk, 1 for attendance
+  quality: number;             // 1-10 rating
+  notes: string | null;
+  created_at?: string;
+}
+
+export interface UtilityPayment {
+  id: string;
+  vendor_id: string;
+  amount: number;
+  date: string;
+  period_month: string;        // '01' to '12'
+  period_year: string;         // '2024'
+  notes: string | null;
+  created_at?: string;
 }
