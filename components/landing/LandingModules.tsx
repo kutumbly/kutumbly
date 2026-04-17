@@ -24,144 +24,104 @@ import {
   Stethoscope, BookMarked, Syringe, Activity, Receipt, PiggyBank,
   Apple, Package, Star, Clock, Shield, Lock
 } from 'lucide-react';
-
-const MODULES = [
-  {
-    id: "cash",
-    icon: <IndianRupee size={26} />,
-    name: "Cash Hub",
-    subtitle: "Parivaar Ka Khazana",
-    color: "from-amber-500/10 to-yellow-500/5",
-    border: "hover:border-amber-400/40",
-    iconBg: "bg-amber-50 text-amber-600 border-amber-100",
-    caps: ["Ledger", "Income & Expense", "Member Splits", "Monthly Reports"],
-    desc: "Complete household cashflow management. Log every rupee, split expenses across family members, and track monthly balance with encrypted local ledger.",
-  },
-  {
-    id: "invest",
-    icon: <TrendingUp size={26} />,
-    name: "Invest Hub",
-    subtitle: "Wealth Command Center",
-    color: "from-emerald-500/10 to-teal-500/5",
-    border: "hover:border-emerald-400/40",
-    iconBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
-    caps: ["Mutual Funds", "Stocks", "Gold", "Real Estate"],
-    desc: "Track your complete investment portfolio offline. Monitor SIPs, equity, gold, and property — all in one encrypted sovereign vault.",
-  },
-  {
-    id: "health",
-    icon: <Heart size={26} />,
-    name: "Health Hub",
-    subtitle: "Parivaar Ka Vaidya",
-    color: "from-rose-500/10 to-pink-500/5",
-    border: "hover:border-rose-400/40",
-    iconBg: "bg-rose-50 text-rose-600 border-rose-100",
-    caps: ["Vitals Tracking", "Prescriptions", "Vaccinations", "SOS Profile"],
-    desc: "Encrypted family medical records. Log vitals (BP, sugar, weight), manage prescriptions with Rx scheduling, track vaccinations, and store SOS emergency cards.",
-  },
-  {
-    id: "vidya",
-    icon: <GraduationCap size={26} />,
-    name: "Vidya Hub",
-    subtitle: "Sovereign Study Companion",
-    color: "from-blue-500/10 to-indigo-500/5",
-    border: "hover:border-blue-400/40",
-    iconBg: "bg-blue-50 text-blue-600 border-blue-100",
-    caps: ["Study Sessions", "YouTube Library", "Progress Streaks", "Subject Tracking"],
-    desc: "Digital homeschooling for every learner in the family. Track subjects, log study sessions, bookmark YouTube resources, and monitor learning streaks offline.",
-  },
-  {
-    id: "sanskriti",
-    icon: <Flame size={26} />,
-    name: "Sanskriti Hub",
-    subtitle: "Digital Temple",
-    color: "from-orange-500/10 to-yellow-500/5",
-    border: "hover:border-orange-400/40",
-    iconBg: "bg-orange-50 text-orange-600 border-orange-100",
-    caps: ["Gotra & Kul", "Vansh Vriksha", "Hindu Calendar", "Sankalpa Generator"],
-    desc: "Preserve your Dharma heritage. Record Gotra, Kul, Vedic lineage, track Hindu festivals and tithi, build your Vansh ancestry tree, and generate formal Sankalpas.",
-  },
-  {
-    id: "saman",
-    icon: <ShoppingCart size={26} />,
-    name: "Saman Hub",
-    subtitle: "Smart Pantry Manager",
-    color: "from-lime-500/10 to-green-500/5",
-    border: "hover:border-lime-400/40",
-    iconBg: "bg-lime-50 text-lime-600 border-lime-100",
-    caps: ["Pantry Inventory", "Low Stock Alerts", "Grocery Lists", "Baseline Setup"],
-    desc: "Intelligent grocery and household inventory management. Set stock thresholds, auto-detect low stock, maintain category-wise lists, and initialize with Indian kitchen essentials.",
-  },
-  {
-    id: "utsav",
-    icon: <Calendar size={26} />,
-    name: "Utsav Hub",
-    subtitle: "Events & Shagun Registry",
-    color: "from-purple-500/10 to-violet-500/5",
-    border: "hover:border-purple-400/40",
-    iconBg: "bg-purple-50 text-purple-600 border-purple-100",
-    caps: ["Nevata Logs", "Shagun Ledger", "Events Calendar", "Gift Tracking"],
-    desc: "Never forget a family occasion. Log social obligations (nevata), track shagun given and received, manage event calendars, and maintain ceremonial gift records.",
-  },
-  {
-    id: "sewak",
-    icon: <Users size={26} />,
-    name: "Sewak Hub",
-    subtitle: "Household Staff Manager",
-    color: "from-slate-500/10 to-zinc-500/5",
-    border: "hover:border-slate-400/40",
-    iconBg: "bg-slate-50 text-slate-600 border-slate-100",
-    caps: ["Payroll", "Attendance", "KYC Records", "Staff Ledger"],
-    desc: "Professional household staff management. Maintain KYC, mark daily attendance (present/absent/unpaid), calculate monthly payroll, and generate salary ledgers.",
-  },
-  {
-    id: "suvidha",
-    icon: <Milk size={26} />,
-    name: "Suvidha Hub",
-    subtitle: "Daily Utility Command",
-    color: "from-cyan-500/10 to-sky-500/5",
-    border: "hover:border-cyan-400/40",
-    iconBg: "bg-cyan-50 text-cyan-600 border-cyan-100",
-    caps: ["Milk Tally", "Vendor Bills", "Daily Logs", "Payment Tracking"],
-    desc: "Manage daily recurring vendors — milkman, newspaper, gas, water. Log daily quantities, track cumulative bills, and record vendor payments with a built-in tally calendar.",
-  },
-  {
-    id: "tasks",
-    icon: <CheckSquare size={26} />,
-    name: "Tasks Hub",
-    subtitle: "Sovereign To-Do Engine",
-    color: "from-teal-500/10 to-cyan-500/5",
-    border: "hover:border-teal-400/40",
-    iconBg: "bg-teal-50 text-teal-600 border-teal-100",
-    caps: ["Priority Levels", "Due Dates", "Member Assignment", "Offline-First"],
-    desc: "Granular family task management. Create tasks with priority levels, assign to family members, set due dates, and track completion — all offline without any cloud dependency.",
-  },
-  {
-    id: "diary",
-    icon: <BookOpen size={26} />,
-    name: "Diary Hub",
-    subtitle: "Encrypted Memory Vault",
-    color: "from-fuchsia-500/10 to-pink-500/5",
-    border: "hover:border-fuchsia-400/40",
-    iconBg: "bg-fuchsia-50 text-fuchsia-600 border-fuchsia-100",
-    caps: ["Rich Journals", "Mood Tracking", "Voice Notes", "Memory Tags"],
-    desc: "Sovereign personal journaling. Write rich diary entries, tag memories, track mood journeys, and preserve your life story in a fully encrypted, air-gapped local vault.",
-  },
-  {
-    id: "family",
-    icon: <Home size={26} />,
-    name: "Family Hub",
-    subtitle: "Your Parivaar Identity",
-    color: "from-gold/10 to-yellow-500/5",
-    border: "hover:border-gold/40",
-    iconBg: "bg-gold/10 text-gold-text border-gold/20",
-    caps: ["Member Profiles", "Aadhaar Links", "Biometric Lock", "Vault Identity"],
-    desc: "The heart of Kutumbly. Create your family vault, add members with complete profiles, link Aadhaar, and secure the entire OS with a biometric-backed sovereign identity.",
-  },
-];
+import { useTranslation } from '@/lib/i18n';
+import { useAppStore } from '@/lib/store';
 
 export default function LandingModules() {
+  const { lang } = useAppStore();
+  const t = useTranslation(lang);
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  const MODULES = [
+    {
+      id: "family",
+      icon: <Home size={26} />,
+      name: t('landing.modules.family.title') || "Family Hub",
+      subtitle: t('landing.modules.family.sub') || "Your Parivaar Identity",
+      color: "from-gold/10 to-yellow-500/5",
+      border: "hover:border-gold/40",
+      iconBg: "bg-gold/10 text-gold-text border-gold/20",
+      caps: ["Profiles", "Identity", "Biometrics", "Vault"],
+      desc: t('landing.modules.family.desc') || "The core of Kutumbly. Create your family vault, add members, and secure identity.",
+    },
+    {
+      id: "cash",
+      icon: <IndianRupee size={26} />,
+      name: t('landing.modules.cash.title') || "Cash Hub",
+      subtitle: t('landing.modules.cash.sub') || "Financial Sovereignty",
+      color: "from-amber-500/10 to-yellow-500/5",
+      border: "hover:border-amber-400/40",
+      iconBg: "bg-amber-50 text-amber-600 border-amber-100",
+      caps: ["Ledger", "Splits", "Reports", "Monthly"],
+      desc: t('landing.modules.cash.desc') || "Complete household cashflow management without cloud tracking.",
+    },
+    {
+      id: "suvidha",
+      icon: <Milk size={26} />,
+      name: t('landing.modules.suvidha.title') || "Suvidha Hub",
+      subtitle: t('landing.modules.suvidha.sub') || "Daily Logistics",
+      color: "from-cyan-500/10 to-sky-500/5",
+      border: "hover:border-cyan-400/40",
+      iconBg: "bg-cyan-50 text-cyan-600 border-cyan-100",
+      caps: ["Milk Tally", "Bills", "Logs", "Payments"],
+      desc: t('landing.modules.suvidha.desc') || "Manage daily recurring vendors and utility logistics simplified.",
+    },
+    {
+      id: "saman",
+      icon: <ShoppingCart size={26} />,
+      name: t('landing.modules.saman.title') || "Saman Hub",
+      subtitle: t('landing.modules.saman.sub') || "Pantry Manager",
+      color: "from-lime-500/10 to-green-500/5",
+      border: "hover:border-lime-400/40",
+      iconBg: "bg-lime-50 text-lime-600 border-lime-100",
+      caps: ["Inventory", "Alerts", "Lists", "Kitchen"],
+      desc: t('landing.modules.saman.desc') || "Intelligent grocery and household inventory management.",
+    },
+    {
+      id: "vidya",
+      icon: <GraduationCap size={26} />,
+      name: t('landing.modules.vidya.title') || "Vidya Hub",
+      subtitle: t('landing.modules.vidya.sub') || "Knowledge Vault",
+      color: "from-blue-500/10 to-indigo-500/5",
+      border: "hover:border-blue-400/40",
+      iconBg: "bg-blue-50 text-blue-600 border-blue-100",
+      caps: ["Study", "Library", "Streaks", "Progress"],
+      desc: t('landing.modules.vidya.desc') || "Digital homeschooling and knowledge persistence for generations.",
+    },
+    {
+      id: "utsav",
+      icon: <Calendar size={26} />,
+      name: t('landing.modules.utsav.title') || "Utsav Hub",
+      subtitle: t('landing.modules.utsav.sub') || "Event Registry",
+      color: "from-purple-500/10 to-violet-500/5",
+      border: "hover:border-purple-400/40",
+      iconBg: "bg-purple-50 text-purple-600 border-purple-100",
+      caps: ["Nevata", "Shagun", "Calendar", "Gifts"],
+      desc: t('landing.modules.utsav.desc') || "Celebrating life's milestones privately with gift and shagun logs.",
+    },
+    {
+      id: "sanskriti",
+      icon: <Flame size={26} />,
+      name: t('landing.modules.sanskriti.title') || "Sanskriti Hub",
+      subtitle: t('landing.modules.sanskriti.sub') || "Digital Temple",
+      color: "from-orange-500/10 to-yellow-500/5",
+      border: "hover:border-orange-400/40",
+      iconBg: "bg-orange-50 text-orange-600 border-orange-100",
+      caps: ["Heritage", "Gotra", "Ancestry", "Calendar"],
+      desc: t('landing.modules.sanskriti.desc') || "Preserve Dharma heritage and ancestral roots digitally.",
+    },
+    {
+      id: "sehat",
+      icon: <Heart size={26} />,
+      name: t('landing.modules.sehat.title') || "Sehat Hub",
+      subtitle: t('landing.modules.sehat.sub') || "Family Vaidya",
+      color: "from-rose-500/10 to-pink-500/5",
+      border: "hover:border-rose-400/40",
+      iconBg: "bg-rose-50 text-rose-600 border-rose-100",
+      caps: ["Vitals", "Rx", "History", "SOS"],
+      desc: t('landing.modules.sehat.desc') || "Medical history and family health logs owned by you.",
+    },
+  ];
 
   return (
     <section className="py-32 bg-white px-6 relative z-10 overflow-hidden" id="modules">
@@ -180,15 +140,17 @@ export default function LandingModules() {
         >
           <div className="inline-flex items-center gap-3 px-4 py-2 bg-clinical border border-border-light rounded-full mb-8 shadow-sm">
             <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-            <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">12 Sovereign Hubs</span>
+            <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] font-inter">
+              {t('landing.modules.tagline') || "12 Sovereign Hubs"}
+            </span>
           </div>
 
           <h2 className="text-4xl md:text-6xl font-black text-text-primary mb-6 tracking-tight font-inter-tight leading-[1.05]">
-            One OS.<br />
-            <span className="text-gold">Every Role of Your Home.</span>
+            {t('landing.modules.header_top') || "One OS."}<br />
+            <span className="text-gold">{t('landing.modules.header_bottom') || "Every Role of Your Home."}</span>
           </h2>
           <p className="text-text-secondary max-w-2xl mx-auto font-medium text-lg md:text-xl opacity-80 leading-relaxed">
-            Kutumbly replaces 12+ scattered apps with one sovereign, encrypted, offline-first ecosystem — built for the Indian family.
+            {t('landing.modules.desc') || "Kutumbly replaces 12+ scattered apps with one sovereign, encrypted, offline-first ecosystem — built for the Indian family."}
           </p>
         </motion.div>
 

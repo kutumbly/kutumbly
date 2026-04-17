@@ -22,32 +22,24 @@ import { useAppStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
 import { Shield, Mail, Globe } from 'lucide-react';
 
-const HUB_LINKS = [
-  { name: "Cash Hub", href: "/os" },
-  { name: "Invest Hub", href: "/os" },
-  { name: "Health Hub", href: "/os" },
-  { name: "Vidya Hub", href: "/os" },
-  { name: "Sanskriti Hub", href: "/os" },
-  { name: "Saman Hub", href: "/os" },
-  { name: "Utsav Hub", href: "/os" },
-  { name: "Sewak Hub", href: "/os" },
-  { name: "Suvidha Hub", href: "/os" },
-  { name: "Tasks Hub", href: "/os" },
-  { name: "Diary Hub", href: "/os" },
-  { name: "Family Hub", href: "/os" },
-];
-
-const COMPANY_LINKS = [
-  { name: "Product", href: "/product" },
-  { name: "Founders", href: "/founders" },
-  { name: "Contact", href: "/contact" },
-  { name: "Privacy Policy", href: "/privacy" },
-  { name: "Terms of Use", href: "/terms" },
-];
-
 export default function LandingFooter() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
+
+  const HUB_LINKS = [
+    { name: t('landing.modules.cash.title') || "Cash Hub", href: "/os" },
+    { name: t('landing.modules.vidya.title') || "Vidya Hub", href: "/os" },
+    { name: t('landing.modules.sehat.title') || "Health Hub", href: "/os" },
+    { name: t('landing.modules.sanskriti.title') || "Sanskriti Hub", href: "/os" },
+    { name: t('landing.modules.saman.title') || "Saman Hub", href: "/os" },
+    { name: t('landing.modules.family.title') || "Family Hub", href: "/os" },
+  ];
+
+  const COMPANY_LINKS = [
+    { name: t('landing.hero.init_btn').replace('Launch ', '') || "Product", href: "/product" },
+    { name: t('landing.footer.privacy_policy') || "Privacy Policy", href: "/privacy" },
+    { name: t('landing.footer.terms') || "Terms of Use", href: "/terms" },
+  ];
 
   return (
     <footer className="bg-bg-primary border-t border-border-light">
@@ -67,7 +59,7 @@ export default function LandingFooter() {
                 </span>
               </div>
               <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.25em] opacity-70">
-                India's Family Sovereign OS
+                {t('landing.footer.mission') || "India's Family Sovereign OS"}
               </p>
             </div>
 
@@ -97,7 +89,7 @@ export default function LandingFooter() {
           {/* Hubs column — 2 sub-cols */}
           <div className="md:col-span-2">
             <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-6 opacity-70">
-              Sovereign Hubs
+              {t('landing.footer.hubs_title') || "Sovereign Hubs"}
             </div>
             <div className="grid grid-cols-2 gap-2">
               {HUB_LINKS.map((link, i) => (
@@ -116,7 +108,7 @@ export default function LandingFooter() {
           {/* Company column */}
           <div>
             <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-6 opacity-70">
-              Company
+              {t('landing.footer.company_title') || "Company"}
             </div>
             <div className="space-y-2">
               {COMPANY_LINKS.map((link, i) => (
@@ -150,7 +142,7 @@ export default function LandingFooter() {
           </div>
           <div className="flex items-center gap-6">
             <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest opacity-60">
-              {t('footer.built_by') || "Built with ❤️ for Indian Families"}
+              {t('landing.footer.built_with') || "Built with ❤️ for Indian Families"}
             </span>
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-gold" />

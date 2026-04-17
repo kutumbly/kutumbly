@@ -33,42 +33,42 @@ import Link from 'next/link';
 import { useAppStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
 
-const COMPARISON = [
-  { feature: "Works 100% offline",        kutumbly: true,  others: false },
-  { feature: "No subscription / account", kutumbly: true,  others: false },
-  { feature: "AES-256 encryption",        kutumbly: true,  others: false },
-  { feature: "Data stays on your device", kutumbly: true,  others: false },
-  { feature: "12 integrated family hubs", kutumbly: true,  others: false },
-  { feature: "Bhojpuri / Hindi UI",       kutumbly: true,  others: false },
-  { feature: "Vansh ancestry tree",       kutumbly: true,  others: false },
-  { feature: "Hindu calendar & rituals",  kutumbly: true,  others: false },
-  { feature: "Air-gapped vault file",     kutumbly: true,  others: false },
-];
-
-const TESTIMONIAL_CARDS = [
-  {
-    quote: "Hamara poora family ka hisaab, health records, aur bacchon ki padhai — sab ek jagah. Aur koi cloud nahi.",
-    name: "Ramesh S.",
-    role: "Small Business Owner, Varanasi",
-    emoji: "🙏",
-  },
-  {
-    quote: "Finally an OS that respects Indian family values. The Sanskriti Hub with Gotra and Vansh tree is extraordinary.",
-    name: "Priya M.",
-    role: "Homemaker & Educator, Pune",
-    emoji: "🌺",
-  },
-  {
-    quote: "Dudh wala, newspaper, kaamwali — sab ka hisaab Suvidha Hub mein. Mahine ke ant mein sab clear.",
-    name: "Sunita D.",
-    role: "Household Manager, Jaipur",
-    emoji: "✨",
-  },
-];
-
 export default function LandingPage() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
+
+  const COMPARISON = [
+    { feature: t('landing.compare.feat.offline') || "Works 100% offline", kutumbly: true, others: false },
+    { feature: t('landing.compare.feat.sub') || "No subscription / account", kutumbly: true, others: false },
+    { feature: t('landing.compare.feat.aes') || "AES-256 encryption", kutumbly: true, others: false },
+    { feature: t('landing.compare.feat.local') || "Data stays on your device", kutumbly: true, others: false },
+    { feature: t('landing.compare.feat.hubs') || "12 integrated family hubs", kutumbly: true, others: false },
+    { feature: t('landing.compare.feat.multilingual') || "Bhojpuri / Hindi UI", kutumbly: true, others: false },
+    { feature: t('landing.compare.feat.vansh') || "Vansh ancestry tree", kutumbly: true, others: false },
+    { feature: t('landing.compare.feat.calendar') || "Hindu calendar & rituals", kutumbly: true, others: false },
+    { feature: t('landing.compare.feat.vault') || "Air-gapped vault file", kutumbly: true, others: false },
+  ];
+
+  const TESTIMONIAL_CARDS = [
+    {
+      quote: t('landing.test.ramesh.quote') || "Hamara poora family ka hisaab...",
+      name: "Ramesh S.",
+      role: t('landing.test.ramesh.role') || "Small Business Owner, Varanasi",
+      emoji: "🙏",
+    },
+    {
+      quote: t('landing.test.priya.quote') || "Finally an OS that respects Indian family values...",
+      name: "Priya M.",
+      role: t('landing.test.priya.role') || "Homemaker & Educator, Pune",
+      emoji: "🌺",
+    },
+    {
+      quote: t('landing.test.sunita.quote') || "Dudh wala, newspaper, kaamwali...",
+      name: "Sunita D.",
+      role: t('landing.test.sunita.role') || "Household Manager, Jaipur",
+      emoji: "✨",
+    },
+  ];
 
   return (
     <main className="min-h-screen bg-bg-tertiary">
@@ -102,8 +102,8 @@ export default function LandingPage() {
               <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Why Kutumbly</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-text-primary tracking-tight font-inter-tight mb-4">
-              Everything Scattered Apps<br />
-              <span className="text-gold">Simply Cannot Do.</span>
+              {t('landing.compare.header_top') || "Everything Scattered Apps"}<br />
+              <span className="text-gold">{t('landing.compare.header_bottom') || "Simply Cannot Do."}</span>
             </h2>
             <p className="text-text-secondary font-medium text-lg opacity-80 max-w-xl mx-auto leading-relaxed">
               Cloud apps ask for trust. Kutumbly asks for nothing — and gives everything.
@@ -124,11 +124,15 @@ export default function LandingPage() {
                 <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em] opacity-70">Feature</div>
               </div>
               <div className="p-7 text-center border-r border-border-light bg-gold/5">
-                <div className="text-[10px] font-black text-gold-text uppercase tracking-[0.25em]">Kutumbly</div>
+                <div className="text-[10px] font-black text-gold-text uppercase tracking-[0.25em]">
+                  {t('landing.compare.kutumbly') || "Kutumbly"}
+                </div>
                 <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest opacity-60 mt-1">Sovereign OS</div>
               </div>
               <div className="p-7 text-center">
-                <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.25em]">Other Apps</div>
+                <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.25em]">
+                  {t('landing.compare.cloud') || "Other Apps"}
+                </div>
                 <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest opacity-60 mt-1">Cloud-Based</div>
               </div>
             </div>
@@ -175,7 +179,7 @@ export default function LandingPage() {
               Early Access Voices
             </div>
             <h2 className="text-3xl md:text-4xl font-black text-text-primary tracking-tight font-inter-tight">
-              What Families Are Saying
+              {t('landing.testimonials.title') || "What Families Are Saying"}
             </h2>
           </motion.div>
 
@@ -281,7 +285,7 @@ export default function LandingPage() {
                 href="/#modules"
                 className="inline-flex h-16 px-12 bg-white border-2 border-border-light rounded-2xl items-center gap-3 font-black text-sm text-text-primary hover:border-gold transition-all shadow-sm"
               >
-                Explore All 12 Hubs
+                {t('landing.hero.mission_btn') || "Explore All 12 Hubs"}
               </Link>
             </div>
 

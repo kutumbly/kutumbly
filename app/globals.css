@@ -148,14 +148,51 @@ body {
 .font-kannada { font-family: var(--font-noto-kannada), 'Tunga', 'Segoe UI Historic', sans-serif; }
 .font-telugu { font-family: var(--font-noto-telugu), 'Gautami', 'Segoe UI Historic', sans-serif; }
 
-/* Dynamic Native-like Rendering via :lang() */
-:lang(hi), :lang(mr), :lang(gu), :lang(pa), :lang(bho), :lang(ne), :lang(bn), :lang(mni), :lang(ta), :lang(kn), :lang(te) {
-  line-height: 1.65;
+/* 
+ * Script-Specific Rendering Hardening
+ * Indian scripts are taller and denser than Latin. 
+ * We adjust line-height and font-smoothing per script.
+ */
+
+/* Devanagari Group: HI, MR, BHO, NE */
+:lang(hi), :lang(mr), :lang(bho), :lang(ne) {
+  line-height: 1.6;
   letter-spacing: 0.01em;
+  font-feature-settings: "devn" 1, "kern" 1;
 }
 
-[lang="bn"], [lang="mni"], [lang="ta"], [lang="kn"], [lang="te"] {
-  font-size: 1.05em; /* Some scripts appear smaller at same pt size */
+/* Bengali Group: BN, MNI */
+:lang(bn), :lang(mni) {
+  line-height: 1.65;
+  letter-spacing: 0.005em;
+  font-feature-settings: "bng2" 1, "kern" 1;
+}
+
+/* Gujarati: GU */
+:lang(gu) {
+  line-height: 1.6;
+  font-feature-settings: "gjr2" 1, "kern" 1;
+}
+
+/* Gurmukhi: PA */
+:lang(pa) {
+  line-height: 1.6;
+  font-feature-settings: "gur2" 1, "kern" 1;
+}
+
+/* Dravidian Group: TA, KN, TE */
+/* These scripts are very circular/complex; they need more vertical breathing room. */
+:lang(ta), :lang(kn), :lang(te) {
+  line-height: 1.75;
+  font-size: 1.04em;
+  letter-spacing: 0.015em;
+  font-feature-settings: "tml2" 1, "knd2" 1, "tlg2" 1, "kern" 1;
+}
+
+/* Ensure Latin technical terms in regional strings aren't too squished */
+:lang(hi) .latin, :lang(ta) .latin {
+  font-family: var(--font-inter), sans-serif;
+  letter-spacing: -0.01em;
 }
 
 /* Safe Area Utilities — Notch & Home Indicator Handling */
@@ -476,3 +513,71 @@ html {
 
 /* ─── Prevent layout shift on module switch ────────────────── */
 main { overflow-anchor: none; }
+
+/* ─── Tabular numbers — prevents layout jump on number updates ── */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ─── Card hover lift — premium depth effect ────────────────── */
+.card-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+[data-theme="dark"] .card-lift:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* ─── Scale-in animation for dialogs, modals ───────────────── */
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.94) translateY(6px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+.animate-scale-in {
+  animation: scale-in 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* ─── Slide-up animation for bottom sheets ─────────────────── */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: slide-up 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* ─── Stagger children utility ──────────────────────────────── */
+.stagger-children > * { animation-fill-mode: both; }
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
+
+/* ─── Gold pill — reusable badge ────────────────────────────── */
+.gold-pill {
+  background: var(--gold-light);
+  color: var(--gold-text);
+  border: 1px solid rgba(201,151,28,0.15);
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+}
+
+/* ─── Status badge variants ─────────────────────────────────── */
+.badge-success { background: var(--bg-success); color: var(--text-success); border: 1px solid rgba(5,150,105,0.15); }
+.badge-danger  { background: var(--bg-danger);  color: var(--text-danger);  border: 1px solid rgba(220,38,38,0.15);  }
+.badge-warning { background: var(--bg-warning); color: var(--text-warning); border: 1px solid rgba(217,119,6,0.15);  }
+.badge-info    { background: var(--bg-info);    color: var(--text-info);    border: 1px solid rgba(59,130,246,0.15); }
+
+/* ─── Dark Mode — BottomNav glass ───────────────────────────── */
+[data-theme="dark"] .mobile-glass-header,
+[data-theme="dark"] [class*="bottom-0"][class*="fixed"] > div:first-child {
+  background: rgba(17, 24, 39, 0.92);
+}

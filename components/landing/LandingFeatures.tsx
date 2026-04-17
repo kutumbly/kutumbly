@@ -25,60 +25,36 @@ import {
 import { useAppStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
 
-const PILLARS = [
-  {
-    id: "01",
-    icon: <Lock size={30} />,
-    title: "AES-256-GCM Encryption",
-    desc: "Every byte of your family data is encrypted with military-grade AES-256-GCM before it is written to disk. Your PIN is the only key. No master password, no recovery backdoor.",
-    stat: "256-bit Key",
-    statLabel: "Encryption Strength",
-  },
-  {
-    id: "02",
-    icon: <CloudOff size={30} />,
-    title: "Zero Cloud Architecture",
-    desc: "Kutumbly runs entirely offline. No API calls, no telemetry, no sync servers. Your .kutumb vault file lives only on your device — untouched by any external network.",
-    stat: "0 Servers",
-    statLabel: "Cloud Dependency",
-  },
-  {
-    id: "03",
-    icon: <HardDrive size={30} />,
-    title: "Local-First .kutumb Vault",
-    desc: "All data is stored in a single encrypted .kutumb file powered by SQLite. Portable, shareable across devices via physical transfer, and never dependent on an internet connection.",
-    stat: ".kutumb",
-    statLabel: "Sovereign File Format",
-  },
-  {
-    id: "04",
-    icon: <Fingerprint size={30} />,
-    title: "Biometric Sovereign Lock",
-    desc: "Kutumbly supports device-level biometric authentication (fingerprint / Face ID) as a second layer on top of your PIN. Your vault cannot be opened without both factors.",
-    stat: "2-Factor",
-    statLabel: "Auth Protocol",
-  },
-  {
-    id: "05",
-    icon: <Cpu size={30} />,
-    title: "Agentic AI Layer",
-    desc: "An on-device AI reasoning layer assists with Sankalpa generation, health summaries, and financial insights — without ever sending data to an external model API.",
-    stat: "On-Device",
-    statLabel: "AI Processing",
-  },
-  {
-    id: "06",
-    icon: <RefreshCw size={30} />,
-    title: "Atomic Write Guarantee",
-    desc: "Every mutation — whether a transaction, health entry, or diary note — is immediately persisted to the vault. No data is ever held in temporary or unencrypted memory.",
-    stat: "Atomic",
-    statLabel: "Write Protocol",
-  },
-];
-
 export default function LandingFeatures() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
+
+  const PILLARS = [
+    {
+      id: "01",
+      icon: <Lock size={30} />,
+      title: t('landing.features.card_aes.title') || "AES-256-GCM Encryption",
+      desc: t('landing.features.card_aes.desc') || "Military-grade hardware-level encryption before disk persistence.",
+      stat: "256-bit",
+      statLabel: t('landing.features.card_aes.stat') || "Strength",
+    },
+    {
+      id: "02",
+      icon: <CloudOff size={30} />,
+      title: t('landing.features.card_airgap.title') || "Zero Cloud Architecture",
+      desc: t('landing.features.card_airgap.desc') || "No telemetry, no background cloud sync, no data leakage.",
+      stat: "0 Servers",
+      statLabel: t('landing.features.card_airgap.stat') || "Dependency",
+    },
+    {
+      id: "03",
+      icon: <HardDrive size={30} />,
+      title: t('landing.features.card_sovereign.title') || "Sovereign Vault",
+      desc: t('landing.features.card_sovereign.desc') || "You own the private keys. You own the hardware. You own the future.",
+      stat: ".kutumb",
+      statLabel: t('landing.features.card_sovereign.stat') || "Format",
+    },
+  ];
 
   return (
     <section className="py-32 bg-bg-tertiary px-6 relative overflow-hidden" id="features">
@@ -102,8 +78,8 @@ export default function LandingFeatures() {
           </div>
 
           <h2 className="text-4xl md:text-6xl font-black text-text-primary mb-6 tracking-tight font-inter-tight leading-[1.1]">
-            Built Different.<br />
-            <span className="text-gold">Not Just Private — Sovereign.</span>
+            {t('landing.features.header_top') || "Built Different."}<br />
+            <span className="text-gold">{t('landing.features.header_bottom') || "Not Just Private — Sovereign."}</span>
           </h2>
           <p className="text-text-secondary max-w-2xl mx-auto font-medium text-lg opacity-80 leading-relaxed italic">
             {t('landing.features.desc') || "Every architectural decision in Kutumbly was made with one priority: your family's data belongs to you — and only you — forever."}
@@ -161,10 +137,10 @@ export default function LandingFeatures() {
           <div className="relative">
             <div className="text-[10px] font-black text-gold-text uppercase tracking-[0.4em] mb-6">Sovereign Manifesto</div>
             <blockquote className="text-3xl md:text-4xl font-black text-text-primary tracking-tight font-inter-tight leading-[1.2] max-w-3xl mx-auto">
-              "You own your data.<br />No cloud, no server,<br />no compromise."
+              {t('landing.hero.manifesto') || `"You own your data. No cloud, no server, no compromise."`}
             </blockquote>
             <div className="mt-8 text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-              — Jawahar R. M. · System Architect, Kutumbly
+              — {t('landing.footer.founder') || "System Architect: Jawahar R. M."}
             </div>
           </div>
         </motion.div>

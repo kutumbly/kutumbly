@@ -27,34 +27,28 @@ import { useAppStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
 import Link from 'next/link';
 
-const NAV_MODULES = [
-  { icon: <Home size={20} />, name: "Family Hub", status: "Active Vault", color: "gold" },
-  { icon: <IndianRupee size={20} />, name: "Cash Hub", status: "Hardened", color: "gold" },
-  { icon: <TrendingUp size={20} />, name: "Invest Hub", status: "Secure", color: "border-medium" },
-  { icon: <Heart size={20} />, name: "Health Hub", status: "Encrypted", color: "border-medium" },
-  { icon: <GraduationCap size={20} />, name: "Vidya Hub", status: "Hardened", color: "gold" },
-  { icon: <Flame size={20} />, name: "Sanskriti Hub", status: "Secure", color: "border-medium" },
-  { icon: <ShoppingCart size={20} />, name: "Saman Hub", status: "Hardened", color: "gold" },
-  { icon: <Calendar size={20} />, name: "Utsav Hub", status: "Secure", color: "border-medium" },
-  { icon: <Users size={20} />, name: "Sewak Hub", status: "Secure", color: "border-medium" },
-  { icon: <Milk size={20} />, name: "Suvidha Hub", status: "Hardened", color: "gold" },
-  { icon: <CheckSquare size={20} />, name: "Tasks Hub", status: "Secure", color: "border-medium" },
-  { icon: <BookOpen size={20} />, name: "Diary Hub", status: "Encrypted", color: "border-medium" },
-];
-
-const DASHBOARD_METRICS = [
-  { label: "Monthly Balance", value: "₹84,200", trend: "+12%", status: "success" },
-  { label: "Portfolio Value", value: "₹9.2L", trend: "+8.4%", status: "success" },
-  { label: "Learning Streak", value: "14 Days", trend: "Active", status: "info" },
-  { label: "Pantry Alerts", value: "3 Items", trend: "Low Stock", status: "warning" },
-  { label: "Staff Present", value: "2 / 2", trend: "Today", status: "success" },
-  { label: "Upcoming Event", value: "Vivah Ann.", trend: "12 Days", status: "info" },
-];
-
 export default function LandingVaultPreview() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
   const [hoveredModule, setHoveredModule] = useState<number | null>(null);
+
+  const NAV_MODULES = [
+    { icon: <Home size={20} />, name: t('landing.modules.family.title') || "Family Hub", status: "Active Vault", color: "gold" },
+    { icon: <IndianRupee size={20} />, name: t('landing.modules.cash.title') || "Cash Hub", status: "Hardened", color: "gold" },
+    { icon: <TrendingUp size={20} />, name: t('landing.modules.vidya.title') || "Vidya Hub", status: "Hardened", color: "gold" },
+    { icon: <Heart size={20} />, name: t('landing.modules.sehat.title') || "Health Hub", status: "Encrypted", color: "border-medium" },
+    { icon: <GraduationCap size={20} />, name: t('landing.modules.utsav.title') || "Utsav Hub", status: "Secure", color: "border-medium" },
+    { icon: <ShoppingCart size={20} />, name: t('landing.modules.saman.title') || "Saman Hub", status: "Hardened", color: "gold" },
+  ];
+
+  const DASHBOARD_METRICS = [
+    { label: t('landing.vault.metrics.balance') || "Monthly Balance", value: "₹84,200", trend: "+12%", status: "success" },
+    { label: t('landing.vault.metrics.portfolio') || "Portfolio Value", value: "₹9.2L", trend: "+8.4%", status: "success" },
+    { label: t('landing.vault.metrics.streak') || "Learning Streak", value: "14 Days", trend: "Active", status: "info" },
+    { label: t('landing.vault.metrics.pantry') || "Pantry Alerts", value: "3 Items", trend: "Low Stock", status: "warning" },
+    { label: t('landing.vault.metrics.staff') || "Staff Present", value: "2 / 2", trend: "Today", status: "success" },
+    { label: t('landing.vault.metrics.event') || "Upcoming Event", value: "Vivah Ann.", trend: "12 Days", status: "info" },
+  ];
 
   return (
     <div className="w-full max-w-7xl mx-auto px-6 py-24 relative">
@@ -168,8 +162,12 @@ export default function LandingVaultPreview() {
             {/* Dashboard title */}
             <div className="flex items-center justify-between mb-8">
               <div>
-                <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-1">Home Dashboard</div>
-                <h3 className="text-xl font-black text-text-primary font-inter-tight">Namaste, Sharma Ji 🙏</h3>
+                <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-1">
+                  {t('landing.vault.dashboard_title') || "Home Dashboard"}
+                </div>
+                <h3 className="text-xl font-black text-text-primary font-inter-tight">
+                  {t('landing.vault.greeting') || "Namaste, Sharma Ji"} 🙏
+                </h3>
               </div>
               <div className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex items-center gap-2">
                 <Activity size={12} className="text-gold" />
@@ -205,12 +203,14 @@ export default function LandingVaultPreview() {
 
             {/* Sample recent activity */}
             <div className="bg-white border border-border-light rounded-2xl p-5 shadow-sm">
-              <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-4">Recent Activity</div>
+              <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-4">
+                {t('landing.vault.activity.title') || "Recent Activity"}
+              </div>
               <div className="space-y-3">
                 {[
-                  { icon: "💰", text: "Grocery expense logged — ₹1,840", time: "2m ago", color: "text-amber-500" },
-                  { icon: "📚", text: "Arjun completed Physics session — 45 mins", time: "1h ago", color: "text-blue-500" },
-                  { icon: "🏥", text: "BP reading logged — 118/76 (Papa)", time: "3h ago", color: "text-rose-500" },
+                  { icon: "💰", text: t('landing.vault.activity.grocery') || "Grocery expense logged — ₹1,840", time: "2m ago", color: "text-amber-500" },
+                  { icon: "📚", text: t('landing.vault.activity.study') || "Arjun completed Physics session — 45 mins", time: "1h ago", color: "text-blue-500" },
+                  { icon: "🏥", text: t('landing.vault.activity.health') || "BP reading logged — 118/76 (Papa)", time: "3h ago", color: "text-rose-500" },
                 ].map((a, i) => (
                   <div key={i} className="flex items-center gap-3 text-xs">
                     <span className="text-lg leading-none">{a.icon}</span>

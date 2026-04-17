@@ -283,28 +283,58 @@ export default function CashModule() {
               </button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-2">
                {budgets.length > 0 ? budgets.map((b) => {
                  const spent = txns.filter(t => t.category === b.category && t.type === 'expense').reduce((s, curr) => s + curr.amount, 0);
                  const perc = Math.min(100, (spent / b.monthly_limit) * 100);
                  return (
-                   <div key={b.id} className="bg-bg-primary border border-border-light p-4 rounded-2xl shadow-sm">
-                      <div className="flex justify-between items-center mb-3">
-                        <span className="text-[10px] font-black text-text-primary uppercase tracking-wider">{b.category}</span>
-                        <span className="text-[9px] font-bold text-text-tertiary">₹{spent} / ₹{b.monthly_limit}</span>
+                   <div key={b.id} className="bg-bg-primary border border-border-light p-3.5 rounded-xl">
+                      <div className="flex justify-between items-center mb-2.5">
+                        <span className="text-[9px] font-black text-text-primary uppercase tracking-wider truncate">{b.category}</span>
+                        <span className="text-[8px] font-bold text-text-tertiary tabular-nums flex-shrink-0 ml-1">₹{spent}/₹{b.monthly_limit}</span>
                       </div>
-                      <div className="w-full bg-bg-tertiary h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-bg-secondary h-1.5 rounded-full overflow-hidden">
                         <div className={`h-full transition-all duration-500 rounded-full ${perc > 90 ? 'bg-red-500' : perc > 70 ? 'bg-orange-400' : 'bg-gold'}`} style={{ width: `${perc}%` }} />
                       </div>
                    </div>
                  );
                }) : (
-                 <div className="col-span-full py-8 text-center bg-bg-primary border border-border-light border-dashed rounded-2xl opacity-40">
+                 <div className="col-span-full py-6 text-center bg-bg-secondary border border-dashed border-border-light rounded-xl opacity-40">
                     <p className="text-[9px] font-black uppercase tracking-widest">No budgets defined for this month</p>
                  </div>
                )}
             </div>
           </section>
+
+          {/* Quick Summary Sidebar */}
+          <div className="space-y-3">
+            <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.25em]">Quick Actions</div>
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="w-full p-4 bg-gold text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition shadow-md shadow-gold/20"
+            >
+              <IndianRupee size={15} /> {t('MONEY_INCOME')}
+            </button>
+            <button
+              onClick={() => { setFType('expense'); setShowAddForm(true); }}
+              className="w-full p-4 bg-bg-primary border border-border-light rounded-xl font-black text-[10px] uppercase tracking-widest text-text-tertiary flex items-center justify-center gap-2 hover:border-red-300 hover:text-red-500 transition"
+            >
+              <IndianRupee size={15} /> {t('MONEY_EXPENSE')}
+            </button>
+            <div className="bg-bg-primary border border-border-light rounded-xl p-4">
+              <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">This Month</div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-[10px] text-text-secondary font-bold">Transactions</span>
+                  <span className="text-[10px] font-black text-text-primary tabular-nums">{txns.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[10px] text-text-secondary font-bold">Categories</span>
+                  <span className="text-[10px] font-black text-text-primary tabular-nums">{donutData.length}</span>
+                </div>
+              </div>
+            </div>
+          </div>
          </div>
          
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

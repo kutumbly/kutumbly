@@ -17,6 +17,7 @@
 "use client";
 
 import React from 'react';
+import { useAppStore } from '@/lib/store';
 
 interface RupeesDisplayProps {
   amount: number | string;
@@ -29,7 +30,16 @@ export default function RupeesDisplay({
   className = "", 
   showSymbol = true 
 }: RupeesDisplayProps) {
-  const formatted = new Intl.NumberFormat('en-IN', {
+  const { lang } = useAppStore();
+
+  // Map Kutumbly lang codes to standard i18n locales for Intl.NumberFormat
+  const localeMap: Record<string, string> = {
+    en: 'en-IN', hi: 'hi-IN', mr: 'mr-IN', gu: 'gu-IN', pa: 'pa-IN',
+    ta: 'ta-IN', bho: 'hi-IN', kn: 'kn-IN', te: 'te-IN', ne: 'ne-NP',
+    bn: 'bn-IN', mni: 'bn-IN'
+  };
+
+  const formatted = new Intl.NumberFormat(localeMap[lang] || 'en-IN', {
     maximumFractionDigits: 0,
   }).format(Number(amount));
 

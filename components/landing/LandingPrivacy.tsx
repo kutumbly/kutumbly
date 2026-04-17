@@ -22,29 +22,29 @@ import { Shield, Lock, Globe, Database, CheckCircle2 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
 
-const PRIVACY_SPECS = [
-  { label: "Encryption Algorithm", value: "AES-256-GCM" },
-  { label: "Network Dependency", value: "Zero (Air-Gapped)" },
-  { label: "Storage Format", value: ".kutumb Vault (SQLite)" },
-  { label: "Authentication", value: "PIN + Biometric" },
-  { label: "Data Residency", value: "Device Only" },
-  { label: "Cloud Sync", value: "Never" },
-  { label: "Analytics / Telemetry", value: "None" },
-  { label: "Third-Party Access", value: "Impossible" },
-];
-
-const GUARANTEES = [
-  "No user data ever leaves your device",
-  "No backend servers or APIs involved",
-  "No subscription or account required",
-  "No analytics, tracking, or fingerprinting",
-  "Full offline functionality, always",
-  "Your PIN is the only encryption key",
-];
-
 export default function LandingPrivacy() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
+
+  const PRIVACY_SPECS = [
+    { label: t('landing.privacy.spec.algo') || "Encryption Algorithm", value: "AES-256-GCM" },
+    { label: t('landing.privacy.spec.net') || "Network Dependency", value: "Zero (Air-Gapped)" },
+    { label: t('landing.privacy.spec.storage') || "Storage Format", value: ".kutumb Vault (SQLite)" },
+    { label: t('landing.privacy.spec.auth') || "Authentication", value: "PIN + Biometric" },
+    { label: t('landing.privacy.spec.residency') || "Data Residency", value: "Device Only" },
+    { label: t('landing.privacy.spec.sync') || "Cloud Sync", value: "Never" },
+    { label: t('landing.privacy.spec.telemetry') || "Analytics / Telemetry", value: "None" },
+    { label: t('landing.privacy.spec.access') || "Third-Party Access", value: "Impossible" },
+  ];
+
+  const GUARANTEES = [
+    t('landing.privacy.guarantee.0') || "No user data ever leaves your device",
+    t('landing.privacy.guarantee.1') || "No backend servers or APIs involved",
+    t('landing.privacy.guarantee.2') || "No subscription or account required",
+    t('landing.privacy.guarantee.3') || "No analytics, tracking, or fingerprinting",
+    t('landing.privacy.guarantee.4') || "Full offline functionality, always",
+    t('landing.privacy.guarantee.5') || "Your PIN is the only encryption key",
+  ];
 
   return (
     <section id="privacy" className="py-32 bg-white relative overflow-hidden">
@@ -168,10 +168,10 @@ export default function LandingPrivacy() {
                   {t('landing.privacy.verified') || "Verified Architecture"}
                 </div>
                 <div className="text-3xl font-black text-text-primary tracking-tighter font-inter-tight">
-                  {t('landing.privacy.stats.airgapped') || "Air-Gapped"}
+                  {t('landing.hero.specs.airgapped') || "Air-Gapped"}
                 </div>
                 <div className="text-xs font-medium text-text-secondary mt-1 opacity-80">
-                  Fully offline. No internet required. Ever.
+                  {t('landing.privacy.airgapped_sub') || "Fully offline. No internet required. Ever."}
                 </div>
               </div>
             </motion.div>

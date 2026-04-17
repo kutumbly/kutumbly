@@ -22,19 +22,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Menu, X, ArrowRight } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
-
-const NAV_LINKS = [
-  { label: "Product", href: "/product" },
-  { label: "Modules", href: "/#modules" },
-  { label: "Security", href: "/#privacy" },
-  { label: "Founders", href: "/founders" },
-  { label: "Contact", href: "/contact" },
-];
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 
 export default function LandingHeader() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const NAV_LINKS = [
+    { label: t('landing.header.nav.product') || "Product", href: "/product" },
+    { label: t('landing.header.nav.modules') || "Modules", href: "/#modules" },
+    { label: t('landing.header.nav.security') || "Security", href: "/#privacy" },
+    { label: t('landing.header.nav.founders') || "Founders", href: "/founders" },
+    { label: t('landing.header.nav.contact') || "Contact", href: "/contact" },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -50,7 +51,7 @@ export default function LandingHeader() {
             <div>
               <span className="text-lg font-black text-text-primary tracking-tight font-inter-tight">Kutumbly</span>
               <div className="text-[7px] font-black text-text-tertiary uppercase tracking-[0.3em] leading-none opacity-70 -mt-0.5">
-                Sovereign OS
+                {t('landing.hero.tagline') || "Sovereign OS"}
               </div>
             </div>
           </Link>
@@ -70,17 +71,12 @@ export default function LandingHeader() {
 
           {/* Right actions */}
           <div className="hidden md:flex items-center gap-3">
-            <button
-              onClick={() => useAppStore.getState().setLang(lang === 'en' ? 'hi' : 'en')}
-              className="h-10 px-4 bg-clinical border border-border-light rounded-xl font-black text-[10px] text-text-secondary uppercase tracking-widest hover:border-gold hover:text-gold transition-all"
-            >
-              {lang === 'en' ? 'हिंदी' : 'EN'}
-            </button>
+            <LanguageSwitcher />
             <Link
               href="/os"
               className="flex items-center gap-2 h-10 px-6 bg-text-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-gold transition-all shadow-sm active:scale-95"
             >
-              Open OS <ArrowRight size={13} />
+              {t('landing.header.open_os') || "Open OS"} <ArrowRight size={13} />
             </Link>
           </div>
 
@@ -121,7 +117,7 @@ export default function LandingHeader() {
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center justify-center gap-2 w-full h-14 bg-text-primary text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gold transition-all"
                   >
-                    Open Kutumbly OS <ArrowRight size={14} />
+                    {t('landing.header.open_os') || "Open OS"} <ArrowRight size={14} />
                   </Link>
                 </div>
               </div>

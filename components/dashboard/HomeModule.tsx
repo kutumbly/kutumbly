@@ -110,39 +110,39 @@ export default function HomeModule() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-5 md:space-y-10"
+      className="space-y-6 md:space-y-8"
     >
       {/* ── Sovereign Shield Hub ────────────────────────────── */}
-      <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+      <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
          {[
            { icon: Shield, label: t('OS_SECURITY'), value: t('OS_LOCKDOWN') },
            { icon: Fingerprint, label: t('BIOMETRIC'), value: bioActive ? t('HARDWARE_ACTIVE') : t('PIN_REQUIRED') },
            { icon: HardDrive, label: t('SYNC_GRID'), value: t('LOCAL_DISCOVERY') }
          ].map((sh, idx) => (
-           <div key={idx} className="bg-bg-primary border border-border-light rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 flex items-center gap-4 shadow-black/[0.02] shadow-xl transition-all hover:border-gold/30 tap-highlight">
-              <div className="w-12 h-12 rounded-2xl bg-gold-light flex items-center justify-center text-gold-text border border-border-light shadow-sm">
-                 <sh.icon size={22} />
+           <div key={idx} className="bg-bg-primary border border-border-light rounded-2xl p-4 flex items-center gap-3 transition-all hover:border-gold/30 hover:shadow-md tap-highlight">
+              <div className="w-10 h-10 rounded-xl bg-gold-light flex items-center justify-center text-gold-text border border-border-light flex-shrink-0">
+                 <sh.icon size={19} />
               </div>
-              <div className="flex-1">
-                 <div className="text-[9px] font-black uppercase tracking-[0.3em] text-text-tertiary mb-1">{sh.label}</div>
-                 <div className="text-[11px] font-black text-text-primary uppercase tracking-wider">{sh.value}</div>
+              <div className="flex-1 min-w-0">
+                 <div className="text-[8px] font-black uppercase tracking-[0.28em] text-text-tertiary mb-0.5 truncate">{sh.label}</div>
+                 <div className="text-[10px] font-black text-text-primary uppercase tracking-wide truncate">{sh.value}</div>
               </div>
            </div>
          ))}
       </motion.div>
 
       {/* Dynamic Metric Cards */}
-      <motion.div variants={item} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <motion.div variants={item} className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {stats.map((stat, i) => (
           <MetricCard key={i} {...stat} />
         ))}
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-6">
         {/* Activity Feed */}
         <motion.section variants={item} className="lg:col-span-2 space-y-4 md:space-y-6">
           <div className="flex items-center justify-between px-2">
@@ -188,148 +188,147 @@ export default function HomeModule() {
           </div>
         </motion.section>
 
-        {/* Quick Access & Health Pulse */}
-        <div className="space-y-8">
-           <motion.section variants={item} className="space-y-6">
-              <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] px-2">
-                 {t('HEALTH_PULSE')}
-              </div>
-              <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 space-y-8 shadow-xl shadow-black/[0.02]">
-                 <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-text-danger/10 flex items-center justify-center text-text-danger border border-text-danger/20">
-                       <Heart className="animate-pulse" size={20} />
-                    </div>
-                    <div className="text-sm font-black text-text-primary uppercase tracking-wider">{t('WELLNESS_PULSE')}</div>
+        {/* Health Pulse Sidebar */}
+        <motion.section variants={item} className="space-y-5">
+           <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em] px-1">
+              {t('HEALTH_PULSE')}
+           </div>
+           <div className="bg-bg-primary border border-border-light rounded-2xl p-5 space-y-5">
+              <div className="flex items-center gap-3">
+                 <div className="w-9 h-9 rounded-full bg-text-danger/10 flex items-center justify-center text-text-danger border border-text-danger/15">
+                    <Heart size={17} className="animate-pulse" />
                  </div>
-                 <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-bg-tertiary p-4 rounded-2xl border border-border-light shadow-sm">
-                       <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">{t('AVG_WEIGHT')}</div>
-                       <div className="text-base font-black text-text-primary">{avgWeight > 0 ? `${avgWeight.toFixed(1)}kg` : '--'}</div>
-                    </div>
-                    <div className="bg-bg-tertiary p-4 rounded-2xl border border-border-light shadow-sm">
-                       <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">{t('LATEST_SUGAR')}</div>
-                       <div className="text-base font-black text-text-primary">{readings[0]?.blood_sugar || '--'}<span className="text-[10px] ml-1 opacity-40">mg</span></div>
-                    </div>
+                 <div className="text-[11px] font-black text-text-primary uppercase tracking-wide">{t('WELLNESS_PULSE')}</div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                 <div className="bg-bg-secondary p-3 rounded-xl border border-border-light">
+                    <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-1.5">{t('AVG_WEIGHT')}</div>
+                    <div className="text-base font-black text-text-primary tabular-nums">{avgWeight > 0 ? `${avgWeight.toFixed(1)}kg` : '--'}</div>
                  </div>
-                 <button className="w-full py-4 bg-bg-primary border border-border-light rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-text-tertiary hover:text-gold-text hover:border-gold-text transition-all">
-                    {t('FULL_VITALS_DATA')}
-                 </button>
+                 <div className="bg-bg-secondary p-3 rounded-xl border border-border-light">
+                    <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-1.5">{t('LATEST_SUGAR')}</div>
+                    <div className="text-base font-black text-text-primary tabular-nums">{readings[0]?.blood_sugar || '--'}<span className="text-[9px] ml-1 opacity-40">mg</span></div>
+                 </div>
               </div>
-           </motion.section>
-
-            {/* Sovereign Modern Insights Row */}
-            <motion.section variants={item} className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
-           {/* Inventory Spotlight */}
-           <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl shadow-black/[0.02] flex flex-col justify-between group hover:border-gold/30 transition-all">
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-2xl bg-gold/5 text-gold-text flex items-center justify-center border border-gold/10">
-                    <Package size={20} />
-                  </div>
-                  <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Critical Inventory</span>
-                </div>
-                <div className="space-y-4">
-                   {lowStockItems.length > 0 ? lowStockItems.slice(0, 3).map(item => (
-                     <div key={item.id} className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-text-primary">{item.name}</span>
-                        <span className="text-[10px] font-black text-red-500 uppercase tracking-widest bg-red-500/5 px-2 py-1 rounded-lg border border-red-500/10">Low: {item.current_stock}{item.unit}</span>
-                     </div>
-                   )) : (
-                     <div className="flex items-center gap-3 text-text-success opacity-50 py-4">
-                        <CheckCircle2 size={16} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Stock is Stable</span>
-                     </div>
-                   )}
-                </div>
-              </div>
-              <button className="mt-8 flex items-center gap-2 text-[10px] font-black text-gold-text uppercase tracking-widest group-hover:gap-3 transition-all">
-                 Restock Vault <ArrowRight size={14} />
+              <button className="w-full py-3 bg-bg-secondary border border-border-light rounded-xl text-[9px] font-black uppercase tracking-[0.25em] text-text-tertiary hover:text-gold hover:border-gold/30 transition-all">
+                 {t('FULL_VITALS_DATA')}
               </button>
            </div>
-
-           {/* Learning & Rituals */}
-           <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl shadow-black/[0.02] flex flex-col justify-between group hover:border-gold/30 transition-all">
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-2xl bg-indigo-500/5 text-indigo-600 flex items-center justify-center border border-indigo-500/10">
-                    <GraduationCap size={20} />
-                  </div>
-                  <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Learning & Traditions</span>
-                </div>
-                <div className="space-y-4">
-                   <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-text-primary">Daily Rituals</span>
-                      <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg border ${ritualLogs.length > 0 ? 'text-success bg-success/5 border-success/10' : 'text-text-tertiary bg-bg-tertiary border-border-light'}`}>
-                        {ritualLogs.length > 0 ? 'COMPLETE' : 'PENDING'}
-                      </span>
-                   </div>
-                   <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-text-primary">Learning Pulse</span>
-                      <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-500/5 px-2 py-1 rounded-lg border border-indigo-500/10">
-                        {totalVidyaMins} Mins Logged
-                      </span>
-                   </div>
-                </div>
-              </div>
-              <button className="mt-8 flex items-center gap-2 text-[10px] font-black text-indigo-600 uppercase tracking-widest group-hover:gap-3 transition-all">
-                 Continue Path <ArrowRight size={14} />
-              </button>
-           </div>
-
-           {/* Prosperity Goals */}
-           <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl shadow-black/[0.02] flex flex-col justify-between group hover:border-gold/30 transition-all">
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-2xl bg-success/5 text-success flex items-center justify-center border border-success/10">
-                    <TrendingUp size={20} />
-                  </div>
-                  <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Wealth Targets</span>
-                </div>
-                <div className="space-y-4">
-                   {goals.length > 0 ? goals.slice(0, 2).map(g => (
-                     <div key={g.id} className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-bold text-text-primary">{g.name}</span>
-                          <span className="text-[9px] font-black text-text-tertiary tracking-widest">₹{g.target_amount}</span>
-                        </div>
-                        <div className="h-1.5 w-full bg-bg-tertiary rounded-full overflow-hidden border border-border-light/40">
-                          <motion.div 
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.min(100, (g.current_progress / g.target_amount) * 100)}%` }}
-                            className="h-full bg-success" 
-                          />
-                        </div>
-                     </div>
-                   )) : (
-                     <div className="text-center py-4 text-[9px] font-black text-text-tertiary uppercase tracking-widest opacity-40">No Goals Set</div>
-                   )}
-                </div>
-              </div>
-              <button className="mt-8 flex items-center gap-2 text-[10px] font-black text-text-success uppercase tracking-widest group-hover:gap-3 transition-all">
-                 Growth Matrix <ArrowRight size={14} />
-              </button>
-           </div>
-        </motion.section>
-
-        {/* System Sync Row */}
-        <motion.section variants={item} className="lg:col-span-3">
-            <button className="w-full flex items-center justify-between p-6 bg-bg-primary border border-border-light rounded-[2rem] hover:border-gold-text transition-all group shadow-xl shadow-black/[0.02] active:scale-[0.98]">
-                <div className="flex items-center gap-5">
-                   <div className="w-14 h-14 rounded-2xl bg-gold/5 text-gold-text flex items-center justify-center border border-gold/10 group-hover:bg-gold-text group-hover:text-white transition-all shadow-sm">
-                      <Zap size={24} strokeWidth={3} />
-                   </div>
-                   <div className="text-left">
-                      <div className="text-[15px] font-black text-text-primary tracking-tight">{t('SYNC_NOW')}</div>
-                      <div className="text-[9px] text-text-tertiary uppercase font-black tracking-[0.3em] opacity-60 mt-1">{t('P2P_BEAM_GRID')}</div>
-                   </div>
-                </div>
-                <div className="w-10 h-10 rounded-full border border-border-light flex items-center justify-center group-hover:border-gold-text group-hover:bg-gold-text/5 transition-all">
-                   <ArrowRight className="text-border-medium group-hover:text-gold-text transition-colors" size={18} />
-                </div>
-            </button>
         </motion.section>
       </div>
-    </div>
-  </motion.div>
+
+      {/* ── Insight Cards ─────────────────────────────────────── */}
+      <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Inventory Spotlight */}
+        <div className="bg-bg-primary border border-border-light rounded-2xl p-5 flex flex-col justify-between group hover:border-gold/25 hover:shadow-md transition-all">
+           <div>
+             <div className="flex items-center gap-3 mb-4">
+               <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-100">
+                 <Package size={18} />
+               </div>
+               <span className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.25em]">{t('CRITICAL_STOCK')}</span>
+             </div>
+             <div className="space-y-3">
+                {lowStockItems.length > 0 ? lowStockItems.slice(0, 3).map(invItem => (
+                  <div key={invItem.id} className="flex items-center justify-between gap-2">
+                     <span className="text-[12px] font-bold text-text-primary truncate">{invItem.name}</span>
+                     <span className="text-[9px] font-black text-text-danger bg-bg-danger px-2 py-0.5 rounded-lg flex-shrink-0">Low</span>
+                  </div>
+                )) : (
+                  <div className="flex items-center gap-2 text-text-success py-3">
+                     <CheckCircle2 size={15} />
+                     <span className="text-[10px] font-black uppercase tracking-wider opacity-60">{t('PANTRY_FULL')}</span>
+                  </div>
+                )}
+             </div>
+           </div>
+           <button className="mt-5 flex items-center gap-1.5 text-[9px] font-black text-gold uppercase tracking-widest group-hover:gap-2.5 transition-all">
+              {t('NAV_SAMAN')} <ArrowRight size={12} />
+           </button>
+        </div>
+
+        {/* Learning & Rituals */}
+        <div className="bg-bg-primary border border-border-light rounded-2xl p-5 flex flex-col justify-between group hover:border-indigo-200 hover:shadow-md transition-all">
+           <div>
+             <div className="flex items-center gap-3 mb-4">
+               <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100">
+                 <GraduationCap size={18} />
+               </div>
+               <span className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.25em]">{t('SMART_LEARNING')}</span>
+             </div>
+             <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                   <span className="text-[12px] font-bold text-text-primary">{t('RITUAL')}</span>
+                   <span className={`text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-lg border ${ritualLogs.length > 0 ? 'text-text-success bg-bg-success border-border-light' : 'text-text-tertiary bg-bg-secondary border-border-light'}`}>
+                     {ritualLogs.length > 0 ? '✓' : '–'}
+                   </span>
+                </div>
+                <div className="flex items-center justify-between">
+                   <span className="text-[12px] font-bold text-text-primary">{t('LEARNERS')}</span>
+                   <span className="text-[8px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">
+                     {totalVidyaMins}m
+                   </span>
+                </div>
+             </div>
+           </div>
+           <button className="mt-5 flex items-center gap-1.5 text-[9px] font-black text-indigo-600 uppercase tracking-widest group-hover:gap-2.5 transition-all">
+              {t('NAV_VIDYA')} <ArrowRight size={12} />
+           </button>
+        </div>
+
+        {/* Prosperity Goals */}
+        <div className="bg-bg-primary border border-border-light rounded-2xl p-5 flex flex-col justify-between group hover:border-emerald-200 hover:shadow-md transition-all">
+           <div>
+             <div className="flex items-center gap-3 mb-4">
+               <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
+                 <TrendingUp size={18} />
+               </div>
+               <span className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.25em]">{t('WEALTH_PORTFOLIO')}</span>
+             </div>
+             <div className="space-y-3">
+                {goals.length > 0 ? goals.slice(0, 2).map(g => (
+                  <div key={g.id} className="space-y-1.5">
+                     <div className="flex justify-between items-center">
+                       <span className="text-[12px] font-bold text-text-primary truncate pr-2">{g.name}</span>
+                       <span className="text-[8px] font-black text-text-tertiary flex-shrink-0 tabular-nums">₹{g.target_amount.toLocaleString('en-IN')}</span>
+                     </div>
+                     <div className="h-1.5 w-full bg-bg-secondary rounded-full overflow-hidden">
+                       <motion.div
+                         initial={{ width: 0 }}
+                         animate={{ width: `${Math.min(100, (g.current_progress / g.target_amount) * 100)}%` }}
+                         transition={{ duration: 0.8, ease: 'easeOut' }}
+                         className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full"
+                       />
+                     </div>
+                  </div>
+                )) : (
+                  <div className="py-3 text-[9px] font-black text-text-tertiary uppercase tracking-wider opacity-40">{t('NO_INVESTMENTS')}</div>
+                )}
+             </div>
+           </div>
+           <button className="mt-5 flex items-center gap-1.5 text-[9px] font-black text-emerald-700 uppercase tracking-widest group-hover:gap-2.5 transition-all">
+              {t('NAV_INVEST')} <ArrowRight size={12} />
+           </button>
+        </div>
+      </motion.div>
+
+      {/* ── System Sync CTA ────────────────────────────────────── */}
+      <motion.section variants={item}>
+          <button className="w-full flex items-center justify-between p-5 bg-bg-primary border border-border-light rounded-2xl hover:border-gold/30 transition-all group hover:shadow-md active:scale-[0.99]">
+              <div className="flex items-center gap-4">
+                 <div className="w-11 h-11 rounded-xl bg-gold/8 text-gold flex items-center justify-center border border-gold/15 group-hover:bg-gold group-hover:text-white transition-all">
+                    <Zap size={20} strokeWidth={2.5} />
+                 </div>
+                 <div className="text-left">
+                    <div className="text-[13px] font-black text-text-primary tracking-tight">{t('SYNC_NOW')}</div>
+                    <div className="text-[9px] text-text-tertiary uppercase font-black tracking-[0.25em] opacity-50 mt-0.5">{t('P2P_BEAM_GRID')}</div>
+                 </div>
+              </div>
+              <div className="w-8 h-8 rounded-full border border-border-light flex items-center justify-center group-hover:border-gold/40 group-hover:bg-gold/5 transition-all">
+                 <ArrowRight className="text-text-tertiary group-hover:text-gold transition-colors" size={15} />
+              </div>
+          </button>
+      </motion.section>
+    </motion.div>
   );
 }

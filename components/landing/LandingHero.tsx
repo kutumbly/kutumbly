@@ -28,10 +28,10 @@ export default function LandingHero() {
   const t = useTranslation(lang);
 
   const STATS = [
-    { value: "12", label: "Sovereign Hubs" },
-    { value: "0", label: "Cloud Servers" },
-    { value: "AES-256", label: "Encryption" },
-    { value: "∞", label: "Offline Use" },
+    { value: "12", label: t('landing.hero.specs.hubs') || "Sovereign Hubs" },
+    { value: "0", label: t('landing.hero.specs.cloud') || "Cloud Servers" },
+    { value: "AES-256", label: t('landing.hero.specs.encryption') || "Encryption" },
+    { value: "∞", label: t('landing.hero.specs.access') || "Offline Use" },
   ];
 
   return (

@@ -18,7 +18,7 @@
 
 import React, { useState } from 'react';
 import { LucideIcon, LayoutGrid } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import MoreModulesDrawer from './MoreModulesDrawer';
 import { useTranslation, Language } from '@/lib/i18n';
 
@@ -34,71 +34,100 @@ interface BottomNavProps {
   lang: string;
 }
 
+// Robust label that never shows raw NAV_* strings
+function useTabLabel(t: (k: string) => string, id: string): string {
+  const key = `NAV_${id.toUpperCase()}`;
+  const translated = t(key);
+  if (translated === key) return id.charAt(0).toUpperCase() + id.slice(1);
+  return translated;
+}
+
 export default function BottomNav({ tabs, activeTab, onTabChange, lang }: BottomNavProps) {
   const t = useTranslation(lang as Language);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // Show first 4 tabs + "More" — always visible primary modules
   const visibleTabs = tabs.slice(0, 4);
   const overflowTabs = tabs.slice(4);
-  const isMoreActive = !visibleTabs.find(t => t.id === activeTab);
-  // Has unread/active module in overflow
-  const overflowActive = overflowTabs.find(t => t.id === activeTab);
+  const isMoreActive = !visibleTabs.find(tab => tab.id === activeTab);
+  const overflowActive = overflowTabs.find(tab => tab.id === activeTab);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-bg-primary/95 backdrop-blur-xl border-t border-border-light shadow-[0_-8px_30px_rgba(0,0,0,0.06)]"
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      {/* Dynamic Thumb Nav Bar */}
-      <nav className="relative flex justify-around items-stretch h-[var(--nav-height,72px)] px-2">
+      {/* Glass backdrop */}
+      <div className="absolute inset-0 bg-bg-primary/92 backdrop-blur-2xl border-t border-border-light/60 shadow-[0_-8px_32px_rgba(0,0,0,0.08)]" />
+
+      {/* Nav Bar */}
+      <nav className="relative flex justify-around items-stretch h-[var(--nav-height,72px)] px-1">
         {visibleTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
-          const label = t(`NAV_${tab.id.toUpperCase()}`);
+          const label = useTabLabel(t, tab.id);
 
           return (
-            <button
+            <motion.button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               aria-label={label}
               aria-current={isActive ? 'page' : undefined}
-              className="flex flex-col items-center justify-center flex-1 gap-1 py-2 min-w-[48px] outline-none transition-all"
+              whileTap={{ scale: 0.88 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+              className="flex flex-col items-center justify-center flex-1 gap-0.5 py-2 min-w-[48px] outline-none"
             >
-              <div className={`relative flex items-center justify-center w-11 h-11 rounded-2xl transition-all duration-200 ${
-                isActive
-                  ? 'text-gold bg-gold/8 scale-105'
-                  : 'text-text-tertiary active:scale-90 active:bg-bg-secondary'
-              }`}>
-                <Icon size={21} strokeWidth={isActive ? 2.5 : 1.75} />
+              {/* Icon Container */}
+              <div className="relative flex items-center justify-center w-12 h-[30px]">
+                <div className={`flex items-center justify-center w-11 h-[30px] rounded-full transition-all duration-200 ${
+                  isActive
+                    ? 'bg-gold/12'
+                    : ''
+                }`}>
+                  <Icon
+                    size={22}
+                    strokeWidth={isActive ? 2.5 : 1.75}
+                    className={`transition-colors duration-200 ${isActive ? 'text-gold' : 'text-text-tertiary'}`}
+                  />
+                </div>
+                {/* Active dot */}
                 {isActive && (
-                  <motion.div
-                    layoutId="bottom-nav-dot"
-                    className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-gold rounded-full shadow-[0_0_6px_rgba(201,151,28,0.5)]"
+                  <motion.span
+                    layoutId="bottom-nav-indicator"
+                    className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-5 h-[3px] bg-gold rounded-full shadow-[0_0_8px_rgba(201,151,28,0.6)]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
               </div>
-              <span className={`text-[9px] font-black uppercase tracking-[0.15em] leading-none max-w-[48px] truncate text-center transition-colors ${
-                isActive ? 'text-gold' : 'text-text-tertiary'
+
+              {/* Label */}
+              <span className={`text-[9px] font-black uppercase tracking-[0.12em] leading-none mt-1.5 max-w-[52px] truncate text-center transition-colors duration-200 ${
+                isActive ? 'text-gold' : 'text-text-tertiary/60'
               }`}>
                 {label}
               </span>
-            </button>
+            </motion.button>
           );
         })}
 
-        {/* More Button — shows gold pulse when overflow module is active */}
-        <button
+        {/* More Button */}
+        <motion.button
           onClick={() => setIsDrawerOpen(true)}
           aria-label={t('MORE')}
-          className="flex flex-col items-center justify-center flex-1 gap-1 py-2 min-w-[48px] outline-none"
+          whileTap={{ scale: 0.88 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+          className="flex flex-col items-center justify-center flex-1 gap-0.5 py-2 min-w-[48px] outline-none"
         >
-          <div className={`relative flex items-center justify-center w-11 h-11 rounded-2xl transition-all duration-200 ${
-            isMoreActive
-              ? 'text-gold bg-gold/8 scale-105'
-              : 'text-text-tertiary active:scale-90 active:bg-bg-secondary'
-          }`}>
-            <LayoutGrid size={21} strokeWidth={isMoreActive ? 2.5 : 1.75} />
-            {/* Badge shows when an overflow tab is active */}
+          <div className="relative flex items-center justify-center w-12 h-[30px]">
+            <div className={`flex items-center justify-center w-11 h-[30px] rounded-full transition-all duration-200 ${
+              isMoreActive ? 'bg-gold/12' : ''
+            }`}>
+              <LayoutGrid
+                size={22}
+                strokeWidth={isMoreActive ? 2.5 : 1.75}
+                className={`transition-colors duration-200 ${isMoreActive ? 'text-gold' : 'text-text-tertiary'}`}
+              />
+            </div>
+            {/* Badge: overflow module is active */}
             {overflowActive && (
               <motion.div
                 initial={{ scale: 0 }}
@@ -106,13 +135,20 @@ export default function BottomNav({ tabs, activeTab, onTabChange, lang }: Bottom
                 className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-gold rounded-full border-2 border-bg-primary shadow-[0_0_6px_rgba(201,151,28,0.5)]"
               />
             )}
+            {isMoreActive && (
+              <motion.span
+                layoutId="bottom-nav-indicator"
+                className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-5 h-[3px] bg-gold rounded-full shadow-[0_0_8px_rgba(201,151,28,0.6)]"
+                transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+              />
+            )}
           </div>
-          <span className={`text-[9px] font-black uppercase tracking-[0.15em] leading-none transition-colors ${
-            isMoreActive ? 'text-gold' : 'text-text-tertiary'
+          <span className={`text-[9px] font-black uppercase tracking-[0.12em] leading-none mt-1.5 transition-colors duration-200 ${
+            isMoreActive ? 'text-gold' : 'text-text-tertiary/60'
           }`}>
             {t('MORE')}
           </span>
-        </button>
+        </motion.button>
       </nav>
 
       {/* Modules Drawer */}

@@ -29,6 +29,21 @@ interface MetricCardProps {
   isCurrency?: boolean;
 }
 
+// Smart value shortener: 9,85,000 → ₹9.85L; 66,240 → ₹66.2K; etc.
+function formatShort(value: number | string, isCurrency: boolean): string {
+  const num = Number(value);
+  if (isNaN(num)) return String(value);
+  
+  const abs = Math.abs(num);
+  const prefix = num < 0 ? '-' : '';
+  const sym = isCurrency ? '₹' : '';
+
+  if (abs >= 10_00_00_000) return `${prefix}${sym}${(abs / 10_00_00_000).toFixed(1)}Cr`;
+  if (abs >= 1_00_000)    return `${prefix}${sym}${(abs / 1_00_000).toFixed(2)}L`;
+  if (abs >= 1_000)       return `${prefix}${sym}${(abs / 1_000).toFixed(1)}K`;
+  return `${prefix}${sym}${abs.toLocaleString('en-IN')}`;
+}
+
 export default function MetricCard({ 
   label, 
   value, 
@@ -54,17 +69,28 @@ export default function MetricCard({
     default: 'bg-gold'
   };
 
-  return (
-    <div className={`relative bg-bg-primary p-5 rounded-[1.8rem] border shadow-black/[0.02] shadow-xl transition-all hover:border-gold/30 group ${statusBorders[status]}`}>
-      {/* Subtle Status Top-bar */}
-      <div className={`absolute top-0 left-6 right-6 h-[2px] rounded-b-full opacity-30 group-hover:opacity-100 transition-opacity ${statusAccents[status]}`} />
+  const statusText = {
+    success: 'text-text-success',
+    warning: 'text-text-warning',
+    danger:  'text-text-danger',
+    info:    'text-text-info',
+    default: 'text-text-primary'
+  };
 
-      <div className="flex justify-between items-start mb-3">
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary">
+  const displayValue = formatShort(value, isCurrency);
+
+  return (
+    <div className={`relative bg-bg-primary p-4 rounded-2xl border transition-all hover:border-gold/30 hover:shadow-md group overflow-hidden ${statusBorders[status]}`}>
+      {/* Status accent top bar */}
+      <div className={`absolute top-0 left-4 right-4 h-[2px] rounded-b-full opacity-25 group-hover:opacity-80 transition-opacity ${statusAccents[status]}`} />
+
+      {/* Label + Sparkline */}
+      <div className="flex justify-between items-start mb-2 gap-2">
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-text-tertiary leading-tight flex-1">
           {label}
         </span>
         {trend && trend.length > 0 && (
-          <div className="opacity-60 group-hover:opacity-100 transition-opacity">
+          <div className="opacity-50 group-hover:opacity-100 transition-opacity flex-shrink-0">
             <SparkLine 
               data={trend} 
               color={status === 'default' ? 'var(--gold)' : `var(--text-${status})`} 
@@ -73,14 +99,16 @@ export default function MetricCard({
         )}
       </div>
       
-      <div className="flex items-baseline gap-1 overflow-hidden">
-        {isCurrency ? (
-          <RupeesDisplay amount={value} className="text-base md:text-xl font-black text-text-primary truncate leading-none" />
-        ) : (
-          <span className="text-base md:text-xl font-black text-text-primary truncate leading-none">{value}</span>
-        )}
+      {/* Value — adaptive sizing, never truncates */}
+      <div className="flex items-baseline gap-1 min-w-0">
+        <span
+          className={`font-black tabular-nums leading-none ${statusText[status]}`}
+          style={{ fontSize: 'clamp(0.95rem, 3.5cqi, 1.35rem)' }}
+        >
+          {displayValue}
+        </span>
         {unit && (
-          <span className="text-[9px] font-black uppercase text-text-tertiary tracking-widest ml-1">
+          <span className="text-[9px] font-black uppercase text-text-tertiary tracking-widest flex-shrink-0">
             {unit}
           </span>
         )}

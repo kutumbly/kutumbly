@@ -19,13 +19,13 @@
 import { useAppStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Home, Book, CheckSquare, IndianRupee,
-  Settings, LogOut, Shield, Heart, Users,
-  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap, Cloud, Milk, Flame
+  Settings, Shield, Heart,
+  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap, Cloud, Milk, Flame, LogOut
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation, Language } from "@/lib/i18n";
 import HomeModule from "@/components/dashboard/HomeModule";
 import DiaryModule from "@/components/dashboard/DiaryModule";
@@ -46,30 +46,29 @@ import BottomNav from "@/components/dashboard/BottomNav";
 import ModuleShell from "@/components/dashboard/ModuleShell";
 
 const ALL_TABS = [
-  { id: "home",    icon: Home },
-  { id: "diary",   icon: Book },
-  { id: "tasks",   icon: CheckSquare },
-  { id: "cash",    icon: IndianRupee },
-  { id: "suvidha", icon: Milk },
-  { id: "utsav",   icon: Calendar },
-  { id: "health",  icon: Heart },
-  { id: "invest",  icon: TrendingUp },
-  { id: "saman",   icon: Utensils },
-  { id: "sewak",   icon: Briefcase },
-  { id: "vidya",   icon: GraduationCap },
+  { id: "home",      icon: Home },
+  { id: "diary",     icon: Book },
+  { id: "tasks",     icon: CheckSquare },
+  { id: "cash",      icon: IndianRupee },
+  { id: "suvidha",   icon: Milk },
+  { id: "utsav",     icon: Calendar },
+  { id: "health",    icon: Heart },
+  { id: "invest",    icon: TrendingUp },
+  { id: "saman",     icon: Utensils },
+  { id: "sewak",     icon: Briefcase },
+  { id: "vidya",     icon: GraduationCap },
   { id: "sanskriti", icon: Flame },
-  { id: "sync",    icon: Cloud },
-  { id: "network", icon: Network },
-  { id: "setup",   icon: Settings },
+  { id: "sync",      icon: Cloud },
+  { id: "network",   icon: Network },
+  { id: "setup",     icon: Settings },
 ];
 
 export default function DashboardPage() {
   const router = useRouter();
   const {
     isUnlocked, activeVault, lockVault,
-    lang, setLang,
+    lang,
     hiddenModules, activeModule, setActiveModule,
-    theme,
   } = useAppStore();
   const t = useTranslation(lang as Language);
 
@@ -79,9 +78,8 @@ export default function DashboardPage() {
 
   if (!isUnlocked) return null;
 
-  // Filter hidden modules, always show setup
   const visibleTabs = ALL_TABS.filter(
-    (t) => t.id === "setup" || !hiddenModules.includes(t.id)
+    (tab) => tab.id === "setup" || !hiddenModules.includes(tab.id)
   );
 
   const handleLogout = () => {
@@ -89,27 +87,38 @@ export default function DashboardPage() {
     router.replace("/os");
   };
 
+  // Robust label fallback — never show raw key strings
+  const getTabLabel = (id: string) => {
+    const key = `NAV_${id.toUpperCase()}`;
+    const translated = t(key);
+    // If translation returns the raw key (no match), use title-cased id
+    if (translated === key) {
+      return id.charAt(0).toUpperCase() + id.slice(1);
+    }
+    return translated;
+  };
+
   const renderModule = () => {
     switch (activeModule) {
-      case "home":    return <HomeModule />;
-      case "diary":   return <DiaryModule />;
-      case "tasks":   return <TasksModule />;
-      case "cash":    return <CashModule />;
-      case "utsav":   return <UtsavModule />;
-      case "health":  return <HealthModule />;
-      case "invest":  return <InvestModule />;
-      case "saman":   return <SamanModule />;
-      case "sewak":   return <SewakModule />;
-      case "vidya":   return <VidyaModule />;
-      case "suvidha": return <SuvidhaModule />;
-      case "sanskriti": return <SanskritiModule />;
-      case "sync":    return <CloudSyncriptModule />;
-      case "network": return <NetworkModule />;
-      case "setup":   return <SetupModule />;
+      case "home":       return <HomeModule />;
+      case "diary":      return <DiaryModule />;
+      case "tasks":      return <TasksModule />;
+      case "cash":       return <CashModule />;
+      case "utsav":      return <UtsavModule />;
+      case "health":     return <HealthModule />;
+      case "invest":     return <InvestModule />;
+      case "saman":      return <SamanModule />;
+      case "sewak":      return <SewakModule />;
+      case "vidya":      return <VidyaModule />;
+      case "suvidha":    return <SuvidhaModule />;
+      case "sanskriti":  return <SanskritiModule />;
+      case "sync":       return <CloudSyncriptModule />;
+      case "network":    return <NetworkModule />;
+      case "setup":      return <SetupModule />;
       default:
         return (
           <ModuleShell
-            title={t(`NAV_${activeModule.toUpperCase()}`) || "Module"}
+            title={getTabLabel(activeModule)}
             subtitle={t('COMING_SOON')}
           >
             <div className="card aspect-video flex flex-col items-center justify-center border-dashed border-2 border-border-medium bg-bg-secondary/30">
@@ -126,112 +135,135 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col min-h-screen bg-bg-tertiary">
 
-      {/* ── App Header ─────────────────────────────────────────── */}
-      <header className="bg-bg-primary border-b border-border-light px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm shadow-black/[0.02] pt-safe">
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 md:w-7 md:h-7 bg-bg-primary border border-border-light rounded-xl flex items-center justify-center p-1 shadow-sm">
-             <Image src="/favicon.svg" alt="Logo" width={20} height={20} className="brightness-110" style={{ height: 'auto' }} />
+      {/* ── App Header ──────────────────────────────────────────── */}
+      <header className="sticky top-0 z-50 pt-safe">
+        <div className="bg-bg-primary/95 backdrop-blur-xl border-b border-border-light/60 px-4 md:px-6 py-3 flex items-center justify-between shadow-[0_1px_12px_rgba(0,0,0,0.05)]">
+          {/* Logo + Vault Name */}
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-bg-primary border border-border-light rounded-[10px] flex items-center justify-center p-1.5 shadow-sm shadow-black/[0.06]">
+              <Image src="/favicon.svg" alt="Kutumbly" width={20} height={20} className="brightness-110" style={{ height: 'auto' }} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[14px] font-black tracking-tight text-text-primary leading-none">Kutumbly</span>
+              {activeVault?.name && (
+                <span className="text-[10px] font-black text-gold uppercase tracking-[0.18em] leading-none mt-0.5 truncate max-w-[140px]">
+                  {activeVault.name}
+                </span>
+              )}
+            </div>
           </div>
-          <div className="flex flex-col md:flex-row md:items-baseline md:gap-2">
-            <span className="text-base md:text-lg font-black tracking-tight text-text-primary">Kutumbly</span>
-            <div className="flex items-center gap-2">
-              <span className="hidden md:block w-px h-3 bg-border-light" />
-              <span className="text-[10px] md:text-[11px] font-black text-gold uppercase tracking-[0.2em]">
-                {activeVault?.name || "Vault"}
+
+          {/* Right: Status + Lang + Lock */}
+          <div className="flex items-center gap-3 md:gap-5">
+            {/* Offline Badge — always visible */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bg-secondary border border-border-light">
+              <span className="w-1.5 h-1.5 rounded-full bg-text-success shadow-[0_0_6px_rgba(5,150,105,0.5)] animate-pulse" />
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-text-tertiary hidden sm:block">
+                {t('OFFLINE')}
               </span>
             </div>
+
+            {/* AES badge — desktop only */}
+            <div className="hidden md:flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-text-tertiary">
+              <Shield size={9} className="opacity-40" />
+              {t('AES_256')}
+            </div>
+
+            <span className="w-px h-4 bg-border-light hidden sm:block" />
+
+            {/* Language chip */}
+            <div className="text-[9px] uppercase font-black tracking-[0.2em] text-text-tertiary bg-bg-secondary border border-border-light px-2 py-1 rounded-lg">
+              {lang}
+            </div>
+
+            {/* Lock button */}
+            <button
+              onClick={handleLogout}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-text-tertiary hover:text-text-danger hover:bg-bg-danger/30 transition-all active:scale-90"
+              title="Lock Vault"
+            >
+              <LogOut size={16} />
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          {/* Offline badge */}
-          <div className="hidden md:flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.3em] text-text-tertiary">
-            <div className="flex items-center gap-1.5">
-               <span className="w-1.5 h-1.5 rounded-full bg-text-success shadow-[0_0_8px_rgba(5,150,105,0.4)]" />
-               {t('OFFLINE')}
-            </div>
-            <span>·</span>
-            <div className="flex items-center gap-1.5">
-               <Shield size={10} className="opacity-50" />
-               {t('AES_256')}
-            </div>
-          </div>
-          {/* Language display (change in Vyavastha) */}
-          <div className="text-[10px] uppercase font-black tracking-[0.2em] text-text-tertiary">
-            {lang}
-          </div>
-          
-          <span className="w-px h-4 bg-border-light mx-1" />
-
-          {/* Lock button */}
-          <button
-            onClick={handleLogout}
-            className="text-text-tertiary hover:text-text-danger transition-all active:scale-90"
-            title="Lock Vault"
-          >
-            <LogOut size={18} />
-          </button>
-        </div>
+        {/* ── Tab Navigation (Desktop) ──────────────────────────── */}
+        <nav className="hidden md:flex bg-bg-primary/90 backdrop-blur-xl border-b border-border-light/60 overflow-x-auto scroller-hide items-center px-3 shadow-[0_1px_8px_rgba(0,0,0,0.03)]">
+          {visibleTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeModule === tab.id;
+            const label = getTabLabel(tab.id);
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveModule(tab.id)}
+                className={`flex-shrink-0 px-4 py-3.5 text-[10px] font-black uppercase tracking-[0.18em] transition-all relative group flex items-center gap-2 ${
+                  isActive ? "text-gold" : "text-text-tertiary hover:text-text-primary"
+                }`}
+              >
+                <Icon
+                  size={13}
+                  strokeWidth={isActive ? 2.8 : 2}
+                  className={`transition-all ${isActive ? 'scale-110' : 'group-hover:scale-105'}`}
+                />
+                <span>{label}</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="active-tab-bar"
+                    className="absolute bottom-0 left-3 right-3 h-[2.5px] bg-gradient-to-r from-gold/70 via-gold to-gold/70 rounded-t-full"
+                  />
+                )}
+              </button>
+            );
+          })}
+        </nav>
       </header>
 
-      {/* ── Tab Navigation (Desktop Only) ─────────────────────────── */}
-      <nav className="hidden md:flex bg-bg-primary border-b border-border-light sticky top-[var(--header-height,57px)] z-40 overflow-x-auto scroller-hide items-center px-4">
-        {visibleTabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeModule === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveModule(tab.id)}
-              className={`flex-shrink-0 px-5 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative group ${
-                isActive ? "text-gold-text" : "text-text-tertiary hover:text-text-primary"
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <Icon size={14} strokeWidth={isActive ? 3 : 2} className="transition-transform group-active:scale-90" />
-                <span>{t(`NAV_${tab.id.toUpperCase()}`)}</span>
-              </div>
-              {isActive && (
-                <motion.div 
-                  layoutId="active-tab-bar"
-                  className="absolute bottom-0 left-5 right-5 h-[3px] bg-gold rounded-t-full shadow-[0_-4px_10px_rgba(201,151,28,0.2)]" 
-                />
-              )}
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* ── Main Content ───────────────────────────────────────── */}
-      <main className="flex-1 p-4 md:p-6 pb-nav-safe md:pb-8 max-w-5xl mx-auto w-full overscroll-contain">
+      {/* ── Main Content ────────────────────────────────────────── */}
+      <main className="flex-1 p-4 md:p-6 pb-nav-safe md:pb-10 max-w-5xl mx-auto w-full overscroll-contain">
+        {/* Home Greeting Banner */}
         {activeModule === "home" && (
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-text-primary">
-              {t('GREETING')}{" "}
-              {activeVault?.name?.split(" ")[0] || ""}
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 md:mb-8"
+          >
+            <h2 className="text-2xl md:text-3xl font-black text-text-primary tracking-tight">
+              {t('GREETING')}{" "}{activeVault?.name?.split(" ")[0] || ""}
             </h2>
-            <p className="text-[11px] font-bold text-text-tertiary uppercase tracking-widest mt-1">
+            <p className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.25em] mt-1.5 opacity-70">
               {new Date().toLocaleDateString(
                 ({ en: 'en-IN', hi: 'hi-IN', mr: 'mr-IN', gu: 'gu-IN', pa: 'pa-IN', ta: 'ta-IN', bho: 'hi-IN', kn: 'kn-IN', te: 'te-IN', ne: 'ne-NP', bn: 'bn-IN', mni: 'en-IN' } as Record<string, string>)[lang] ?? 'en-IN',
                 { weekday: "long", day: "numeric", month: "long", year: "numeric" }
               )}
             </p>
-          </div>
+          </motion.div>
         )}
-        {renderModule()}
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeModule}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
+            {renderModule()}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
-      {/* -- Mobile Navigation ------------------------------------ */}
-      <BottomNav 
-        tabs={visibleTabs as any} 
-        activeTab={activeModule} 
-        onTabChange={setActiveModule} 
-        lang={lang} 
+      {/* ── Mobile Navigation ─────────────────────────────────── */}
+      <BottomNav
+        tabs={visibleTabs as any}
+        activeTab={activeModule}
+        onTabChange={setActiveModule}
+        lang={lang}
       />
 
-      {/* ── Footer (Hide on mobile to prevent clutter) ─────────── */}
-      <footer className="hidden md:block py-6 text-center bg-bg-tertiary border-t border-border-light/50">
-        <div className="text-[9px] font-black uppercase tracking-[0.4em] text-text-tertiary opacity-40">
+      {/* ── Footer ────────────────────────────────────────────── */}
+      <footer className="hidden md:block py-4 text-center bg-bg-tertiary border-t border-border-light/40">
+        <div className="text-[9px] font-black uppercase tracking-[0.4em] text-text-tertiary opacity-30">
           Kutumbly Sovereign OS · Zero Cloud · Bharat
         </div>
       </footer>
