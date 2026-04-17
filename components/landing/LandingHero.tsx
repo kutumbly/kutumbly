@@ -28,10 +28,10 @@ export default function LandingHero() {
   const t = useTranslation(lang);
 
   const STATS = [
-    { value: "12", label: t('landing.hero.specs.hubs') || "Sovereign Hubs" },
-    { value: "0", label: t('landing.hero.specs.cloud') || "Cloud Servers" },
-    { value: "AES-256", label: t('landing.hero.specs.encryption') || "Encryption" },
-    { value: "∞", label: t('landing.hero.specs.access') || "Offline Use" },
+    { value: "12", label: t('landing.hero.specs.hubs') },
+    { value: "0", label: t('landing.hero.specs.cloud') },
+    { value: "AES-256", label: t('landing.hero.specs.encryption') },
+    { value: "∞", label: t('landing.hero.specs.access') },
   ];
 
   return (
@@ -52,7 +52,7 @@ export default function LandingHero() {
             <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-white/50 border border-gold/30 rounded-full shadow-sm backdrop-blur-md">
               <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
               <span className="text-[10px] font-black text-gold-text uppercase tracking-[0.35em]">
-                {t('landing.hero.tagline') || "India's First Family Sovereign OS"}
+                {t('landing.hero.tagline')}
               </span>
             </div>
           </motion.div>
@@ -65,12 +65,12 @@ export default function LandingHero() {
             className="space-y-4"
           >
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-text-primary leading-[1.03] tracking-tight font-inter-tight">
-              {t('landing.hero.title_part1') || "Your Family."}<br className="hidden md:block" />
-              <span className="text-gold">{t('landing.hero.title_part2') || "Your OS."}</span>
+              {t('landing.hero.title_part1')}<br className="hidden md:block" />
+              <span className="text-gold">{t('landing.hero.title_part2')}</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-text-secondary font-semibold leading-relaxed max-w-3xl mx-auto opacity-85 italic">
-              {t('landing.hero.manifesto') || `"You own your data. No cloud, no server, no compromise."`}
+              {t('landing.hero.manifesto')}
             </p>
           </motion.div>
 
@@ -87,7 +87,7 @@ export default function LandingHero() {
             >
               <div className="absolute inset-0 bg-gold translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500 ease-in-out -z-10" />
               <span className="flex items-center gap-3">
-                {t('landing.hero.init_btn') || "Launch Kutumbly"} <ArrowRight size={16} />
+                {t('landing.hero.init_btn')} <ArrowRight size={16} />
               </span>
             </Link>
 
@@ -95,7 +95,7 @@ export default function LandingHero() {
               href="/product"
               className="px-10 py-5 bg-white/50 border border-border-light text-text-primary rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-sm backdrop-blur-md hover:bg-white hover:shadow-md transition-all"
             >
-              {t('landing.hero.mission_btn') || "View All Modules"}
+              {t('landing.hero.mission_btn')}
             </Link>
           </motion.div>
 
@@ -126,10 +126,10 @@ export default function LandingHero() {
             className="flex flex-wrap items-center justify-center gap-3 pt-2"
           >
             {[
-              { icon: <Shield size={13} />, label: t('landing.hero.specs.aes') || "AES-256-GCM" },
-              { icon: <Lock size={13} />, label: t('landing.hero.specs.airgapped') || "Air-Gapped" },
-              { icon: <Database size={13} />, label: t('landing.hero.specs.sql') || "Local .kutumb Vault" },
-              { icon: <Cpu size={13} />, label: t('landing.hero.specs.agentic') || "Agentic AI Layer" },
+              { icon: <Shield size={13} />, label: t('landing.hero.specs.aes') },
+              { icon: <Lock size={13} />, label: t('landing.hero.specs.airgapped') },
+              { icon: <Database size={13} />, label: t('landing.hero.specs.sql') },
+              { icon: <Cpu size={13} />, label: t('landing.hero.specs.agentic') },
             ].map((b, i) => (
               <div key={i} className="flex items-center gap-2 px-4 py-2 bg-white/40 border border-border-light/60 rounded-full text-[9px] font-black text-text-tertiary uppercase tracking-widest shadow-sm backdrop-blur-sm">
                 <span className="text-gold">{b.icon}</span>

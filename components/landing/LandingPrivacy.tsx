@@ -63,22 +63,22 @@ export default function LandingPrivacy() {
           >
             <Lock size={14} className="text-gold" />
             <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-              {t('landing.privacy.verified') || "Privacy Architecture"}
+              {t('landing.privacy.verified')}
             </span>
           </motion.div>
 
           <h2 className="text-4xl md:text-6xl font-black text-text-primary tracking-tighter mb-6 leading-[1.1]">
-            {t('landing.privacy.title') || "Your Data."}<br />
-            <span className="text-gold">Your Custody.</span>
+            {t('landing.privacy.title')}<br />
+            <span className="text-gold">{t('common.privacy')}</span>
           </h2>
           <p className="text-text-secondary text-lg font-medium leading-relaxed italic opacity-80 mb-10">
-            {t('landing.privacy.desc') || "Privacy is not a feature in Kutumbly — it is the operating principle. Everything was designed from the ground up to ensure your family's data never touches a server, ever."}
+            {t('landing.privacy.desc')}
           </p>
 
           <div className="w-1 h-16 bg-gradient-to-b from-gold/40 to-transparent mx-auto rounded-full mb-10" />
 
           <blockquote className="text-2xl md:text-3xl font-black text-text-primary tracking-tight font-inter-tight leading-snug">
-            &quot;{t('landing.privacy.quote') || "Your family memory is not a product. It is a sovereign right."}&quot;
+            &quot;{t('landing.privacy.quote')}&quot;
           </blockquote>
         </div>
 
@@ -103,10 +103,10 @@ export default function LandingPrivacy() {
               </div>
               <div>
                 <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-1">
-                  {t('landing.privacy.pipeline') || "Security Pipeline"}
+                  {t('landing.privacy.pipeline')}
                 </div>
                 <div className="text-xs font-black text-text-success uppercase tracking-widest">
-                  {t('common.status.hardened') || "Verified & Hardened"}
+                  {t('common.status.hardened')}
                 </div>
               </div>
             </div>
@@ -132,7 +132,7 @@ export default function LandingPrivacy() {
               className="p-10 bg-bg-primary border border-border-light rounded-[3rem] shadow-sm hover:shadow-xl hover:shadow-gold/5 transition-all"
             >
               <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-8">
-                Sovereign Guarantees
+                {t('landing.footer.manifesto_header')}
               </div>
               <div className="space-y-4">
                 {GUARANTEES.map((g, i) => (
@@ -165,13 +165,13 @@ export default function LandingPrivacy() {
               </div>
               <div>
                 <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-1">
-                  {t('landing.privacy.verified') || "Verified Architecture"}
+                  {t('landing.privacy.verified')}
                 </div>
                 <div className="text-3xl font-black text-text-primary tracking-tighter font-inter-tight">
-                  {t('landing.hero.specs.airgapped') || "Air-Gapped"}
+                  {t('landing.hero.specs.airgapped')}
                 </div>
                 <div className="text-xs font-medium text-text-secondary mt-1 opacity-80">
-                  {t('landing.privacy.airgapped_sub') || "Fully offline. No internet required. Ever."}
+                  {t('landing.privacy.airgapped_sub')}
                 </div>
               </div>
             </motion.div>
@@ -180,7 +180,7 @@ export default function LandingPrivacy() {
             <div className="flex items-start gap-5 px-8 py-6 bg-clinical border border-border-light rounded-2xl">
               <Lock size={16} className="text-gold flex-shrink-0 mt-0.5" />
               <p className="text-sm font-bold text-text-secondary leading-relaxed">
-                {t('landing.privacy.infobar') || "Kutumbly uses the File System Access API to write the encrypted .kutumb vault directly to your chosen location. No intermediate server. No cloud buffer. Direct disk write only."}
+                {t('landing.privacy.infobar')}
               </p>
             </div>
           </div>

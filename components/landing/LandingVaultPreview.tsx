@@ -63,13 +63,13 @@ export default function LandingVaultPreview() {
       >
         <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/80 border border-gold/20 rounded-full mb-6 shadow-sm backdrop-blur-md">
           <Shield size={13} className="text-gold" />
-          <span className="text-[10px] font-black text-gold-text uppercase tracking-[0.3em]">Live OS Preview</span>
+          <span className="text-[10px] font-black text-gold-text uppercase tracking-[0.3em]">{t('landing.vault.live_preview')}</span>
         </div>
         <h2 className="text-3xl md:text-5xl font-black text-text-primary tracking-tight font-inter-tight mb-4">
-          The Sovereign Dashboard
+          {t('landing.vault.title')}
         </h2>
         <p className="text-text-secondary font-medium text-base max-w-xl mx-auto opacity-80">
-          Every family hub, one encrypted screen. This is what your Kutumbly OS looks like.
+          {t('landing.vault.desc')}
         </p>
       </motion.div>
 
@@ -91,12 +91,12 @@ export default function LandingVaultPreview() {
           <div className="flex items-center gap-3 py-2 px-6 bg-clinical rounded-xl border border-border-light shadow-inner">
             <Shield size={12} className="text-gold" />
             <span className="text-[9px] font-black text-text-primary uppercase tracking-[0.3em]">
-              {t('landing.vault.version_label') || "kutumbly-os · v1.0 · sovereign"}
+              {t('landing.vault.version_label')}
             </span>
           </div>
           <div className="flex items-center gap-2 text-[9px] font-black text-text-success uppercase tracking-widest">
             <div className="w-1.5 h-1.5 rounded-full bg-text-success animate-pulse" />
-            {t('landing.vault.session_encrypted') || "Session Encrypted"}
+            {t('landing.vault.session_encrypted')}
           </div>
         </div>
 
@@ -114,10 +114,10 @@ export default function LandingVaultPreview() {
                 <div className="w-12 h-12 bg-clinical border border-border-light rounded-xl flex items-center justify-center text-2xl shadow-sm">🏘️</div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-black text-text-primary leading-none mb-1 font-inter-tight truncate">
-                    {t('landing.vault.demo.name') || "Sharma Parivaar"}
+                    {t('landing.vault.demo.name')}
                   </div>
                   <div className="text-[9px] text-text-success font-black uppercase tracking-widest">
-                    {t('landing.vault.demo.status') || "Vault Active"}
+                    {t('landing.vault.demo.status')}
                   </div>
                 </div>
                 <Lock size={12} className="text-gold flex-shrink-0" />
@@ -150,7 +150,7 @@ export default function LandingVaultPreview() {
             {/* Add Vault button */}
             <div className="p-4 border-t border-border-light/40">
               <button className="w-full py-3 text-[9px] font-black text-text-tertiary flex items-center justify-center gap-2 hover:text-gold transition-all uppercase tracking-widest border border-border-light/60 rounded-xl hover:bg-white hover:shadow-sm">
-                <Plus size={12} /> {t('landing.vault.create') || "New Vault"}
+                <Plus size={12} /> {t('landing.vault.create')}
               </button>
             </div>
           </div>
@@ -163,10 +163,10 @@ export default function LandingVaultPreview() {
             <div className="flex items-center justify-between mb-8">
               <div>
                 <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-1">
-                  {t('landing.vault.dashboard_title') || "Home Dashboard"}
+                  {t('landing.vault.dashboard_title')}
                 </div>
                 <h3 className="text-xl font-black text-text-primary font-inter-tight">
-                  {t('landing.vault.greeting') || "Namaste, Sharma Ji"} 🙏
+                  {t('landing.vault.greeting')} 🙏
                 </h3>
               </div>
               <div className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex items-center gap-2">
@@ -204,13 +204,13 @@ export default function LandingVaultPreview() {
             {/* Sample recent activity */}
             <div className="bg-white border border-border-light rounded-2xl p-5 shadow-sm">
               <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-4">
-                {t('landing.vault.activity.title') || "Recent Activity"}
+                {t('landing.vault.activity.title')}
               </div>
               <div className="space-y-3">
                 {[
-                  { icon: "💰", text: t('landing.vault.activity.grocery') || "Grocery expense logged — ₹1,840", time: "2m ago", color: "text-amber-500" },
-                  { icon: "📚", text: t('landing.vault.activity.study') || "Arjun completed Physics session — 45 mins", time: "1h ago", color: "text-blue-500" },
-                  { icon: "🏥", text: t('landing.vault.activity.health') || "BP reading logged — 118/76 (Papa)", time: "3h ago", color: "text-rose-500" },
+                  { icon: "💰", text: t('landing.vault.activity.grocery'), time: "2m ago", color: "text-amber-500" },
+                  { icon: "📚", text: t('landing.vault.activity.study'), time: "1h ago", color: "text-blue-500" },
+                  { icon: "🏥", text: t('landing.vault.activity.health'), time: "3h ago", color: "text-rose-500" },
                 ].map((a, i) => (
                   <div key={i} className="flex items-center gap-3 text-xs">
                     <span className="text-lg leading-none">{a.icon}</span>
@@ -227,12 +227,12 @@ export default function LandingVaultPreview() {
         <div className="h-12 bg-white/80 border-t border-border-light px-8 flex items-center justify-between backdrop-blur-sm">
           <div className="flex items-center gap-6">
             <span className="text-[8px] font-black text-text-tertiary uppercase tracking-widest">{t('landing.vault.tech.pipe') || "SQL.js · WASM"}</span>
-            <span className="text-[8px] font-black text-text-tertiary uppercase tracking-widest">{t('landing.vault.tech.latency') || "Latency: &lt;2ms"}</span>
-            <span className="text-[8px] font-black text-text-tertiary uppercase tracking-widest">12 Hubs · 1 Vault</span>
+            <span className="text-[8px] font-black text-text-tertiary uppercase tracking-widest">{t('landing.vault.tech.latency') || "Latency: <2ms"}</span>
+            <span className="text-[8px] font-black text-text-tertiary uppercase tracking-widest">12 {t('landing.modules.tagline').split(' ')[1]} · 1 Vault</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-text-success shadow-[0_0_8px_rgba(6,95,70,0.4)]" />
-            <span className="text-[8px] font-black text-text-success uppercase tracking-widest">{t('landing.vault.tech.status') || "Air-Gapped · Secure"}</span>
+            <span className="text-[8px] font-black text-text-success uppercase tracking-widest">{t('landing.vault.tech.status')}</span>
           </div>
         </div>
       </motion.div>
@@ -249,10 +249,10 @@ export default function LandingVaultPreview() {
           href="/os"
           className="inline-flex items-center gap-3 h-14 px-10 bg-text-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gold transition-all shadow-lg shadow-black/10 hover:-translate-y-0.5"
         >
-          Open Kutumbly OS <ArrowRight size={16} />
+          {t('landing.vault.cta_btn')} <ArrowRight size={16} />
         </Link>
         <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mt-4 opacity-70">
-          Works in your browser · No install · No account required
+          {t('landing.vault.cta_sub')}
         </p>
       </motion.div>
     </div>

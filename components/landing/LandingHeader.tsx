@@ -111,13 +111,16 @@ export default function LandingHeader() {
                     {link.label}
                   </Link>
                 ))}
-                <div className="pt-2 border-t border-border-light mt-2">
+                <div className="pt-2 border-t border-border-light mt-2 space-y-3">
+                  <div className="flex justify-center p-2">
+                    <LanguageSwitcher />
+                  </div>
                   <Link
                     href="/os"
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center justify-center gap-2 w-full h-14 bg-text-primary text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gold transition-all"
                   >
-                    {t('landing.header.open_os') || "Open OS"} <ArrowRight size={14} />
+                    {t('landing.header.open_os')} <ArrowRight size={14} />
                   </Link>
                 </div>
               </div>

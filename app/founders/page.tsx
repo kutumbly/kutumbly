@@ -35,7 +35,7 @@ export default function FoundersPage() {
       <div className="min-h-screen bg-bg-primary text-text-primary pt-24 pb-32">
         <div className="max-w-6xl mx-auto px-6 py-20">
           <Link href="/" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-tertiary hover:text-gold transition-colors mb-12">
-            <ArrowLeft size={16} /> {lang === 'en' ? 'Return to Home' : 'वापस होम'}
+            <ArrowLeft size={16} /> {t('common.return_home')}
           </Link>
           
           <div className="text-center mb-24">
@@ -52,7 +52,7 @@ export default function FoundersPage() {
               transition={{ delay: 0.1 }}
               className="text-text-secondary text-sm md:text-base font-bold uppercase tracking-[0.2em] opacity-80 max-w-2xl mx-auto"
             >
-              Bridging deep enterprise technology with family software sovereignty
+              {t('landing.founders.subtitle')}
             </motion.p>
           </div>
 
@@ -67,7 +67,7 @@ export default function FoundersPage() {
                <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-bl-[200px] -z-10 group-hover:bg-gold/10 transition-all"></div>
                <div className="flex items-center gap-3 mb-10">
                   <Star className="text-gold" />
-                  <h3 className="font-black uppercase tracking-widest text-[11px] text-text-primary">Founder & Principal Financier</h3>
+                  <h3 className="font-black uppercase tracking-widest text-[11px] text-text-primary">{t('landing.founders.pd.role')}</h3>
                </div>
                
                <div className="mb-10 flex items-center gap-8">
@@ -78,13 +78,13 @@ export default function FoundersPage() {
                     <h4 className="text-4xl font-black tracking-tight text-text-primary mb-1">
                        {t('FOUNDER_PUSHPA')}
                     </h4>
-                    <p className="text-xs font-bold text-text-tertiary uppercase tracking-[0.2em]">Head of Sales & Vision · Gorakhpur</p>
+                    <p className="text-xs font-bold text-text-tertiary uppercase tracking-[0.2em]">{t('landing.founders.pd.tagline')}</p>
                   </div>
                </div>
 
                <div className="text-base font-medium text-text-secondary leading-[1.8] space-y-6">
                   <p className="italic font-bold text-text-primary border-l-4 border-gold pl-6 py-2 bg-gold/5 rounded-r-2xl">
-                    &quot;Real wisdom isn&apos;t inherited in a classroom or a boardroom; it’s forged in the village and tempered by raw experience.&quot;
+                    &quot;{t('landing.founders.pd.quote')}&quot;
                   </p>
                   <p>
                     {t('landing.founders.pd.bio_1')}
@@ -105,7 +105,7 @@ export default function FoundersPage() {
                <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-bl-[200px] -z-10 group-hover:bg-gold/10 transition-all"></div>
                <div className="flex items-center gap-3 mb-10">
                   <Code className="text-gold" />
-                  <h3 className="font-black uppercase tracking-widest text-[11px] text-text-primary">Founder & System Architect</h3>
+                  <h3 className="font-black uppercase tracking-widest text-[11px] text-text-primary">{t('landing.founders.jm.role')}</h3>
                </div>
                
                <div className="mb-10 flex items-center gap-8">
@@ -116,13 +116,13 @@ export default function FoundersPage() {
                     <h4 className="text-4xl font-black tracking-tight text-text-primary mb-1">
                       {t('FOUNDER_JAWAHAR')}
                     </h4>
-                    <p className="text-xs font-bold text-text-tertiary uppercase tracking-[0.2em]">Lead Engineer · 19+ Years Exp</p>
+                    <p className="text-xs font-bold text-text-tertiary uppercase tracking-[0.2em]">{t('landing.founders.jm.tagline')}</p>
                   </div>
                </div>
 
                <div className="text-base font-medium text-text-secondary leading-[1.8] space-y-6">
                   <p className="italic font-bold text-text-primary border-l-4 border-gold pl-6 py-2 bg-gold/5 rounded-r-2xl">
-                    &quot;Bridging elite, heavy-duty enterprise technology with uncompromising family software sovereignty.&quot;
+                    &quot;{t('landing.founders.jm.quote')}&quot;
                   </p>
                   <p>
                     {t('landing.founders.jm.bio_1')}

@@ -141,16 +141,16 @@ export default function LandingModules() {
           <div className="inline-flex items-center gap-3 px-4 py-2 bg-clinical border border-border-light rounded-full mb-8 shadow-sm">
             <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
             <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] font-inter">
-              {t('landing.modules.tagline') || "12 Sovereign Hubs"}
+              {t('landing.modules.tagline')}
             </span>
           </div>
 
           <h2 className="text-4xl md:text-6xl font-black text-text-primary mb-6 tracking-tight font-inter-tight leading-[1.05]">
-            {t('landing.modules.header_top') || "One OS."}<br />
-            <span className="text-gold">{t('landing.modules.header_bottom') || "Every Role of Your Home."}</span>
+            {t('landing.modules.header_top')}<br />
+            <span className="text-gold">{t('landing.modules.header_bottom')}</span>
           </h2>
           <p className="text-text-secondary max-w-2xl mx-auto font-medium text-lg md:text-xl opacity-80 leading-relaxed">
-            {t('landing.modules.desc') || "Kutumbly replaces 12+ scattered apps with one sovereign, encrypted, offline-first ecosystem — built for the Indian family."}
+            {t('landing.modules.desc')}
           </p>
         </motion.div>
 
@@ -212,9 +212,9 @@ export default function LandingModules() {
           className="mt-16 p-10 bg-bg-tertiary border border-border-light rounded-[3rem] flex flex-col md:flex-row items-center justify-between gap-8 shadow-sm"
         >
           <div>
-            <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-2">Sovereign Architecture</div>
-            <h3 className="text-2xl font-black text-text-primary tracking-tight font-inter-tight">All 12 Hubs. One encrypted <span className="text-gold">.kutumb</span> file.</h3>
-            <p className="text-sm text-text-secondary font-medium mt-2 max-w-xl">Every hub runs fully offline. Your data never leaves your device. No subscriptions, no cloud, no compromise.</p>
+            <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-2">{t('landing.privacy.verified')}</div>
+            <h3 className="text-2xl font-black text-text-primary tracking-tight font-inter-tight">{t('landing.modules.cta.title')}</h3>
+            <p className="text-sm text-text-secondary font-medium mt-2 max-w-xl">{t('landing.modules.cta.desc')}</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <div className="flex items-center gap-2 px-5 py-3 bg-white border border-border-light rounded-2xl shadow-sm">
@@ -223,7 +223,7 @@ export default function LandingModules() {
             </div>
             <div className="flex items-center gap-2 px-5 py-3 bg-white border border-border-light rounded-2xl shadow-sm">
               <Lock size={14} className="text-gold" />
-              <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">Zero Cloud</span>
+              <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('landing.hero.specs.airgapped')}</span>
             </div>
           </div>
         </motion.div>

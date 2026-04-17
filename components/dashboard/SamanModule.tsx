@@ -91,7 +91,7 @@ export default function SamanModule() {
   };
 
   const handleApplyBaseline = () => {
-    if (window.confirm("Initialize your kitchen with standard Indian essentials (Atta, Dal, Oil)?")) {
+    if (window.confirm(t('SAMAN_INIT_PROMPT'))) {
       applyBaseline();
       setShowAddForm(false);
     }
@@ -103,7 +103,7 @@ export default function SamanModule() {
   const totalEstimated = items.filter(i => !i.checked).reduce((acc, i) => acc + i.estimated_price, 0);
 
   const getBreadcrumbs = () => {
-    const b = [t('FAMILY_GROCERY')];
+    const b = [t('SAMAN_HUB')];
     if (view === 'category-items' || view === 'item-detail') b.push(activeCategory || '');
     if (view === 'item-detail') b.push(activeItem?.name || '');
     return b;
@@ -117,13 +117,13 @@ export default function SamanModule() {
   return (
     <ModuleShell 
       title={
-        view === 'overview' ? t('FAMILY_GROCERY') :
-        view === 'category-items' ? `${activeCategory} List` :
-        activeItem?.name || "Item Details"
+        view === 'overview' ? t('SAMAN_HUB') :
+        view === 'category-items' ? `${activeCategory} ${t('SAMAN_ITEM_LIST')}` :
+        activeItem?.name || t('SAMAN_ITEM_DETAILS')
       }
-      subtitle={view === 'overview' ? t('SMART_SHOPPING') : undefined}
+      subtitle={view === 'overview' ? t('SAMAN_SUBTITLE') : undefined}
       onAdd={view === 'overview' && !showAddForm ? () => setShowAddForm(true) : undefined}
-      addLabel={t('ADD_SAAMAN')}
+      addLabel={t('SAMAN_ADD_ITEM')}
       breadcrumbs={view !== 'overview' ? getBreadcrumbs() : undefined}
       onBack={view !== 'overview' ? handleBack : undefined}
     >
@@ -147,14 +147,14 @@ export default function SamanModule() {
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-                  {t('KIRANA_ADD')}
+                  {t('SAMAN_KIRANA_ADD_MDL')}
                 </h3>
                 <button onClick={() => setShowAddForm(false)} className="text-text-tertiary hover:text-text-danger text-xs font-bold">✕</button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
-                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('ITEM_NAME')}</label>
-                  <input autoFocus value={fName} onChange={e => setFName(e.target.value)} placeholder="e.g. Basmati Rice"
+                  <label className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('SAMAN_ITEM_NAME')}</label>
+                  <input autoFocus value={fName} onChange={e => setFName(e.target.value)} placeholder={t('SAMAN_BASMATI_PH')}
                     className="bg-bg-secondary border border-border-light rounded-2xl p-4 text-sm font-bold text-text-primary focus:outline-none focus:border-gold transition-all" />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -188,7 +188,7 @@ export default function SamanModule() {
               </div>
               <button onClick={handleAddItem} disabled={!fName.trim()}
                 className="w-full h-14 bg-gold-text text-white font-black rounded-2xl text-[11px] uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-30 shadow-lg shadow-gold/10">
-                {t('KIRANA_ADD')}
+                {t('SAMAN_KIRANA_ADD')}
               </button>
             </motion.div>
           )}
@@ -225,7 +225,7 @@ export default function SamanModule() {
                  </div>
                  <h4 className="text-base font-black text-text-primary uppercase tracking-[0.2em] relative z-10">{String(cat)}</h4>
                  <div className="mt-4 px-4 py-1.5 bg-bg-tertiary rounded-full border border-border-light text-[10px] font-black text-text-tertiary uppercase tracking-widest relative z-10 group-hover:bg-gold/5 group-hover:text-gold group-hover:border-gold/20 transition-all">
-                    {catItems.length} items
+                    {catItems.length} {t('NAV_SAMAN')}
                  </div>
                </motion.div>
              );
@@ -236,8 +236,8 @@ export default function SamanModule() {
                  <div className="w-24 h-24 bg-bg-tertiary rounded-full flex items-center justify-center mb-8">
                     <ShoppingCart size={48} strokeWidth={1} className="text-text-tertiary" />
                  </div>
-                 <h2 className="text-sm font-black uppercase tracking-[0.5em] max-w-[250px] leading-relaxed">Inventory Archive Empty</h2>
-                 <p className="text-[10px] font-bold mt-4 uppercase tracking-widest opacity-60">Initialize your kitchen baseline to begin.</p>
+                 <h2 className="text-sm font-black uppercase tracking-[0.5em] max-w-[250px] leading-relaxed">{t('SAMAN_INVENTORY_EMPTY')}</h2>
+                 <p className="text-[10px] font-bold mt-4 uppercase tracking-widest opacity-60">{t('SAMAN_INIT_KITCHEN_PH')}</p>
               </div>
            )}
         </div>
@@ -254,10 +254,10 @@ export default function SamanModule() {
               </div>
               <div>
                  <h4 className="text-lg font-black text-text-primary tracking-tight">
-                   {lang === 'hi' ? 'Rasoi ki Taiyari?' : 'Initialize Kitchen?'}
+                   {t('SAMAN_RASOI_TAIYARI')}
                  </h4>
                  <p className="text-[11px] text-text-tertiary font-black uppercase tracking-[0.2em] mt-1 opacity-80">
-                   {lang === 'hi' ? 'Indian Essentials ek-saath jodein' : 'Add 20+ Indian Household Essentials'}
+                   {t('SAMAN_INDIAN_ESSENTIALS')}
                  </p>
               </div>
            </div>
@@ -278,7 +278,7 @@ export default function SamanModule() {
         >
           <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-4">
               <div className="flex items-center justify-between px-6 py-4 border-b border-border-light/50 mb-4">
-                 <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Item List</div>
+                 <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">{t('SAMAN_ITEM_LIST')}</div>
               </div>
                   {items.filter(it => it.category === activeCategory).map((item, idx) => {
                 const stockHealth = Math.min(100, (item.current_stock / (item.threshold || 1)) * 100);
@@ -297,7 +297,7 @@ export default function SamanModule() {
                           {item.checked ? <CheckCircle2 size={32} strokeWidth={3} /> : <Circle size={32} strokeWidth={2} />}
                        </button>
                        {isLow && !item.checked && (
-                         <div className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse shadow-lg shadow-red-600/20" title="Low Stock" />
+                         <div className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse shadow-lg shadow-red-600/20" title={t('SAMAN_LOW_STOCK')} />
                        )}
                     </div>
                     
@@ -358,34 +358,34 @@ export default function SamanModule() {
            <div className="p-0 border-b border-border-light">
               <table className="w-full text-left">
                  <tbody>
-                    <tr className="border-b border-border-light/50">
-                       <td className="p-6 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] w-1/3">Status</td>
-                       <td className="p-6 text-sm font-black text-text-secondary">
-                          {activeItem.checked ? (
-                             <span className="text-success flex items-center gap-2"><CheckCircle2 size={16}/> Purchased</span>
-                          ) : (
-                             <span className="text-warning flex items-center gap-2"><Clock size={16}/> Pending</span>
-                          )}
-                       </td>
-                    </tr>
-                    <tr className="border-b border-border-light/50">
-                       <td className="p-6 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Estimate</td>
-                       <td className="p-6 text-xl font-black text-text-primary">
-                          ₹{activeItem.estimated_price.toLocaleString()}
-                       </td>
-                    </tr>
-                    <tr className="border-b border-border-light/50">
-                       <td className="p-6 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Current Stock</td>
-                       <td className="p-6 text-sm font-black text-text-primary">
-                          {activeItem.current_stock} {activeItem.unit}
-                       </td>
-                    </tr>
-                    <tr className="border-b border-border-light/50">
-                       <td className="p-6 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Low Threshold</td>
-                       <td className="p-6 text-sm font-black text-text-danger">
-                          {activeItem.threshold} {activeItem.unit}
-                       </td>
-                    </tr>
+                     <tr className="border-b border-border-light/50">
+                        <td className="p-6 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] w-1/3">{t('SAMAN_STATUS')}</td>
+                        <td className="p-6 text-sm font-black text-text-secondary">
+                           {activeItem.checked ? (
+                              <span className="text-success flex items-center gap-2"><CheckCircle2 size={16}/> {t('SAMAN_PURCHASED')}</span>
+                           ) : (
+                              <span className="text-warning flex items-center gap-2"><Clock size={16}/> {t('SAMAN_PENDING')}</span>
+                           )}
+                        </td>
+                     </tr>
+                     <tr className="border-b border-border-light/50">
+                        <td className="p-6 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{t('SAMAN_ESTIMATE')}</td>
+                        <td className="p-6 text-xl font-black text-text-primary">
+                           ₹{activeItem.estimated_price.toLocaleString()}
+                        </td>
+                     </tr>
+                     <tr className="border-b border-border-light/50">
+                        <td className="p-6 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{t('SAMAN_CURRENT_STOCK')}</td>
+                        <td className="p-6 text-sm font-black text-text-primary">
+                           {activeItem.current_stock} {activeItem.unit}
+                        </td>
+                     </tr>
+                     <tr className="border-b border-border-light/50">
+                        <td className="p-6 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{t('SAMAN_LOW_THRESHOLD')}</td>
+                        <td className="p-6 text-sm font-black text-text-danger">
+                           {activeItem.threshold} {activeItem.unit}
+                        </td>
+                     </tr>
                  </tbody>
               </table>
            </div>
@@ -404,21 +404,21 @@ export default function SamanModule() {
                    setShowAddForm(true);
                    setView('overview'); 
                 }}
-                className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-border-light text-text-primary font-black text-[11px] uppercase tracking-widest hover:bg-gold-text hover:text-white transition-all shadow-sm active:scale-[0.98] focus:outline-none"
+                 className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-border-light text-text-primary font-black text-[11px] uppercase tracking-widest hover:bg-gold-text hover:text-white transition-all shadow-sm active:scale-[0.98] focus:outline-none"
               >
-                 Edit Item
+                 {t('SAMAN_EDIT_ITEM')}
               </button>
               <button 
                 onClick={() => {
-                   if (window.confirm(t('CONFIRM_DELETE') || "Delete this item permanently?")) {
+                   if (window.confirm(t('SAMAN_CONFIRM_DELETE'))) {
                       deleteItem(activeItem.id);
                       setView('category-items');
                       setActiveItem(null);
                    }
                 }}
-                className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-text-danger/10 text-text-danger font-black text-[11px] uppercase tracking-widest hover:bg-text-danger hover:text-white transition-all shadow-sm active:scale-[0.98] focus:outline-none"
+                 className="w-full h-14 flex items-center justify-center gap-2 rounded-2xl bg-text-danger/10 text-text-danger font-black text-[11px] uppercase tracking-widest hover:bg-text-danger hover:text-white transition-all shadow-sm active:scale-[0.98] focus:outline-none"
               >
-                 Delete Item
+                 {t('SAMAN_DELETE_ITEM')}
               </button>
            </div>
         </motion.div>

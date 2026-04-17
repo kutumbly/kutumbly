@@ -44,11 +44,11 @@ import { UtilityVendor } from '@/types/db';
 type SuvidhaView = 'dashboard' | 'vendors' | 'ledger';
 
 const VENDOR_TYPES = [
-  { id: 'milk', label: 'Milkman', icon: Milk, color: '#3B82F6' },
-  { id: 'water', label: 'Water Supply', icon: Droplets, color: '#0EA5E9' },
-  { id: 'helper', label: 'Helper/Maid', icon: Users, color: '#EC4899' },
-  { id: 'paper', label: 'Newspaper', icon: History, color: '#8B5CF6' },
-  { id: 'other', label: 'Other', icon: Settings2, color: '#64748B' },
+  { id: 'milk', label: 'SUVIDHA_MILKMAN', icon: Milk, color: '#3B82F6' },
+  { id: 'water', label: 'SUVIDHA_WATER', icon: Droplets, color: '#0EA5E9' },
+  { id: 'helper', label: 'SUVIDHA_HELPER', icon: Users, color: '#EC4899' },
+  { id: 'paper', label: 'SUVIDHA_PAPER', icon: History, color: '#8B5CF6' },
+  { id: 'other', label: 'SUVIDHA_OTHER', icon: Settings2, color: '#64748B' },
 ];
 
 export default function SuvidhaModule() {
@@ -111,19 +111,19 @@ export default function SuvidhaModule() {
 
   return (
     <ModuleShell
-      title="Suvidha Hub"
-      subtitle="Utility Tally & Monthly Bills"
+      title={t('SUVIDHA_HUB')}
+      subtitle={t('SUVIDHA_SUBTITLE')}
       onAdd={() => setShowAddVendor(true)}
-      addLabel="New Vendor"
+      addLabel={t('SUVIDHA_NEW_VENDOR')}
     >
       <div className="flex flex-col gap-8">
         
         {/* Navigation Tabs (Pill Style) */}
         <div className="flex bg-bg-secondary p-1.5 rounded-2xl border border-border-light self-start relative">
           {[
-            { id: 'dashboard', label: 'Dashboard', icon: Calendar },
-            { id: 'ledger', label: 'Ledger', icon: Table },
-            { id: 'vendors', label: 'Vendors', icon: Settings2 },
+            { id: 'dashboard', label: t('SUVIDHA_DASHBOARD'), icon: Calendar },
+            { id: 'ledger', label: t('SUVIDHA_LEDGER'), icon: Table },
+            { id: 'vendors', label: t('SUVIDHA_VENDORS'), icon: Settings2 },
           ].map(tab => (
             <button
               key={tab.id}
@@ -155,9 +155,9 @@ export default function SuvidhaModule() {
               
               {/* Summary Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <MetricCard label="Current Month Milk" value={currentMonthMilk} status="default" unit="Liters" />
-                <MetricCard label="Amount Payable" value={summary.totalDue} isCurrency status="warning" />
-                <MetricCard label="Active Services" value={vendors.length} status="success" unit="Vendors" />
+                <MetricCard label={t('SUVIDHA_CURRENT_MILK')} value={currentMonthMilk} status="default" unit={t('SUVIDHA_LITERS')} />
+                <MetricCard label={t('SUVIDHA_PAYABLE')} value={summary.totalDue} isCurrency status="warning" />
+                <MetricCard label={t('SUVIDHA_ACTIVE_SERVICES')} value={vendors.length} status="success" unit={t('SUVIDHA_VENDORS')} />
               </div>
 
 
@@ -165,12 +165,12 @@ export default function SuvidhaModule() {
               <section className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl shadow-black/[0.02]">
                 <div className="flex items-center justify-between mb-8">
                   <div>
-                    <h3 className="text-xl font-black text-text-primary">Daily Tally</h3>
-                    <p className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">Entry for {new Date().toLocaleDateString(undefined, { weekday:'long', day:'numeric', month:'short' })}</p>
+                    <h3 className="text-xl font-black text-text-primary">{t('SUVIDHA_DAILY_TALLY')}</h3>
+                    <p className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">{t('SUVIDHA_ENTRY_FOR')} {new Date().toLocaleDateString(undefined, { weekday:'long', day:'numeric', month:'short' })}</p>
                   </div>
                   <div className="flex items-center gap-2 px-4 py-2 bg-bg-tertiary rounded-full border border-border-light">
                     <History size={14} className="text-text-tertiary" />
-                    <span className="text-[10px] font-black text-text-tertiary">Bulk Log Yesterday</span>
+                    <span className="text-[10px] font-black text-text-tertiary">{t('SUVIDHA_BULK_LOG')}</span>
                   </div>
                 </div>
 
@@ -191,7 +191,7 @@ export default function SuvidhaModule() {
                              <div>
                                <h4 className="text-base font-black text-text-primary tracking-tight">{v.name}</h4>
                                <p className="text-[10px] font-black text-text-tertiary uppercase tracking-widest mt-1">
-                                 ₹{v.rate_per_unit} / {v.type === 'milk' ? 'liter' : v.type === 'helper' ? 'day' : 'unit'}
+                                 ₹{v.rate_per_unit} / {v.type === 'milk' ? t('SUVIDHA_LITER') : v.type === 'helper' ? t('SUVIDHA_DAY') : t('SUVIDHA_UNIT')}
                                </p>
                              </div>
                            </div>
@@ -235,7 +235,7 @@ export default function SuvidhaModule() {
                      <div className="w-20 h-20 bg-bg-tertiary rounded-full flex items-center justify-center mb-6">
                         <Milk size={44} strokeWidth={1} className="text-text-tertiary" />
                      </div>
-                     <p className="text-[10px] font-black uppercase tracking-[0.4em] max-w-[200px] leading-relaxed">No active utility services found in vault</p>
+                     <p className="text-[10px] font-black uppercase tracking-[0.4em] max-w-[200px] leading-relaxed">{t('SUVIDHA_NO_SERVICES')}</p>
                    </div>
                  )}
 
@@ -257,15 +257,15 @@ export default function SuvidhaModule() {
                       </button>
                     </div>
                     <h4 className="text-lg font-black text-text-primary mb-1">{v.name}</h4>
-                    <p className="text-[10px] font-black text-text-tertiary uppercase tracking-widest mb-4">{v.type} Service</p>
+                    <p className="text-[10px] font-black text-text-tertiary uppercase tracking-widest mb-4">{t(v.type === 'milk' ? 'SUVIDHA_MILKMAN' : v.type === 'water' ? 'SUVIDHA_WATER' : v.type === 'helper' ? 'SUVIDHA_HELPER' : v.type === 'paper' ? 'SUVIDHA_PAPER' : 'SUVIDHA_OTHER')}</p>
                     
                     <div className="space-y-3 pt-4 border-t border-border-light">
                       <div className="flex justify-between items-center">
-                        <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Rate</span>
+                        <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('SUVIDHA_RATE')}</span>
                         <span className="text-sm font-black text-text-primary">₹{v.rate_per_unit}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Billing Day</span>
+                        <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('SUVIDHA_BILLING_DAY')}</span>
                         <span className="text-sm font-black text-text-primary">{v.billing_cycle_day}th</span>
                       </div>
                     </div>
@@ -286,7 +286,7 @@ export default function SuvidhaModule() {
                 className="bg-bg-primary w-full max-w-lg rounded-[3rem] border border-border-light shadow-2xl overflow-hidden"
               >
                 <div className="p-8 border-b border-border-light bg-bg-tertiary flex items-center justify-between">
-                  <h3 className="text-xl font-black text-text-primary">Configure New Suvidha</h3>
+                  <h3 className="text-xl font-black text-text-primary">{t('SUVIDHA_CONFIGURE')}</h3>
                   <button onClick={() => setShowAddVendor(false)} className="text-text-tertiary hover:text-text-primary transition-colors">
                     <XCircle size={24} />
                   </button>
@@ -294,21 +294,21 @@ export default function SuvidhaModule() {
                 
                 <div className="p-8 space-y-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">Vendor Name</label>
-                    <input autoFocus type="text" value={vName} onChange={e => setVName(e.target.value)} placeholder="e.g. Krishna Dairy" className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold outline-none focus:border-gold" />
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('SUVIDHA_VENDOR_NAME')}</label>
+                    <input autoFocus type="text" value={vName} onChange={e => setVName(e.target.value)} placeholder={t('SUVIDHA_VENDOR_PH')} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold outline-none focus:border-gold" />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">Service Type</label>
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('SUVIDHA_SERVICE_TYPE')}</label>
                     <div className="flex flex-wrap gap-2">
-                      {VENDOR_TYPES.map(t => (
+                       {VENDOR_TYPES.map(vt => (
                         <button 
-                          key={t.id}
-                          onClick={() => setVType(t.id)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${vType === t.id ? 'bg-gold-text text-white border-gold-text' : 'bg-bg-tertiary text-text-tertiary border-border-light hover:border-gold/30'}`}
+                          key={vt.id}
+                          onClick={() => setVType(vt.id)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${vType === vt.id ? 'bg-gold-text text-white border-gold-text' : 'bg-bg-tertiary text-text-tertiary border-border-light hover:border-gold/30'}`}
                         >
-                          <t.icon size={14} />
-                          {t.label}
+                          <vt.icon size={14} />
+                          {t(vt.label)}
                         </button>
                       ))}
                     </div>
@@ -316,19 +316,19 @@ export default function SuvidhaModule() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">Rate (₹)</label>
+                      <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('SUVIDHA_RATE')} (₹)</label>
                       <input type="number" value={vRate} onChange={e => setVRate(e.target.value)} placeholder="65" className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold outline-none focus:border-gold" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">Billing Cycle Day</label>
+                      <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('SUVIDHA_BILLING_DAY')}</label>
                       <input type="number" min="1" max="31" value={vBillingDay} onChange={e => setVBillingDay(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-sm font-bold outline-none focus:border-gold" />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">Handle By Member</label>
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('SUVIDHA_HANDLE_BY')}</label>
                     <div className="flex flex-wrap gap-2">
-                      <button onClick={() => setVMember('')} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase border transition-all ${!vMember ? 'bg-bg-tertiary text-gold border-gold/30' : 'bg-bg-primary text-text-tertiary border-border-light'}`}>House Manager</button>
+                      <button onClick={() => setVMember('')} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase border transition-all ${!vMember ? 'bg-bg-tertiary text-gold border-gold/30' : 'bg-bg-primary text-text-tertiary border-border-light'}`}>{t('SUVIDHA_HOUSE_MANAGER')}</button>
                       {members.map(m => (
                         <button key={m.id} onClick={() => setVMember(m.id)} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase border transition-all ${vMember === m.id ? 'bg-gold-text text-white' : 'bg-bg-primary text-text-tertiary border-border-light'}`}>{m.name}</button>
                       ))}
@@ -336,7 +336,7 @@ export default function SuvidhaModule() {
                   </div>
 
                   <button onClick={handleSaveVendor} className="w-full bg-gold-text text-white font-black tracking-widest h-14 rounded-2xl shadow-xl mt-4 uppercase flex items-center justify-center gap-3">
-                    <Plus size={18} /> Add to System
+                    <Plus size={18} /> {t('SUVIDHA_ADD_SYSTEM')}
                   </button>
                 </div>
               </motion.div>

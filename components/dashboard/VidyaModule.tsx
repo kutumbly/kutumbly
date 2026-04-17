@@ -295,7 +295,7 @@ export default function VidyaModule() {
               <ArrowRight className="w-5 h-5 opacity-40 rotate-180" />
             </button>
             <h2 className="text-xl font-black text-text-primary tracking-tight">
-              {view === 'edit-learner' ? 'Refine Vidyarthi Profile' : t('NEW_LEARNER')}
+              {view === 'edit-learner' ? t('VIDYA_REFINE_PROFILE') : t('NEW_LEARNER')}
             </h2>
           </div>
 
@@ -343,7 +343,7 @@ export default function VidyaModule() {
 
             <button onClick={handleSaveLearner} disabled={!fLName} className="w-full mt-2 bg-gold-text hover:opacity-90 text-white font-black tracking-[0.2em] h-14 rounded-2xl shadow-xl transition-all disabled:opacity-50 uppercase flex items-center justify-center gap-3">
               {view === 'edit-learner' ? <Save size={18} /> : <PlusCircle size={18} />}
-              {view === 'edit-learner' ? 'Update Profile' : t('ADD_LEARNER')}
+              {view === 'edit-learner' ? t('VIDYA_UPDATE_PROFILE') : t('ADD_LEARNER')}
             </button>
           </div>
         </motion.div>
@@ -353,10 +353,10 @@ export default function VidyaModule() {
         <div className="space-y-10 md:space-y-12">
           {/* Top Global Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-             <MetricCard label="Active Students" value={vidya.learners.length} status="default" />
-             <MetricCard label="Total Resources" value={vidya.learners.reduce((acc, l) => acc + (vidya.getStats(l.id).resourceCount), 0)} status="success" />
-             <MetricCard label="Mins Studied" value={vidya.learners.reduce((acc, l) => acc + (vidya.getStats(l.id).totalMins), 0)} unit="m" status="success" />
-             <MetricCard label="Avg Progress" value="68%" status="warning" />
+             <MetricCard label={t('VIDYA_ACTIVE_STUDENTS')} value={vidya.learners.length} status="default" />
+             <MetricCard label={t('VIDYA_TOTAL_RESOURCES')} value={vidya.learners.reduce((acc, l) => acc + (vidya.getStats(l.id).resourceCount), 0)} status="success" />
+             <MetricCard label={t('VIDYA_MINS_STUDIED')} value={vidya.learners.reduce((acc, l) => acc + (vidya.getStats(l.id).totalMins), 0)} unit="m" status="success" />
+             <MetricCard label={t('VIDYA_AVG_PROGRESS')} value="68%" status="warning" />
           </div>
 
           <section className="space-y-6">
@@ -458,9 +458,9 @@ export default function VidyaModule() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8 relative z-10">
              <StatPill icon={<Clock size={20} />} label={t('TOTAL_STUDY')} value={fmtMins(learnerStats?.totalMins || 0)} />
-             <StatPill icon={<CheckCircle2 size={20} className="text-success" />} label="Lessons Done" value={learnerStats?.completedCount || 0} />
+             <StatPill icon={<CheckCircle2 size={20} className="text-success" />} label={t('VIDYA_LESSONS_DONE')} value={learnerStats?.completedCount || 0} />
              <StatPill icon={<BookOpen size={20} className="text-info" />} label={t('RESOURCES')} value={learnerStats?.resourceCount || 0} />
-             <StatPill icon={<TrendingUp size={20} className="text-gold" />} label="Curved Finish" value={`${Math.round(((learnerStats?.completedCount || 0) / (learnerStats?.resourceCount || 1)) * 100)}%`} />
+             <StatPill icon={<TrendingUp size={20} className="text-gold" />} label={t('VIDYA_CURVED_FINISH')} value={`${Math.round(((learnerStats?.completedCount || 0) / (learnerStats?.resourceCount || 1)) * 100)}%`} />
           </div>
 
           <div className="mt-8 relative z-10">
@@ -471,7 +471,7 @@ export default function VidyaModule() {
         <section className="space-y-6">
           <div className="flex items-center justify-between px-2">
             <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-               Curriculum & Progress
+               {t('VIDYA_CURRICULUM')}
             </div>
             <button onClick={() => { setIsEditingSubject(null); setFSubName(''); setFSubCat('Science'); setShowAddSubject(true); }} className="text-[10px] font-black text-gold-text uppercase tracking-widest hover:underline flex items-center gap-1">
                <Plus size={14} /> {t('ADD_SUBJECT')}
@@ -492,7 +492,7 @@ export default function VidyaModule() {
                        </div>
                        <div className="flex-1">
                           <h4 className="text-lg font-black text-text-primary tracking-tight leading-tight mb-1">{s.name}</h4>
-                          <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{s.category || 'General'}</span>
+                          <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{s.category || t('MONEY_GENERAL')}</span>
                        </div>
                        <div className="text-right">
                           <div className="text-xl font-black text-text-primary tabular-nums tracking-tighter">{progress}%</div>
@@ -537,18 +537,18 @@ export default function VidyaModule() {
                 </div>
                 <div className="space-y-6">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('DURATION_MINS')} *</label>
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('VIDYA_SAMAY')} *</label>
                     <input type="number" value={fSDur} onChange={e => setFSDur(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 font-black text-xl text-text-primary outline-none focus:border-gold" placeholder="60" />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">Specific Vishay</label>
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('VIDYA_SPECIFIC_VISHAY')}</label>
                     <select value={fSSub} onChange={e => setFSSub(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 font-bold text-text-primary outline-none focus:border-gold appearance-none cursor-pointer">
-                      <option value="">Swadhyaya (Independent Study)</option>
+                      <option value="">{t('VIDYA_SWADHYAYA')}</option>
                       {learnerSubjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                     </select>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('MOOD')}</label>
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('VIDYA_MOOD')}</label>
                     <div className="grid grid-cols-4 gap-2">
                        {MOODS.map(m => (
                          <button key={m.val} onClick={() => setFSMood(m.val as any)} className={`p-3 rounded-xl border flex flex-col items-center gap-1 transition-all ${fSMood === m.val ? 'bg-gold-text text-white border-gold-text shadow-md' : 'bg-bg-tertiary text-text-tertiary border-border-light hover:border-gold/30'}`}>
@@ -558,7 +558,7 @@ export default function VidyaModule() {
                        ))}
                     </div>
                   </div>
-                  <button onClick={handleLogSession} disabled={!fSDur} className="w-full h-14 bg-gold-text text-white font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-xl shadow-gold/20 disabled:opacity-50 mt-4">Log Attendance</button>
+                  <button onClick={handleLogSession} disabled={!fSDur} className="w-full h-14 bg-gold-text text-white font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-xl shadow-gold/20 disabled:opacity-50 mt-4">{t('VIDYA_LOG_ATTENDANCE')}</button>
                 </div>
               </motion.div>
             </div>
@@ -568,13 +568,13 @@ export default function VidyaModule() {
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
               <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white border border-border-light rounded-[32px] p-8 max-w-sm w-full shadow-2xl">
                 <div className="flex items-center justify-between mb-8">
-                   <h3 className="text-lg font-black text-text-primary tracking-tight">{isEditingSubject ? 'Modify Subject' : t('ADD_SUBJECT')}</h3>
+                   <h3 className="text-lg font-black text-text-primary tracking-tight">{isEditingSubject ? t('VIDYA_MODIFY_SUBJECT') : t('ADD_SUBJECT')}</h3>
                    <button onClick={() => setShowAddSubject(false)} className="text-text-tertiary hover:text-danger"><X size={20}/></button>
                 </div>
                 <div className="space-y-6">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">Subject Name</label>
-                    <input type="text" value={fSubName} onChange={e => setFSubName(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 font-black text-text-primary outline-none focus:border-gold" placeholder="e.g. Molecular Biology" />
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('VIDYA_SUBJECT_NAME')}</label>
+                    <input type="text" value={fSubName} onChange={e => setFSubName(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 font-black text-text-primary outline-none focus:border-gold" placeholder={t('VIDYA_SUBJECT_PH')} />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('TASKS_CATEGORY')}</label>
@@ -585,7 +585,7 @@ export default function VidyaModule() {
                     </select>
                   </div>
                   <button onClick={handleSaveSubject} disabled={!fSubName} className="w-full h-14 bg-gold-text text-white font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-xl shadow-gold/20 disabled:opacity-50 mt-4">
-                    {isEditingSubject ? 'Update Subject' : 'Initialize Subject'}
+                    {isEditingSubject ? t('VIDYA_UPDATE_SUBJECT') : t('VIDYA_INIT_SUBJECT')}
                   </button>
                 </div>
               </motion.div>
@@ -606,7 +606,7 @@ export default function VidyaModule() {
         <section className="space-y-6">
           <div className="flex items-center justify-between px-2">
             <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-               Study Units & Resources
+               {t('VIDYA_STUDY_UNITS')}
             </div>
             <button onClick={() => { setIsEditingResource(null); setFResName(''); setShowAddResource(true); }} className="text-[10px] font-black text-gold-text uppercase tracking-widest hover:underline flex items-center gap-1">
                <Plus size={14} /> {t('ADD_RESOURCE')}
@@ -630,7 +630,7 @@ export default function VidyaModule() {
               <div className="md:col-span-2 bg-bg-primary border-2 border-dashed border-border-light rounded-[3rem] py-16 flex flex-col items-center justify-center text-center opacity-40">
                  <Play size={32} className="text-text-tertiary mb-3" strokeWidth={1} />
                  <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-1">{t('NO_RESOURCES')}</p>
-                 <button onClick={() => setShowAddResource(true)} className="mt-4 text-[9px] font-black text-gold-text hover:underline">Add First Resource</button>
+                 <button onClick={() => setShowAddResource(true)} className="mt-4 text-[9px] font-black text-gold-text hover:underline">{t('VIDYA_ADD_FIRST_RES')}</button>
               </div>
              )}
           </div>
@@ -641,12 +641,12 @@ export default function VidyaModule() {
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
               <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white border border-border-light rounded-[32px] p-8 max-w-sm w-full shadow-2xl overflow-y-auto max-h-[90vh] scroller-hide">
                 <div className="flex items-center justify-between mb-8">
-                   <h3 className="text-lg font-black text-text-primary tracking-tight">{isEditingResource ? 'Modify Unit' : 'Add Study Unit'}</h3>
+                   <h3 className="text-lg font-black text-text-primary tracking-tight">{isEditingResource ? t('VIDYA_MODIFY_UNIT') : t('VIDYA_ADD_STUDY_UNIT')}</h3>
                    <button onClick={() => setShowAddResource(false)} className="text-text-tertiary hover:text-danger"><X size={20}/></button>
                 </div>
                 <div className="space-y-6">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">Resource Type</label>
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('VIDYA_RES_TYPE')}</label>
                     <div className="grid grid-cols-3 gap-2">
                        {Object.keys(RESOURCE_LABELS).map(type => (
                          <button key={type} onClick={() => setFResType(type as any)} className={`p-3 rounded-xl border flex flex-col items-center gap-1 transition-all ${fResType === type ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-bg-tertiary text-text-tertiary border-border-light hover:border-indigo-400/30'}`}>
@@ -658,12 +658,12 @@ export default function VidyaModule() {
                   </div>
                   
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">Unit Title *</label>
-                    <input type="text" value={fResName} onChange={e => setFResName(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 font-black text-text-primary outline-none focus:border-gold" placeholder="Introduction to Relativity" />
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('VIDYA_UNIT_TITLE')}</label>
+                    <input type="text" value={fResName} onChange={e => setFResName(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 font-black text-text-primary outline-none focus:border-gold" placeholder={t('VIDYA_UNIT_PH')} />
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">URL / Link</label>
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('VIDYA_URL_LINK')}</label>
                     <input type="text" value={rUrl} onChange={e => setRUrl(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-xs font-bold text-indigo-600 outline-none focus:border-gold" placeholder="https://..." />
                   </div>
 
@@ -677,18 +677,18 @@ export default function VidyaModule() {
                         </select>
                      </div>
                      <div className="flex flex-col gap-2">
-                        <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">Est. Time (M)</label>
+                        <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('VIDYA_EST_TIME')}</label>
                         <input type="number" value={fResDur} onChange={e => setFResDur(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-xs font-black outline-none focus:border-gold" placeholder="30" />
                      </div>
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">Chapter / Topic</label>
-                    <input type="text" value={rChapter} onChange={e => setRChapter(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-xs font-bold outline-none focus:border-gold" placeholder="Unit 1 — Core Laws" />
+                    <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('VIDYA_CHAPTER_TOPIC')}</label>
+                    <input type="text" value={rChapter} onChange={e => setRChapter(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 text-xs font-bold outline-none focus:border-gold" placeholder={t('VIDYA_CHAPTER_PH')} />
                   </div>
 
                   <button onClick={handleSaveResource} disabled={!fResName} className="w-full h-14 bg-indigo-600 text-white font-black rounded-2xl text-[11px] uppercase tracking-widest shadow-xl shadow-indigo-600/20 disabled:opacity-50 mt-4">
-                    {isEditingResource ? 'Save Changes' : 'Append to Course'}
+                    {isEditingResource ? t('VIDYA_SAVE_CHANGES') : t('VIDYA_APPEND_COURSE')}
                   </button>
                 </div>
               </motion.div>
@@ -722,7 +722,7 @@ export default function VidyaModule() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
            <div className="bg-bg-primary border border-border-light rounded-[2rem] p-8">
-              <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-6">Course Material</h3>
+              <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-6">{t('VIDYA_COURSE_MATERIAL')}</h3>
               {activeResource.url ? (
                 <div className="space-y-6">
                    <div className="p-6 bg-bg-tertiary rounded-2xl border border-border-light flex items-center justify-between">
@@ -746,20 +746,20 @@ export default function VidyaModule() {
                 </div>
               ) : (
                 <div className="py-12 border-2 border-dashed border-border-light rounded-2xl flex flex-col items-center justify-center text-[10px] font-black uppercase tracking-widest text-text-tertiary opacity-40">
-                   No Source Linked
+                   {t('VIDYA_NO_SOURCE')}
                 </div>
               )}
            </div>
 
            <div className="space-y-6">
               <div className="bg-bg-primary border border-border-light rounded-[2rem] p-8 flex flex-col items-center justify-center text-center">
-                 <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-8">Siddhi (Completion) Signal</h3>
+                 <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-8">{t('VIDYA_COMPLETION_SIGNAL')}</h3>
                  <button 
                    onClick={() => vidya.toggleComplete(activeResource.id, activeResource.is_completed)}
                    className={`w-48 h-48 rounded-full border-8 flex flex-col items-center justify-center gap-4 transition-all duration-500 ${activeResource.is_completed ? 'bg-text-success/5 border-text-success text-text-success shadow-2xl shadow-text-success/20' : 'bg-bg-tertiary border-border-light text-text-tertiary hover:border-indigo-400 hover:text-indigo-600'}`}
                  >
                     {activeResource.is_completed ? <CheckCircle2 size={64} className="animate-pulse" /> : <Circle size={64} />}
-                    <span className="text-xs font-black uppercase tracking-widest">{activeResource.is_completed ? 'Sampurna' : 'Mark Siddhi'}</span>
+                    <span className="text-xs font-black uppercase tracking-widest">{activeResource.is_completed ? t('VIDYA_SAMPURNA') : t('VIDYA_MARK_SIDDHI')}</span>
                  </button>
               </div>
 
@@ -788,7 +788,7 @@ export default function VidyaModule() {
         view === 'overview' ? t('STUDY_BUDDY') :
         view === 'learner' ? activeLearner?.name ?? t('LEARNERS').slice(0, -1) :
         view === 'subject' ? activeSubject?.name ?? t('SUBJECTS').slice(0, -1) :
-        view === 'edit-learner' ? 'Profile Editor' :
+        view === 'edit-learner' ? t('VIDYA_PROFILE_EDITOR') :
         activeResource?.title ?? t('RESOURCES').slice(0, -1)
       }
       subtitle={view === 'overview' ? t('SMART_LEARNING') : undefined}
@@ -830,7 +830,7 @@ function LearningFlame({ streak }: { streak: number }) {
         />
       </motion.div>
       <div className="text-[10px] font-black text-gold-text uppercase tracking-widest">
-         {streak} DAY TAPASYA
+         {streak} {t('VIDYA_TAPASYA')}
       </div>
     </div>
   );
@@ -843,9 +843,9 @@ function StudyRhythm({ data }: { data: { label: string; mins: number }[] }) {
       <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none" />
       <div className="flex items-center justify-between mb-8 relative z-10">
         <h4 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-           STUDY RHYTHM (7 DAYS)
+           {t('VIDYA_STUDY_RHYTHM')}
         </h4>
-        <div className="text-[10px] font-black text-gold-text opacity-60 tabular-nums">MINUTES / DAY</div>
+        <div className="text-[10px] font-black text-gold-text opacity-60 tabular-nums">{t('VIDYA_MINS_PER_DAY')}</div>
       </div>
       <div className="flex items-end justify-between gap-3 h-32 px-2 relative z-10">
         {data.map((d, i) => (

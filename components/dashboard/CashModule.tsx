@@ -166,7 +166,7 @@ export default function CashModule() {
               <ArrowLeft size={20} />
             </button>
             <h2 className="text-xl font-black text-text-primary tracking-tight">
-              {isEditing ? "Edit Voucher Details" : t('MONEY_INCOME')}
+              {isEditing ? t('MONEY_EDIT_VOUCHER') : t('MONEY_INCOME')}
             </h2>
           </div>
           
@@ -203,9 +203,9 @@ export default function CashModule() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">TAG FAMILY MEMBER</label>
+              <label className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] pl-2">{t('MONEY_TAG_MEMBER')}</label>
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => setFMember('')} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${!fMember ? 'bg-bg-tertiary text-gold-text border-gold/30 shadow-sm' : 'bg-bg-primary text-text-tertiary border-border-light hover:border-gold/30'}`}>General</button>
+                <button onClick={() => setFMember('')} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${!fMember ? 'bg-bg-tertiary text-gold-text border-gold/30 shadow-sm' : 'bg-bg-primary text-text-tertiary border-border-light hover:border-gold/30'}`}>{t('MONEY_GENERAL')}</button>
                 {members.map(m => (
                   <button key={m.id} onClick={() => setFMember(m.id)} className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${fMember === m.id ? 'bg-gold-text text-white border-gold-text shadow-md' : 'bg-bg-primary text-text-tertiary border-border-light hover:border-gold/30'}`}>{m.name}</button>
                 ))}
@@ -239,7 +239,7 @@ export default function CashModule() {
              <MetricCard label={t('MONEY_EXPENSE')} value={summary.expense} isCurrency status="danger" trend={[5000, 12000, 8000, 15000, summary.expense]} />
              <div className="bg-bg-primary rounded-[1.8rem] border border-border-light p-5 flex flex-col justify-between shadow-xl shadow-black/[0.02]">
                <div className="flex justify-between items-center mb-3">
-                 <span className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] leading-tight">Savings Rate</span>
+                 <span className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] leading-tight">{t('MONEY_SAVINGS_RATE')}</span>
                  <span className="text-sm font-black text-text-success tabular-nums">{summary.income > 0 ? (((summary.income - summary.expense) / summary.income) * 100).toFixed(0) : 0}%</span>
                </div>
                <div className="w-full bg-bg-tertiary h-2 rounded-full overflow-hidden">
@@ -272,18 +272,18 @@ export default function CashModule() {
            {/* Budget Tracking */}
            <section className="lg:col-span-2 space-y-6">
              <div className="flex items-center justify-between px-2">
-               <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Monthly Budget Status</div>
+               <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">{t('MONEY_BUDGET_STATUS')}</div>
                <button 
                  onClick={() => {
-                   const cat = window.prompt("Enter Category (e.g., Grocery):");
+                   const cat = window.prompt(t('MONEY_PROMPT_CAT'));
                    if (!cat) return;
-                   const amt = window.prompt("Enter Monthly Limit (₹):");
+                   const amt = window.prompt(t('MONEY_PROMPT_AMT'));
                    if (!amt) return;
                    setCategoryBudget(cat, Number(amt));
                  }}
                  className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline"
                >
-                 + Define Budget
+                 {t('MONEY_DEFINE_BUDGET')}
                </button>
              </div>
              
@@ -304,7 +304,7 @@ export default function CashModule() {
                   );
                 }) : (
                   <div className="col-span-full py-12 text-center bg-bg-primary border border-border-light border-dashed rounded-[2rem] opacity-40">
-                     <p className="text-[10px] font-black uppercase tracking-widest">No active budgets found in this vault</p>
+                     <p className="text-[10px] font-black uppercase tracking-widest">{t('MONEY_BUDGET_EMPTY')}</p>
                   </div>
                 )}
              </div>
@@ -312,7 +312,7 @@ export default function CashModule() {
 
            {/* Quick Actions Sidebar */}
            <div className="space-y-4">
-             <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] px-2">Sovereign Treasury</div>
+             <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] px-2">{t('MONEY_TREASURY')}</div>
              
              <button
                onClick={() => setShowAddForm(true)}
@@ -323,13 +323,13 @@ export default function CashModule() {
 
              <div className="bg-bg-primary border border-border-light rounded-[2rem] p-6 space-y-4 shadow-xl shadow-black/[0.01]">
                <div className="flex items-center justify-between">
-                 <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Efficiency Rate</span>
-                 <span className="text-[10px] font-black text-text-tertiary">HIGH</span>
+                 <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('MONEY_EFFICIENCY')}</span>
+                 <span className="text-[10px] font-black text-text-tertiary">{t('MONEY_EFFICIENCY_HIGH')}</span>
                </div>
                <div className="w-full bg-bg-tertiary h-1 rounded-full overflow-hidden">
                  <div className="w-3/4 h-full bg-gold" />
                </div>
-               <p className="text-[10px] font-medium text-text-secondary leading-relaxed opacity-80 italic">"Your cash liquidity is high. Consider moving to Sovereign Invest for better yields."</p>
+               <p className="text-[10px] font-medium text-text-secondary leading-relaxed opacity-80 italic">"{t('MONEY_LIQUIDITY_MSG')}"</p>
              </div>
            </div>
          </div>
@@ -377,7 +377,7 @@ export default function CashModule() {
                      onClick={() => setFilter(f)}
                      className={`text-[9px] font-black uppercase px-4 py-2 rounded-lg transition-all ${filter === f ? 'bg-gold-text text-white shadow-md' : 'text-text-tertiary hover:text-text-primary'}`}
                    >
-                     {f}
+                     {t('MONEY_FILTER_' + f.toUpperCase())}
                    </button>
                  ))}
               </div>
@@ -505,7 +505,7 @@ export default function CashModule() {
                <Receipt size={36} />
             </div>
             
-            <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.4em] mb-3">VOUCHER No. {activeVoucher.id}</h3>
+            <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.4em] mb-3">{t('MONEY_VOUCHER_NO')} {activeVoucher.id}</h3>
             <h2 className="text-4xl font-black text-text-primary tracking-tighter mb-2">₹{activeVoucher.amount.toLocaleString('en-IN')}</h2>
             <div className="flex items-center justify-center gap-2 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">
                <span>{activeVoucher.category}</span>
@@ -516,7 +516,7 @@ export default function CashModule() {
           
           <div className="p-10 space-y-8">
              <div>
-                <label className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em]">{t('NARRATION_LABEL')}</label>
+                <label className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em]">{t('MONEY_NARRATION')}</label>
                 <div className="mt-2 text-base font-bold text-text-secondary p-4 bg-bg-tertiary rounded-2xl border border-border-light">
                    {activeVoucher.description}
                 </div>
@@ -530,7 +530,7 @@ export default function CashModule() {
                   }}
                   className="flex-1 h-14 flex items-center justify-center gap-2 rounded-2xl border-2 border-red-500/20 text-red-500 font-black text-[11px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all focus:outline-none"
                 >
-                   <Trash2 size={16} /> Delete Voucher
+                   <Trash2 size={16} /> {t('MONEY_DELETE_VOUCHER')}
                 </button>
                  <button 
                   onClick={() => {
@@ -545,7 +545,7 @@ export default function CashModule() {
                   }}
                   className="flex-1 h-14 flex items-center justify-center gap-2 rounded-2xl border border-border-light text-text-primary font-black text-[11px] uppercase tracking-widest hover:bg-bg-tertiary transition-all"
                 >
-                   Edit Voucher
+                   {t('MONEY_EDIT_VOUCHER')}
                 </button>
              </div>
           </div>

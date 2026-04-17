@@ -63,10 +63,8 @@ export default function LandingFooter() {
               </p>
             </div>
 
-            <p className="text-sm text-text-secondary font-medium leading-relaxed opacity-80">
-              One encrypted .kutumb file. <br />
-              12 sovereign family hubs. <br />
-              Zero cloud. Zero compromise.
+            <p className="text-xs text-text-secondary font-medium leading-relaxed opacity-80">
+              {t('landing.footer.disclaimer')}
             </p>
 
             <div className="space-y-3">
@@ -124,7 +122,7 @@ export default function LandingFooter() {
             </div>
 
             <div className="mt-8 p-5 bg-clinical border border-border-light rounded-2xl">
-              <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-2">Built By</div>
+              <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-2">{t('common.built_by') || "Built By"}</div>
               <div className="text-sm font-black text-text-primary font-inter-tight">Jawahar R. M.</div>
               <div className="text-[9px] font-black text-text-tertiary uppercase tracking-widest opacity-70 mt-1">
                 AITDL Network · Sovereign Division

@@ -133,7 +133,7 @@ kutumbly/
 
 ## 7. Founders & Visionaries
 
-* **Pushpa D (Head of Sales & Vision):** Brings profound operational, logistical, and financial understanding, driving Kutumbly from an ambitious concept into a sovereign reality.
+* **Pushpa D. (Head of Sales & Vision):** Brings profound operational, logistical, and financial understanding, driving Kutumbly from an ambitious concept into a sovereign reality.
 * **Jawahar R. M. (Founder & System Architect):** With over 19 years of deep enterprise-grade engineering (architecting for Tally, Aditya Birla, Raymond), Jawahar engineered Kutumbly to be an impenetrable vault bridging elite technology with family software sovereignty.
 
 ---
