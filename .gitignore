@@ -45,3 +45,11 @@ next-env.d.ts
 # build artifacts
 public/sw.js
 public/workbox-*.js
+
+# kutumbly scratch and temp
+scratch/
+*.zip
+*.html
+!app/**/*.html
+!components/**/*.html
+!public/**/*.html
