@@ -77,35 +77,39 @@ export default function MissionLedger({ event }: MissionLedgerProps) {
   return (
     <div className="space-y-8 pb-32">
       {/* 1. Statistics Ribbon */}
+      {/* 1. Statistics Ribbon (Premium Glass) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-6 shadow-xl flex items-center justify-between">
-          <div>
-            <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mb-1">Total Mila (Received)</p>
-            <h3 className="text-2xl font-black text-text-success"><RupeesDisplay amount={stats.totalMila} /></h3>
-          </div>
-          <div className="p-3 bg-text-success/10 rounded-2xl text-text-success">
-            <TrendingUp size={20} />
-          </div>
+        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl flex items-center justify-between group hover:border-text-success/30 transition-all card-lift relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-text-success/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-text-success/10 transition-all" />
+           <div className="relative z-10">
+              <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2 opacity-60">Total Mila (Received)</p>
+              <h3 className="text-3xl font-black text-text-success tabular-nums tracking-tighter"><RupeesDisplay amount={stats.totalMila} /></h3>
+           </div>
+           <div className="w-14 h-14 rounded-2xl bg-text-success/5 border border-text-success/10 flex items-center justify-center text-text-success shadow-inner relative z-10 group-hover:scale-110 transition-transform">
+              <TrendingUp size={28} />
+           </div>
         </div>
 
-        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-6 shadow-xl flex items-center justify-between">
-          <div>
-            <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mb-1">Total Diya (Given)</p>
-            <h3 className="text-2xl font-black text-text-danger"><RupeesDisplay amount={stats.totalDiya} /></h3>
-          </div>
-          <div className="p-3 bg-text-danger/10 rounded-2xl text-text-danger">
-            <TrendingDown size={20} />
-          </div>
+        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl flex items-center justify-between group hover:border-text-danger/30 transition-all card-lift relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-text-danger/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-text-danger/10 transition-all" />
+           <div className="relative z-10">
+              <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2 opacity-60">Total Diya (Given)</p>
+              <h3 className="text-3xl font-black text-text-danger tabular-nums tracking-tighter"><RupeesDisplay amount={stats.totalDiya} /></h3>
+           </div>
+           <div className="w-14 h-14 rounded-2xl bg-text-danger/5 border border-text-danger/10 flex items-center justify-center text-text-danger shadow-inner relative z-10 group-hover:scale-110 transition-transform">
+              <TrendingDown size={28} />
+           </div>
         </div>
 
-        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-6 shadow-xl flex items-center justify-between">
-          <div>
-            <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mb-1">Mission Balance</p>
-            <h3 className="text-2xl font-black text-gold"><RupeesDisplay amount={stats.net} /></h3>
-          </div>
-          <div className="p-3 bg-gold/10 rounded-2xl text-gold">
-            <History size={20} />
-          </div>
+        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl flex items-center justify-between group hover:border-gold/30 transition-all card-lift relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-gold/10 transition-all" />
+           <div className="relative z-10">
+              <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2 opacity-60">Mission Balance</p>
+              <h3 className="text-3xl font-black text-gold tabular-nums tracking-tighter"><RupeesDisplay amount={stats.net} /></h3>
+           </div>
+           <div className="w-14 h-14 rounded-2xl bg-gold/5 border border-gold/10 flex items-center justify-center text-gold shadow-inner relative z-10 group-hover:scale-110 transition-transform">
+              <History size={28} />
+           </div>
         </div>
       </div>
 
@@ -130,40 +134,45 @@ export default function MissionLedger({ event }: MissionLedgerProps) {
         </button>
       </div>
 
-      {/* 3. Ledger Grid */}
+      {/* 3. Ledger Grid (Premium Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <AnimatePresence>
-          {filteredLedger.map((l) => (
+          {filteredLedger.map((l, i) => (
             <motion.div 
               key={l.id}
               layout
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 group hover:border-gold/30 transition-all relative overflow-hidden"
+              transition={{ delay: i * 0.05 }}
+              className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 group hover:border-gold/30 hover:shadow-2xl transition-all relative overflow-hidden card-lift"
             >
-              <div className="flex justify-between items-start mb-6">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-gold/5 rounded-full blur-2xl -mr-12 -mt-12 group-hover:bg-gold/10 transition-colors" />
+              
+              <div className="flex justify-between items-start mb-6 relative z-10">
                  <div>
-                    <h4 className="text-sm font-black text-text-primary mb-1">{l.family_name}</h4>
-                    <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Updated: {new Date(l.updated_at).toLocaleDateString()}</p>
+                    <h4 className="text-base font-black text-text-primary mb-1 group-hover:text-gold transition-colors">{l.family_name}</h4>
+                    <p className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] opacity-60">
+                      Authorized: {new Date(l.updated_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                    </p>
                  </div>
-                 <div className={`text-base font-black tabular-nums ${l.net >= 0 ? 'text-text-success' : 'text-text-danger'}`}>
+                 <div className={`text-xl font-black tabular-nums tracking-tighter ${l.net >= 0 ? 'text-text-success' : 'text-text-danger'}`}>
                     {l.net > 0 ? '+' : ''}<RupeesDisplay amount={l.net} />
                  </div>
               </div>
 
-              <div className="space-y-3">
-                 <div className="flex justify-between items-center text-[10px] font-bold text-text-tertiary uppercase">
-                    <span>Diya (Given)</span>
-                    <span className="text-text-danger"><RupeesDisplay amount={l.diya} /></span>
+              <div className="space-y-4 relative z-10">
+                 <div className="flex justify-between items-center p-3 bg-bg-tertiary rounded-xl border border-border-light/50">
+                    <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">Diya (Given)</span>
+                    <span className="text-[11px] font-black text-text-danger tabular-nums tracking-tight"><RupeesDisplay amount={l.diya} /></span>
                  </div>
-                 <div className="flex justify-between items-center text-[10px] font-bold text-text-tertiary uppercase">
-                    <span>Mila (Received)</span>
-                    <span className="text-text-success"><RupeesDisplay amount={l.mila} /></span>
+                 <div className="flex justify-between items-center p-3 bg-bg-tertiary rounded-xl border border-border-light/50">
+                    <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">Mila (Received)</span>
+                    <span className="text-[11px] font-black text-text-success tabular-nums tracking-tight"><RupeesDisplay amount={l.mila} /></span>
                  </div>
                  {l.notes && (
-                   <div className="mt-4 p-3 bg-bg-secondary rounded-xl border border-border-light text-[10px] italic text-text-tertiary">
-                      &quot;{l.notes}&quot;
+                   <div className="mt-6 p-4 bg-gold/5 border border-gold/10 rounded-2xl text-[11px] font-medium leading-relaxed text-text-secondary">
+                      <span className="text-gold mr-1">“</span>{l.notes}<span className="text-gold ml-1">”</span>
                    </div>
                  )}
               </div>

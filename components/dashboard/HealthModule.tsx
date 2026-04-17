@@ -307,26 +307,27 @@ export default function HealthModule() {
            <MetricCard label={t('WELLNESS_PULSE')} value={wellnessPulse} unit="%" status={wellnessPulse < 80 ? 'warning' : 'success'} />
         </div>
 
-        {/* SOS Quick View */}
-        <section className="bg-red-500/5 border border-red-500/10 rounded-[2.5rem] p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-           <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-red-500 rounded-2xl flex items-center justify-center text-white shadow-lg animate-pulse">
-                <AlertCircle size={28} />
+        {/* SOS Quick View (Premium Glass Layout) */}
+        <section className="bg-red-500/10 border border-red-500/20 backdrop-blur-md rounded-[2.5rem] p-8 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-xl shadow-red-500/[0.05] relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl -mr-32 -mt-32" />
+           <div className="flex items-center gap-6 relative z-10">
+              <div className="w-16 h-16 bg-red-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-2xl shadow-red-600/30 animate-pulse">
+                <AlertCircle size={32} />
               </div>
               <div>
-                <h4 className="text-sm font-black text-red-600 uppercase tracking-widest leading-none">Emergency SOS Profiles</h4>
-                <p className="text-[10px] text-red-500 font-bold mt-1 opacity-70">Vital information for first responders, stored strictly offline.</p>
+                <h4 className="text-lg font-black text-red-700 uppercase tracking-[0.2em] leading-none mb-2">Emergency SOS Protocol</h4>
+                <p className="text-xs text-red-600/80 font-bold max-w-md">Vital medical identity for first responders. Encrypted & stored strictly on this device.</p>
               </div>
            </div>
-           <div className="flex gap-2">
-             {members.slice(0, 4).map(m => {
-               const p = medicalProfiles.find(x => x.member_id === m.id);
-               return (
-                <div key={m.id} className="w-10 h-10 rounded-xl bg-white border border-red-500/20 flex flex-col items-center justify-center text-[10px] font-black text-red-600 shadow-sm">
-                   {p?.blood_group || m.initials}
-                </div>
-               );
-             })}
+           <div className="flex gap-3 relative z-10">
+              {members.slice(0, 5).map(m => {
+                const p = medicalProfiles.find(x => x.member_id === m.id);
+                return (
+                 <div key={m.id} className="w-12 h-12 rounded-2xl bg-white border border-red-500/20 flex flex-col items-center justify-center text-[10px] font-black text-red-600 shadow-xl group hover:scale-110 transition-transform cursor-help" title={`${m.name}: ${p?.blood_group || 'No Data'}`}>
+                    {p?.blood_group || m.initials}
+                 </div>
+                );
+              })}
            </div>
         </section>
 
@@ -349,7 +350,7 @@ export default function HealthModule() {
                   transition={{ delay: i * 0.05 }}
                   onClick={() => { setActiveMember(m); setView('member-report'); }}
                   key={m.id}
-                  className="bg-bg-primary border border-border-light p-6 rounded-[2.5rem] group cursor-pointer hover:border-gold/30 hover:shadow-2xl shadow-black/[0.02] transition-all relative overflow-hidden"
+                  className="card-lift bg-bg-primary border border-border-light p-6 rounded-[2.5rem] group cursor-pointer hover:border-gold/30 hover:shadow-2xl shadow-black/[0.02] transition-all relative overflow-hidden"
                 >
                    {profile?.blood_group && (
                      <div className="absolute top-0 right-0 p-4">
@@ -602,43 +603,50 @@ export default function HealthModule() {
                     <h3 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] flex items-center gap-2">
                        <LineChart size={16} className="text-info" /> {t('VITALS_HISTORY')}
                     </h3>
-                    <div className="flex gap-2">
-                      <Sparkline data={readings.filter(r => r.member_id === activeMember.id).map(r => Number(r.bp_systolic)).slice(0, 10).reverse()} />
-                    </div>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left min-w-[500px]">
+                    <table className="w-full text-left min-w-[600px]">
                        <thead>
                           <tr className="border-b border-border-light bg-bg-tertiary">
-                             <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] rounded-tl-xl">Date</th>
-                             <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em]">BP (Sys/Dia)</th>
-                             <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em]">Sugar / Pulse</th>
-                             <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em]">Weight</th>
-                             <th className="p-4 text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] rounded-tr-xl text-right">Actions</th>
+                             <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] rounded-tl-2xl">Timestamp</th>
+                             <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">BP (Sys/Dia)</th>
+                             <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Vitals</th>
+                             <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">Weight</th>
+                             <th className="p-5 text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] rounded-tr-2xl text-right">Actions</th>
                           </tr>
                        </thead>
-                       <tbody>
+                       <tbody className="divide-y divide-border-light/40">
                           {readings.filter(r => r.member_id === activeMember.id).slice(0, 15).map((r, i) => (
-                             <tr key={r.id} className="border-b border-border-light/50 hover:bg-bg-tertiary transition-colors group">
-                                <td className="p-4 text-xs font-bold text-text-secondary">{new Date(String(r.date)).toLocaleDateString()}</td>
-                                <td className="p-4">
-                                   <span className={`text-sm font-black ${r.bp_systolic && (r.bp_systolic > 140 || r.bp_systolic < 90) ? 'text-red-500' : 'text-text-primary'}`}>
-                                      {r.bp_systolic || '--'} / {r.bp_diastolic || '--'}
-                                   </span>
+                             <tr key={r.id} className="hover:bg-bg-tertiary/50 transition-all group">
+                                <td className="p-5">
+                                   <div className="text-sm font-black text-text-secondary">{new Date(String(r.date)).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                                   <div className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mt-1 opacity-60">Sovereign Log</div>
                                 </td>
-                                <td className="p-4">
-                                   <div className={`text-sm font-black tabular-nums ${r.blood_sugar && (r.blood_sugar > 140 || r.blood_sugar < 70) ? 'text-red-500' : 'text-text-primary'}`}>
-                                      {r.blood_sugar || '--'} mg
-                                   </div>
-                                   <div className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mt-0.5 opacity-60">
-                                      {r.pulse ? `${r.pulse} bpm` : '--'}
+                                <td className="p-5">
+                                   <div className={`text-lg font-black tabular-nums tracking-tighter ${r.bp_systolic && (r.bp_systolic > 140 || r.bp_systolic < 90) ? 'text-red-500' : 'text-text-primary'}`}>
+                                      {r.bp_systolic || '--'}<span className="opacity-20 mx-1">/</span>{r.bp_diastolic || '--'}
                                    </div>
                                 </td>
-                                <td className="p-4 text-sm font-black text-text-primary">{r.weight || '--'} kg</td>
-                                <td className="p-4 text-right">
-                                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                      <button onClick={() => handleEditVitalsTrigger(r)} className="p-2.5 rounded-xl bg-white border border-border-light text-text-tertiary hover:text-gold transition-all"><Edit3 size={14}/></button>
-                                      <button onClick={() => handleDeleteReading(r.id)} className="p-2.5 rounded-xl bg-white border border-border-light text-text-tertiary hover:text-danger transition-all"><Trash2 size={14}/></button>
+                                <td className="p-5">
+                                   <div className="flex items-center gap-4">
+                                      <div className={`flex flex-col ${r.blood_sugar && (r.blood_sugar > 140 || r.blood_sugar < 70) ? 'text-red-500' : ''}`}>
+                                         <div className="text-base font-black tabular-nums">{r.blood_sugar || '--'}</div>
+                                         <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest">mg/dL</div>
+                                      </div>
+                                      <div className="w-px h-6 bg-border-light/50" />
+                                      <div className="flex flex-col">
+                                         <div className="text-base font-black tabular-nums">{r.pulse || '--'}</div>
+                                         <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest">BPM</div>
+                                      </div>
+                                   </div>
+                                </td>
+                                <td className="p-5">
+                                   <div className="text-sm font-black text-text-primary tabular-nums">{r.weight || '--'} <span className="text-[10px] text-text-tertiary">kg</span></div>
+                                </td>
+                                <td className="p-5 text-right">
+                                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all scale-95 group-hover:scale-100">
+                                      <button onClick={() => handleEditVitalsTrigger(r)} className="p-3 rounded-xl bg-white border border-border-light text-text-tertiary hover:text-gold hover:border-gold/30 shadow-sm transition-all"><Edit3 size={16}/></button>
+                                      <button onClick={() => handleDeleteReading(r.id)} className="p-3 rounded-xl bg-white border border-border-light text-text-tertiary hover:text-danger hover:border-danger/30 shadow-sm transition-all"><Trash2 size={16}/></button>
                                    </div>
                                 </td>
                              </tr>
@@ -646,12 +654,12 @@ export default function HealthModule() {
                        </tbody>
                     </table>
                   </div>
-                  {readings.filter(r => r.member_id === activeMember.id).length === 0 && (
-                     <div className="text-center py-12 text-[10px] font-black text-text-tertiary uppercase tracking-widest opacity-50 border-2 border-dashed border-border-light rounded-[2rem] mt-4">
-                        Zero vitals records found for this vault.
-                     </div>
-                  )}
-               </div>
+                </div>
+                {readings.filter(r => r.member_id === activeMember.id).length === 0 && (
+                   <div className="text-center py-12 text-[10px] font-black text-text-tertiary uppercase tracking-widest opacity-50 border-2 border-dashed border-border-light rounded-[2rem] mt-4">
+                      Zero vitals records found for this vault.
+                   </div>
+                )}
 
                {/* Vaccination Ledger */}
                <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl shadow-black/[0.02]">

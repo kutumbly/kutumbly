@@ -201,28 +201,30 @@ export default function SamanModule() {
            <MetricCard label={t('PANTRY_STATUS')} value={pendingCount > 0 ? t('PANTRY_STOCKING') : t('PANTRY_FULL')} status={pendingCount > 0 ? 'warning' : 'success'} />
         </div>
 
-        {/* Categories Grid (replaces full list view) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Categories Grid (Premium Card Layout) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
            {categories.map((cat, i) => {
              const catItems = items.filter(it => it.category === cat);
              const pendingCatCount = catItems.filter(it => !it.checked).length;
              return (
                <motion.div 
                  key={String(cat)}
-                 whileHover={{ y: -2 }}
+                 whileHover={{ y: -4 }}
                  onClick={() => { setActiveCategory(cat); setView('category-items'); }}
-                 className="card p-6 flex flex-col items-center justify-center text-center group hover:border-gold/30 hover:shadow-xl transition-all cursor-pointer"
+                 className="card-lift bg-bg-primary border border-border-light p-8 flex flex-col items-center justify-center text-center group hover:border-gold/30 hover:shadow-2xl transition-all cursor-pointer rounded-[3rem] relative overflow-hidden"
                >
-                 <div className="w-16 h-16 rounded-full bg-bg-tertiary text-text-tertiary flex items-center justify-center mb-4 group-hover:scale-110 group-hover:text-gold transition-all shadow-inner border border-border-light relative">
-                    <Package size={24} />
+                 <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-gold/10 transition-colors" />
+                 
+                 <div className="w-20 h-20 rounded-[2rem] bg-bg-tertiary text-text-tertiary flex items-center justify-center mb-6 group-hover:scale-110 group-hover:text-gold transition-all shadow-inner border border-border-light relative z-10">
+                    <Package size={32} />
                     {pendingCatCount > 0 && (
-                       <div className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[9px] font-black text-white">
+                       <div className="absolute -top-2 -right-2 w-8 h-8 bg-red-600 rounded-2xl border-2 border-white flex items-center justify-center text-[10px] font-black text-white shadow-lg">
                          {pendingCatCount}
                        </div>
                     )}
                  </div>
-                 <h4 className="text-sm font-black text-text-primary uppercase tracking-widest">{String(cat)}</h4>
-                 <div className="mt-4 px-3 py-1 bg-bg-tertiary rounded-full border border-border-light text-[9px] font-black text-text-secondary uppercase tracking-widest">
+                 <h4 className="text-base font-black text-text-primary uppercase tracking-[0.2em] relative z-10">{String(cat)}</h4>
+                 <div className="mt-4 px-4 py-1.5 bg-bg-tertiary rounded-full border border-border-light text-[10px] font-black text-text-tertiary uppercase tracking-widest relative z-10 group-hover:bg-gold/5 group-hover:text-gold group-hover:border-gold/20 transition-all">
                     {catItems.length} items
                  </div>
                </motion.div>
@@ -230,11 +232,12 @@ export default function SamanModule() {
            })}
 
            {items.length === 0 && (
-              <div className="col-span-full py-32 flex flex-col items-center justify-center bg-bg-primary border border-border-light border-dashed rounded-[3rem] opacity-40">
-                 <div className="w-20 h-20 bg-bg-tertiary rounded-full flex items-center justify-center mb-6">
-                    <ShoppingCart size={36} strokeWidth={1} className="text-text-tertiary" />
+              <div className="col-span-full py-40 flex flex-col items-center justify-center bg-bg-primary border border-border-light border-dashed rounded-[4rem] opacity-30 text-center">
+                 <div className="w-24 h-24 bg-bg-tertiary rounded-full flex items-center justify-center mb-8">
+                    <ShoppingCart size={48} strokeWidth={1} className="text-text-tertiary" />
                  </div>
-                 <h2 className="text-sm font-black uppercase tracking-[0.4em]">{t('PANTRY_FULL')}</h2>
+                 <h2 className="text-sm font-black uppercase tracking-[0.5em] max-w-[250px] leading-relaxed">Inventory Archive Empty</h2>
+                 <p className="text-[10px] font-bold mt-4 uppercase tracking-widest opacity-60">Initialize your kitchen baseline to begin.</p>
               </div>
            )}
         </div>
@@ -274,60 +277,59 @@ export default function SamanModule() {
            className="space-y-4"
         >
           <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-4">
-             <div className="flex items-center justify-between px-6 py-4 border-b border-border-light/50 mb-2">
-                <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Item List</div>
-             </div>
-             
-             {items.filter(it => it.category === activeCategory).map((item, idx) => {
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border-light/50 mb-4">
+                 <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Item List</div>
+              </div>
+                  {items.filter(it => it.category === activeCategory).map((item, idx) => {
                 const stockHealth = Math.min(100, (item.current_stock / (item.threshold || 1)) * 100);
                 const isLow = item.current_stock <= (item.threshold || 1);
                 return (
-                  <motion.div 
+                 <motion.div 
                     layout
                     onClick={() => { setActiveItem(item); setView('item-detail'); }}
                     key={String(item.id)}
                     initial={{ opacity: 0, scale: 0.98, x: -5 }}
                     animate={{ opacity: 1, scale: 1, x: 0 }}
-                    className={`p-4 rounded-[2rem] flex items-center gap-6 group hover:bg-bg-tertiary transition-all duration-300 cursor-pointer ${item.checked ? 'opacity-40 grayscale select-none' : ''}`}
-                  >
-                     <div className="flex flex-col items-center gap-2">
+                    className={`p-6 rounded-[2.5rem] flex items-center gap-6 group hover:bg-bg-tertiary transition-all duration-300 cursor-pointer ${item.checked ? 'opacity-40 grayscale select-none' : 'card-lift'}`}
+                 >
+                    <div className="flex flex-col items-center gap-2">
                        <button className={`p-1 rounded-full transition-all transform active:scale-75 ${item.checked ? 'text-gold-text' : 'text-border-medium hover:text-gold-text'}`}>
-                          {item.checked ? <CheckCircle2 size={26} strokeWidth={3} /> : <Circle size={26} strokeWidth={2} />}
+                          {item.checked ? <CheckCircle2 size={32} strokeWidth={3} /> : <Circle size={32} strokeWidth={2} />}
                        </button>
                        {isLow && !item.checked && (
-                         <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" title="Low Stock" />
+                         <div className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse shadow-lg shadow-red-600/20" title="Low Stock" />
                        )}
-                     </div>
-                     
-                     <div className="flex-1">
-                        <div className="flex justify-between items-start mb-2">
-                           <div>
-                              <h4 className={`text-base font-black tracking-tight leading-tight ${item.checked ? 'line-through text-text-tertiary' : 'text-text-primary'}`}>
-                                 {String(item.name)}
-                              </h4>
-                              <p className="text-[10px] text-text-tertiary font-black uppercase tracking-[0.15em] mt-1.5 opacity-80">
-                                 {String(item.quantity)} {String(item.unit)}
-                              </p>
-                           </div>
-                           <div className="text-right">
-                              <div className={`text-lg font-black tracking-tighter tabular-nums ${item.checked ? 'text-text-tertiary' : 'text-text-primary'}`}>
-                                 <RupeesDisplay amount={item.estimated_price} />
-                              </div>
-                           </div>
-                        </div>
-                        
-                        {/* Stock Health Bar */}
-                        <div className="w-full h-1 bg-bg-secondary rounded-full overflow-hidden flex">
-                           <motion.div 
-                             initial={{ width: 0 }}
-                             animate={{ width: `${stockHealth}%` }}
-                             className={`h-full ${isLow ? 'bg-red-500' : 'bg-gold-text'}`}
-                           />
-                        </div>
-                     </div>
-                  </motion.div>
+                    </div>
+                    
+                    <div className="flex-1">
+                       <div className="flex justify-between items-center mb-3">
+                          <div>
+                             <h4 className={`text-lg font-black tracking-tight leading-tight ${item.checked ? 'line-through text-text-tertiary' : 'text-text-primary'}`}>
+                                {String(item.name)}
+                             </h4>
+                             <p className="text-[11px] text-text-tertiary font-black uppercase tracking-[0.15em] mt-1.5 opacity-80">
+                                {String(item.quantity)} {String(item.unit)}
+                             </p>
+                          </div>
+                          <div className="text-right">
+                             <div className={`text-xl font-black tracking-tighter tabular-nums ${item.checked ? 'text-text-tertiary' : 'text-text-primary'}`}>
+                                <RupeesDisplay amount={item.estimated_price} />
+                             </div>
+                          </div>
+                       </div>
+                       
+                       {/* Stock Health Bar */}
+                       <div className="w-full h-1.5 bg-bg-secondary rounded-full overflow-hidden flex shadow-inner">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${stockHealth}%` }}
+                            className={`h-full ${isLow ? 'bg-red-600 shadow-lg shadow-red-600/20' : 'bg-gold-text shadow-lg shadow-gold/20'}`}
+                          />
+                       </div>
+                    </div>
+                 </motion.div>
                 );
-             })}
+              })}
           </div>
         </motion.div>
         )}

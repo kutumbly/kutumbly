@@ -25,7 +25,7 @@ import { useTranslation, Language } from '@/lib/i18n';
 import RupeesDisplay from '../ui/RupeesDisplay';
 import {
   Calendar, Users, Gift, ArrowRight,
-  MapPin, CheckCircle2, Clock, Package2, ArrowLeft, Settings
+  MapPin, CheckCircle2, Clock, Package2, ArrowLeft, Settings, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MissionControl from './utsav/MissionControl';
@@ -116,69 +116,81 @@ export default function UtsavModule() {
 
   const renderEvents = () => (
     <div className="grid gap-4">
-      {filteredEvents.length > 0 ? filteredEvents.map((e: NevataEvent) => {
+      {filteredEvents.length > 0 ? filteredEvents.map((e: NevataEvent, i: number) => {
         const emoji = EVENT_TYPE_EMOJI[String(e.event_type)] || '📅';
         const dir   = DIRECTION_LABEL[String(e.direction)] || DIRECTION_LABEL['they_invited'];
         return (
-          <div
+          <motion.div
             key={String(e.id)}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
             onClick={() => {
               setSelectedEvent(e);
               setNevataMode('control');
             }}
-            className="card p-5 flex flex-col md:flex-row gap-5 justify-between group hover:border-gold transition-all cursor-pointer"
+            className="card-lift bg-bg-primary border border-border-light p-6 rounded-[2.5rem] flex flex-col md:flex-row gap-6 justify-between group hover:border-gold/30 hover:shadow-2xl transition-all cursor-pointer relative overflow-hidden"
           >
-            <div className="flex gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-bg-tertiary border border-border-light flex items-center justify-center text-2xl flex-shrink-0">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-gold/10 transition-colors" />
+            
+            <div className="flex gap-6 relative z-10">
+              <div className="w-16 h-16 rounded-[1.5rem] bg-bg-tertiary border border-border-light flex items-center justify-center text-3xl flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform">
                 {emoji}
               </div>
               <div>
-                <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <h4 className="text-sm font-black text-text-primary tracking-tight">
+                <div className="flex items-center gap-3 flex-wrap mb-2">
+                  <h4 className="text-lg font-black text-text-primary tracking-tight leading-none group-hover:text-gold transition-colors">
                     {e.title}
                   </h4>
-                  <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest ${dir.color}`}>
+                  <span className={`text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest ${dir.color} border border-border-light/10 shadow-sm`}>
                     {t(e.direction === 'we_hosted' ? 'NEVATA_WE_HOSTED' : 'NEVATA_THEY_HOSTED')}
                   </span>
                 </div>
-                <p className="text-[11px] font-bold text-text-tertiary uppercase tracking-widest">
-                  {e.family_name} · {e.event_date}
+                <p className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.15em] opacity-80 mb-4">
+                  {e.family_name} · <span className="text-text-secondary">{new Date(e.event_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                 </p>
-                <div className="flex items-center gap-3 mt-2">
+                <div className="flex items-center gap-4">
                   {e.location && (
-                    <span className="flex items-center gap-1 text-[10px] font-bold text-text-tertiary">
-                      <MapPin size={11} className="text-gold" /> {e.location}
-                    </span>
+                    <div className="flex items-center gap-2 bg-bg-tertiary px-3 py-1.5 rounded-xl border border-border-light">
+                      <MapPin size={12} className="text-gold" /> 
+                      <span className="text-[10px] font-black text-text-secondary uppercase tracking-wider">{e.location}</span>
+                    </div>
                   )}
-                  <span className="flex items-center gap-1 text-[10px] font-bold text-text-tertiary">
-                    <Users size={11} className="text-gold" /> {e.our_count} {t('PEOPLE_COUNT')}
-                  </span>
+                  <div className="flex items-center gap-2 bg-bg-tertiary px-3 py-1.5 rounded-xl border border-border-light">
+                    <Users size={12} className="text-gold" /> 
+                    <span className="text-[10px] font-black text-text-secondary uppercase tracking-wider">{e.our_count} {t('PEOPLE_COUNT')}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col justify-between items-end gap-3">
+            <div className="flex flex-col justify-between items-end gap-4 relative z-10">
               {direction === 'they_invited' && (
-                <div className="bg-gold/5 border border-gold/20 rounded-xl p-3 text-right min-w-[120px]">
-                  <div className="text-[9px] font-black text-gold uppercase tracking-[0.2em] mb-1">
-                    PARAM-PRASAD
+                <div className="bg-white border border-gold/20 rounded-[1.5rem] p-4 text-right min-w-[140px] shadow-xl shadow-gold/5 group-hover:border-gold/40 transition-all">
+                  <div className="text-[9px] font-black text-gold uppercase tracking-[0.2em] mb-1 opacity-60">
+                    PARAM-SHAGUN
                   </div>
-                  <div className="text-base font-black text-gold tabular-nums">
+                  <div className="text-xl font-black text-gold tabular-nums tracking-tighter">
                     <RupeesDisplay amount={501} />
                   </div>
                 </div>
               )}
-              <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border ${
-                e.status === 'attended'
-                  ? 'bg-bg-success text-text-success border-text-success/10'
-                  : e.status === 'upcoming'
-                  ? 'bg-bg-warning text-text-warning border-text-warning/10'
-                  : 'bg-bg-tertiary text-text-tertiary border-border-light'
-              }`}>
-                {t(`STATUS_${e.status.toUpperCase()}` as any)}
-              </span>
+              <div className="flex items-center gap-3">
+                 <span className={`text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest border transition-all ${
+                  e.status === 'attended'
+                    ? 'bg-bg-success/10 text-text-success border-text-success/20'
+                    : e.status === 'upcoming'
+                    ? 'bg-red-500/10 text-red-600 border-red-500/20 animate-pulse'
+                    : 'bg-bg-tertiary text-text-tertiary border-border-light'
+                }`}>
+                  {t(`STATUS_${e.status.toUpperCase()}` as any)}
+                </span>
+                <div className="w-10 h-10 rounded-full bg-bg-tertiary flex items-center justify-center text-text-tertiary opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all">
+                   <ChevronRight size={20} />
+                </div>
+              </div>
             </div>
-          </div>
+          </motion.div>
         );
       }) : (
         <div className="py-24 flex flex-col items-center justify-center opacity-30">
@@ -411,19 +423,26 @@ export default function UtsavModule() {
               className="space-y-8"
             >
               {/* ── Direction Toggle ──────────────────────────────── */}
-        <div className="flex justify-center">
-          <div className="bg-bg-secondary p-1 rounded-2xl border border-border-light flex shadow-inner">
+         <div className="flex justify-center">
+          <div className="bg-bg-secondary p-1.5 rounded-[1.8rem] border border-border-light flex shadow-inner relative">
             {(['they_invited', 'we_hosted'] as const).map((d) => (
               <button
                 key={d}
                 onClick={() => { setDirection(d); setActiveTab('events'); }}
-                className={`px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
+                className={`px-10 py-3 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all relative z-10 ${
                   direction === d
-                    ? 'bg-bg-primary text-gold shadow-md'
+                    ? 'text-gold'
                     : 'text-text-tertiary hover:text-text-primary'
                 }`}
               >
                 {d === 'they_invited' ? 'VYAVAHAR (ATTEND)' : 'APNA KAAJ (HOST)'}
+                {direction === d && (
+                   <motion.div 
+                      layoutId="utsav-dir-pill"
+                      className="absolute inset-0 bg-bg-primary rounded-xl shadow-lg border border-border-light/50 -z-10"
+                      transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+                   />
+                )}
               </button>
             ))}
           </div>

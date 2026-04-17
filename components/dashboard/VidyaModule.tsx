@@ -373,36 +373,47 @@ export default function VidyaModule() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-               {vidya.learners.length > 0 ? vidya.learners.map((l, i) => {
-                 const stats = vidya.getStats(l.id);
-                 return (
-                  <div key={l.id} className="group relative">
-                    <div onClick={() => { setActiveLearner(l); setView('learner'); }} className="bg-bg-primary border border-border-light p-6 rounded-[2.5rem] flex items-center gap-5 shadow-black/[0.02] hover:border-gold/30 transition-all cursor-pointer">
-                      <div className="w-16 h-16 rounded-2xl bg-gold/5 border border-gold/10 flex items-center justify-center font-black text-gold-text text-xl group-hover:bg-gold group-hover:text-white transition-all">
-                        {l.avatar_initials}
-                      </div>
-                      <div className="flex-1">
-                          <h4 className="text-base font-black text-text-primary tracking-tight">{l.name}</h4>
-                          <p className="text-[10px] text-text-tertiary font-black uppercase tracking-widest mt-1 opacity-80">
-                            {l.standard} · {l.institution}
-                          </p>
-                          <div className="flex items-center gap-4 mt-3">
-                            <div className="flex items-center gap-1.5 text-[9px] font-black text-gold-text uppercase tracking-widest bg-gold/5 px-2 py-0.5 rounded-lg border border-gold/10">
-                              <BookOpen size={10} /> {stats.resourceCount} Units
-                            </div>
-                            <div className="flex items-center gap-1.5 text-[9px] font-black text-text-success uppercase tracking-widest bg-text-success/5 px-2 py-0.5 rounded-lg border border-text-success/10">
-                              <Clock size={10} /> {fmtMins(stats.totalMins)}
-                            </div>
-                          </div>
-                      </div>
-                    </div>
-                    <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
-                      <button onClick={(e) => { e.stopPropagation(); handleTriggerEditLearner(l); }} className="p-2.5 bg-white border border-border-light rounded-xl hover:text-gold shadow-sm"><Edit3 size={14}/></button>
-                      <button onClick={(e) => { e.stopPropagation(); if(window.confirm('Archive this learner? All history will be kept offline.')) vidya.deleteLearner(l.id); }} className="p-2.5 bg-white border border-border-light rounded-xl hover:text-danger shadow-sm"><X size={14}/></button>
-                    </div>
-                  </div>
-                 );
-               }) : (
+                {vidya.learners.length > 0 ? vidya.learners.map((l, i) => {
+                  const stats = vidya.getStats(l.id);
+                  return (
+                   <motion.div 
+                     key={l.id} 
+                     initial={{ opacity: 0, y: 10 }}
+                     animate={{ opacity: 1, y: 0 }}
+                     transition={{ delay: i * 0.05 }}
+                     className="group relative"
+                   >
+                     <div onClick={() => { setActiveLearner(l); setView('learner'); }} className="card-lift bg-bg-primary border border-border-light p-8 rounded-[3rem] flex items-center gap-6 shadow-black/[0.02] hover:border-gold/30 transition-all cursor-pointer relative overflow-hidden">
+                       <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-gold/10 transition-colors" />
+                       
+                       <div className="w-20 h-20 rounded-[2rem] bg-gold/5 border border-gold/10 flex items-center justify-center font-black text-gold-text text-2xl group-hover:bg-gold group-hover:text-white transition-all shadow-inner relative z-10">
+                         {l.avatar_initials}
+                       </div>
+                       <div className="flex-1 relative z-10">
+                           <h4 className="text-xl font-black text-text-primary tracking-tight leading-none mb-2">{l.name}</h4>
+                           <p className="text-[11px] text-text-tertiary font-black uppercase tracking-[0.2em] opacity-80">
+                             {l.standard} · {l.institution}
+                           </p>
+                           <div className="flex items-center gap-4 mt-4">
+                             <div className="flex items-center gap-2 text-[10px] font-black text-gold-text uppercase tracking-widest bg-gold/5 px-3 py-1 rounded-xl border border-gold/10">
+                               <BookOpen size={12} /> {stats.resourceCount} Units
+                             </div>
+                             <div className="flex items-center gap-2 text-[10px] font-black text-text-success uppercase tracking-widest bg-text-success/5 px-3 py-1 rounded-xl border border-text-success/10">
+                               <Clock size={12} /> {fmtMins(stats.totalMins)}
+                             </div>
+                           </div>
+                       </div>
+                       <div className="w-10 h-10 rounded-full bg-bg-tertiary flex items-center justify-center text-text-tertiary opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 transition-all duration-300">
+                          <ChevronRight size={20} />
+                       </div>
+                     </div>
+                     <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 z-20">
+                       <button onClick={(e) => { e.stopPropagation(); handleTriggerEditLearner(l); }} className="p-2.5 bg-white border border-border-light rounded-xl hover:text-gold shadow-sm transition-all"><Edit3 size={14}/></button>
+                       <button onClick={(e) => { e.stopPropagation(); if(window.confirm('Archive this learner? All history will be kept offline.')) vidya.deleteLearner(l.id); }} className="p-2.5 bg-white border border-border-light rounded-xl hover:text-danger shadow-sm transition-all"><X size={14}/></button>
+                     </div>
+                   </motion.div>
+                  );
+                }) : (
                 <div className="md:col-span-2 bg-bg-primary border-2 border-dashed border-border-light rounded-[3rem] py-16 flex flex-col items-center justify-center text-center opacity-40">
                    <Users size={32} className="text-text-tertiary mb-3" strokeWidth={1} />
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-1">{t('NO_LEARNERS')}</p>
@@ -472,33 +483,36 @@ export default function VidyaModule() {
                const progress = vidya.getSubjectProgress(s.id);
                return (
                 <div key={s.id} className="group relative">
-                  <div onClick={() => { setActiveSubject(s); setView('subject'); }} className="bg-bg-primary border border-border-light p-6 rounded-[2.5rem] shadow-black/[0.02] hover:border-gold/30 hover:shadow-xl transition-all cursor-pointer">
-                    <div className="flex items-center gap-4 mb-5">
-                       <div className="w-12 h-12 rounded-2xl bg-indigo-500/5 text-indigo-600 flex items-center justify-center border border-indigo-500/10 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                          <GraduationCap size={24} />
+                  <div onClick={() => { setActiveSubject(s); setView('subject'); }} className="card-lift bg-bg-primary border border-border-light p-8 rounded-[3rem] shadow-black/[0.02] hover:border-gold/30 hover:shadow-2xl transition-all cursor-pointer relative overflow-hidden">
+                    <div className="absolute bottom-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl -mr-16 -mb-16 group-hover:bg-indigo-500/10 transition-colors" />
+                    
+                    <div className="flex items-center gap-5 mb-6 relative z-10">
+                       <div className="w-14 h-14 rounded-2xl bg-indigo-500/5 text-indigo-600 flex items-center justify-center border border-indigo-500/10 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-inner">
+                          <GraduationCap size={28} />
                        </div>
                        <div className="flex-1">
-                          <h4 className="text-base font-black text-text-primary tracking-tight">{s.name}</h4>
-                          <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{s.category || 'General'}</span>
+                          <h4 className="text-lg font-black text-text-primary tracking-tight leading-tight mb-1">{s.name}</h4>
+                          <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{s.category || 'General'}</span>
                        </div>
                        <div className="text-right">
-                          <div className="text-sm font-black text-text-primary">{progress}%</div>
-                          <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest opacity-60">Complete</div>
+                          <div className="text-xl font-black text-text-primary tabular-nums tracking-tighter">{progress}%</div>
+                          <div className="text-[9px] font-black text-text-tertiary uppercase tracking-widest opacity-60">Complete</div>
                        </div>
                     </div>
                     
-                    {/* Progress Bar */}
-                    <div className="h-1.5 w-full bg-border-light/30 rounded-full overflow-hidden">
+                    {/* Progress Bar (Standardized) */}
+                    <div className="h-2 w-full bg-bg-secondary rounded-full overflow-hidden shadow-inner relative z-10">
                        <motion.div 
                           initial={{ width: 0 }} 
                           animate={{ width: `${progress}%` }} 
-                          className="h-full bg-indigo-500 rounded-full" 
+                          transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+                          className="h-full bg-indigo-500 rounded-full shadow-lg shadow-indigo-500/20" 
                        />
                     </div>
                   </div>
-                  <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
-                    <button onClick={(e) => { e.stopPropagation(); handleTriggerEditSubject(s); }} className="p-2 bg-white border border-border-light rounded-xl hover:text-gold"><Edit3 size={13}/></button>
-                    <button onClick={(e) => { e.stopPropagation(); if(window.confirm('Delete this subject and all its resources?')) vidya.deleteSubject(s.id); }} className="p-2 bg-white border border-border-light rounded-xl hover:text-danger"><Trash2 size={13}/></button>
+                  <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 z-20">
+                    <button onClick={(e) => { e.stopPropagation(); handleTriggerEditSubject(s); }} className="p-2.5 bg-white border border-border-light rounded-xl hover:text-gold shadow-sm transition-all"><Edit3 size={14}/></button>
+                    <button onClick={(e) => { e.stopPropagation(); if(window.confirm('Delete this subject and all its resources?')) vidya.deleteSubject(s.id); }} className="p-2.5 bg-white border border-border-light rounded-xl hover:text-danger shadow-sm transition-all"><Trash2 size={14}/></button>
                   </div>
                 </div>
                );
@@ -825,22 +839,31 @@ function LearningFlame({ streak }: { streak: number }) {
 function StudyRhythm({ data }: { data: { label: string; mins: number }[] }) {
   const max = Math.max(...data.map(d => d.mins), 60);
   return (
-    <div className="bg-bg-tertiary border border-border-light rounded-[2rem] p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-bg-secondary/50 border border-border-light rounded-[2rem] p-8 shadow-inner relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none" />
+      <div className="flex items-center justify-between mb-8 relative z-10">
         <h4 className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
            STUDY RHYTHM (7 DAYS)
         </h4>
-        <div className="text-[10px] font-black text-gold-text opacity-60">MINUTES / DAY</div>
+        <div className="text-[10px] font-black text-gold-text opacity-60 tabular-nums">MINUTES / DAY</div>
       </div>
-      <div className="flex items-end justify-between gap-2 h-24 px-2">
+      <div className="flex items-end justify-between gap-3 h-32 px-2 relative z-10">
         {data.map((d, i) => (
-          <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-            <motion.div 
-              initial={{ height: 0 }} 
-              animate={{ height: `${(d.mins / max) * 100}%` }}
-              className="w-full max-w-[12px] bg-gold rounded-full min-h-[4px]"
-            />
-            <span className="text-[8px] font-black text-text-tertiary uppercase">{d.label}</span>
+          <div key={i} className="flex-1 flex flex-col items-center gap-3 h-full justify-end group/bar">
+            <div className="relative w-full max-w-[14px] flex flex-col justify-end h-full">
+               <motion.div 
+                 initial={{ height: 0 }} 
+                 animate={{ height: `${(d.mins / max) * 100}%` }}
+                 className="w-full bg-gold rounded-full min-h-[6px] shadow-lg shadow-gold/20 relative overflow-hidden"
+               >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+               </motion.div>
+               {/* Tooltip on hover */}
+               <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-bg-primary border border-border-light px-2 py-1 rounded-md text-[8px] font-black opacity-0 group-hover/bar:opacity-100 transition-opacity shadow-xl tabular-nums whitespace-nowrap z-50">
+                  {d.mins}m
+               </div>
+            </div>
+            <span className="text-[9px] font-black text-text-tertiary uppercase tracking-tighter opacity-60">{d.label}</span>
           </div>
         ))}
       </div>
@@ -873,52 +896,75 @@ function ResourceCard({ res, onOpen, onBookmark, onComplete, onEdit, onDelete }:
   const Icon = RESOURCE_ICONS[res.resource_type];
   const color = RESOURCE_COLORS[res.resource_type];
   return (
-    <motion.div layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-      className={`bg-bg-primary border border-border-light rounded-[2rem] overflow-hidden group hover:border-indigo-400 hover:shadow-xl transition-all ${res.is_completed ? 'opacity-60' : ''}`}>
-      <div className="flex items-start gap-5 p-6">
+    <motion.div layout initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}
+      className={`bg-bg-primary border border-border-light rounded-[2.5rem] overflow-hidden group hover:border-indigo-400/50 hover:shadow-2xl transition-all card-lift relative ${res.is_completed ? 'opacity-70' : ''}`}>
+      
+      {res.is_completed && <div className="absolute inset-0 bg-text-success/[0.02] pointer-events-none z-0" />}
+      
+      <div className="flex items-start gap-6 p-8 relative z-10">
         {/* Thumbnail or Icon */}
         <div className="flex-shrink-0 cursor-pointer" onClick={onOpen}>
           {res.thumbnail_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={res.thumbnail_url} alt={res.title} className="w-24 h-16 object-cover rounded-xl border border-border-light shadow-sm" />
+            <div className="relative group/thumb">
+               {/* eslint-disable-next-line @next/next/no-img-element */}
+               <img src={res.thumbnail_url} alt={res.title} className="w-28 h-20 object-cover rounded-2xl border border-border-light shadow-md group-hover/thumb:scale-105 transition-transform" />
+               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
+                  <Play size={24} className="text-white drop-shadow-lg" fill="currentColor" />
+               </div>
+            </div>
           ) : (
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center border border-border-light" style={{ background: color + '12' }}>
-              <Icon size={26} style={{ color }} />
+            <div className="w-20 h-20 rounded-[1.5rem] flex items-center justify-center border border-border-light shadow-inner group-hover:scale-105 transition-transform" style={{ background: color + '12' }}>
+              <Icon size={32} style={{ color }} />
             </div>
           )}
         </div>
 
         {/* Body */}
         <div className="flex-1 min-w-0 cursor-pointer" onClick={onOpen}>
-          <div className="flex items-center gap-2 mb-1.5">
-            <div className="text-[7px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full" style={{ color, background: color + '15', border: `1px solid ${color}20` }}>
+          <div className="flex items-center gap-3 mb-2.5">
+            <div className="text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-sm" style={{ color, background: color + '15', border: `1px solid ${color}20` }}>
               {t(RESOURCE_LABELS[res.resource_type]).replace('RESOURCE_LABELS_', '')}
             </div>
             {res.difficulty && (
-              <span className={`text-[7px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border ${DIFF_COLORS[res.difficulty]}`}>{t(res.difficulty.toUpperCase())}</span>
+              <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border shadow-sm ${DIFF_COLORS[res.difficulty]}`}>{t(res.difficulty.toUpperCase())}</span>
             )}
           </div>
-          <h4 className={`font-black text-text-primary tracking-tight leading-tight line-clamp-2 ${res.is_completed ? 'line-through opacity-60' : ''}`}>{res.title}</h4>
-          {res.duration_mins && (
-            <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-text-tertiary">
-              <Clock size={12} /> {fmtMins(res.duration_mins)}
-            </div>
-          )}
+          <h4 className={`text-base font-black text-text-primary tracking-tight leading-snug line-clamp-2 transition-all ${res.is_completed ? 'line-through text-text-tertiary' : 'group-hover:text-indigo-600'}`}>{res.title}</h4>
+          
+          <div className="flex items-center gap-4 mt-3.5">
+            {res.duration_mins && (
+              <div className="flex items-center gap-1.5 text-[10px] font-black text-text-tertiary uppercase tracking-wider opacity-60">
+                <Clock size={12} className="text-indigo-400" /> {fmtMins(res.duration_mins)}
+              </div>
+            )}
+            {res.chapter && (
+               <div className="flex items-center gap-1.5 text-[10px] font-black text-text-tertiary uppercase tracking-wider opacity-60 truncate">
+                  <Bookmark size={12} className="text-gold" /> {res.chapter}
+               </div>
+            )}
+          </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-col gap-2 flex-shrink-0 relative z-20">
-          <div className="flex gap-2">
-            <button onClick={(e) => { e.stopPropagation(); onBookmark(); }} className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${res.is_bookmarked ? 'text-gold bg-gold/5 border-gold/20' : 'bg-bg-tertiary text-text-tertiary border-border-light hover:text-gold'}`}>
-               {res.is_bookmarked ? <BookMarked size={14} /> : <Bookmark size={14} />}
+        {/* Actions (Pill Style) */}
+        <div className="flex flex-col gap-3 flex-shrink-0 relative z-20">
+          <div className="flex flex-col gap-2 p-1.5 bg-bg-secondary rounded-2xl border border-border-light shadow-inner">
+            <button 
+              onClick={(e) => { e.stopPropagation(); onBookmark(); }} 
+              className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all shadow-sm ${res.is_bookmarked ? 'text-gold bg-bg-primary border-gold/30' : 'bg-transparent text-text-tertiary border-transparent hover:text-gold hover:bg-bg-primary'}`}
+            >
+               {res.is_bookmarked ? <BookMarked size={18} /> : <Bookmark size={18} />}
             </button>
-            <button onClick={(e) => { e.stopPropagation(); onComplete(); }} title="Complete" className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${res.is_completed ? 'text-text-success bg-text-success/5 border-text-success/20' : 'bg-bg-tertiary text-text-tertiary border-border-light hover:text-text-success'}`}>
-               {res.is_completed ? <CheckCircle2 size={14} /> : <Circle size={14} />}
+            <button 
+              onClick={(e) => { e.stopPropagation(); onComplete(); }} 
+              title="Complete" 
+              className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all shadow-sm ${res.is_completed ? 'text-text-success bg-bg-primary border-text-success/30' : 'bg-transparent text-text-tertiary border-transparent hover:text-text-success hover:bg-bg-primary'}`}
+            >
+               {res.is_completed ? <CheckCircle2 size={18} /> : <Circle size={18} />}
             </button>
           </div>
-          <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-             <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="w-8 h-8 rounded-lg bg-bg-tertiary border border-border-light flex items-center justify-center text-text-tertiary hover:text-indigo-600"><Edit3 size={14}/></button>
-             <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="w-8 h-8 rounded-lg bg-bg-tertiary border border-border-light flex items-center justify-center text-text-tertiary hover:text-danger"><Trash2 size={14}/></button>
+          <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+             <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="w-10 h-10 rounded-xl bg-bg-primary border border-border-light flex items-center justify-center text-text-tertiary hover:text-indigo-600 hover:shadow-md transition-all"><Edit3 size={16}/></button>
+             <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="w-10 h-10 rounded-xl bg-bg-primary border border-border-light flex items-center justify-center text-text-tertiary hover:text-danger hover:shadow-md transition-all"><Trash2 size={16}/></button>
           </div>
         </div>
       </div>

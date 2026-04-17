@@ -118,8 +118,8 @@ export default function SuvidhaModule() {
     >
       <div className="flex flex-col gap-8">
         
-        {/* Navigation Tabs */}
-        <div className="flex bg-bg-primary p-1 rounded-2xl border border-border-light self-start">
+        {/* Navigation Tabs (Pill Style) */}
+        <div className="flex bg-bg-secondary p-1.5 rounded-2xl border border-border-light self-start relative">
           {[
             { id: 'dashboard', label: 'Dashboard', icon: Calendar },
             { id: 'ledger', label: 'Ledger', icon: Table },
@@ -128,24 +128,38 @@ export default function SuvidhaModule() {
             <button
               key={tab.id}
               onClick={() => setView(tab.id as SuvidhaView)}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${view === tab.id ? 'bg-gold-text text-white shadow-md' : 'text-text-tertiary hover:text-text-primary'}`}
+              className={`relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors z-10 ${view === tab.id ? 'text-white' : 'text-text-tertiary hover:text-text-primary'}`}
             >
-              <tab.icon size={14} />
-              {tab.label}
+              {view === tab.id && (
+                <motion.div 
+                  layoutId="activeTab"
+                  className="absolute inset-0 bg-gold-text rounded-xl shadow-lg shadow-gold/10"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <tab.icon size={14} className="relative z-20" />
+              <span className="relative z-20">{tab.label}</span>
             </button>
           ))}
         </div>
 
         <AnimatePresence mode="wait">
           {view === 'dashboard' && (
-            <motion.div key="dash" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+            <motion.div 
+              key="dash" 
+              initial={{ opacity: 0, y: 15 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              exit={{ opacity: 0, y: -15 }} 
+              className="space-y-10"
+            >
               
               {/* Summary Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <MetricCard label="Current Month Milk" value={currentMonthMilk} status="default" unit="Liters" />
                 <MetricCard label="Amount Payable" value={summary.totalDue} isCurrency status="warning" />
                 <MetricCard label="Active Services" value={vendors.length} status="success" unit="Vendors" />
               </div>
+
 
               {/* Today's Tally */}
               <section className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl shadow-black/[0.02]">
@@ -161,63 +175,70 @@ export default function SuvidhaModule() {
                 </div>
 
                 {vendors.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {vendors.map(v => {
-                      const todayLog = logs.find(l => l.vendor_id === v.id && l.date === todayDate);
-                      return (
-                        <div key={v.id} className="flex items-center justify-between p-5 bg-bg-tertiary rounded-3xl border border-border-light group hover:border-gold/30 transition-all">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-bg-primary border border-border-light flex items-center justify-center text-gold shadow-sm">
-                              {getVendorIcon(v.type)}
-                            </div>
-                            <div>
-                              <h4 className="text-sm font-black text-text-primary">{v.name}</h4>
-                              <p className="text-[9px] font-black text-text-tertiary uppercase tracking-wider">
-                                ₹{v.rate_per_unit}/{v.type === 'milk' ? 'L' : v.type === 'helper' ? 'Month' : 'Unit'}
-                              </p>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-4">
-                            {v.type === 'helper' ? (
-                              <div className="flex gap-2">
-                                <button 
-                                  onClick={() => logDaily(v.id, todayDate, todayLog?.quantity === 1 ? 0 : 1)}
-                                  className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${todayLog?.quantity === 1 ? 'bg-success text-white' : 'bg-bg-primary text-text-tertiary border border-border-light hover:border-success/50'}`}
-                                >
-                                  {todayLog?.quantity === 1 ? <CheckCircle2 size={24} /> : <Users size={20} />}
-                                </button>
-                                <button 
-                                  onClick={() => logDaily(v.id, todayDate, 0)}
-                                  className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${todayLog?.quantity === 0 ? 'bg-red-500 text-white' : 'bg-bg-primary text-text-tertiary border border-border-light hover:border-red-500/50'}`}
-                                >
-                                  <XCircle size={20} />
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="flex items-center bg-bg-primary rounded-2xl border border-border-light p-1 shadow-sm">
-                                <button 
-                                  onClick={() => logDaily(v.id, todayDate, Math.max(0, (todayLog?.quantity || 0) - 0.5))}
-                                  className="w-10 h-10 flex items-center justify-center hover:text-gold transition-colors"
-                                >-</button>
-                                <span className="w-12 text-center text-sm font-black text-text-primary">{todayLog?.quantity || 0}</span>
-                                <button 
-                                  onClick={() => logDaily(v.id, todayDate, (todayLog?.quantity || 0) + 0.5)}
-                                  className="w-10 h-10 flex items-center justify-center hover:text-gold transition-colors"
-                                >+</button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="py-20 flex flex-col items-center justify-center opacity-40 border-2 border-dashed border-border-light rounded-[3rem]">
-                    <Milk size={48} strokeWidth={1} className="mb-4" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em]">No active services found</p>
-                  </div>
-                )}
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     {vendors.map(v => {
+                       const todayLog = logs.find(l => l.vendor_id === v.id && l.date === todayDate);
+                       return (
+                         <motion.div 
+                           key={v.id} 
+                           whileHover={{ y: -2 }}
+                           className="flex items-center justify-between p-6 bg-bg-tertiary rounded-[2rem] border border-border-light group hover:border-gold/20 hover:shadow-xl shadow-black/[0.01] transition-all"
+                         >
+                           <div className="flex items-center gap-4">
+                             <div className="w-14 h-14 rounded-2xl bg-bg-primary border border-border-light flex items-center justify-center text-gold shadow-sm group-hover:scale-105 transition-transform">
+                               {getVendorIcon(v.type)}
+                             </div>
+                             <div>
+                               <h4 className="text-base font-black text-text-primary tracking-tight">{v.name}</h4>
+                               <p className="text-[10px] font-black text-text-tertiary uppercase tracking-widest mt-1">
+                                 ₹{v.rate_per_unit} / {v.type === 'milk' ? 'liter' : v.type === 'helper' ? 'day' : 'unit'}
+                               </p>
+                             </div>
+                           </div>
+                           
+                           <div className="flex items-center gap-4">
+                             {v.type === 'helper' ? (
+                               <div className="flex gap-2.5">
+                                 <button 
+                                   onClick={() => logDaily(v.id, todayDate, todayLog?.quantity === 1 ? 0 : 1)}
+                                   className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${todayLog?.quantity === 1 ? 'bg-text-success text-white shadow-lg shadow-success/20' : 'bg-bg-primary text-text-tertiary border border-border-light hover:border-success/40'}`}
+                                 >
+                                   {todayLog?.quantity === 1 ? <CheckCircle2 size={24} /> : <Users size={20} />}
+                                 </button>
+                                 <button 
+                                   onClick={() => logDaily(v.id, todayDate, 0)}
+                                   className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${todayLog?.quantity === 0 ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-bg-primary text-text-tertiary border border-border-light hover:border-red-500/40'}`}
+                                 >
+                                   <XCircle size={20} />
+                                 </button>
+                               </div>
+                             ) : (
+                               <div className="flex items-center bg-bg-primary rounded-2xl border border-border-light p-1.5 shadow-sm">
+                                 <button 
+                                   onClick={() => logDaily(v.id, todayDate, Math.max(0, (todayLog?.quantity || 0) - 0.5))}
+                                   className="w-10 h-10 flex items-center justify-center hover:text-gold transition-colors text-lg font-black"
+                                 >-</button>
+                                 <span className="w-12 text-center text-sm font-black text-text-primary tabular-nums">{todayLog?.quantity || 0}</span>
+                                 <button 
+                                   onClick={() => logDaily(v.id, todayDate, (todayLog?.quantity || 0) + 0.5)}
+                                   className="w-10 h-10 flex items-center justify-center hover:text-gold transition-colors text-lg font-black"
+                                 >+</button>
+                               </div>
+                             )}
+                           </div>
+                         </motion.div>
+                       );
+                     })}
+                   </div>
+                 ) : (
+                   <div className="py-24 flex flex-col items-center justify-center opacity-30 border-2 border-dashed border-border-light rounded-[3rem] text-center">
+                     <div className="w-20 h-20 bg-bg-tertiary rounded-full flex items-center justify-center mb-6">
+                        <Milk size={44} strokeWidth={1} className="text-text-tertiary" />
+                     </div>
+                     <p className="text-[10px] font-black uppercase tracking-[0.4em] max-w-[200px] leading-relaxed">No active utility services found in vault</p>
+                   </div>
+                 )}
+
               </section>
             </motion.div>
           )}

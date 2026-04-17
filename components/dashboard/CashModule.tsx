@@ -230,112 +230,110 @@ export default function CashModule() {
         >
         
         {/* Top Stats Dashboard */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 grid grid-cols-2 gap-4">
-              <MetricCard label={t('MONEY_BALANCE')} value={summary.balance} isCurrency status="default" trend={[15000, 20000, 18000, 25000, summary.balance]} />
-              <MetricCard label={t('MONEY_INCOME')} value={summary.income} isCurrency status="success" />
-              <MetricCard label={t('MONEY_EXPENSE')} value={summary.expense} isCurrency status="danger" trend={[5000, 12000, 8000, 15000, summary.expense]} />
-              <div className="bg-bg-primary rounded-[1.5rem] border border-border-light p-4 flex flex-col justify-between shadow-sm">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[9px] font-black text-text-tertiary uppercase tracking-wider">Sovereign Savings Rate</span>
-                  <span className="text-xs font-black text-success">{summary.income > 0 ? (((summary.income - summary.expense) / summary.income) * 100).toFixed(0) : 0}%</span>
-                </div>
-                <div className="w-full bg-bg-tertiary h-1.5 rounded-full overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${Math.min(100, summary.income > 0 ? ((summary.income - summary.expense) / summary.income) * 100 : 0)}%` }}
-                    className="h-full bg-success rounded-full"
-                  />
-                </div>
-              </div>
-            </div>
+        {/* ── Top Dashboard Section ────────────────────────────────── */}
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+           {/* Left: 2x2 Primary Metrics */}
+           <div className="grid grid-cols-2 gap-4">
+             <MetricCard label={t('MONEY_BALANCE')} value={summary.balance} isCurrency status="default" trend={[15000, 20000, 18000, 25000, summary.balance]} />
+             <MetricCard label={t('MONEY_INCOME')} value={summary.income} isCurrency status="success" />
+             <MetricCard label={t('MONEY_EXPENSE')} value={summary.expense} isCurrency status="danger" trend={[5000, 12000, 8000, 15000, summary.expense]} />
+             <div className="bg-bg-primary rounded-[1.8rem] border border-border-light p-5 flex flex-col justify-between shadow-xl shadow-black/[0.02]">
+               <div className="flex justify-between items-center mb-3">
+                 <span className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] leading-tight">Savings Rate</span>
+                 <span className="text-sm font-black text-text-success tabular-nums">{summary.income > 0 ? (((summary.income - summary.expense) / summary.income) * 100).toFixed(0) : 0}%</span>
+               </div>
+               <div className="w-full bg-bg-tertiary h-2 rounded-full overflow-hidden">
+                 <motion.div 
+                   initial={{ width: 0 }}
+                   animate={{ width: `${Math.min(100, summary.income > 0 ? ((summary.income - summary.expense) / summary.income) * 100 : 0)}%` }}
+                   className="h-full bg-success rounded-full"
+                 />
+               </div>
+             </div>
+           </div>
            
-           <div className="bg-bg-primary rounded-[2.5rem] p-6 flex flex-col items-center justify-center border border-border-light shadow-xl shadow-black/[0.02]">
-              <div className="text-[10px] font-black uppercase tracking-[0.3em] mb-6 text-text-tertiary">{t('EXPENSE_PROFILE')}</div>
+           {/* Right: Spending Profile (Donut Chart) */}
+           <div className="bg-bg-primary rounded-[2.5rem] p-7 flex flex-col items-center justify-center border border-border-light shadow-xl shadow-black/[0.02]">
+              <div className="text-[10px] font-black uppercase tracking-[0.3em] mb-7 text-text-tertiary">{t('EXPENSE_PROFILE')}</div>
               <DonutChart data={donutData.length > 0 ? donutData : [{ label: 'Empty', value: 1, color: 'var(--bg-tertiary)' }]} size={160} thickness={18} />
-              <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <div className="mt-7 flex flex-wrap justify-center gap-3">
                  {donutData.slice(0, 3).map((d, i) => (
-                    <div key={i} className="flex items-center gap-2 px-3 py-1 rounded-full bg-bg-tertiary border border-border-light">
-                       <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }}></div>
+                    <div key={i} className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-bg-tertiary border border-border-light">
+                       <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.color }}></div>
                        <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{d.label}</span>
                     </div>
                  ))}
               </div>
            </div>
-          </div>
-
-          {/* Budget Progress Tracking */}
-          <section className="space-y-6">
-            <div className="flex items-center justify-between px-2">
-              <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Monthly Budget Status</div>
-              <button 
-                onClick={() => {
-                  const cat = window.prompt("Enter Category (e.g., Grocery):");
-                  if (!cat) return;
-                  const amt = window.prompt("Enter Monthly Limit (₹):");
-                  if (!amt) return;
-                  setCategoryBudget(cat, Number(amt));
-                }}
-                className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline"
-              >
-                + Define Budget
-              </button>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-2">
-               {budgets.length > 0 ? budgets.map((b) => {
-                 const spent = txns.filter(t => t.category === b.category && t.type === 'expense').reduce((s, curr) => s + curr.amount, 0);
-                 const perc = Math.min(100, (spent / b.monthly_limit) * 100);
-                 return (
-                   <div key={b.id} className="bg-bg-primary border border-border-light p-3.5 rounded-xl">
-                      <div className="flex justify-between items-center mb-2.5">
-                        <span className="text-[9px] font-black text-text-primary uppercase tracking-wider truncate">{b.category}</span>
-                        <span className="text-[8px] font-bold text-text-tertiary tabular-nums flex-shrink-0 ml-1">₹{spent}/₹{b.monthly_limit}</span>
-                      </div>
-                      <div className="w-full bg-bg-secondary h-1.5 rounded-full overflow-hidden">
-                        <div className={`h-full transition-all duration-500 rounded-full ${perc > 90 ? 'bg-red-500' : perc > 70 ? 'bg-orange-400' : 'bg-gold'}`} style={{ width: `${perc}%` }} />
-                      </div>
-                   </div>
-                 );
-               }) : (
-                 <div className="col-span-full py-6 text-center bg-bg-secondary border border-dashed border-border-light rounded-xl opacity-40">
-                    <p className="text-[9px] font-black uppercase tracking-widest">No budgets defined for this month</p>
-                 </div>
-               )}
-            </div>
-          </section>
-
-          {/* Quick Summary Sidebar */}
-          <div className="space-y-3">
-            <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.25em]">Quick Actions</div>
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="w-full p-4 bg-gold text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition shadow-md shadow-gold/20"
-            >
-              <IndianRupee size={15} /> {t('MONEY_INCOME')}
-            </button>
-            <button
-              onClick={() => { setFType('expense'); setShowAddForm(true); }}
-              className="w-full p-4 bg-bg-primary border border-border-light rounded-xl font-black text-[10px] uppercase tracking-widest text-text-tertiary flex items-center justify-center gap-2 hover:border-red-300 hover:text-red-500 transition"
-            >
-              <IndianRupee size={15} /> {t('MONEY_EXPENSE')}
-            </button>
-            <div className="bg-bg-primary border border-border-light rounded-xl p-4">
-              <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2">This Month</div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-[10px] text-text-secondary font-bold">Transactions</span>
-                  <span className="text-[10px] font-black text-text-primary tabular-nums">{txns.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[10px] text-text-secondary font-bold">Categories</span>
-                  <span className="text-[10px] font-black text-text-primary tabular-nums">{donutData.length}</span>
-                </div>
-              </div>
-            </div>
-          </div>
          </div>
+
+         {/* ── Middle Dashboard Section: Budgets & Actions ─────────── */}
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+           {/* Budget Tracking */}
+           <section className="lg:col-span-2 space-y-6">
+             <div className="flex items-center justify-between px-2">
+               <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">Monthly Budget Status</div>
+               <button 
+                 onClick={() => {
+                   const cat = window.prompt("Enter Category (e.g., Grocery):");
+                   if (!cat) return;
+                   const amt = window.prompt("Enter Monthly Limit (₹):");
+                   if (!amt) return;
+                   setCategoryBudget(cat, Number(amt));
+                 }}
+                 className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline"
+               >
+                 + Define Budget
+               </button>
+             </div>
+             
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {budgets.length > 0 ? budgets.map((b) => {
+                  const spent = txns.filter(t => t.category === b.category && t.type === 'expense').reduce((s, curr) => s + curr.amount, 0);
+                  const perc = Math.min(100, (spent / b.monthly_limit) * 100);
+                  return (
+                    <div key={b.id} className="bg-bg-primary border border-border-light p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                       <div className="flex justify-between items-center mb-3">
+                         <span className="text-[10px] font-black text-text-primary uppercase tracking-wider">{b.category}</span>
+                         <span className="text-[9px] font-bold text-text-tertiary tabular-nums">₹{spent} / ₹{b.monthly_limit}</span>
+                       </div>
+                       <div className="w-full bg-bg-tertiary h-1.5 rounded-full overflow-hidden">
+                         <div className={`h-full transition-all duration-500 rounded-full ${perc > 90 ? 'bg-red-500' : perc > 70 ? 'bg-orange-400' : 'bg-gold'}`} style={{ width: `${perc}%` }} />
+                       </div>
+                    </div>
+                  );
+                }) : (
+                  <div className="col-span-full py-12 text-center bg-bg-primary border border-border-light border-dashed rounded-[2rem] opacity-40">
+                     <p className="text-[10px] font-black uppercase tracking-widest">No active budgets found in this vault</p>
+                  </div>
+                )}
+             </div>
+           </section>
+
+           {/* Quick Actions Sidebar */}
+           <div className="space-y-4">
+             <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] px-2">Sovereign Treasury</div>
+             
+             <button
+               onClick={() => setShowAddForm(true)}
+               className="w-full p-5 bg-gold-text text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:opacity-95 transition-all shadow-xl shadow-gold/10"
+             >
+               <IndianRupee size={18} /> {t('MONEY_INCOME')}
+             </button>
+
+             <div className="bg-bg-primary border border-border-light rounded-[2rem] p-6 space-y-4 shadow-xl shadow-black/[0.01]">
+               <div className="flex items-center justify-between">
+                 <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">Efficiency Rate</span>
+                 <span className="text-[10px] font-black text-text-tertiary">HIGH</span>
+               </div>
+               <div className="w-full bg-bg-tertiary h-1 rounded-full overflow-hidden">
+                 <div className="w-3/4 h-full bg-gold" />
+               </div>
+               <p className="text-[10px] font-medium text-text-secondary leading-relaxed opacity-80 italic">"Your cash liquidity is high. Consider moving to Sovereign Invest for better yields."</p>
+             </div>
+           </div>
+         </div>
+
          
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {donutData.map((d, i) => {

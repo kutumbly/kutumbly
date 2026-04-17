@@ -23,7 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, UserPlus, Search, Phone, 
   CheckCircle2, XCircle, Clock, Send, 
-  Filter, X, Save, MessageCircle 
+  Filter, X, Save, MessageCircle, ShieldCheck 
 } from 'lucide-react';
 import { broadcastMission } from '@/lib/whatsapp';
 
@@ -90,111 +90,129 @@ export default function GuestManager({ event }: GuestManagerProps) {
   return (
     <div className="space-y-8 pb-32">
       {/* 1. Atithi Analytics Ribbon */}
+      {/* 1. Atithi Analytics Ribbon (Premium Glass) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-6 shadow-xl flex items-center justify-between">
-          <div>
-            <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mb-1">Total Families Invited</p>
-            <h3 className="text-2xl font-black text-text-primary">{stats.total}</h3>
-          </div>
-          <div className="p-3 bg-bg-secondary rounded-2xl text-text-tertiary">
-            <Users size={20} />
-          </div>
+        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl flex items-center justify-between group hover:border-gold/30 transition-all card-lift relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-gold/10 transition-all" />
+           <div className="relative z-10">
+              <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2 opacity-60">Total Families Invited</p>
+              <h3 className="text-3xl font-black text-text-primary tabular-nums tracking-tighter">{stats.total}</h3>
+           </div>
+           <div className="w-14 h-14 rounded-2xl bg-bg-secondary border border-border-light flex items-center justify-center text-text-tertiary shadow-inner relative z-10 group-hover:scale-110 transition-transform">
+              <Users size={28} />
+           </div>
         </div>
 
-        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-6 shadow-xl flex items-center justify-between border-text-success/20">
-          <div>
-            <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mb-1">Confirmed Heads</p>
-            <h3 className="text-2xl font-black text-text-success">{stats.confirmed}</h3>
-          </div>
-          <div className="p-3 bg-text-success/10 rounded-2xl text-text-success">
-            <CheckCircle2 size={20} />
-          </div>
+        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl flex items-center justify-between group hover:border-text-success/30 transition-all card-lift relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-text-success/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-text-success/10 transition-all" />
+           <div className="relative z-10">
+              <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2 opacity-60">Confirmed Heads</p>
+              <h3 className="text-3xl font-black text-text-success tabular-nums tracking-tighter">{stats.confirmed}</h3>
+           </div>
+           <div className="w-14 h-14 rounded-2xl bg-text-success/5 border border-text-success/10 flex items-center justify-center text-text-success shadow-inner relative z-10 group-hover:scale-110 transition-transform">
+              <CheckCircle2 size={28} />
+           </div>
         </div>
 
-        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-6 shadow-xl flex items-center justify-between border-text-warning/20">
-          <div>
-            <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest mb-1">Awaiting RSVP</p>
-            <h3 className="text-2xl font-black text-text-warning">{stats.pending}</h3>
-          </div>
-          <div className="p-3 bg-text-warning/10 rounded-2xl text-text-warning">
-            <Clock size={20} />
-          </div>
+        <div className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl flex items-center justify-between group hover:border-text-warning/30 transition-all card-lift relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-32 h-32 bg-text-warning/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-text-warning/10 transition-all" />
+           <div className="relative z-10">
+              <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-2 opacity-60">Awaiting RSVP</p>
+              <h3 className="text-3xl font-black text-text-warning tabular-nums tracking-tighter">{stats.pending}</h3>
+           </div>
+           <div className="w-14 h-14 rounded-2xl bg-text-warning/5 border border-text-warning/10 flex items-center justify-center text-text-warning shadow-inner relative z-10 group-hover:scale-110 transition-transform">
+              <Clock size={28} />
+           </div>
         </div>
       </div>
 
       {/* 2. Command Toolbar */}
-      <div className="flex flex-col md:flex-row gap-4 items-center">
+      {/* 2. Command Toolbar (Standardized Pill) */}
+      <div className="flex flex-col md:flex-row gap-6 items-center">
         <div className="relative flex-1 group w-full">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-tertiary group-focus-within:text-gold transition-colors" size={18} />
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-tertiary group-focus-within:text-gold transition-colors" size={20} />
           <input 
             type="text"
             placeholder="Search Guest or Pariwar Tag..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full h-16 bg-bg-primary border border-border-light rounded-[1.5rem] pl-16 pr-6 text-sm font-bold text-text-primary focus:outline-none focus:border-gold/50 shadow-lg transition-all"
+            className="w-full h-16 bg-bg-secondary border border-border-light rounded-[1.5rem] pl-16 pr-6 text-sm font-black text-text-primary focus:outline-none focus:border-gold/50 shadow-inner transition-all"
           />
         </div>
         
-        <div className="flex bg-bg-secondary rounded-[1.5rem] border border-border-light p-1 h-16 w-full md:w-auto">
+        <div className="flex bg-bg-secondary rounded-[1.8rem] border border-border-light p-1.5 h-16 w-full md:w-auto relative shadow-inner">
            {(['all', 'pending', 'confirmed', 'declined'] as const).map(f => (
              <button 
                key={f}
                onClick={() => setFilter(f)}
-               className={`flex-1 md:px-6 rounded-[1rem] text-[9px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-bg-primary text-gold shadow-md' : 'text-text-tertiary'}`}
+               className={`px-8 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all relative z-10 ${filter === f ? 'text-gold' : 'text-text-tertiary hover:text-text-primary'}`}
              >
                {f}
+               {filter === f && (
+                 <motion.div 
+                   layoutId="guest-filter-pill"
+                   className="absolute inset-0 bg-bg-primary rounded-xl shadow-md border border-border-light/50 -z-10"
+                   transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+                 />
+               )}
              </button>
            ))}
         </div>
 
         <button 
           onClick={() => setShowAddModal(true)}
-          className="h-16 px-10 bg-gold-text text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-widest flex items-center gap-3 shadow-xl shadow-gold/20 hover:scale-[1.02] active:scale-[0.98] transition-all w-full md:w-auto"
+          className="h-16 px-10 bg-gold-text text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 shadow-xl shadow-gold/20 hover:scale-[1.03] active:scale-[0.97] transition-all w-full md:w-auto"
         >
-          <UserPlus size={20} />
+          <UserPlus size={22} />
           Enroll Guest
         </button>
       </div>
 
-      {/* 3. Atithi List Grid */}
+      {/* 3. Atithi List Grid (Premium Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-         <AnimatePresence>
-            {filteredGuests.map(g => (
+         <AnimatePresence mode="popLayout">
+            {filteredGuests.map((g, i) => (
                <motion.div 
                   key={g.id} layout
-                  initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 group hover:border-gold/30 transition-all relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 group hover:border-gold/30 hover:shadow-2xl transition-all relative overflow-hidden card-lift"
                >
-                  <div className="flex justify-between items-start mb-6">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gold/5 rounded-full blur-2xl -mr-12 -mt-12 group-hover:bg-gold/10 transition-colors pointer-events-none" />
+                  
+                  <div className="flex justify-between items-start mb-8 relative z-10">
                      <div>
-                        <h4 className="text-sm font-black text-text-primary mb-1">{g.guest_name}</h4>
-                        <span className="text-[9px] font-black px-2 py-0.5 bg-bg-secondary border border-border-light rounded-full text-text-tertiary uppercase tracking-widest">
+                        <h4 className="text-base font-black text-text-primary mb-1 group-hover:text-gold transition-colors">{g.guest_name}</h4>
+                        <span className="text-[9px] font-black px-3 py-1 bg-bg-secondary border border-border-light rounded-full text-text-tertiary uppercase tracking-[0.2em] opacity-80 shadow-inner">
                            {g.family_tag || 'Individual'}
                         </span>
                      </div>
                      <div className="flex flex-col items-end gap-2">
-                        <div className="flex items-center gap-2 text-[10px] font-black text-text-primary">
-                           <Users size={12} className="text-gold" /> {g.guest_count} Heads
+                        <div className="flex items-center gap-2 text-[11px] font-black text-text-primary tabular-nums tracking-tighter">
+                           <Users size={14} className="text-gold" /> {g.guest_count} Heads
                         </div>
-                        <div className="flex items-center gap-1.5 uppercase tracking-widest text-[8px] font-black">
+                        <div className="flex items-center gap-2 uppercase tracking-[0.15em] text-[9px] font-black px-3 py-1 rounded-full bg-bg-tertiary border border-border-light shadow-sm">
                            {getStatusIcon(g.rsvp_status)} {g.rsvp_status}
                         </div>
                      </div>
                   </div>
 
-                  <div className="flex gap-2 mt-auto">
+                  <div className="flex gap-3 mt-auto relative z-10">
                      <button 
                         onClick={() => updateGuestRSVP(g.id, 'confirmed')}
-                        className={`flex-1 h-12 rounded-2xl border border-border-light flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest hover:border-text-success/50 transition-all ${g.rsvp_status === 'confirmed' ? 'bg-text-success text-white' : 'text-text-tertiary bg-bg-secondary'}`}
+                        className={`flex-1 h-14 rounded-2xl border flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-sm ${g.rsvp_status === 'confirmed' ? 'bg-text-success border-text-success text-white shadow-text-success/20' : 'text-text-tertiary bg-bg-secondary border-border-light hover:border-text-success/50 hover:text-text-success'}`}
                      >
-                        Confirm
+                        {g.rsvp_status === 'confirmed' ? <ShieldCheck size={18} /> : null}
+                        {g.rsvp_status === 'confirmed' ? 'Confirmed' : 'Confirm'}
                      </button>
                      <button 
                         onClick={() => handleBroadcastInvite(g)}
-                        className="w-12 h-12 rounded-2xl bg-bg-secondary border border-border-light flex items-center justify-center text-text-tertiary hover:text-gold hover:border-gold/50 transition-all"
+                        className="w-14 h-14 rounded-2xl bg-bg-secondary border border-border-light flex items-center justify-center text-text-tertiary hover:text-gold hover:border-gold/50 transition-all shadow-sm card-lift"
                         title="Broadcast Aamantran via WhatsApp"
                      >
-                        <MessageCircle size={18} />
+                        <MessageCircle size={22} />
                      </button>
                   </div>
                </motion.div>

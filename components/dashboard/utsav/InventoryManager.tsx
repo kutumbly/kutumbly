@@ -235,60 +235,71 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
   return (
     <div className="space-y-8">
       {/* 1. Interactive Hub Controls */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+      {/* 1. Interactive Hub Controls (Standardized) */}
+      <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
          <div className="relative w-full md:w-96 group">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-tertiary group-focus-within:text-gold transition-all" size={18} />
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-text-tertiary group-focus-within:text-gold transition-all" size={20} />
             <input 
                type="text" 
-               placeholder="Search Saamaan..." 
+               placeholder="Search Saamaan / Vendor..." 
                value={searchTerm}
                onChange={e => setSearchTerm(e.target.value)}
-               className="w-full bg-bg-primary border border-border-light rounded-full py-4 pl-16 pr-6 text-sm font-bold text-text-primary focus:outline-none focus:border-gold focus:shadow-2xl transition-all"
+               className="w-full bg-bg-secondary border border-border-light rounded-[1.5rem] py-5 pl-16 pr-6 text-sm font-black text-text-primary focus:outline-none focus:border-gold focus:shadow-2xl transition-all shadow-inner"
             />
          </div>
 
-         <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar w-full md:w-auto">
+         <div className="flex items-center gap-3 overflow-x-auto hide-scrollbar w-full md:w-auto p-1 bg-bg-secondary rounded-[1.8rem] border border-border-light">
             {(['ALL', 'ORDERED', 'DISPATCHED', 'RECEIVED'] as const).map(f => (
                <button 
                   key={f}
                   onClick={() => setFilter(f)}
-                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all whitespace-nowrap ${filter === f ? 'bg-gold-text text-white border-gold shadow-lg shadow-gold/20' : 'bg-bg-primary text-text-tertiary border-border-light hover:border-gold/30'}`}
+                  className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap relative ${filter === f ? 'text-gold' : 'text-text-tertiary hover:text-text-primary'}`}
                >
                   {f}
+                  {filter === f && (
+                    <motion.div 
+                      layoutId="inventory-filter-pill"
+                      className="absolute inset-0 bg-bg-primary rounded-2xl shadow-md border border-border-light/50 -z-10"
+                      transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+                    />
+                  )}
                </button>
             ))}
+            <div className="h-8 w-[1px] bg-border-light/50 mx-1" />
             <button 
                onClick={() => setShowAddModal(true)}
-               className="ml-2 w-12 h-12 bg-gold-text text-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all flex-shrink-0"
+               className="w-12 h-12 bg-gold-text text-white rounded-2xl flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all flex-shrink-0"
             >
                <Plus size={24} strokeWidth={3} />
             </button>
-
-            <button 
-               onClick={handleGenerateBridge}
-               disabled={isBridging}
-               className="ml-2 px-6 h-12 bg-bg-primary border border-gold/30 text-gold rounded-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-gold/10 transition-all disabled:opacity-50"
-            >
-               {isBridging ? <RefreshCcw size={16} className="animate-spin" /> : <MessageCircle size={16} />}
-               Broadcast
-            </button>
-
-            <button 
-               onClick={handleSyncFulfillment}
-               disabled={isBridging}
-               className="ml-2 px-6 h-12 bg-bg-primary border border-text-success/30 text-text-success rounded-full flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-text-success/10 transition-all disabled:opacity-50"
-            >
-               <RefreshCcw size={16} className={isBridging ? 'animate-spin' : ''} />
-               Sync
-            </button>
-
-            <button 
-               onClick={() => setShowScanner(true)}
-               className="ml-2 w-12 h-12 bg-bg-tertiary border border-border-light text-text-primary rounded-full flex items-center justify-center shadow-xl hover:border-gold/50 transition-all flex-shrink-0"
-            >
-               <ScanLine size={20} />
-            </button>
          </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-4">
+          <button 
+              onClick={handleGenerateBridge}
+              disabled={isBridging}
+              className="px-8 h-14 bg-bg-primary border border-gold/30 text-gold rounded-2xl flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg hover:bg-gold/5 transition-all disabled:opacity-50 card-lift"
+          >
+              {isBridging ? <RefreshCcw size={16} className="animate-spin" /> : <MessageCircle size={18} />}
+              Broadcast Mission
+          </button>
+
+          <button 
+              onClick={handleSyncFulfillment}
+              disabled={isBridging}
+              className="px-8 h-14 bg-bg-primary border border-text-success/30 text-text-success rounded-2xl flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg hover:bg-text-success/5 transition-all disabled:opacity-50 card-lift"
+          >
+              <RefreshCcw size={18} className={isBridging ? 'animate-spin' : ''} />
+              Sync Protocol
+          </button>
+
+          <button 
+              onClick={() => setShowScanner(true)}
+              className="w-14 h-14 bg-bg-primary border border-border-light text-text-primary rounded-2xl flex items-center justify-center shadow-lg hover:border-gold/50 transition-all flex-shrink-0 card-lift"
+          >
+              <ScanLine size={24} />
+          </button>
       </div>
 
       {/* 2. Inventory Grid - Lifecycle Cards */}
@@ -298,68 +309,66 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
                <motion.div 
                   layout
                   key={item.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="bg-bg-primary border border-border-light rounded-[2.5rem] p-6 shadow-xl group hover:border-gold/30 hover:shadow-2xl transition-all relative overflow-hidden"
+                  className="bg-bg-primary border border-border-light rounded-[2.5rem] p-8 shadow-xl group hover:border-gold/30 hover:shadow-2xl transition-all relative overflow-hidden card-lift"
                >
-                  <div className="flex justify-between items-start mb-6">
-                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl flex items-center justify-center border" style={{ backgroundColor: `${CAT_COLORS[item.category] || '#ccc'}20`, borderColor: `${CAT_COLORS[item.category] || '#ccc'}40`, color: CAT_COLORS[item.category] }}>
-                           <Package size={20} />
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-gold/10 transition-colors pointer-events-none" />
+                  
+                  <div className="flex justify-between items-start mb-8 relative z-10">
+                     <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center border shadow-inner group-hover:scale-110 transition-transform" style={{ backgroundColor: `${CAT_COLORS[item.category] || '#ccc'}20`, borderColor: `${CAT_COLORS[item.category] || '#ccc'}40`, color: CAT_COLORS[item.category] }}>
+                           <Package size={28} />
                         </div>
                         <div>
-                           <h3 className="text-sm font-black text-text-primary truncate max-w-[120px]">{item.item_name}</h3>
-                           <p className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{item.category}</p>
+                           <h3 className="text-base font-black text-text-primary truncate max-w-[150px] group-hover:text-gold transition-colors">{item.item_name}</h3>
+                           <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{item.category}</p>
                         </div>
                      </div>
-                     <div className={`px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest border ${getStatusStyle(item.status)}`}>
+                     <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${getStatusStyle(item.status)}`}>
                         {item.status}
                      </div>
                   </div>
 
-                  <div className="space-y-4 mb-6">
-                     <div className="flex items-center justify-between text-[11px] font-bold">
-                        <span className="text-text-tertiary uppercase tracking-widest">Responsibility</span>
-                        <div className="flex items-center gap-2 text-text-primary">
-                           <User size={12} className="text-gold" /> {item.assigned_to_id || 'Anyone'}
+                  <div className="space-y-4 mb-8 relative z-10">
+                     <div className="flex items-center justify-between p-3.5 bg-bg-secondary rounded-[1.2rem] border border-border-light">
+                        <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest opacity-60">Responsibility</span>
+                        <div className="flex items-center gap-2 text-text-primary font-black text-[11px] uppercase tracking-wider">
+                           <User size={14} className="text-gold" /> {item.assigned_to_id || 'Anyone'}
                         </div>
                      </div>
-                     <div className="flex items-center justify-between text-[11px] font-bold">
-                        <span className="text-text-tertiary uppercase tracking-widest">Expected Qty</span>
-                        <span className="text-text-primary">{item.quantity_expected} {item.unit}</span>
+                     <div className="flex items-center justify-between p-3.5 bg-bg-secondary rounded-[1.2rem] border border-border-light">
+                        <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest opacity-60">Expected Qty</span>
+                        <span className="text-text-primary font-black text-sm tabular-nums tracking-tighter">{item.quantity_expected} <span className="text-[10px] font-bold text-text-tertiary uppercase">{item.unit}</span></span>
                      </div>
                   </div>
 
                   {/* Lifecycle Quick Actions (Cousin Mode) */}
-                  <div className="flex items-center gap-2 pt-4 border-t border-border-light/50">
+                  <div className="flex items-center gap-3 pt-6 border-t border-border-light/30 relative z-10">
                      {item.status === 'ORDERED' && (
                         <button 
                            onClick={() => updateInventoryStatus(item.id, 'RECEIVED')}
-                           className="flex-1 bg-gold/10 text-gold py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-gold-text hover:text-white transition-all flex items-center justify-center gap-2"
+                           className="flex-1 bg-gold/10 text-gold py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border border-gold/10 hover:bg-gold-text hover:text-white hover:border-gold transition-all flex items-center justify-center gap-2 shadow-sm"
                         >
-                           <ShieldCheck size={14} /> Mark Received
+                           <ShieldCheck size={16} /> Mark Received
                         </button>
                      )}
-                     {item.status === 'RECEIVED' && (
+                     {(item.status === 'RECEIVED' || item.status === 'IN_USE') && (
                         <button 
-                           onClick={() => updateInventoryStatus(item.id, 'IN_USE')}
-                           className="flex-1 bg-text-success/10 text-text-success py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-text-success hover:text-white transition-all flex items-center justify-center gap-2"
+                           onClick={() => updateInventoryStatus(item.id, item.status === 'RECEIVED' ? 'IN_USE' : 'RETURNED')}
+                           className="flex-1 bg-text-success/10 text-text-success py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border border-text-success/10 hover:bg-text-success hover:text-white hover:border-text-success transition-all flex items-center justify-center gap-2 shadow-sm"
                         >
-                           <Truck size={14} /> Move to Use
+                           {item.status === 'RECEIVED' ? <Truck size={16} /> : <CheckCircle2 size={16} />} 
+                           {item.status === 'RECEIVED' ? 'Move to Use' : 'Mark Returned'}
                         </button>
                      )}
-                     <button className="w-12 h-12 bg-bg-secondary rounded-2xl flex items-center justify-center text-text-tertiary hover:text-text-primary transition-all">
-                        <MoreVertical size={18} />
+                     <button className="w-14 h-14 bg-bg-secondary rounded-2xl border border-border-light flex items-center justify-center text-text-tertiary hover:text-text-primary hover:border-gold/30 transition-all shadow-sm">
+                        <MoreVertical size={20} />
                      </button>
                   </div>
-
-                  {/* Subtle Background Icon */}
-                  <div className="absolute -bottom-4 -right-4 opacity-[0.03] rotate-12 group-hover:scale-110 transition-all pointer-events-none">
-                     <Package size={120} />
-                  </div>
-               </motion.div>
+                </motion.div>
             ))}
          </AnimatePresence>
 
