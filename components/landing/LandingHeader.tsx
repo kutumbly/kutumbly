@@ -18,66 +18,117 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Shield, Menu, X, ArrowRight } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
-import LanguagePicker from '@/components/ui/LanguagePicker';
-import { Globe } from 'lucide-react';
+
+const NAV_LINKS = [
+  { label: "Product", href: "/product" },
+  { label: "Modules", href: "/#modules" },
+  { label: "Security", href: "/#privacy" },
+  { label: "Founders", href: "/founders" },
+  { label: "Contact", href: "/contact" },
+];
 
 export default function LandingHeader() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
-
-  const LANG_LABELS: Record<string, string> = {
-    en: 'EN', hi: 'हि', mr: 'मर', gu: 'ગુ', pa: 'ਪੰ',
-    ta: 'த', bho: 'भो', kn: 'ಕ', te: 'తె', ne: 'ने', bn: 'বা', mni: 'মৈ'
-  };
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <>
-      <nav className="fixed top-0 left-0 right-0 h-20 flex items-center justify-between px-8 md:px-20 z-50 bg-white/80 backdrop-blur-xl border-b border-border-light shadow-sm">
-        <div className="flex items-center gap-4">
-           <Link href="/" className="w-9 h-9 bg-white border border-border-light rounded-[14px] flex items-center justify-center p-1.5 shadow-sm hover:border-gold transition-all hover:scale-105 active:scale-95">
-              <Image src="/favicon.svg" alt="Kutumbly Logo" width={22} height={22} style={{ height: 'auto' }} />
-           </Link>
-           <Link href="/" className="font-black text-xl tracking-tight text-text-primary hover:text-gold transition-colors font-inter-tight">
-              Kutumbly
-           </Link>
-        </div>
-        <div className="flex items-center gap-8">
-           <div className="hidden lg:flex items-center gap-8 px-8 border-x border-border-light/40">
-              <Link href="/product" className="text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary hover:text-text-primary transition-colors">
-                {t('nav.technical_manifesto')}
-              </Link>
-              <button 
-                onClick={() => window.location.pathname === '/' ? window.scrollTo({ top: 800, behavior: 'smooth' }) : window.location.href = '/'}
-                className="text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary hover:text-text-primary transition-colors"
-              >
-                {t('nav.mission_arch')}
-              </button>
-           </div>
-           
-           <div className="flex items-center gap-4">
-              <button 
-                onClick={() => setIsPickerOpen(true)}
-                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-primary bg-clinical px-5 py-2.5 rounded-2xl border border-border-light hover:bg-white hover:shadow-sm transition-all active:scale-95"
-              >
-                <Globe size={14} className="text-gold" />
-                {LANG_LABELS[lang] ?? lang.toUpperCase()}
-              </button>
+    <header className="fixed top-0 left-0 right-0 z-50">
+      {/* Glassmorphism bar */}
+      <div className="mx-4 mt-4">
+        <div className="bg-white/80 backdrop-blur-2xl border border-border-light/80 rounded-2xl shadow-lg shadow-black/[0.04] px-6 h-16 flex items-center justify-between">
 
-              <Link href="/os" className="px-8 py-3 bg-text-primary text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-gold transition-all shadow-lg shadow-black/5 active:scale-95">
-                 {t('nav.open_app')}
-              </Link>
-           </div>
-        </div>
-      </nav>
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-9 h-9 bg-gold rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-gold/30 transition-shadow">
+              <Shield size={16} className="text-white" />
+            </div>
+            <div>
+              <span className="text-lg font-black text-text-primary tracking-tight font-inter-tight">Kutumbly</span>
+              <div className="text-[7px] font-black text-text-tertiary uppercase tracking-[0.3em] leading-none opacity-70 -mt-0.5">
+                Sovereign OS
+              </div>
+            </div>
+          </Link>
 
-      <LanguagePicker 
-        isOpen={isPickerOpen} 
-        onClose={() => setIsPickerOpen(false)} 
-      />
-    </>
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="px-4 py-2 text-xs font-black text-text-secondary hover:text-text-primary uppercase tracking-widest transition-colors rounded-xl hover:bg-clinical"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Right actions */}
+          <div className="hidden md:flex items-center gap-3">
+            <button
+              onClick={() => useAppStore.getState().setLang(lang === 'en' ? 'hi' : 'en')}
+              className="h-10 px-4 bg-clinical border border-border-light rounded-xl font-black text-[10px] text-text-secondary uppercase tracking-widest hover:border-gold hover:text-gold transition-all"
+            >
+              {lang === 'en' ? 'हिंदी' : 'EN'}
+            </button>
+            <Link
+              href="/os"
+              className="flex items-center gap-2 h-10 px-6 bg-text-primary text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-gold transition-all shadow-sm active:scale-95"
+            >
+              Open OS <ArrowRight size={13} />
+            </Link>
+          </div>
+
+          {/* Mobile menu toggle */}
+          <button
+            className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-clinical transition-colors text-text-secondary"
+            onClick={() => setMobileOpen(v => !v)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+
+        {/* Mobile nav dropdown */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mt-2 bg-white/95 backdrop-blur-2xl border border-border-light rounded-2xl shadow-xl overflow-hidden"
+            >
+              <div className="p-4 space-y-1">
+                {NAV_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-5 py-4 text-sm font-black text-text-secondary hover:text-text-primary hover:bg-clinical rounded-xl transition-all uppercase tracking-widest"
+                  >
+                    <div className="w-1.5 h-1.5 rounded-full bg-border-medium" />
+                    {link.label}
+                  </Link>
+                ))}
+                <div className="pt-2 border-t border-border-light mt-2">
+                  <Link
+                    href="/os"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center gap-2 w-full h-14 bg-text-primary text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gold transition-all"
+                  >
+                    Open Kutumbly OS <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </header>
   );
 }

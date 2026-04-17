@@ -25,9 +25,8 @@ import {
   ExternalLink, RefreshCcw, Send, MessageCircle, 
   ScanLine, X, QrCode
 } from 'lucide-react';
-import { useScanner } from '@/hooks/useScanner';
-import { useNevataEngine } from '@/hooks/useNevataEngine';
-import { useVault } from '@/hooks/useVault';
+import { useScanner, useNevataEngine } from '@/modules/utsav';
+import { useFamily } from '@/modules/family';
 import { useAppStore } from '@/lib/store';
 import { requestAccessToken } from '@/lib/gdrive';
 import { 
@@ -53,8 +52,7 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
   const { 
     inventory, addInventoryItem, updateInventoryStatus, findInventoryItem 
   } = useNevataEngine(event.id);
-  const { getFamilyMembers } = useVault();
-  const family = getFamilyMembers();
+  const { familyMembers: family } = useFamily();
 
   const { videoRef, isScanning, startScanner, stopScanner, scanFrame } = useScanner();
 

@@ -14,18 +14,26 @@
 import { useMemo, useCallback, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { saveVault } from '@/lib/vault';
-import { diaryRepo } from './diary.repo';
-import { DiaryEntry } from '@/types/db';
+import { familyRepo } from './family.repo';
+import { FamilyMember } from '@/types/db';
 
 /**
- * DIARY HUB (Memory & Journal)
- * Sealed module for preserving family history and daily thoughts.
+ * FAMILY HUB (Identity & Settings)
+ * Sealed module for managing family members and sovereign system settings.
  */
-export function useDiary() {
-  const { db, currentPin, fileHandle } = useAppStore();
+export function useFamily() {
+  const { db, currentPin, fileHandle, isUnlocked } = useAppStore();
   const [tick, setTick] = useState(0);
 
-  const entries = useMemo(() => diaryRepo.getEntries(db), [db, tick]);
+  const familyMembers = useMemo(() => {
+    if (!isUnlocked) return [];
+    return familyRepo.getMembers(db);
+  }, [db, isUnlocked, tick]);
+
+  const settings = useMemo(() => {
+    if (!isUnlocked) return {};
+    return familyRepo.getSettings(db);
+  }, [db, isUnlocked, tick]);
 
   const commit = useCallback(() => {
     if (db && fileHandle && currentPin) {
@@ -34,19 +42,11 @@ export function useDiary() {
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
-  const addEntry = useCallback((entry: any) => {
-    const id = diaryRepo.createEntry(db, entry);
-    commit();
-  }, [db, commit]);
-
-  const deleteEntry = useCallback((id: string) => {
-    diaryRepo.deleteEntry(db, id);
-    commit();
-  }, [db, commit]);
-
   return {
-    entries,
-    addEntry,
-    deleteEntry
+    familyMembers,
+    settings,
+    getFamilyMembers: () => familyMembers,
+    getSettings: () => settings,
+    refresh: () => setTick(t => t + 1)
   };
 }

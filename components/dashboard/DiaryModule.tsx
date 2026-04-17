@@ -18,7 +18,7 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/lib/store';
-import { useDiary } from '@/hooks/useDiary';
+import { useDiary } from '@/modules/diary';
 import ModuleShell from './ModuleShell';
 import { useTranslation } from '@/lib/i18n';
 import { Search, Book, Trash2, Calendar, Smile, Heart, MessageSquare, ArrowRight, BookOpen, MapPin, Cloud, Tag, Lock, Unlock } from 'lucide-react';

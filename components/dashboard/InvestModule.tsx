@@ -18,8 +18,8 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/lib/store';
-import { useInvest } from '@/hooks/useInvest';
-import { useFamily } from '@/hooks/useFamily';
+import { useInvest } from '@/modules/invest';
+import { useFamily } from '@/modules/family';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
 import { 
@@ -44,7 +44,7 @@ export default function InvestModule() {
     addGoal, editGoal, deleteGoal
   } = useInvest();
   
-  const familyMembers = useFamily();
+  const { familyMembers } = useFamily();
   
   const [view, setView] = useState<InvestView>('overview');
   const [selectedType, setSelectedType] = useState<string | null>(null);

@@ -5,15 +5,74 @@
  * System Architect   :  Jawahar R. M.
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
- * Contact     :  kutumbly@outlook.com
- * Web         :  kutumbly.com | aitdl.com | aitdl.in
- *
- * © 2026 Kutumbly.com — All Rights Reserved
- * Unauthorized use or distribution is prohibited.
  *
  * "Memory, Not Code."
  * ============================================================ */
 
-/** MONEY MODULE — PUBLIC INDEX */
-export { useMoney } from '@/hooks/useMoney';
-export type { MoneyTransaction, MoneyBudget } from '@/types/contracts/money.contract';
+"use client";
+
+import { useMemo, useCallback, useState } from 'react';
+import { useAppStore } from '@/lib/store';
+import { saveVault } from '@/lib/vault';
+import { moneyRepo } from './money.repo';
+import { Transaction } from '@/types/db';
+
+/**
+ * CASH HUB (Money & Expense Management)
+ * Sealed module for household financial tracking and budgeting.
+ */
+export function useCash(month?: string) {
+  const { db, currentPin, fileHandle } = useAppStore();
+  const [tick, setTick] = useState(0);
+  const currentMonth = month || new Date().toISOString().slice(0, 7);
+
+  const txns = useMemo(() => moneyRepo.getTransactions(db, currentMonth), [db, currentMonth, tick]);
+  const budgets = useMemo(() => moneyRepo.getBudgets(db, currentMonth), [db, currentMonth, tick]);
+
+  const summary = useMemo(() => {
+    const income = txns.filter(t => t.type === 'income').reduce((sum, t) => sum + Number(t.amount), 0);
+    const expense = txns.filter(t => t.type === 'expense').reduce((sum, t) => sum + Number(t.amount), 0);
+    return {
+        income,
+        expense,
+        balance: income - expense
+    };
+  }, [txns]);
+
+  const commit = useCallback(() => {
+    if (db && fileHandle && currentPin) {
+      saveVault(db, currentPin, fileHandle).catch(console.error);
+    }
+    setTick(t => t + 1);
+  }, [db, currentPin, fileHandle]);
+
+  const addTransaction = useCallback((tx: Omit<Transaction, 'id' | 'created_at'>) => {
+    const id = moneyRepo.createTransaction(db, tx);
+    commit();
+  }, [db, commit]);
+
+  const editTransaction = useCallback((id: string, updates: Partial<Transaction>) => {
+    moneyRepo.updateTransaction(db, id, updates);
+    commit();
+  }, [db, commit]);
+
+  const deleteTransaction = useCallback((id: string) => {
+    moneyRepo.deleteTransaction(db, id);
+    commit();
+  }, [db, commit]);
+
+  const setCategoryBudget = useCallback((category: string, limit: number) => {
+    moneyRepo.upsertBudget(db, category, limit, currentMonth);
+    commit();
+  }, [db, currentMonth, commit]);
+
+  return {
+    txns,
+    budgets,
+    summary,
+    addTransaction,
+    editTransaction,
+    deleteTransaction,
+    setCategoryBudget
+  };
+}

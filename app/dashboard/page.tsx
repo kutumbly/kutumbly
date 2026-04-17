@@ -23,24 +23,25 @@ import { useEffect, useState } from "react";
 import {
   Home, Book, CheckSquare, IndianRupee,
   Settings, LogOut, Shield, Heart, Users,
-  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap, Cloud, Milk
+  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap, Cloud, Milk, Flame
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation, Language } from "@/lib/i18n";
 import HomeModule from "@/components/dashboard/HomeModule";
 import DiaryModule from "@/components/dashboard/DiaryModule";
 import TasksModule from "@/components/dashboard/TasksModule";
-import MoneyModule from "@/components/dashboard/MoneyModule";
-import NevataModule from "@/components/dashboard/NevataModule";
-import HomeStaffModule from "@/components/dashboard/HomeStaffModule";
+import CashModule from "@/components/dashboard/CashModule";
+import UtsavModule from "@/components/dashboard/UtsavModule";
+import SewakModule from "@/components/dashboard/SewakModule";
 import HealthModule from "@/components/dashboard/HealthModule";
 import InvestModule from "@/components/dashboard/InvestModule";
-import GroceryModule from "@/components/dashboard/GroceryModule";
+import SamanModule from "@/components/dashboard/SamanModule";
 import SetupModule from "@/components/dashboard/SetupModule";
 import NetworkModule from "@/components/dashboard/NetworkModule";
 import CloudSyncriptModule from "@/components/dashboard/CloudSyncriptModule";
 import VidyaModule from "@/components/dashboard/VidyaModule";
 import SuvidhaModule from "@/components/dashboard/SuvidhaModule";
+import SanskritiModule from "@/components/dashboard/SanskritiModule";
 import BottomNav from "@/components/dashboard/BottomNav";
 import ModuleShell from "@/components/dashboard/ModuleShell";
 
@@ -48,14 +49,15 @@ const ALL_TABS = [
   { id: "home",    icon: Home },
   { id: "diary",   icon: Book },
   { id: "tasks",   icon: CheckSquare },
-  { id: "money",   icon: IndianRupee },
+  { id: "cash",    icon: IndianRupee },
   { id: "suvidha", icon: Milk },
-  { id: "nevata",  icon: Calendar },
+  { id: "utsav",   icon: Calendar },
   { id: "health",  icon: Heart },
   { id: "invest",  icon: TrendingUp },
-  { id: "grocery", icon: Utensils },
-  { id: "staff",   icon: Briefcase },
+  { id: "saman",   icon: Utensils },
+  { id: "sewak",   icon: Briefcase },
   { id: "vidya",   icon: GraduationCap },
+  { id: "sanskriti", icon: Flame },
   { id: "sync",    icon: Cloud },
   { id: "network", icon: Network },
   { id: "setup",   icon: Settings },
@@ -92,14 +94,15 @@ export default function DashboardPage() {
       case "home":    return <HomeModule />;
       case "diary":   return <DiaryModule />;
       case "tasks":   return <TasksModule />;
-      case "money":   return <MoneyModule />;
-      case "nevata":  return <NevataModule />;
+      case "cash":    return <CashModule />;
+      case "utsav":   return <UtsavModule />;
       case "health":  return <HealthModule />;
       case "invest":  return <InvestModule />;
-      case "grocery": return <GroceryModule />;
-      case "staff":   return <HomeStaffModule />;
+      case "saman":   return <SamanModule />;
+      case "sewak":   return <SewakModule />;
       case "vidya":   return <VidyaModule />;
       case "suvidha": return <SuvidhaModule />;
+      case "sanskriti": return <SanskritiModule />;
       case "sync":    return <CloudSyncriptModule />;
       case "network": return <NetworkModule />;
       case "setup":   return <SetupModule />;

@@ -18,7 +18,7 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/lib/store';
-import { useVidya, getYouTubeThumbnail } from '@/hooks/useVidya';
+import { useVidya, getYouTubeThumbnail } from '@/modules/vidya';
 import ModuleShell from './ModuleShell';
 import {
   GraduationCap, BookOpen, FileText, Link2, Book,
@@ -129,10 +129,10 @@ export default function VidyaModule() {
   /* ── Computed ─────────────────────────────────────────── */
   const learnerSubjects = activeLearner ? vidya.getSubjects(activeLearner.id) : [];
   const learnerStats    = activeLearner ? vidya.getStats(activeLearner.id) : null;
-  const learnerSessions = activeLearner ? vidya.getSessions(activeLearner.id, 10) : [];
+  const learnerSessions = activeLearner ? vidya.getAnalytics(activeLearner.id) : [];
   const subjectResources = activeSubject ? vidya.getResources(activeSubject.id) : [];
 
-  /* ── Breadcrumbs ──────────────────────────────────────── */
+  /* == Breadcrumbs ======================================== */
   const getBreadcrumbs = (): string[] => {
     const b = [t('STUDY_BUDDY')];
     if (activeLearner) b.push(activeLearner.name);
@@ -171,7 +171,15 @@ export default function VidyaModule() {
       });
       setView('overview');
     } else {
-      vidya.addLearner(fLName, fLInstitution, fLGrade, fLBoard, fLGoal, fLDeadline, fLFamId);
+      vidya.addLearner({
+        name: fLName.trim(),
+        institution: fLInstitution,
+        standard: fLGrade,
+        board: fLBoard,
+        goal: fLGoal,
+        goal_deadline: fLDeadline,
+        family_member_id: fLFamId || null
+      });
       setView('overview');
     }
     setFLName(''); setFLInstitution(''); setFLGrade(''); setFLBoard('CBSE'); setFLGoal(''); setFLDeadline(''); setFLFamId('');
@@ -199,7 +207,12 @@ export default function VidyaModule() {
         target_score: sScore
       });
     } else {
-      vidya.addSubject(activeLearner.id, fSubName, fSubCat, sColor, sScore);
+      vidya.addSubject(activeLearner.id, {
+        name: fSubName.trim(),
+        category: fSubCat,
+        color: sColor,
+        target_score: sScore
+      });
     }
     setFSubName(''); setFSubCat('Science'); setSColor('#c9971c'); setSScore('');
     setIsEditingSubject(null);
@@ -229,7 +242,16 @@ export default function VidyaModule() {
         difficulty: fResDiff
       });
     } else {
-      vidya.addResource(activeSubject.id, activeLearner.id, fResName, fResType, rUrl, rChapter, rLesson, rDesc, Number(fResDur) || undefined, fResDiff);
+      vidya.addResource(activeSubject.id, activeLearner.id, {
+        title: fResName.trim(),
+        resource_type: fResType,
+        url: rUrl,
+        chapter: rChapter,
+        lesson: rLesson,
+        description: rDesc,
+        duration_mins: Number(fResDur) || null,
+        difficulty: fResDiff
+      });
     }
     setFResName(''); setFResType('youtube'); setRUrl(''); setRChapter(''); setRLesson(''); setRDesc(''); setFResDur('');
     setIsEditingResource(null);
@@ -251,7 +273,12 @@ export default function VidyaModule() {
 
   const handleLogSession = () => {
     if (!activeLearner || !fSDur) return;
-    vidya.logSession(activeLearner.id, Number(fSDur), fSSub || undefined, logNotes, fSMood);
+    vidya.logSession(activeLearner.id, {
+      duration_mins: Number(fSDur),
+      subject_id: fSSub || null,
+      notes: logNotes,
+      mood: fSMood
+    });
     setFSDur(''); setFSSub(''); setFSMood('focused'); setLogNotes('');
     setShowLogSession(false);
   };

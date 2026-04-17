@@ -49,7 +49,7 @@ export default function ModuleShell({
       transition={{ duration: 0.2, ease: 'easeOut' }}
       className="space-y-4 md:space-y-8"
     >
-      {/* ── Module Header ─────────────────────────────────────── */}
+      {/* == Module Header ======================================= */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex-1 flex items-center gap-3 min-w-0">
           {/* Back button */}
@@ -108,7 +108,7 @@ export default function ModuleShell({
         </div>
       </div>
 
-      {/* ── Content ─────────────────────────────────────────────── */}
+      {/* == Content =============================================== */}
       <div>
         {children}
       </div>

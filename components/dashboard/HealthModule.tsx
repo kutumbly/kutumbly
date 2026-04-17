@@ -18,8 +18,8 @@
 
 import React from 'react';
 import { useAppStore } from '@/lib/store';
-import { useHealth } from '@/hooks/useHealth';
-import { useVault } from '@/hooks/useVault';
+import { useHealth } from '@/modules/health';
+import { useFamily } from '@/modules/family';
 import ModuleShell from './ModuleShell';
 import { useTranslation } from '@/lib/i18n';
 import MetricCard from '../ui/MetricCard';
@@ -36,7 +36,7 @@ type HealthView = 'overview' | 'member-report' | 'vaccinations' | 'sos-edit';
 export default function HealthModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
-  const { getFamilyMembers } = useVault();
+  const { familyMembers: members } = useFamily();
   const { 
     readings, medications, vaccinations, medicalProfiles,
     addReading, editReading, deleteReading,
@@ -47,7 +47,7 @@ export default function HealthModule() {
     advancedProfiles, updateAdvancedProfile
   } = useHealth();
   
-  const members = getFamilyMembers();
+  
 
   // Navigation & Drill-down
   const [view, setView] = React.useState<HealthView>('overview');
@@ -101,10 +101,21 @@ export default function HealthModule() {
     const pulse = Number(fPulse) || 0;
     const weight = Number(fWeight) || 0;
 
+    const payload = {
+      member_id: fMem,
+      date: fDate,
+      bp_sys: sys,
+      bp_dia: dia,
+      sugar,
+      pulse,
+      weight,
+      notes: fNotes
+    };
+
     if (isEditingReading) {
-      editReading(isEditingReading, sys, dia, sugar, pulse, weight, fNotes, fDate);
+      editReading(isEditingReading, payload);
     } else {
-      addReading(fMem, sys, dia, sugar, pulse, weight, fNotes, fDate);
+      addReading(payload);
     }
     
     setShowAddForm(false);
@@ -654,8 +665,8 @@ export default function HealthModule() {
                           if (!vName) return;
                           const vDate = window.prompt("Date Taken (YYYY-MM-DD):") || new Date().toISOString().split('T')[0];
                           const vProvider = window.prompt("Provider (e.g., Apollo Hospital):") || "Local Clinic";
-                          const vNext = window.prompt("Next Due (optional, YYYY-MM-DD):") || null;
-                          addVaccination(activeMember.id, vName, vDate, vProvider, vNext, "");
+                          const vNext = window.prompt("Next Due (optional, YYYY-MM-DD):") || "";
+                          addVaccination({ member_id: activeMember.id, name: vName, date: vDate, provider: vProvider, next_due_date: vNext, notes: "" });
                         }}
                         className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline"
                      >
@@ -849,8 +860,28 @@ export default function HealthModule() {
                <div className="mt-12 flex gap-4">
                   <button 
                     onClick={() => {
-                      updateMedicalProfile(activeMember.id, sosBlood, sosAllergies, sosChronic, sosDoctor, sosEmergency, sosInsurance);
-                      updateAdvancedProfile(activeMember.id, advPrakriti, advAgni, advDiet, advSurgery, advFamily, advTreatment);
+                      const profilePayload = {
+                        member_id: activeMember.id,
+                        bloodGroup: sosBlood,
+                        allergies: sosAllergies,
+                        chronic: sosChronic,
+                        doctor: sosDoctor,
+                        emergencyContact: sosEmergency,
+                        insurance: sosInsurance
+                      };
+
+                      const advancedPayload = {
+                        member_id: activeMember.id,
+                        prakriti: advPrakriti,
+                        agni: advAgni,
+                        diet: advDiet,
+                        surgical_history: advSurgery,
+                        family_history: advFamily,
+                        current_treatment: advTreatment
+                      };
+
+                      updateMedicalProfile(profilePayload);
+                      updateAdvancedProfile(advancedPayload);
                       setView('member-report');
                     }}
                     className="flex-1 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-black tracking-[0.2em] h-16 rounded-2xl shadow-xl transition-all uppercase flex items-center justify-center gap-3"
@@ -940,7 +971,17 @@ export default function HealthModule() {
                   <button 
                      disabled={!rxGen}
                      onClick={() => {
-                        addPrescription(activeMember.id, rxDoc, rxGen, rxBrand, rxType, rxDose, rxSch, rxMeal, rxPurp);
+                        addPrescription({
+                           member_id: activeMember.id,
+                           doctor_name: rxDoc,
+                           generic_name: rxGen,
+                           brand_name: rxBrand,
+                           medicine_type: rxType,
+                           dosage: rxDose,
+                           schedule_code: rxSch,
+                           meal_instruction: rxMeal,
+                           purpose: rxPurp
+                        });
                         setShowRxForm(false);
                         setRxGen(''); setRxBrand(''); setRxPurp('');
                      }}

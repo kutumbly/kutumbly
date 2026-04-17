@@ -24,7 +24,7 @@ export interface Transaction {
   type: 'income' | 'expense';
   category: string;
   description: string;
-  member_id: string;
+  member_id: string | null;
   created_at?: string;
 }
 

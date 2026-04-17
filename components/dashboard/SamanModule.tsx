@@ -18,7 +18,7 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/lib/store';
-import { useGrocery } from '@/hooks/useGrocery';
+import { useSaman } from '@/modules/saman';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
 import { ShoppingCart, Package, ListChecks, ArrowRight, MoreVertical, Plus, CheckCircle2, Circle, Clock, ChevronRight } from 'lucide-react';
@@ -29,10 +29,10 @@ import { GroceryItem } from '@/types/db';
 
 type GroceryView = 'overview' | 'category-items' | 'item-detail';
 
-export default function GroceryModule() {
+export default function SamanModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang as Language);
-  const { items, addItem, checkItem, deleteItem, clearChecked, applyBaseline, editItem } = useGrocery();
+  const { items, addItem, checkItem, deleteItem, clearChecked, applyBaseline, editItem } = useSaman();
 
   const [view, setView] = useState<GroceryView>('overview');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);

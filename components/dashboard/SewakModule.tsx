@@ -18,7 +18,7 @@
 
 import React from 'react';
 import { useAppStore } from '@/lib/store';
-import { useStaff } from '@/hooks/useStaff';
+import { useSewak } from '@/modules/staff';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
 import { Briefcase, UserCheck, CalendarDays, Wallet, UserMinus, UserPlus, Phone, History, MoreHorizontal, ArrowRight, ArrowLeft } from 'lucide-react';
@@ -29,10 +29,10 @@ import { StaffMember, VetanPayment, AttendanceRecord } from '@/types/db';
 
 type StaffView = 'overview' | 'staff-ledger';
 
-export default function HomeStaffModule() {
+export default function SewakModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang as Language);
-  const { staff, payments, attendance, addStaff, removeStaff, payVetan, grantAdvance, calculatePayout, markAttendance } = useStaff();
+  const { staff, payments, attendance, addStaff, removeStaff, paySalary, grantAdvance, calculatePayout, markAttendance } = useSewak();
   
   const [showAddForm, setShowAddForm] = React.useState(false);
   const [fName, setFName] = React.useState('');
@@ -85,7 +85,7 @@ export default function HomeStaffModule() {
       `Process this formally?`;
 
     if (window.confirm(breakdownMsg)) {
-       payVetan(staff_id, targetMonth, totals.gross, totals.net, totals.advanceRecovered);
+       paySalary(staff_id, targetMonth, totals.gross, totals.net, totals.advanceRecovered);
        alert("Vetan documented into ledger successfully!");
     }
   };

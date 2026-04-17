@@ -18,8 +18,8 @@
 
 import React, { useMemo, useState } from 'react';
 import { useAppStore } from '@/lib/store';
-import { useMoney } from '@/hooks/useMoney';
-import { useVault } from '@/hooks/useVault';
+import { useCash } from '@/modules/money';
+import { useFamily } from '@/modules/family';
 import ModuleShell from './ModuleShell';
 import { useTranslation } from '@/lib/i18n';
 import MetricCard from '../ui/MetricCard';
@@ -53,12 +53,11 @@ const CATEGORY_COLORS: Record<string, string> = {
   'Other': 'var(--text-tertiary)',
 };
 
-export default function MoneyModule() {
+export default function CashModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
-  const { txns, budgets, summary, addTransaction, deleteTransaction, setCategoryBudget, editTransaction } = useMoney();
-  const { getFamilyMembers } = useVault();
-  const members = getFamilyMembers();
+  const { txns, budgets, summary, addTransaction, deleteTransaction, setCategoryBudget, editTransaction } = useCash();
+  const { familyMembers: members } = useFamily();
 
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
   
@@ -85,10 +84,24 @@ export default function MoneyModule() {
     const validatedAmount = Math.max(0, Number(fAmount));
 
     if (isEditing && activeVoucher) {
-       editTransaction(String(activeVoucher.id), fType, validatedAmount, fCategory, fDesc, fDate, fMember || undefined);
+       editTransaction(String(activeVoucher.id), {
+         type: fType,
+         amount: validatedAmount,
+         category: fCategory,
+         description: fDesc,
+         date: fDate,
+         member_id: fMember || null
+       });
        setIsEditing(false);
     } else {
-       addTransaction(fType, validatedAmount, fCategory, fDesc, fDate, fMember || undefined);
+       addTransaction({
+         type: fType,
+         amount: validatedAmount,
+         category: fCategory,
+         description: fDesc,
+         date: fDate,
+         member_id: fMember || null
+       });
     }
 
     setShowAddForm(false);

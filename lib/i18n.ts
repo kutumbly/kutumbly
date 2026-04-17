@@ -16,8 +16,9 @@
 
 export type Language = "en" | "hi" | "mr" | "gu" | "pa" | "ta" | "bho" | "kn" | "te" | "ne" | "bn" | "mni";
 
-export type DictionaryEntry = {
-  [key in Language]: string;
+export type DictionaryEntry = Partial<Record<Language, string>> & {
+  en: string;
+  hi: string;
 };
 
 // Unified Namespaced Dictionary - Production Grade
@@ -41,6 +42,7 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
   "nav.home": { en: "Home", hi: "\u0939\u094b\u092e", mr: "\u0918\u0930", gu: "\u0ab9\u0acb\u0aae", pa: "\u0a18\u0a30", ta: "\u0bae\u0bc1\u0b95\u0baa\u0bcd\u0baa\u0bc1", bho: "\u0918\u0930", kn: "\u0cae\u0ca8\u0cc6", te: "\u0c39\u0c4b\u0c2e\u0c4d", ne: "\u0917\u0943\u0939", bn: "\u09b9\u09cb\u09ae", mni: "\u09af\u09bc\u09c1\u09ae" },
   "nav.money": { en: "Money", hi: "\u092e\u0928\u0940", mr: "\u092a\u0948\u0938\u093e", gu: "\u0aaa\u0ac8\u0ab8\u0abe", pa: "\u0a2a\u0a48\u0a38\u0a3e", ta: "\u0baa\u0ba3\u0bae\u0bcd", bho: "\u0930\u0941\u092a\u093f\u092f\u093e-\u092a\u0907\u0938\u093e", kn: "\u0cb9\u0ca3", te: "\u0c21\u0c2c\u0c4d\u0c2c\u0c41", ne: "\u092a\u0948\u0938\u093e", bn: "\u099f\u09be\u0995\u09be", mni: "\u09b6\u09c7\u09a8-\u09a5\u09c1\u09ae" },
   "nav.nevata": { en: "Utsav Hub", hi: "उत्सव हब", mr: "उत्सव हब", gu: "ઉત્સવ હબ", pa: "ਉਤਸਵ ਹਬ", ta: "உத்சவ் ஹப்", bho: "उत्सव हब", kn: "ಉತ್ಸವ್ ಹಬ್", te: "ఉత్సవ్ హబ్", ne: "उत्सव हब", bn: "উৎসব হাব", mni: "উত্সব হব" },
+  "nav.sanskriti": { en: "Sanskriti Hub", hi: "संस्कृति हब", mr: "संस्कृती हब", gu: "સંસ્કૃતિ હબ", pa: "ਸੰਸਕ੍ਰਿਤੀ ਹਬ", ta: "சமஸ்கிருதி ஹப்", bho: "संस्कृति हब", kn: "ಸಂಸ್ಕೃತಿ ಹಬ್", te: "సంస్కృతి హబ్", ne: "संस्कृति हब", bn: "সংস্কৃতি হাব", mni: "সন্সক্রিতি হব" },
   "nav.diary": { en: "Diary", hi: "\u0921\u093e\u092f\u0930\u0940", mr: "\u0921\u093e\u092f\u0930\u0940", gu: "\u0aa1\u0abe\u0aaf\u0ab0\u0ac0", pa: "\u0a21\u0a3e\u0a07\u0a30\u0a40", ta: "\u0b9f\u0bc8\u0bb0\u0bbf", bho: "\u0921\u093e\u092f\u0930\u0940", kn: "\u0ca1\u0cc8\u0cb0\u0cbf", te: "\u0c21\u0c48\u0c30\u0c40", ne: "\u0921\u093e\u092f\u0930\u0940", bn: "\u09a1\u09be\u09af\u09bc\u09c7\u09b0\u09bf", mni: "\u09a6\u09be\u0987\u09b0\u09c0" },
   "nav.health_up": { en: "Health Up", hi: "\u0939\u0947\u0932\u094d\u0925 \u0905\u092a", mr: "\u0939\u0947\u0932\u094d\u0925 \u0905\u092a", gu: "\u0939\u0947\u0932\u094d\u0925 \u0905\u092a", pa: "\u0a39\u0a48\u0a32\u0a25 \u0a05\u0a71\u0a2a", ta: "\u0bb9\u0bc6\u0bb2\u0bcd\u0ba4\u0bcd \u0c85\u0baa\u0bcd", bho: "\u0938\u0947\u0939\u0924", kn: "\u0cb9\u0cc6\u0cb2\u0ccd\u0ca4\u0ccd \u0c85\u0caa\u0ccd", te: "\u0cb9\u0cc6\u0cb2\u0ccd\u0ca4\u0ccd \u0c85\u0caa\u0ccd", ne: "\u0938\u094d\u0935\u093e\u0938\u094d\u0925\u094d\u092f", bn: "\u09b9\u09c7\u09b2\u09a5 \u0986\u09aa", mni: "\u09b6\u09b0\u09c1\u0995 \u09ab\u0997\u09ce\u09b9\u09a8\u09ac\u09be" },
   "nav.todo": { en: "To-Do", hi: "\u0915\u093e\u092e", mr: "\u0915\u093e\u092e\u0947", gu: "\u0a95\u0abe\u0aae", pa: "\u0a15\u0a70\u0a2e", ta: "\u0b9a\u0bc6\u0baf\u0bcd\u0baf \u0bb5\u0bc7\u0ba3\u0bcd\u0b9f\u0bbf\u0baf\u0bb5\u0bc8", bho: "\u0915\u093e\u091c-\u0915\u093e\u092e", kn: "\u0c95\u0cc6\u0cb2\u0cb8\u0c97\u0cb3\u0cc1", te: "\u0c1a\u0c47\u0c2f\u0c35\u0c32\u0c38\u0c3f\u0c28\u0c35\u0c3f", ne: "\u0917\u0930\u094d\u0928\u0941\u092a\u0930\u094d\u0928\u0947 \u0915\u093e\u092e", bn: "\u099f\u09c1-\u0921\u0942", mni: "\u09a4\u09cc\u0997\u09a6\u09ac\u09be \u09a5\u09ac\u0995" },
@@ -922,6 +924,18 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
     ta: " எழுதவும்.", bho: " लिखीं।", kn: " ಬರೆಯಿರಿ.", te: " రాయండి.",
     ne: " लेख्नुहोस्।", bn: " লিখুন।", mni: " ইরম্মু।"
   },
+  /* ── Sanskriti Module ── */
+  "SANSKRITI_HERITAGE": { en: "Family Heritage", hi: "पारिवारिक विरासत", bho: "पुरखौती", mr: "कौटुंबिक वारसा", gu: "કૌટુંબિક વારસો" },
+  "SANSKRITI_GOTRA": { en: "Gotra", hi: "गोत्र", bho: "गोत्र", mr: "गोत्र", gu: "ગોત્ર" },
+  "SANSKRITI_KULDEVI": { en: "Kuldevi", hi: "कुलदेवी", bho: "कुलदेवी", mr: "कुलदेवी", gu: "કુલદેવી" },
+  "SANSKRITI_KULGURU": { en: "Kulguru", hi: "कुलगुरु", bho: "कुलगुरु", mr: "कुलगुरू", gu: "કુલગુરુ" },
+  "SANSKRITI_GRAMDEVI": { en: "Gramdevi", hi: "ग्रामदेवी", bho: "ग्रामदेवी", mr: "ग्रामदेवी", gu: "ગ્રામદેવી" },
+  "SANSKRITI_SANKALPA": { en: "Sankalpa", hi: "संकल्प", bho: "संकल्प", mr: "संकल्प", gu: "સંકલ્પ" },
+  "SANSKRITI_RITUAL_LOG": { en: "Ritual Log", hi: "अनुष्ठान लॉग", bho: "पूजा-पाठ के हिसाब", mr: "विधी नोंद", gu: "વિધિ નોંધ" },
+  "SANSKRITI_ROOTS": { en: "Ancestral Roots", hi: "पूर्वजों की जड़े", bho: "पुरनिया लोगन के जड़", mr: "पूर्वजांची मुळे", gu: "પૂર્વજોના મૂળ" },
+  "SANSKRITI_VEDA": { en: "Veda/Shaakha", hi: "वेद और शाखा", bho: "वेद-शाखा", mr: "वेद आणि शाखा", gu: "વેદ અને શાખા" },
+  "SANSKRITI_EMPTY": { en: "Traditions await your ink.", hi: "आपकी विरासत अभी लिखी जानी है।", bho: "राउर पुरखौती के याद अभी जुड़ल बाकी बा।", mr: "तुमचा वारसा अद्याप लिहायचा आहे.", gu: "તમારો વારસો હજુ લખવાનો બાકી છે." },
+
   "SETUP_CONFIRM_DESTROY": {
     en: "Confirm Destroy", hi: "साफ करने की पुष्टि करें", mr: "साफ करण्याची पुष्टी करा", gu: "સાફ કરવાની ખાતરી કરો", pa: "ਸਾਫ਼ ਕਰਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
     ta: "அழிக்க உறுதி செய்", bho: "साफ करे खातिर पक्की करीं", kn: "ಸ್ವಚ್ಛಗೊಳಿಸಲು ಖಚಿತಪಡಿಸಿ", te: "తొలగించడానికి నిర్ధారించండి",

@@ -14,18 +14,18 @@
 import { useMemo, useCallback, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { saveVault } from '@/lib/vault';
-import { diaryRepo } from './diary.repo';
-import { DiaryEntry } from '@/types/db';
+import { tasksRepo } from './tasks.repo';
+import { FamilyTask } from '@/types/db';
 
 /**
- * DIARY HUB (Memory & Journal)
- * Sealed module for preserving family history and daily thoughts.
+ * TASKS HUB (Productivity & Delegation)
+ * Sealed module for managing family tasks and assignments.
  */
-export function useDiary() {
+export function useTasks() {
   const { db, currentPin, fileHandle } = useAppStore();
   const [tick, setTick] = useState(0);
 
-  const entries = useMemo(() => diaryRepo.getEntries(db), [db, tick]);
+  const tasks = useMemo(() => tasksRepo.getTasks(db), [db, tick]);
 
   const commit = useCallback(() => {
     if (db && fileHandle && currentPin) {
@@ -34,19 +34,26 @@ export function useDiary() {
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
-  const addEntry = useCallback((entry: any) => {
-    const id = diaryRepo.createEntry(db, entry);
+  const addTask = useCallback((task: Omit<FamilyTask, 'id' | 'created_at' | 'status'>) => {
+    const id = tasksRepo.createTask(db, task);
     commit();
   }, [db, commit]);
 
-  const deleteEntry = useCallback((id: string) => {
-    diaryRepo.deleteEntry(db, id);
+  const toggleTask = useCallback((id: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'pending' ? 'done' : 'pending';
+    tasksRepo.updateStatus(db, id, newStatus);
+    commit();
+  }, [db, commit]);
+
+  const deleteTask = useCallback((id: string) => {
+    tasksRepo.deleteTask(db, id);
     commit();
   }, [db, commit]);
 
   return {
-    entries,
-    addEntry,
-    deleteEntry
+    tasks,
+    addTask,
+    toggleTask,
+    deleteTask
   };
 }

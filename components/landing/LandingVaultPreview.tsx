@@ -16,160 +16,244 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Lock as LockIcon, Coins, Heart, Plus } from 'lucide-react';
+import {
+  Shield, Lock, IndianRupee, Heart, GraduationCap, Flame,
+  ShoppingCart, Calendar, Users, Milk, CheckSquare, BookOpen,
+  Home, TrendingUp, Plus, Activity, ArrowRight
+} from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
+import Link from 'next/link';
+
+const NAV_MODULES = [
+  { icon: <Home size={20} />, name: "Family Hub", status: "Active Vault", color: "gold" },
+  { icon: <IndianRupee size={20} />, name: "Cash Hub", status: "Hardened", color: "gold" },
+  { icon: <TrendingUp size={20} />, name: "Invest Hub", status: "Secure", color: "border-medium" },
+  { icon: <Heart size={20} />, name: "Health Hub", status: "Encrypted", color: "border-medium" },
+  { icon: <GraduationCap size={20} />, name: "Vidya Hub", status: "Hardened", color: "gold" },
+  { icon: <Flame size={20} />, name: "Sanskriti Hub", status: "Secure", color: "border-medium" },
+  { icon: <ShoppingCart size={20} />, name: "Saman Hub", status: "Hardened", color: "gold" },
+  { icon: <Calendar size={20} />, name: "Utsav Hub", status: "Secure", color: "border-medium" },
+  { icon: <Users size={20} />, name: "Sewak Hub", status: "Secure", color: "border-medium" },
+  { icon: <Milk size={20} />, name: "Suvidha Hub", status: "Hardened", color: "gold" },
+  { icon: <CheckSquare size={20} />, name: "Tasks Hub", status: "Secure", color: "border-medium" },
+  { icon: <BookOpen size={20} />, name: "Diary Hub", status: "Encrypted", color: "border-medium" },
+];
+
+const DASHBOARD_METRICS = [
+  { label: "Monthly Balance", value: "₹84,200", trend: "+12%", status: "success" },
+  { label: "Portfolio Value", value: "₹9.2L", trend: "+8.4%", status: "success" },
+  { label: "Learning Streak", value: "14 Days", trend: "Active", status: "info" },
+  { label: "Pantry Alerts", value: "3 Items", trend: "Low Stock", status: "warning" },
+  { label: "Staff Present", value: "2 / 2", trend: "Today", status: "success" },
+  { label: "Upcoming Event", value: "Vivah Ann.", trend: "12 Days", status: "info" },
+];
 
 export default function LandingVaultPreview() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
+  const [hoveredModule, setHoveredModule] = useState<number | null>(null);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-6 py-32 relative">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gold/5 blur-[160px] pointer-events-none" />
-      
-      <motion.div 
-        initial={{ opacity: 0, y: 80 }}
+    <div className="w-full max-w-7xl mx-auto px-6 py-24 relative">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gold/4 blur-[180px] pointer-events-none" />
+
+      {/* Section header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-        className="relative bg-white/40 backdrop-blur-3xl rounded-[4rem] border border-white/60 shadow-[0_40px_120px_rgba(0,0,0,0.06)] overflow-hidden group"
+        className="text-center mb-16 relative"
       >
-        {/* Browser Top Bar — Research Edition */}
-        <div className="h-20 bg-white/80 border-b border-border-light flex items-center px-10 justify-between">
-          <div className="flex gap-3">
-            <div className="w-3.5 h-3.5 rounded-full bg-border-medium/30" />
-            <div className="w-3.5 h-3.5 rounded-full bg-border-medium/30" />
-            <div className="w-3.5 h-3.5 rounded-full bg-border-medium/30" />
+        <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/80 border border-gold/20 rounded-full mb-6 shadow-sm backdrop-blur-md">
+          <Shield size={13} className="text-gold" />
+          <span className="text-[10px] font-black text-gold-text uppercase tracking-[0.3em]">Live OS Preview</span>
+        </div>
+        <h2 className="text-3xl md:text-5xl font-black text-text-primary tracking-tight font-inter-tight mb-4">
+          The Sovereign Dashboard
+        </h2>
+        <p className="text-text-secondary font-medium text-base max-w-xl mx-auto opacity-80">
+          Every family hub, one encrypted screen. This is what your Kutumbly OS looks like.
+        </p>
+      </motion.div>
+
+      {/* OS Window Mock */}
+      <motion.div
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+        className="relative bg-white/50 backdrop-blur-3xl rounded-[3rem] border border-white/70 shadow-[0_40px_120px_rgba(0,0,0,0.07)] overflow-hidden"
+      >
+        {/* Window chrome bar */}
+        <div className="h-16 bg-white/90 border-b border-border-light flex items-center px-8 justify-between backdrop-blur-md">
+          <div className="flex gap-2.5">
+            <div className="w-3 h-3 rounded-full bg-red-300/60" />
+            <div className="w-3 h-3 rounded-full bg-yellow-300/60" />
+            <div className="w-3 h-3 rounded-full bg-green-300/60" />
           </div>
-          <div className="flex items-center gap-3 py-2.5 px-8 bg-clinical rounded-2xl border border-border-light shadow-inner">
-             <Shield size={14} className="text-gold" />
-             <span className="text-[10px] font-black text-text-primary uppercase tracking-[0.25em]">{t('landing.vault.version_label')}</span>
+          <div className="flex items-center gap-3 py-2 px-6 bg-clinical rounded-xl border border-border-light shadow-inner">
+            <Shield size={12} className="text-gold" />
+            <span className="text-[9px] font-black text-text-primary uppercase tracking-[0.3em]">
+              {t('landing.vault.version_label') || "kutumbly-os · v1.0 · sovereign"}
+            </span>
           </div>
-          <div className="flex items-center gap-5">
-             <div className="text-[9px] font-black text-text-success flex items-center gap-2 uppercase tracking-[0.2em]">
-                <div className="w-1.5 h-1.5 rounded-full bg-text-success animate-pulse" />
-                <span>{t('landing.vault.session_encrypted')}</span>
-             </div>
+          <div className="flex items-center gap-2 text-[9px] font-black text-text-success uppercase tracking-widest">
+            <div className="w-1.5 h-1.5 rounded-full bg-text-success animate-pulse" />
+            {t('landing.vault.session_encrypted') || "Session Encrypted"}
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row min-h-[640px]">
-          {/* Sidebar — Clinical Minimalism */}
-          <div className="w-full lg:w-80 bg-white/20 border-r border-border-light/40 p-10">
-             <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-10 opacity-60">
-               {t('landing.vault.title')}
-             </div>
-             
-             <div className="space-y-5">
-                <motion.div 
-                   whileHover={{ x: 6 }}
-                   className="flex items-center gap-5 p-5 bg-white border border-gold/10 rounded-[2.5rem] shadow-xl shadow-gold/5 cursor-default group/item"
+        {/* OS Body */}
+        <div className="flex min-h-[580px]">
+
+          {/* Sidebar — All 12 modules */}
+          <div className="w-72 bg-white/30 border-r border-border-light/40 flex flex-col">
+            {/* Vault identity card */}
+            <div className="p-5 border-b border-border-light/40">
+              <motion.div
+                whileHover={{ x: 4 }}
+                className="flex items-center gap-4 p-4 bg-white border border-gold/20 rounded-2xl shadow-lg shadow-gold/5 cursor-default"
+              >
+                <div className="w-12 h-12 bg-clinical border border-border-light rounded-xl flex items-center justify-center text-2xl shadow-sm">🏘️</div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-black text-text-primary leading-none mb-1 font-inter-tight truncate">
+                    {t('landing.vault.demo.name') || "Sharma Parivaar"}
+                  </div>
+                  <div className="text-[9px] text-text-success font-black uppercase tracking-widest">
+                    {t('landing.vault.demo.status') || "Vault Active"}
+                  </div>
+                </div>
+                <Lock size={12} className="text-gold flex-shrink-0" />
+              </motion.div>
+            </div>
+
+            {/* Module list */}
+            <div className="flex-1 overflow-hidden p-4 space-y-0.5">
+              {NAV_MODULES.map((mod, i) => (
+                <motion.div
+                  key={i}
+                  onHoverStart={() => setHoveredModule(i)}
+                  onHoverEnd={() => setHoveredModule(null)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-default ${
+                    i === 0 ? 'bg-gold/10 border border-gold/20' : 'hover:bg-white/60'
+                  }`}
                 >
-                   <div className="w-14 h-14 bg-clinical border border-border-light rounded-[1.5rem] flex items-center justify-center text-3xl shadow-sm group-hover/item:scale-110 transition-transform">🏘️</div>
-                   <div className="flex-1">
-                      <div className="text-sm font-black text-text-primary leading-none mb-1 font-inter-tight">{t('landing.vault.demo.name')}</div>
-                      <div className="text-[9px] text-text-success font-black uppercase tracking-widest">{t('landing.vault.demo.status')}</div>
-                   </div>
-                   <LockIcon size={14} className="text-gold" />
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-${mod.color} bg-white border border-border-light/50 shadow-sm flex-shrink-0`}>
+                    {mod.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-black text-text-primary truncate font-inter-tight">{mod.name}</div>
+                    <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest opacity-70">{mod.status}</div>
+                  </div>
+                  <Lock size={10} className="text-border-medium flex-shrink-0 opacity-60" />
                 </motion.div>
+              ))}
+            </div>
 
-                {[
-                  { icon: <Coins size={24} />, name: t('nav.money'), status: t('common.status.hardened'), color: "gold" },
-                  { icon: <Heart size={24} />, name: t('nav.health_up'), status: t('common.status.secure'), color: "border-medium" }
-                ].map((v, i) => (
-                   <div key={i} className="flex items-center gap-5 p-5 opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
-                      <div className="w-14 h-14 bg-clinical border border-border-light rounded-[1.5rem] flex items-center justify-center shadow-sm">
-                         <div className={`text-${v.color}`}>{v.icon}</div>
-                      </div>
-                      <div className="flex-1">
-                         <div className="text-sm font-black text-text-primary font-inter-tight">{v.name}</div>
-                         <div className="text-[9px] text-text-tertiary font-black uppercase tracking-widest">{v.status}</div>
-                      </div>
-                      <LockIcon size={14} className="text-border-medium" />
-                   </div>
-                ))}
-             </div>
-
-             <div className="mt-16 border-t border-border-light/40 pt-10">
-                <button className="w-full py-5 text-[9px] font-black text-text-tertiary flex items-center justify-center gap-3 hover:text-text-primary transition-all uppercase tracking-[0.2em] border border-border-light/60 rounded-2xl hover:bg-white hover:shadow-sm">
-                   <Plus size={14} /> {t('landing.vault.create')}
-                </button>
-             </div>
+            {/* Add Vault button */}
+            <div className="p-4 border-t border-border-light/40">
+              <button className="w-full py-3 text-[9px] font-black text-text-tertiary flex items-center justify-center gap-2 hover:text-gold transition-all uppercase tracking-widest border border-border-light/60 rounded-xl hover:bg-white hover:shadow-sm">
+                <Plus size={12} /> {t('landing.vault.create') || "New Vault"}
+              </button>
+            </div>
           </div>
 
-          {/* Unlock Dashboard — The Reasoning Interface */}
-          <div className="flex-1 p-16 flex flex-col items-center justify-center relative overflow-hidden bg-clinical/30">
-             <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-[100px] -z-10" />
-             
-             {/* Reasoning Logic Path (Visual) */}
-             <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-                <div className="w-[400px] h-[400px] border border-dashed border-gold/40 rounded-full animate-[spin_20s_linear_infinite]" />
-                <div className="absolute w-[500px] h-[500px] border border-dashed border-gold/20 rounded-full animate-[spin_30s_linear_infinite_reverse]" />
-             </div>
+          {/* Main Content — Home Dashboard Preview */}
+          <div className="flex-1 bg-clinical/20 p-8 overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gold/4 rounded-full blur-[100px] -z-10" />
 
-             <motion.div 
-                initial={{ scale: 0.98, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
-                className="w-full max-w-[340px] text-center relative"
-              >
-                 <div className="w-24 h-24 bg-white rounded-[3rem] border border-gold/30 flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-gold/10 relative">
-                    <div className="absolute inset-[-8px] border border-gold/10 rounded-[3.5rem] animate-pulse" />
-                    <LockIcon size={36} className="text-gold" />
-                 </div>
-
-                 <h3 className="text-xl font-black text-text-primary mb-3 tracking-tight font-inter-tight">{t('landing.vault.mission_logic.title')}</h3>
-                 <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-12">{t('landing.vault.mission_logic.sub')}</p>
-
-                 <div className="flex justify-center gap-5 mb-12">
-                    {[1,2,3].map(i => (
-                       <motion.div 
-                          key={i} 
-                          initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.1 * i }}
-                          className="w-4 h-4 rounded-full bg-gold shadow-[0_0_20px_rgba(201,151,28,0.4)]" 
-                       />
-                    ))}
-                    <div className="w-4 h-4 rounded-full border-2 border-gold/20" />
-                 </div>
-
-                 <div className="grid grid-cols-3 gap-5">
-                    {[1,2,3,4,5,6,7,8,9].map(n => (
-                       <motion.div 
-                         key={n} 
-                         whileHover={{ scale: 1.05, backgroundColor: '#FFFFFF', borderColor: '#c9971c' }}
-                         whileTap={{ scale: 0.95 }}
-                         className="w-full aspect-square rounded-[1.8rem] border border-border-light bg-white/60 flex items-center justify-center text-base font-black text-text-primary shadow-sm cursor-default transition-all"
-                       >
-                         {n}
-                       </motion.div>
-                    ))}
-                    <div className="w-full aspect-square flex items-center justify-center text-text-tertiary text-[10px] font-black uppercase tracking-widest">BKSP</div>
-                    <div className="w-full aspect-square rounded-[1.8rem] border border-border-light bg-white/60 flex items-center justify-center text-base font-black text-text-primary shadow-sm transition-all hover:border-gold">0</div>
-                    <motion.div 
-                       whileHover={{ scale: 1.05, backgroundColor: '#c9971c', color: '#FFFFFF' }}
-                       className="w-full aspect-square rounded-[1.8rem] border border-gold text-gold flex items-center justify-center shadow-lg shadow-gold/5 transition-all"
-                    >
-                       ✓
-                    </motion.div>
-                 </div>
-              </motion.div>
-           </div>
-         </div>
-
-         {/* Technical Metadata Footer */}
-         <div className="h-14 bg-clinical border-t border-border-light px-10 flex items-center justify-between">
-            <div className="flex items-center gap-6">
-               <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('landing.vault.tech.pipe')}</span>
-               <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('landing.vault.tech.latency')}</span>
+            {/* Dashboard title */}
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <div className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-1">Home Dashboard</div>
+                <h3 className="text-xl font-black text-text-primary font-inter-tight">Namaste, Sharma Ji 🙏</h3>
+              </div>
+              <div className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex items-center gap-2">
+                <Activity size={12} className="text-gold" />
+                {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-               <div className="w-2 h-2 rounded-full bg-text-success shadow-[0_0_8px_rgba(6,95,70,0.4)]" />
-               <span className="text-[9px] font-black text-text-success uppercase tracking-widest">{t('landing.vault.tech.status')}</span>
+
+            {/* Metric Cards Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              {DASHBOARD_METRICS.map((m, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.06 }}
+                  className={`p-5 bg-white border rounded-2xl shadow-sm group hover:shadow-md transition-all ${
+                    m.status === 'success' ? 'border-green-100 hover:border-green-200' :
+                    m.status === 'warning' ? 'border-yellow-100 hover:border-yellow-200' :
+                    'border-border-light hover:border-blue-200'
+                  }`}
+                >
+                  <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-2 opacity-70">{m.label}</div>
+                  <div className="text-xl font-black text-text-primary tracking-tighter font-inter-tight">{m.value}</div>
+                  <div className={`text-[8px] font-black uppercase tracking-widest mt-1.5 ${
+                    m.status === 'success' ? 'text-text-success' :
+                    m.status === 'warning' ? 'text-amber-600' :
+                    'text-blue-500'
+                  }`}>{m.trend}</div>
+                </motion.div>
+              ))}
             </div>
-         </div>
+
+            {/* Sample recent activity */}
+            <div className="bg-white border border-border-light rounded-2xl p-5 shadow-sm">
+              <div className="text-[8px] font-black text-text-tertiary uppercase tracking-[0.3em] mb-4">Recent Activity</div>
+              <div className="space-y-3">
+                {[
+                  { icon: "💰", text: "Grocery expense logged — ₹1,840", time: "2m ago", color: "text-amber-500" },
+                  { icon: "📚", text: "Arjun completed Physics session — 45 mins", time: "1h ago", color: "text-blue-500" },
+                  { icon: "🏥", text: "BP reading logged — 118/76 (Papa)", time: "3h ago", color: "text-rose-500" },
+                ].map((a, i) => (
+                  <div key={i} className="flex items-center gap-3 text-xs">
+                    <span className="text-lg leading-none">{a.icon}</span>
+                    <span className="flex-1 text-text-secondary font-medium">{a.text}</span>
+                    <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest flex-shrink-0">{a.time}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Status bar footer */}
+        <div className="h-12 bg-white/80 border-t border-border-light px-8 flex items-center justify-between backdrop-blur-sm">
+          <div className="flex items-center gap-6">
+            <span className="text-[8px] font-black text-text-tertiary uppercase tracking-widest">{t('landing.vault.tech.pipe') || "SQL.js · WASM"}</span>
+            <span className="text-[8px] font-black text-text-tertiary uppercase tracking-widest">{t('landing.vault.tech.latency') || "Latency: &lt;2ms"}</span>
+            <span className="text-[8px] font-black text-text-tertiary uppercase tracking-widest">12 Hubs · 1 Vault</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-text-success shadow-[0_0_8px_rgba(6,95,70,0.4)]" />
+            <span className="text-[8px] font-black text-text-success uppercase tracking-widest">{t('landing.vault.tech.status') || "Air-Gapped · Secure"}</span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* CTA below preview */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.4 }}
+        className="text-center mt-10"
+      >
+        <Link
+          href="/os"
+          className="inline-flex items-center gap-3 h-14 px-10 bg-text-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gold transition-all shadow-lg shadow-black/10 hover:-translate-y-0.5"
+        >
+          Open Kutumbly OS <ArrowRight size={16} />
+        </Link>
+        <p className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest mt-4 opacity-70">
+          Works in your browser · No install · No account required
+        </p>
       </motion.div>
     </div>
   );

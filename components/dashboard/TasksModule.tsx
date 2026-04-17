@@ -18,8 +18,8 @@
 
 import React, { useState } from 'react';
 import { useAppStore } from '@/lib/store';
-import { useTasks } from '@/hooks/useTasks';
-import { useVault } from '@/hooks/useVault';
+import { useTasks } from '@/modules/tasks';
+import { useFamily } from '@/modules/family';
 import ModuleShell from './ModuleShell';
 import { useTranslation } from '@/lib/i18n';
 import { parseRichContent } from '@/lib/richContent';
@@ -37,8 +37,7 @@ const CATEGORIES = [
 export default function TasksModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
-  const { getFamilyMembers } = useVault();
-  const family = getFamilyMembers();
+  const { familyMembers: family } = useFamily();
   const { tasks, toggleTask, addTask, deleteTask } = useTasks();
   const [filter, setFilter] = useState<'pending' | 'done' | 'all'>('pending');
   const [catFilter, setCatFilter] = useState<string>('all');

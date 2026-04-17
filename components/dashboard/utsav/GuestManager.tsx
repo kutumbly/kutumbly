@@ -17,7 +17,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { useNevataEngine } from '@/hooks/useNevataEngine';
+import { useNevataEngine } from '@/modules/utsav';
 import { NevataEvent, NevataGuest } from '@/types/db';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 

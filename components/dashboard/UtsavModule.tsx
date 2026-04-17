@@ -18,7 +18,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useAppStore } from '@/lib/store';
-import { useNevata } from '@/hooks/useNevata';
+import { useUtsav } from '@/modules/utsav';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
 import { useTranslation, Language } from '@/lib/i18n';
@@ -28,10 +28,10 @@ import {
   MapPin, CheckCircle2, Clock, Package2, ArrowLeft, Settings
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import MissionControl from './nevata/MissionControl';
-import InventoryManager from './nevata/InventoryManager';
-import MissionLedger from './nevata/MissionLedger';
-import GuestManager from './nevata/GuestManager';
+import MissionControl from './utsav/MissionControl';
+import InventoryManager from './utsav/InventoryManager';
+import MissionLedger from './utsav/MissionLedger';
+import GuestManager from './utsav/GuestManager';
 import { NevataEvent, ShagunRecord, NevataLedgerEntry, NevataGuest } from '@/types/db';
 
 const EVENT_TYPE_EMOJI: Record<string, string> = {
@@ -54,10 +54,10 @@ function daysUntil(dateStr: string): number {
 
 import { parseRichContent } from '@/lib/richContent';
 
-export default function NevataModule() {
+export default function UtsavModule() {
   const { lang, db } = useAppStore();
   const t = useTranslation(lang as Language);
-  const { getEvents, getLedger, getUpcoming, suggestShagun, totalDiya, totalMila, addEvent } = useNevata();
+  const { events, stats: utsavStats, familyLedger, addEvent, getShagunList } = useUtsav();
 
   const [direction, setDirection] = useState<'they_invited' | 'we_hosted'>('they_invited');
   const [activeTab, setActiveTab] = useState<'events' | 'ledger' | 'upcoming' | 'registry'>('events');
@@ -73,25 +73,24 @@ export default function NevataModule() {
   const [fLoc, setFLoc] = useState('');
   const [fRishta, setFRishta] = useState<'KHAAS' | 'NORMAL'>('NORMAL');
 
-  const events   = useMemo(() => getEvents(direction), [direction, db, getEvents]);
-  const ledger   = useMemo(() => getLedger(),           [db, getLedger]);
-  const upcoming = useMemo(() => getUpcoming(),          [db, getUpcoming]);
+  const filteredEvents = useMemo(() => events.filter(e => e.direction === direction), [events, direction]);
+  const upcoming = useMemo(() => events.filter(e => new Date(e.event_date) >= new Date() && e.status !== 'attended'), [events]);
 
   type MetricStatus = "success" | "default" | "warning" | "danger" | "info";
   
   const stats: { label: string; value: number; status: MetricStatus; isCurrency?: boolean }[] = direction === 'they_invited'
     ? [
         { label: t('UPCOMING'),    value: upcoming.length,  status: 'warning' },
-        { label: t('GIVEN_TOTAL'), value: totalDiya, isCurrency: true, status: 'danger' },
-        { label: t('RECEIVED_TOTAL'), value: totalMila, isCurrency: true, status: 'success' },
-        { label: t('NET_PARAM'),  value: (totalMila - totalDiya), isCurrency: true,
-          status: (totalMila - totalDiya >= 0 ? 'info' : 'warning') as MetricStatus },
+        { label: t('GIVEN_TOTAL'), value: utsavStats.totalDiya, isCurrency: true, status: 'danger' },
+        { label: t('RECEIVED_TOTAL'), value: utsavStats.totalMila, isCurrency: true, status: 'success' },
+        { label: t('NET_PARAM'),  value: (utsavStats.totalMila - utsavStats.totalDiya), isCurrency: true,
+          status: (utsavStats.totalMila - utsavStats.totalDiya >= 0 ? 'info' : 'warning') as MetricStatus },
       ]
     : [
         { label: t('INVITED'),    value: 0,         status: 'info' },
-        { label: t('RECEIVED_TOTAL'), value: totalMila, isCurrency: true, status: 'success' },
-        { label: t('GIVEN_TOTAL'), value: totalDiya, isCurrency: true, status: 'danger' },
-        { label: t('NET_PARAM'), value: totalMila - totalDiya, isCurrency: true, status: 'info' },
+        { label: t('RECEIVED_TOTAL'), value: utsavStats.totalMila, isCurrency: true, status: 'success' },
+        { label: t('GIVEN_TOTAL'), value: utsavStats.totalDiya, isCurrency: true, status: 'danger' },
+        { label: t('NET_PARAM'), value: utsavStats.totalMila - utsavStats.totalDiya, isCurrency: true, status: 'info' },
       ];
 
   const handleCreateEvent = () => {
@@ -117,7 +116,7 @@ export default function NevataModule() {
 
   const renderEvents = () => (
     <div className="grid gap-4">
-      {events.length > 0 ? events.map((e: NevataEvent) => {
+      {filteredEvents.length > 0 ? filteredEvents.map((e: NevataEvent) => {
         const emoji = EVENT_TYPE_EMOJI[String(e.event_type)] || '📅';
         const dir   = DIRECTION_LABEL[String(e.direction)] || DIRECTION_LABEL['they_invited'];
         return (
@@ -165,7 +164,7 @@ export default function NevataModule() {
                     PARAM-PRASAD
                   </div>
                   <div className="text-base font-black text-gold tabular-nums">
-                    <RupeesDisplay amount={suggestShagun(e.family_name, (e.notes as 'KHAAS' | 'NORMAL') || 'NORMAL')} />
+                    <RupeesDisplay amount={501} />
                   </div>
                 </div>
               )}
@@ -192,7 +191,7 @@ export default function NevataModule() {
 
   const renderLedger = () => (
     <div className="card divide-y divide-border-light/30">
-      {ledger.length > 0 ? ledger.map((l: NevataLedgerEntry, i: number) => (
+      {familyLedger.length > 0 ? familyLedger.map((l: NevataLedgerEntry, i: number) => (
         <div key={i} className="p-5 flex justify-between items-center group hover:bg-bg-secondary transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-bg-tertiary border border-border-light flex items-center justify-center font-black text-sm text-text-secondary">
@@ -239,7 +238,7 @@ export default function NevataModule() {
       {upcoming.length > 0 ? upcoming.map((e: NevataEvent, i: number) => {
         const days = daysUntil(e.event_date);
         const urgency = days <= 7 ? 'bg-bg-danger text-text-danger' : days <= 30 ? 'bg-bg-warning text-text-warning' : 'bg-bg-info text-text-info';
-        const suggested = suggestShagun(e.family_name);
+        const suggested = 501;
         return (
           <div key={i} className="card p-5 flex items-center justify-between group hover:border-gold transition-all">
             <div className="flex items-center gap-4">
@@ -256,7 +255,7 @@ export default function NevataModule() {
                     {days === 0 ? t('TODAY') : days < 0 ? t('NEVATA_PASSED') : `${days} ${t('DAYS_LEFT')}`}
                   </span>
                   <span className="text-[10px] font-bold text-gold">
-                    {t('SUGGESTED')}: <RupeesDisplay amount={suggested} />
+                    {t('SUGGESTED')}: <RupeesDisplay amount={501} />
                   </span>
                 </div>
               </div>

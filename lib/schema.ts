@@ -367,4 +367,43 @@ CREATE TABLE IF NOT EXISTS medical_prescriptions (
   created_at TEXT,
   FOREIGN KEY (member_id) REFERENCES family_members(id)
 );
+
+-- SANSKRITI HUB (TRADITION & HERITAGE) TABLES
+CREATE TABLE IF NOT EXISTS sanskriti_dharma_profile (
+  id TEXT PRIMARY KEY,
+  gotra TEXT,
+  pravar TEXT,
+  kuldevta TEXT,
+  kuldevi TEXT,
+  kulguru TEXT,
+  shaakha TEXT,
+  veda TEXT,
+  upadevyas TEXT, -- JSON string array
+  is_locked INTEGER DEFAULT 0,
+  updated_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS sanskriti_village_roots (
+  id TEXT PRIMARY KEY,
+  village_name TEXT NOT NULL,
+  district TEXT,
+  state TEXT,
+  gramdevi_name TEXT,
+  gramdevi_rituals TEXT,
+  sthan_address TEXT,
+  notes TEXT,
+  updated_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS sanskriti_ritual_logs (
+  id TEXT PRIMARY KEY,
+  date TEXT NOT NULL,
+  type TEXT NOT NULL, -- 'DAILY' | 'SPECIAL' | 'TITHI' | 'SANKALPA'
+  name TEXT NOT NULL,
+  performer_id TEXT, -- Link to family_members.id
+  sankalpa_text TEXT,
+  notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (performer_id) REFERENCES family_members(id)
+);
 `;

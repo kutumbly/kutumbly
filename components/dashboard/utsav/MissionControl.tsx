@@ -28,7 +28,7 @@ import {
   Clock,
   ArrowRight
 } from 'lucide-react';
-import { useNevataEngine } from '@/hooks/useNevataEngine';
+import { useNevataEngine } from '@/modules/utsav';
 import { NevataEvent } from '@/types/db';
 
 interface MissionControlProps {

@@ -18,8 +18,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { useAppStore } from '@/lib/store';
-import { useSuvidha } from '@/hooks/useSuvidha';
-import { useVault } from '@/hooks/useVault';
+import { useSuvidha } from '@/modules/suvidha';
+import { useFamily } from '@/modules/family';
 import { useTranslation } from '@/lib/i18n';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
@@ -63,8 +63,7 @@ export default function SuvidhaModule() {
     getSummary, 
     getVendorStats 
   } = useSuvidha();
-  const { getFamilyMembers } = useVault();
-  const members = getFamilyMembers();
+  const { familyMembers: members } = useFamily();
 
   const [view, setView] = useState<SuvidhaView>('dashboard');
   const [showAddVendor, setShowAddVendor] = useState(false);

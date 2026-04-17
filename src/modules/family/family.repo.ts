@@ -5,25 +5,23 @@
  * System Architect   :  Jawahar R. M.
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
- * Contact     :  kutumbly@outlook.com
- * Web         :  kutumbly.com | aitdl.com | aitdl.in
- *
- * © 2026 Kutumbly.com — All Rights Reserved
- * Unauthorized use or distribution is prohibited.
  *
  * "Memory, Not Code."
  * ============================================================ */
 
-"use client";
-
-import { useAppStore } from '@/lib/store';
+import { Database } from 'sql.js';
 import { FamilyMember } from '@/types/db';
 import { runQuery } from '@/lib/db';
 
-export function useVault() {
-  const { db, activeVault, isUnlocked, lockVault } = useAppStore();
+/**
+ * Family/Identity logic repository using @/core/db
+ */
+export const familyRepo = {
+  getMembers: (db: Database | null): FamilyMember[] => {
+    return runQuery<FamilyMember>(db, "SELECT * FROM family_members ORDER BY name ASC");
+  },
 
-  const getSettings = () => {
+  getSettings: (db: Database | null): Record<string, string> => {
     if (!db) return {};
     try {
       const res = db.exec("SELECT * FROM settings");
@@ -35,19 +33,12 @@ export function useVault() {
     } catch {
       return {};
     }
-  };
+  },
 
-  const getFamilyMembers = (): FamilyMember[] => {
-    if (!db) return [];
-    return runQuery<FamilyMember>(db, "SELECT * FROM family_members ORDER BY name ASC");
-  };
-
-  return {
-    db,
-    activeVault,
-    isUnlocked,
-    lock: lockVault,
-    getSettings,
-    getFamilyMembers,
-  };
-}
+  updateMember: (db: Database | null, id: string, data: Partial<FamilyMember>) => {
+    if (!db) return;
+    const sets = Object.keys(data).map(k => `${k} = ?`).join(', ');
+    const vals = [...Object.values(data), id];
+    db.run(`UPDATE family_members SET ${sets} WHERE id = ?`, vals);
+  }
+};
