@@ -131,5 +131,5 @@ export function useStaff() {
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
-  return { staff, payments, attendance, addStaff, removeStaff, paySalary, grantAdvance, markAttendance, calculatePayout };
+  return { staff, payments, attendance, addStaff, removeStaff, paySalary, payVetan: paySalary, grantAdvance, markAttendance, calculatePayout };
 }
