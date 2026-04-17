@@ -13,7 +13,10 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sovereign:alpha": "node scripts/sovereign.js alpha",
+    "sovereign:beta": "node scripts/sovereign.js beta",
+    "sovereign:prod": "node scripts/sovereign.js prod"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",

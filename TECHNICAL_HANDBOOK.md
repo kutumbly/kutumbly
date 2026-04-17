@@ -42,5 +42,34 @@ Comprehensive registry of all functional units currently integrated into the Sov
 - **PWA Ready**: The system is designed to be installed as a standalone app, functioning entirely offline until a Syncript event is triggered.
 
 ---
+
+## 9. Sovereign Release Protocol (SDRP)
+Formal multi-tier workflow for pushing code across verified levels.
+
+### 🧪 Stage 1: Alpha (Hardening)
+- **Branch**: `alpha`
+- **Focus**: Technical validation, "Unbreakable" boundary checks.
+- **Merge Logic**: Feature branches merge here first.
+- **Command**: `git merge <feature-branch> --no-ff`
+
+### 🛡️ Stage 2: Beta (Cultural Polish)
+- **Branch**: `beta`
+- **Focus**: Localization audits, UI fidelity, and family testing.
+- **Merge Logic**: Merged from `alpha` after technical verification.
+- **Command**: `git merge alpha --no-ff`
+
+### 💎 Stage 3: Production (Stable)
+- **Branch**: `production`
+- **Focus**: Stable, final encrypted release.
+- **Merge Logic**: Merged from `beta` after cultural verification.
+- **Command**: `git merge beta --no-ff`
+
+### Automation Utilities
+Use the sovereign CLI for promotion:
+- `npm run sovereign:alpha`
+- `npm run sovereign:beta`
+- `npm run sovereign:prod`
+
+---
 © 2026 Kutumbly.com — Sovereign Division
 *Document Signed by: Antigravity AI Implementation Team*
