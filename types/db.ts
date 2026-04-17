@@ -323,6 +323,9 @@ export interface SalaryPayment {
   advance: number;
 }
 
+/** Sovereign alias — VetanPayment (Vetan = Salary in Hindi) */
+export type VetanPayment = SalaryPayment;
+
 export interface AttendanceRecord {
   id: string;
   staff_id: string;
