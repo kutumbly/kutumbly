@@ -396,4 +396,3 @@ CREATE TABLE IF NOT EXISTS sanskriti_ritual_logs (
   FOREIGN KEY (performer_id) REFERENCES family_members(id)
 );
 `;
-`;
