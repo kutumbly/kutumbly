@@ -376,6 +376,23 @@ input, select, textarea {
 .animate-float { animation: float 6s ease-in-out infinite; }
 .animate-pulse-gold { animation: pulse-gold 4s ease-in-out infinite; }
 
+@keyframes shimmer-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+.animate-shimmer-sweep {
+  animation: shimmer-sweep 1.6s ease-in-out infinite;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.22) 50%, transparent 100%);
+}
+
+@keyframes sovereign-pulse-glow {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.75; }
+}
+.animate-sovereign-glow { animation: sovereign-pulse-glow 3s ease-in-out infinite; }
+
 .sovereign-gradient {
   background: linear-gradient(135deg, #FAF9F6 0%, #FAEEDA 100%);
 }
@@ -530,6 +547,41 @@ main { overflow-anchor: none; }
 }
 [data-theme="dark"] .card-lift:hover {
   box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* ─── Card glow — gold aura on hover ────────────────────────── */
+.card-glow {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(201,151,28,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  border-color: rgba(201,151,28,0.25);
+}
+[data-theme="dark"] .card-glow:hover {
+  box-shadow: 0 8px 32px rgba(232,184,75,0.15), 0 2px 8px rgba(0,0,0,0.4);
+  border-color: rgba(232,184,75,0.3);
+}
+
+/* ─── Gold transition — universal hover gold ─────────────────── */
+.hover-gold {
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.hover-gold:hover {
+  color: var(--gold);
+  border-color: rgba(201,151,28,0.35);
+}
+
+/* ─── Pulse border — attention accent ───────────────────────── */
+@keyframes pulse-border-gold {
+  0%, 100% { border-color: rgba(201,151,28,0.15); }
+  50%       { border-color: rgba(201,151,28,0.5); }
+}
+.pulse-border-gold { animation: pulse-border-gold 2.5s ease-in-out infinite; }
+
+/* ─── Premium number transition ─────────────────────────────── */
+.value-transition {
+  transition: color 0.3s ease, opacity 0.3s ease;
 }
 
 /* ─── Scale-in animation for dialogs, modals ───────────────── */

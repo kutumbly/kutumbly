@@ -174,7 +174,7 @@ export interface SamanItem {
 }
 
 /** 
- * Utsav Hub (Events & Nevata) Models 
+ * Utsav Hub (Social & Events) Models 
  */
 export interface UtsavEvent {
   id: string;
@@ -314,7 +314,7 @@ export interface SewakMember {
 
 export interface SewakPayment {
   id: string;
-  staff_id: string;
+  sewak_id: string;
   month: string;
   gross: number;
   deductions: number;
@@ -328,7 +328,7 @@ export type VetanPayment = SewakPayment;
 
 export interface SewakAttendance {
   id: string;
-  staff_id: string;
+  sewak_id: string;
   date: string;
   status: 'present' | 'absent' | 'leave' | 'absent_unpaid' | 'leave_paid' | 'half_day';
   notes: string;

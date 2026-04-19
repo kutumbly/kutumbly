@@ -17,6 +17,7 @@
 "use client";
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import SparkLine from './SparkLine';
 import RupeesDisplay from './RupeesDisplay';
 
@@ -27,6 +28,7 @@ interface MetricCardProps {
   trend?: number[];
   status?: 'success' | 'warning' | 'danger' | 'info' | 'default';
   isCurrency?: boolean;
+  icon?: React.ReactNode;
 }
 
 // Smart value shortener: 9,85,000 → ₹9.85L; 66,240 → ₹66.2K; etc.
@@ -50,7 +52,8 @@ export default function MetricCard({
   unit = "", 
   trend, 
   status = 'default',
-  isCurrency = false
+  isCurrency = false,
+  icon,
 }: MetricCardProps) {
   
   const statusBorders = {
@@ -69,6 +72,14 @@ export default function MetricCard({
     default: 'bg-gold'
   };
 
+  const statusGlows = {
+    success: 'rgba(6,95,70,0.1)',
+    warning: 'rgba(146,64,14,0.1)',
+    danger:  'rgba(153,27,27,0.1)',
+    info:    'rgba(30,64,175,0.1)',
+    default: 'rgba(201,151,28,0.08)'
+  };
+
   const statusText = {
     success: 'text-text-success',
     warning: 'text-text-warning',
@@ -80,17 +91,35 @@ export default function MetricCard({
   const displayValue = formatShort(value, isCurrency);
 
   return (
-    <div className={`relative bg-bg-primary p-4 rounded-2xl border transition-all hover:border-gold/30 hover:shadow-md group overflow-hidden ${statusBorders[status]}`}>
-      {/* Status accent top bar */}
-      <div className={`absolute top-0 left-4 right-4 h-[2px] rounded-b-full opacity-25 group-hover:opacity-80 transition-opacity ${statusAccents[status]}`} />
+    <motion.div
+      whileHover={{ y: -2, scale: 1.01 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 26 }}
+      className={`relative bg-bg-primary p-4 rounded-2xl border transition-all hover:shadow-lg group overflow-hidden cursor-default ${statusBorders[status]}`}
+      style={{ '--glow-color': statusGlows[status] } as React.CSSProperties}
+    >
+      {/* Status accent top bar — animates opacity on hover */}
+      <div className={`absolute top-0 left-0 right-0 h-[2.5px] rounded-b-full opacity-20 group-hover:opacity-70 transition-opacity duration-300 ${statusAccents[status]}`} />
 
-      {/* Label + Sparkline */}
-      <div className="flex justify-between items-start mb-2 gap-2">
-        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-text-tertiary leading-tight flex-1">
-          {label}
-        </span>
+      {/* Subtle radial glow behind value on hover */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-2xl"
+        style={{ background: `radial-gradient(circle at 20% 80%, ${statusGlows[status]} 0%, transparent 70%)` }}
+      />
+
+      {/* Label row */}
+      <div className="flex justify-between items-start mb-2.5 gap-2 relative z-10">
+        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+          {icon && (
+            <span className="text-text-tertiary opacity-60 flex-shrink-0 group-hover:opacity-100 transition-opacity">
+              {icon}
+            </span>
+          )}
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-text-tertiary leading-tight flex-1 truncate">
+            {label}
+          </span>
+        </div>
         {trend && trend.length > 0 && (
-          <div className="opacity-50 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          <div className="opacity-40 group-hover:opacity-90 transition-opacity flex-shrink-0">
             <SparkLine 
               data={trend} 
               color={status === 'default' ? 'var(--gold)' : `var(--text-${status})`} 
@@ -100,9 +129,9 @@ export default function MetricCard({
       </div>
       
       {/* Value — adaptive sizing, never truncates */}
-      <div className="flex items-baseline gap-1 min-w-0">
+      <div className="flex items-baseline gap-1 min-w-0 relative z-10">
         <span
-          className={`font-black tabular-nums leading-none ${statusText[status]}`}
+          className={`font-black tabular-nums leading-none transition-colors ${statusText[status]}`}
           style={{ fontSize: 'clamp(0.95rem, 3.5cqi, 1.35rem)' }}
         >
           {displayValue}
@@ -113,6 +142,6 @@ export default function MetricCard({
           </span>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

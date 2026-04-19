@@ -79,14 +79,17 @@ export default function ModuleShell({
               </div>
             )}
 
-            {/* Title — gold left accent */}
-            <h2 className="text-xl md:text-2xl font-black text-text-primary tracking-tight leading-tight truncate">
-              {title}
-            </h2>
+            {/* Title — premium gold left-accent bar */}
+            <div className="flex items-center gap-2.5">
+              <span className="w-[3px] h-6 rounded-full bg-gradient-to-b from-gold to-gold/20 flex-shrink-0" />
+              <h2 className="text-xl md:text-2xl font-black text-text-primary tracking-tight leading-tight truncate">
+                {title}
+              </h2>
+            </div>
 
-            {/* Subtitle */}
+            {/* Subtitle — offset to align under title */}
             {subtitle && !breadcrumbs && (
-              <p className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.28em] mt-1 truncate opacity-70">
+              <p className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.28em] mt-1.5 ml-[17px] truncate opacity-70">
                 {subtitle}
               </p>
             )}
@@ -100,20 +103,27 @@ export default function ModuleShell({
             <motion.button
               onClick={onAdd}
               whileTap={{ scale: 0.93 }}
-              className="h-10 md:h-9 px-4 md:px-5 bg-gold text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:opacity-90 transition-all shadow-md shadow-gold/25 flex items-center justify-center gap-1.5"
+              whileHover={{ scale: 1.02 }}
+              className="relative h-10 md:h-9 px-4 md:px-5 bg-gold text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-md shadow-gold/30 flex items-center justify-center gap-1.5 overflow-hidden group"
               aria-label={addLabel}
             >
-              <Plus size={14} strokeWidth={3} className="flex-shrink-0" />
-              <span className="hidden sm:inline">{addLabel}</span>
+              {/* Shimmer sweep on hover */}
+              <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer-sweep" />
+              <Plus size={14} strokeWidth={3} className="flex-shrink-0 relative z-10" />
+              <span className="hidden sm:inline relative z-10">{addLabel}</span>
             </motion.button>
           )}
         </div>
       </div>
 
-      {/* == Content ============================================= */}
-      <div>
+      {/* == Content — slight fade-in delay for premium polish */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.07, duration: 0.2 }}
+      >
         {children}
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
