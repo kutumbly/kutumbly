@@ -28,7 +28,7 @@ import {
   UtsavGuest
 } from '@/types/db';
 
-export function useNevataEngine(eventId?: string) {
+export function useUtsavEngine(eventId?: string) {
   const { db, currentPin, fileHandle } = useAppStore();
   const [tick, setTick] = useState(0);
 

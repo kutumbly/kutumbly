@@ -321,7 +321,7 @@ export default function HealthModule() {
            </div>
            <div className="flex gap-3 relative z-10">
               {members.slice(0, 5).map(m => {
-                const p = medicalProfiles.find(x => x.member_id === m.id);
+                const p = healthProfiles.find(x => x.member_id === m.id);
                 return (
                  <div key={m.id} className="w-12 h-12 rounded-2xl bg-white border border-red-500/20 flex flex-col items-center justify-center text-[10px] font-black text-red-600 shadow-xl group hover:scale-110 transition-transform cursor-help" title={`${m.name}: ${p?.blood_group || 'No Data'}`}>
                     {p?.blood_group || m.initials}
@@ -341,7 +341,7 @@ export default function HealthModule() {
                const memberMeds = prescriptions.filter((med) => med.member_id === m.id && !med.end_date);
                const mr = readings.filter((r: HealthReading) => r.member_id === m.id);
                const latestReading = mr.length > 0 ? mr[0] : null;
-               const profile = medicalProfiles.find(p => p.member_id === m.id);
+               const profile = healthProfiles.find(p => p.member_id === m.id);
                
                return (
                 <motion.div 

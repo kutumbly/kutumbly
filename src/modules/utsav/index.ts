@@ -16,10 +16,10 @@ import { useAppStore } from '@/lib/store';
 import { saveVault } from '@/lib/vault';
 import { utsavRepo } from './utsav.repo';
 import { UtsavEvent, UtsavShagun } from '@/types/db';
-import { useNevataEngine } from './engine';
+import { useUtsavEngine } from './engine';
 import { useScanner } from './scanner';
 
-export { useNevataEngine, useScanner };
+export { useUtsavEngine, useScanner };
 
 
 /**

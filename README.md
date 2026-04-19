@@ -64,7 +64,7 @@ Intelligent inventory for your household essentials.
 ### 📚 Vidya Hub
 A dedicated tracker for family education, study milestones, and parent-teacher logs.
 
-### 🤝 Staff Hub (Sewak)
+### 🤝 Sewak Hub (Kutumb Sewak)
 A professional, dignity-first ledger for managing domestic support staff salaries and attendance.
 
 ## 🚀 Quick Setup
