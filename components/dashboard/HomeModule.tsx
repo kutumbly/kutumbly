@@ -123,8 +123,8 @@ export default function HomeModule() {
            { icon: Fingerprint, label: t('BIOMETRIC'), value: bioActive ? t('HARDWARE_ACTIVE') : t('PIN_REQUIRED') },
            { icon: HardDrive, label: t('SYNC_GRID'), value: t('LOCAL_DISCOVERY') }
          ].map((sh, idx) => (
-           <div key={idx} className="bg-bg-primary border border-border-light rounded-2xl p-4 flex items-center gap-3 transition-all hover:border-gold/30 hover:shadow-md tap-highlight">
-              <div className="w-10 h-10 rounded-xl bg-gold-light flex items-center justify-center text-gold-text border border-border-light flex-shrink-0">
+           <div key={idx} className="card-glow bg-bg-primary border border-border-light rounded-2xl p-4 flex items-center gap-3 tap-highlight">
+              <div className="w-10 h-10 rounded-xl bg-gold-light flex items-center justify-center text-gold-text border border-border-light flex-shrink-0 group-hover:scale-110 transition-transform duration-200">
                  <sh.icon size={19} />
               </div>
               <div className="flex-1 min-w-0">
@@ -159,7 +159,7 @@ export default function HomeModule() {
               <motion.div 
                 key={i} 
                 whileHover={{ x: 4 }}
-                className="bg-bg-primary border border-border-light p-5 rounded-[2rem] flex gap-5 items-start group shadow-black/[0.01] shadow-lg transition-all"
+                className="card-glow bg-bg-primary border border-border-light p-5 rounded-[2rem] flex gap-5 items-start group"
               >
                 <div className="w-12 h-12 rounded-2xl bg-bg-tertiary flex items-center justify-center flex-shrink-0 border border-border-light group-hover:border-gold/30 group-hover:bg-bg-primary transition-all shadow-sm">
                   <Clock className="w-5 h-5 text-text-tertiary" />
@@ -314,18 +314,21 @@ export default function HomeModule() {
 
       {/* ── System Sync CTA ────────────────────────────────────── */}
       <motion.section variants={item}>
-          <button className="w-full flex items-center justify-between p-5 bg-bg-primary border border-border-light rounded-2xl hover:border-gold/30 transition-all group hover:shadow-md active:scale-[0.99]">
-              <div className="flex items-center gap-4">
-                 <div className="w-11 h-11 rounded-xl bg-gold/8 text-gold flex items-center justify-center border border-gold/15 group-hover:bg-gold group-hover:text-white transition-all">
+          <button className="relative w-full flex items-center justify-between p-5 bg-bg-primary border border-border-light rounded-2xl hover:border-gold/40 transition-all group hover:shadow-lg active:scale-[0.99] overflow-hidden">
+              {/* Subtle sovereign glow behind the button on hover */}
+              <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 10% 50%, rgba(201,151,28,0.06) 0%, transparent 60%)' }} />
+              <div className="flex items-center gap-4 relative z-10">
+                 <div className="relative w-11 h-11 rounded-xl bg-gold/8 text-gold flex items-center justify-center border border-gold/15 group-hover:bg-gold group-hover:text-white transition-all">
                     <Zap size={20} strokeWidth={2.5} />
+                    <span className="absolute inset-0 rounded-xl border border-gold/30 animate-sovereign-glow" />
                  </div>
                  <div className="text-left">
                     <div className="text-[13px] font-black text-text-primary tracking-tight">{t('SYNC_NOW')}</div>
                     <div className="text-[9px] text-text-tertiary uppercase font-black tracking-[0.25em] opacity-50 mt-0.5">{t('P2P_BEAM_GRID')}</div>
                  </div>
               </div>
-              <div className="w-8 h-8 rounded-full border border-border-light flex items-center justify-center group-hover:border-gold/40 group-hover:bg-gold/5 transition-all">
-                 <ArrowRight className="text-text-tertiary group-hover:text-gold transition-colors" size={15} />
+              <div className="relative z-10 w-8 h-8 rounded-full border border-border-light flex items-center justify-center group-hover:border-gold/40 group-hover:bg-gold/5 transition-all">
+                 <ArrowRight className="text-text-tertiary group-hover:text-gold transition-colors group-hover:translate-x-0.5" size={15} />
               </div>
           </button>
       </motion.section>
