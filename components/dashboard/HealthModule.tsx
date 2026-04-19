@@ -29,7 +29,7 @@ import {
   Trash2, Edit3, Save, X, PlusCircle, Scale
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HealthReading, Medication, FamilyMember, Vaccination, MedicalProfile } from '@/types/db';
+import { HealthReading, Medication, FamilyMember, Vaccination, HealthProfile } from '@/types/db';
 
 type HealthView = 'overview' | 'member-report' | 'vaccinations' | 'sos-edit';
 
@@ -38,12 +38,12 @@ export default function HealthModule() {
   const t = useTranslation(lang);
   const { familyMembers: members } = useFamily();
   const { 
-    readings, medications, vaccinations, medicalProfiles,
+    readings, medications, vaccinations, healthProfiles,
     addReading, editReading, deleteReading,
     addMedication, stopMedication, deleteMedication,
     prescriptions, addPrescription, stopPrescription, deletePrescription,
     addVaccination, deleteVaccination,
-    updateMedicalProfile,
+    updateHealthProfile,
     advancedProfiles, updateAdvancedProfile
   } = useHealth();
   
@@ -208,7 +208,7 @@ export default function HealthModule() {
       title={
         view === 'overview' ? t('HEALTH') :
         view === 'sos-edit' ? t('HEALTH_SOS_PROFILE') :
-        `${activeMember?.name} ${t('HEALTH_MEDICAL_PROFILES')}`
+        `${activeMember?.name} ${t('HEALTH_HEALTH_PROFILES')}`
       }
       subtitle={view === 'overview' ? t('HEALTH_SUBTITLE') : undefined}
       onAdd={showAddForm || view === 'sos-edit' ? undefined : () => setShowAddForm(true)}
@@ -334,7 +334,7 @@ export default function HealthModule() {
         {/* Family Member Profiles */}
         <section className="space-y-6">
           <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] px-2">
-             {t('HEALTH_MEDICAL_PROFILES')}
+             {t('HEALTH_HEALTH_PROFILES')}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              {members.map((m: FamilyMember, i: number) => {
@@ -466,7 +466,7 @@ export default function HealthModule() {
                     </div>
                     <button 
                       onClick={() => {
-                        const profile = medicalProfiles.find(p => p.member_id === activeMember.id);
+                        const profile = healthProfiles.find(p => p.member_id === activeMember.id);
                         setSosBlood(profile?.blood_group || '');
                         setSosAllergies(profile?.allergies || '');
                         setSosChronic(profile?.chronic_conditions || '');
@@ -495,7 +495,7 @@ export default function HealthModule() {
                  {medicalProfiles.find(p => p.member_id === activeMember.id)?.blood_group ? (
                     <div className="mt-4 flex items-center gap-2 bg-red-500/10 text-red-600 px-5 py-2 rounded-2xl border border-red-500/20">
                        <HeartPulse size={16} className="animate-pulse" />
-                       <span className="text-xs font-black uppercase tracking-widest">{medicalProfiles.find(p => p.member_id === activeMember.id)?.blood_group}</span>
+                       <span className="text-xs font-black uppercase tracking-widest">{healthProfiles.find(p => p.member_id === activeMember.id)?.blood_group}</span>
                     </div>
                   ) : (
                     <button onClick={() => setView('sos-edit')} className="mt-4 text-[10px] font-black text-text-tertiary uppercase tracking-widest border border-dashed border-border-light px-4 py-2 rounded-xl hover:border-gold transition-all">{t('HEALTH_SOS_PROFILE')}</button>
@@ -539,11 +539,11 @@ export default function HealthModule() {
              <div className="md:col-span-2 space-y-6">
                 {/* SOS / Medical ID Cards */}
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                  {medicalProfiles.find(p => p.member_id === activeMember.id) && (
+                  {healthProfiles.find(p => p.member_id === activeMember.id) && (
                     <div className="bg-bg-primary border border-border-light rounded-[2rem] p-6 shadow-sm flex flex-col gap-4">
                        <div className="flex items-center gap-3 text-text-tertiary">
                           <AlertCircle size={18} className="text-red-500" />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-text-primary">{t('HEALTH_MEDICAL_PROFILES')}</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-text-primary">{t('HEALTH_HEALTH_PROFILES')}</span>
                        </div>
                        
                        <div className="grid grid-cols-2 gap-4 text-sm mt-2">

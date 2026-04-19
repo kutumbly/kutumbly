@@ -15,107 +15,95 @@
  * ============================================================ */
 
 export function seedDatabase(db: any) {
-  // Family members
+  // 1. Family members
   db.run(`INSERT OR IGNORE INTO family_members VALUES
-    ('jm','Jawahar Mallah','Papa','1981-03-15','JM'),
-    ('sm','Sunita Mallah','Maa','1984-07-22','SM'),
+    ('jm','Jawahar R. M.','System Architect','1981-03-15','JM'),
+    ('sm','Sunita Mallah','Co-Founder','1984-07-22','SM'),
     ('pj','Priya Mallah','Beti','2012-05-12','PJ')`);
 
-  // Staff
-  db.run(`INSERT OR IGNORE INTO staff_members VALUES
-    ('st1','Kamla Devi','Bai (Housekeeping)',4000,'2022-01-10',NULL),
-    ('st2','Ramesh Kumar','Driver',12000,'2020-03-15',NULL)`);
+  // 2. Sewak Hub (Kutumb Sewak)
+  db.run(`INSERT OR IGNORE INTO sewak_members VALUES
+    ('st1','Kamla Devi','Housekeeping',4000,'2022-01-10','+91 98765 43210',0,2,'VERIFIED','1234-5678-9012'),
+    ('st2','Ramesh Kumar','Driver',12500,'2020-03-15','+91 98234 56789',500,1,'VERIFIED','9876-5432-1098')`);
 
-  // Transactions (V2 — richer: Education added)
-  db.run(`INSERT OR IGNORE INTO transactions VALUES
-    ('t1','2026-04-01',95000,'income','Salary','Monthly salary — Jawahar','jm','2026-04-01'),
-    ('t2','2026-04-09',3240,'expense','Grocery','D-Mart grocery','sm','2026-04-09'),
-    ('t3','2026-04-07',1820,'expense','Utilities','MSEB electricity','jm','2026-04-07'),
-    ('t4','2026-04-10',4500,'expense','Housing','Society maintenance','jm','2026-04-10'),
-    ('t5','2026-04-08',1200,'expense','Education','School books — Priya','sm','2026-04-08'),
-    ('t6','2026-04-05',6000,'expense','Staff','Kamla Devi salary','jm','2026-04-05'),
-    ('t7','2026-04-05',12000,'expense','Staff','Ramesh Kumar salary','jm','2026-04-05')`);
+  // 3. Cash Hub (Transactions & Budget)
+  db.run(`INSERT OR IGNORE INTO cash_transactions VALUES
+    ('t1','2026-04-01',125000,'income','Sovereign Salary','Monthly earnings — Jawahar','jm','2026-04-01'),
+    ('t2','2026-04-09',3240,'expense','Saman','D-Mart grocery','sm','2026-04-09'),
+    ('t3','2026-04-07',1820,'expense','Suvidha','MSEB electricity','jm','2026-04-07'),
+    ('t4','2026-04-10',4500,'expense','Nivas','Society maintenance','jm','2026-04-10'),
+    ('t5','2026-04-08',1200,'expense','Vidya','School books — Priya','sm','2026-04-08'),
+    ('t6','2026-04-05',6000,'expense','Sewak','Kamla Devi salary + bonus','jm','2026-04-05'),
+    ('t7','2026-04-05',12500,'expense','Sewak','Ramesh Kumar salary','jm','2026-04-05')`);
 
-  // Generic Events (V2 — birthdays, anniversaries, festivals)
-  db.run(`INSERT OR IGNORE INTO events VALUES
-    ('e1','Akshaya Tritiya','2026-04-30','Pooja','Auspicious — gold purchase',5000,NULL,1),
-    ('e2','Priya ki Birthday','2026-05-12','Birthday','Gift + celebration at home',2000,'Sketch pad + art supplies',0),
-    ('e3','Sunita-Jawahar Anniversary','2026-05-22','Anniversary','20th year — plan dinner',5000,'Dinner at Yauatcha',0),
-    ('e4','Rakshabandhan','2026-08-09','Festival',NULL,3000,NULL,1)`);
+  db.run(`INSERT OR IGNORE INTO cash_budgets VALUES
+    ('b1','Saman',15000,'2026-04'),
+    ('b2','Suvidha',5000,'2026-04'),
+    ('b3','Sewak',20000,'2026-04')`);
 
-  // Nevata seed
-  db.run(`INSERT OR IGNORE INTO nevata_events VALUES
+  // 4. Utsav Hub (Social & Events)
+  db.run(`INSERT OR IGNORE INTO utsav_internal_events VALUES
+    ('e1','Akshaya Tritiya','2026-04-30','Pooja','Auspicious — gold purchase',5000,'Gold Coin',1),
+    ('e2','Priya ki Birthday','2026-05-12','Birthday','Gift + celebration at home',2000,'Sketch pad + art supplies',0)`);
+
+  db.run(`INSERT OR IGNORE INTO utsav_events VALUES
     ('ne1','Rahul ki Shaadi','shaadi','they_invited','Mallah Parivar','2026-04-22','Agra',4,'upcoming',NULL,'2026-04-13'),
-    ('ne2','Chotu ka Mundan','mundan','they_invited','Verma Khaandaan','2026-02-02','Lucknow',3,'attended',NULL,'2026-02-03'),
-    ('ne3','Hamari Beti ki Sagai','sagai','we_hosted','Agarwal Parivar','2026-03-10','Ghar',0,'attended',NULL,'2026-03-11')`);
+    ('ne2','Chotu ka Mundan','mundan','they_invited','Verma Khaandaan','2026-02-02','Lucknow',3,'attended',NULL,'2026-02-03')`);
 
-  db.run(`INSERT OR IGNORE INTO nevata_shagun VALUES
+  db.run(`INSERT OR IGNORE INTO utsav_shagun VALUES
     ('ns1','ne1','diya',21000,'Cash envelope','Jawahar Mallah',NULL,0,'2026-04-13'),
-    ('ns2','ne2','diya',15000,'Silver bowl set + cash','Sunita Mallah',NULL,1,'2026-02-03'),
-    ('ns3','ne3','mila',51000,'Cash + Saree Set',NULL,'Mallah Parivar',1,'2026-03-11')`);
+    ('ns2','ne2','diya',15000,'Silver bowl set + cash','Sunita Mallah',NULL,1,'2026-02-03')`);
 
-  db.run(`INSERT OR IGNORE INTO nevata_family_ledger VALUES
-    ('nl1','Mallah Parivar','ne3',21000,51000,30000,NULL,'2026-04-13'),
-    ('nl2','Verma Khaandaan','ne2',15000,0,-15000,'Unka shagun abhi nahi aaya','2026-04-13')`);
+  // 5. Cash Hub (Wealth & Investments)
+  db.run(`INSERT OR IGNORE INTO cash_investments VALUES
+    ('i1','jm',NULL,'Parag Parikh Flexi Cap','Mutual Fund',240000,285000,NULL,5000,'2022-01-01',NULL,'Main retirement fund'),
+    ('i2','jm',NULL,'Gold Physical (Vault)','Gold',160000,205000,NULL,NULL,'2021-11-01',NULL,'28g physical + SGBs'),
+    ('i3','pj',NULL,'Sukanya Samriddhi (SSY)','SSY',150000,175000,NULL,12500,'2023-01-01','2044-01-01','Priya higher education')`);
 
-  // Investments (V2 — Gold added)
-  db.run(`INSERT OR IGNORE INTO investments VALUES
-    ('i1','Parag Parikh Flexi Cap','Mutual Fund',240000,280000,NULL,5000,'2022-01-01',NULL,NULL),
-    ('i2','SBI Nifty 50 Index','Mutual Fund',160000,190000,NULL,5000,'2022-06-01',NULL,NULL),
-    ('i3','PPF Account','PPF',180000,210000,NULL,NULL,'2020-04-01',NULL,NULL),
-    ('i4','SBI Fixed Deposit','FD',100000,107000,NULL,NULL,'2023-08-15','2026-08-15',NULL),
-    ('i5','Gold Physical + SGB','Gold',160000,198000,NULL,NULL,'2021-11-01',NULL,'28g physical + SGBs')`);
-
-  // Health (V2 — Priya added)
+  // 6. Health Hub
   db.run(`INSERT OR IGNORE INTO health_readings VALUES
-    ('h1','jm','2026-04-12',118,76,98,72,NULL,NULL,'2026-04-12'),
-    ('h2','sm','2026-04-12',138,88,112,78,NULL,'BP elevated — monitor','2026-04-12'),
-    ('h3','pj','2026-04-12',108,70,88,68,NULL,NULL,'2026-04-12')`);
+    ('h1','jm','2026-04-12',118,76,98,72,74.5,NULL,'2026-04-12'),
+    ('h2','sm','2026-04-12',138,88,112,78,62.0,'BP elevated — avoid salt','2026-04-12')`);
 
-  // Diary (V2 — richer entry)
-  db.run(`INSERT OR IGNORE INTO diary_entries (id, date, content, mood, mood_label, created_at) VALUES
-    ('d1','2026-04-12','Aaj family ke saath nashta kiya. Priya ke exam results aye — 94% in Maths. Bahut khushi hui aaj. Shaam ko puja karni chahiye.',4,'Happy','2026-04-12')`);
+  db.run(`INSERT OR IGNORE INTO health_profiles (id, member_id, blood_group, allergies) VALUES
+    ('hp1','jm','O+','None'),
+    ('hp2','sm','B+','Dust, Pollen')`);
 
-  // Tasks (V2 — completed task added)
-  db.run(`INSERT OR IGNORE INTO tasks (id, title, description, priority, status, category, assigned_to, due_date, created_at, completed_at) VALUES
-    ('tk1','Renew car insurance','Expires May 1 — call agent','high','pending','Finance','jm','2026-04-28','2026-04-12',NULL),
-    ('tk2','Book dentist for Mom',NULL,'medium','pending','Health','sm','2026-05-05','2026-04-12',NULL),
-    ('tk3','File ITR FY 2025-26',NULL,'medium','pending','Legal','jm','2026-07-31','2026-04-12',NULL),
-    ('tk4','Pay society maintenance',NULL,'high','done','Home','jm','2026-04-10','2026-04-10','2026-04-10')`);
+  // 7. Sovereign Diary & Tasks
+  db.run(`INSERT OR IGNORE INTO diary_entries (id, date, content, mood, mood_label, title, created_at) VALUES
+    ('d1','2026-04-12','Aaj family ke saath nashta kiya. Priya ke exam results aye — 94% in Maths. Bahut khushi hui aaj.','4','Happy','Khushi ka Din','2026-04-12')`);
 
-  // Grocery (V2 — 8 items)
-  db.run(`INSERT OR IGNORE INTO grocery_lists VALUES ('gl1','Kirana List','2026-04-12','active')`);
-  db.run(`INSERT OR IGNORE INTO grocery_items VALUES
-    ('gi1','gl1','Atta (whole wheat)','5','kg',210,0,'Grains & Dal'),
-    ('gi2','gl1','Toor Dal','1','kg',140,0,'Grains & Dal'),
-    ('gi3','gl1','Basmati Rice','5','kg',380,0,'Grains & Dal'),
-    ('gi4','gl1','Amul Ghee','500','g',290,0,'Dairy'),
-    ('gi5','gl1','Mustard Oil','1','L',180,0,'Oils & Spices'),
-    ('gi6','gl1','Tomatoes','2','kg',80,1,'Vegetables'),
-    ('gi7','gl1','Coriander + Mint','1','bunch',30,1,'Vegetables'),
-    ('gi8','gl1','Mother Dairy Curd','500','g',65,0,'Dairy')`);
+  db.run(`INSERT OR IGNORE INTO tasks (id, title, description, priority, status, category, assigned_to, due_date, created_at) VALUES
+    ('tk1','Renew Car Insurance','Expires May 1 — call agent','high','pending','Finance','jm','2026-04-28','2026-04-12'),
+    ('tk2','Book Dentist for Priya','Regular checkup','medium','pending','Health','sm','2026-05-05','2026-04-12')`);
 
-  // Vidya (Study Buddy) seed
+  // 8. Saman Hub (Kirana)
+  db.run(`INSERT OR IGNORE INTO saman_lists VALUES ('gl1','Kirana List','2026-04-12','active')`);
+  db.run(`INSERT OR IGNORE INTO saman_items VALUES
+    ('gi1','gl1','Atta (Organic)','10','kg',450,0,'Grains',8,2,NULL,'2026-04-10'),
+    ('gi2','gl1','Amul Ghee','1','L',650,0,'Dairy',0.5,0.2,NULL,'2026-04-05'),
+    ('gi3','gl1','Toor Dal','2','kg',280,0,'Grains',1.5,0.5,NULL,'2026-04-09')`);
+
+  // 9. Vidya Hub (Study Buddy)
   db.run(`INSERT OR IGNORE INTO vidya_learners VALUES
-    ('vl1','Priya Mallah','pj','Delhi Public School','Class 8','CBSE','PJ','Score 90%+ in Board Exams','2028-03-31',1,'2026-04-01'),
-    ('vl2','Jawahar Mallah','jm',NULL,'Self-Study','Self','JM','Clear SEBI Grade-A Officer exam','2027-12-31',1,'2026-04-01')`);
+    ('vl1','Priya Mallah','pj','DPS Delhi','Class 8','CBSE','PJ','Score 90%+ in Boards','2028-03-31',1,'2026-04-01')`);
 
   db.run(`INSERT OR IGNORE INTO vidya_subjects VALUES
-    ('vs1','vl1','Mathematics','Science','#6366f1','90%+',NULL,'2026-04-01'),
-    ('vs2','vl1','Science','Science','#10b981','85%+',NULL,'2026-04-01'),
-    ('vs3','vl1','English','Language','#f59e0b','85%+',NULL,'2026-04-01'),
-    ('vs4','vl2','Economics & Finance','Commerce','#c9971c','Full Command',NULL,'2026-04-01'),
-    ('vs5','vl2','Stock Market Analysis','Tech','#3b82f6','Practical Mastery',NULL,'2026-04-01')`);
+    ('vs1','vl1','Mathematics','Science','#6366f1','90%+',NULL,'2026-04-01')`);
 
-  db.run(`INSERT OR IGNORE INTO vidya_resources VALUES
-    ('vr1','vs1','vl1','Class 8 Maths Chapter 11 — Mensuration','youtube','https://www.youtube.com/watch?v=v2K5k1TW-zQ','https://img.youtube.com/vi/v2K5k1TW-zQ/mqdefault.jpg','NCERT Chapter 11 — Area, Surface Area & Volume','Chapter 11','Lesson 1 — Surface Area of Cube','ncert,mensuration,class8',1,0,'medium',18,'2026-04-01'),
-    ('vr2','vs1','vl1','Vedantu Class 8 Algebra — Full Playlist','youtube','https://www.youtube.com/watch?v=L3LMbpZIKhQ','https://img.youtube.com/vi/L3LMbpZIKhQ/mqdefault.jpg','Complete Algebra revision for Class 8','Chapter 9','Lesson 1 — Variables and Expressions','algebra,class8,vedantu',0,0,'easy',22,'2026-04-01'),
-    ('vr3','vs2','vl1','NCERT Science Class 8 Chapter 3 — Synthetic Fibres','article','https://ncert.nic.in/textbook/pdf/hesc108.pdf',NULL,'Official NCERT PDF — Synthetic Fibres and Plastics','Chapter 3','Lesson 1','ncert,science,fibres',0,0,'medium',NULL,'2026-04-01'),
-    ('vr4','vs4','vl2','Zerodha Varsity — Option Trading Basics','article','https://zerodha.com/varsity/module/option-theory/',NULL,'Free comprehensive option trading course by Zerodha',NULL,'Module 3','finance,options,zerodha',1,0,'hard',NULL,'2026-04-01'),
-    ('vr5','vs4','vl2','CA Rachana Ranade — Stock Market for Beginners','youtube','https://www.youtube.com/watch?v=GfxRHONcMZw','https://img.youtube.com/vi/GfxRHONcMZw/mqdefault.jpg','Complete stock market investing guide for Indians',NULL,NULL,'stocks,investing,beginner',1,0,'easy',45,'2026-04-01')`);
+  // 10. Suvidha Hub (Daily Delivery)
+  db.run(`INSERT OR IGNORE INTO suvidha_vendors VALUES
+    ('sv1','Amul Mother Dairy','milk',68,1,'jm',1,'2026-04-01'),
+    ('sv2','Pure Water Supplies','water',40,1,'sm',1,'2026-04-01')`);
 
-  db.run(`INSERT OR IGNORE INTO vidya_sessions VALUES
-    ('vsn1','vl1','vs1',NULL,'2026-04-12',45,'Completed mensuration exercises from NCERT','focused','2026-04-12'),
-    ('vsn2','vl1','vs2',NULL,'2026-04-12',30,'Read Chapter 3 — Synthetic Fibres','neutral','2026-04-12'),
-    ('vsn3','vl2','vs4',NULL,'2026-04-13',60,'Read Varsity Options module + 2 mock tests','focused','2026-04-13')`);
+  db.run(`INSERT OR IGNORE INTO suvidha_logs VALUES
+    ('sl1','sv1','2026-04-12',2,5,'Regular delivery','2026-04-12'),
+    ('sl2','sv1','2026-04-13',2,5,NULL,'2026-04-13')`);
+
+  // 11. Sanskriti Hub (Heritage)
+  db.run(`INSERT OR IGNORE INTO sanskriti_dharma_profile (id, gotra, kuldevta, veda) VALUES
+    ('dp1','Kashyap','Lord Shiva','Rigveda')`);
+
+  db.run(`INSERT OR IGNORE INTO sanskriti_village_roots (id, village_name, district, state) VALUES
+    ('vr1','Mallah Pur','Varanasi','Uttar Pradesh')`);
 }

@@ -13,7 +13,7 @@ import { Database } from 'sql.js';
 import { runQuery } from '@/lib/db';
 import { 
   HealthReading, Medication, Vaccination, 
-  MedicalProfile, HealthAdvancedProfile, MedicalPrescription 
+  HealthProfile, HealthAdvancedProfile, HealthPrescription 
 } from '@/types/db';
 
 /**
@@ -29,7 +29,7 @@ export const healthRepo = {
 
   getMedications: (db: Database | null): Medication[] => {
     if (!db) return [];
-    return runQuery<Medication>(db, "SELECT * FROM medications ORDER BY start_date DESC");
+    return runQuery<Medication>(db, "SELECT * FROM health_medications ORDER BY start_date DESC");
   },
 
   createReading: (db: Database | null, r: any) => {
@@ -60,11 +60,11 @@ export const healthRepo = {
   updateSOSProfile: (db: Database | null, p: any) => {
     if (!db) return;
     const updated_at = new Date().toISOString();
-    const existing = runQuery<MedicalProfile>(db, "SELECT * FROM medical_profiles WHERE member_id = ?", [p.member_id]);
+    const existing = runQuery<HealthProfile>(db, "SELECT * FROM health_profiles WHERE member_id = ?", [p.member_id]);
     
     if (existing.length > 0) {
       db.run(
-        `UPDATE medical_profiles SET 
+        `UPDATE health_profiles SET 
           blood_group = ?, allergies = ?, chronic_conditions = ?, 
           primary_doctor = ?, emergency_contact = ?, insurance_details = ?, 
           updated_at = ? 
@@ -74,7 +74,7 @@ export const healthRepo = {
     } else {
       const id = crypto.randomUUID();
       db.run(
-        `INSERT INTO medical_profiles (
+        `INSERT INTO health_profiles (
           id, member_id, blood_group, allergies, chronic_conditions, 
           primary_doctor, emergency_contact, insurance_details, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,

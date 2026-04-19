@@ -18,16 +18,16 @@
 
 import React from 'react';
 import { useAppStore } from '@/lib/store';
-import { useSewak } from '@/modules/staff';
+import { useSewak } from '@/modules/sewak';
 import ModuleShell from './ModuleShell';
 import MetricCard from '../ui/MetricCard';
 import { Briefcase, UserCheck, CalendarDays, Wallet, UserMinus, UserPlus, Phone, History, MoreHorizontal, ArrowRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import RupeesDisplay from '../ui/RupeesDisplay';
 import { useTranslation, Language } from '@/lib/i18n';
-import { StaffMember, VetanPayment, AttendanceRecord } from '@/types/db';
+import { SewakMember, SewakPayment, SewakAttendance } from '@/types/db';
 
-type StaffView = 'overview' | 'staff-ledger';
+type SewakView = 'overview' | 'staff-ledger';
 
 export default function SewakModule() {
   const { lang } = useAppStore();
@@ -49,11 +49,11 @@ export default function SewakModule() {
     setFPhone('');
   };
 
-  const totalMonthlyPayout = staff.reduce((acc: number, s: StaffMember) => acc + s.salary, 0);
-  const presentToday = attendance.filter((a: AttendanceRecord) => a.date === new Date().toISOString().slice(0, 10) && a.status === 'present').length;
+  const totalMonthlyPayout = staff.reduce((acc: number, s: SewakMember) => acc + s.salary, 0);
+  const presentToday = attendance.filter((a: SewakAttendance) => a.date === new Date().toISOString().slice(0, 10) && a.status === 'present').length;
 
-  const [view, setView] = React.useState<StaffView>('overview');
-  const [activeStaff, setActiveStaff] = React.useState<StaffMember | null>(null);
+  const [view, setView] = React.useState<SewakView>('overview');
+  const [activeStaff, setActiveStaff] = React.useState<SewakMember | null>(null);
 
   const getBreadcrumbs = () => {
     const b = [t('SUPPORT_STAFF')];
@@ -65,17 +65,17 @@ export default function SewakModule() {
     if (view === 'staff-ledger') setView('overview');
   };
 
-  const handleMarkAttendance = (staff_id: string, status: 'present' | 'absent' | 'absent_unpaid') => {
+  const handleMarkAttendance = (sewak_id: string, status: 'present' | 'absent' | 'absent_unpaid') => {
     const today = new Date().toISOString().slice(0, 10);
-    markAttendance(staff_id, today, status);
+    markAttendance(sewak_id, today, status);
   };
 
-  const handleProcessPay = (staff_id: string) => {
+  const handleProcessPay = (sewak_id: string) => {
     const targetMonth = window.prompt("Enter exact month to pay (YYYY-MM):", new Date().toISOString().slice(0, 7));
     if (!targetMonth) return;
     
     // Execute Hook Calculation Matrix
-    const totals = calculatePayout(staff_id, targetMonth);
+    const totals = calculatePayout(sewak_id, targetMonth);
     const breakdownMsg = 
       `Payroll Breakdown for ${targetMonth}:\n\n` +
       `Gross Vetan: Rs ${totals.gross.toFixed(2)}\n` +
@@ -85,7 +85,7 @@ export default function SewakModule() {
       `Process this formally?`;
 
     if (window.confirm(breakdownMsg)) {
-       paySalary(staff_id, targetMonth, totals.gross, totals.net, totals.advanceRecovered);
+       paySalary(sewak_id, targetMonth, totals.gross, totals.net, totals.advanceRecovered);
        alert("Vetan documented into ledger successfully!");
     }
   };
@@ -168,10 +168,10 @@ export default function SewakModule() {
              {t('STAFF_ROSTER')}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {staff.length > 0 ? staff.map((s: StaffMember, i: number) => {
+              {staff.length > 0 ? staff.map((s: SewakMember, i: number) => {
                const initials = s.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
-               const sAtt = attendance.filter((a: AttendanceRecord) => a.staff_id === s.id);
-               const pPercentage = sAtt.length > 0 ? (sAtt.filter((a: AttendanceRecord) => a.status === 'present').length / sAtt.length) * 100 : 100;
+               const sAtt = attendance.filter((a: SewakAttendance) => a.sewak_id === s.id);
+               const pPercentage = sAtt.length > 0 ? (sAtt.filter((a: SewakAttendance) => a.status === 'present').length / sAtt.length) * 100 : 100;
 
                return (
                 <motion.div 
@@ -258,7 +258,7 @@ export default function SewakModule() {
           </div>
           
           <div className="card divide-y divide-border-light/30">
-             {payments.length > 0 ? payments.map((p: VetanPayment, i: number) => (
+             {payments.length > 0 ? payments.map((p: SewakPayment, i: number) => (
                 <div key={p.id} className="p-5 flex justify-between items-center group hover:bg-bg-secondary transition-all">
                    <div className="flex gap-4 items-center">
                       <div className="w-10 h-10 rounded-xl bg-bg-success/5 text-text-success flex items-center justify-center border border-text-success/10 group-hover:bg-text-success group-hover:text-white transition-all shadow-inner">
@@ -266,7 +266,7 @@ export default function SewakModule() {
                       </div>
                       <div>
                          <div className="text-sm font-black text-text-primary tracking-tight">
-                           {staff.find((s: StaffMember) => s.id === p.staff_id)?.name || 'Former Staff'}
+                           {staff.find((s: SewakMember) => s.id === p.sewak_id)?.name || 'Former Staff'}
                          </div>
                          <div className="text-[10px] text-text-tertiary font-bold uppercase tracking-widest mt-0.5">
                            Month of {p.month} · Paid on {p.paid_on}
@@ -368,7 +368,7 @@ export default function SewakModule() {
                         </tr>
                      </thead>
                      <tbody>
-                        {payments.filter(p => p.staff_id === activeStaff.id).map((p, i) => (
+                        {payments.filter(p => p.sewak_id === activeStaff.id).map((p, i) => (
                            <tr key={p.id} className="border-b border-border-light/50 hover:bg-bg-tertiary transition-colors group">
                               <td className="p-4 text-xs font-bold text-text-secondary uppercase">{p.month}</td>
                               <td className="p-4 text-xs font-bold text-text-secondary">{p.paid_on}</td>
@@ -377,7 +377,7 @@ export default function SewakModule() {
                         ))}
                      </tbody>
                   </table>
-                  {payments.filter(p => p.staff_id === activeStaff.id).length === 0 && (
+                  {payments.filter(p => p.sewak_id === activeStaff.id).length === 0 && (
                      <div className="text-center py-8 text-[10px] font-black text-text-tertiary uppercase tracking-widest opacity-50">
                         No payments yet
                      </div>
@@ -397,7 +397,7 @@ export default function SewakModule() {
                      </button>
                   </div>
                   <div className="space-y-3">
-                     {attendance.filter(a => a.staff_id === activeStaff.id).map((a, i) => (
+                     {attendance.filter(a => a.sewak_id === activeStaff.id).map((a, i) => (
                         <div key={i} className="flex items-center justify-between p-4 bg-bg-tertiary border border-border-light rounded-2xl">
                            <div className="text-sm font-bold text-text-primary">{a.date}</div>
                            <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border ${a.status === 'present' ? 'bg-success/5 text-success border-success/10' : a.status === 'absent' ? 'bg-danger/5 text-danger border-danger/10' : 'bg-warning/5 text-warning border-warning/10'}`}>
@@ -405,7 +405,7 @@ export default function SewakModule() {
                            </span>
                         </div>
                      ))}
-                     {attendance.filter(a => a.staff_id === activeStaff.id).length === 0 && (
+                     {attendance.filter(a => a.sewak_id === activeStaff.id).length === 0 && (
                         <div className="text-center py-8 text-[10px] font-black text-text-tertiary uppercase tracking-widest opacity-50">
                            No attendance logged
                         </div>

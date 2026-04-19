@@ -492,7 +492,7 @@ export default function VidyaModule() {
                        </div>
                        <div className="flex-1">
                           <h4 className="text-lg font-black text-text-primary tracking-tight leading-tight mb-1">{s.name}</h4>
-                          <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{s.category || t('MONEY_GENERAL')}</span>
+                          <span className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.2em]">{s.category || t('CASH_GENERAL')}</span>
                        </div>
                        <div className="text-right">
                           <div className="text-xl font-black text-text-primary tabular-nums tracking-tighter">{progress}%</div>

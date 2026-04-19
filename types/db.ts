@@ -15,9 +15,9 @@
  * ============================================================ */
 
 /** 
- * Money Module Models 
+ * Cash Hub (Money & Wealth) Models 
  */
-export interface Transaction {
+export interface CashTransaction {
   id: string;
   date: string;
   amount: number;
@@ -28,7 +28,7 @@ export interface Transaction {
   created_at?: string;
 }
 
-export interface CategoryBudget {
+export interface CashBudget {
   id: string;
   category: string;
   monthly_limit: number;
@@ -96,7 +96,7 @@ export interface Medication {
   status?: 'active' | 'completed' | 'paused';
 }
 
-export interface MedicalProfile {
+export interface HealthProfile {
   id: string;
   member_id: string;
   blood_group: string | null;
@@ -119,7 +119,7 @@ export interface HealthAdvancedProfile {
   updated_at: string;
 }
 
-export interface MedicalPrescription {
+export interface HealthPrescription {
   id: string;
   member_id: string;
   doctor_name: string | null;
@@ -149,16 +149,16 @@ export interface Vaccination {
 }
 
 /** 
- * Grocery Module Models 
+ * Saman Hub (Household Supply) Models 
  */
-export interface GroceryList {
+export interface SamanList {
   id: string;
   name: string;
   created_at: string;
   status: string;
 }
 
-export interface GroceryItem {
+export interface SamanItem {
   id: string;
   list_id: string;
   name: string;
@@ -174,9 +174,9 @@ export interface GroceryItem {
 }
 
 /** 
- * Nevata (Family Network) Models 
+ * Utsav Hub (Events & Nevata) Models 
  */
-export interface NevataEvent {
+export interface UtsavEvent {
   id: string;
   title: string;
   event_type: string;
@@ -191,7 +191,7 @@ export interface NevataEvent {
   created_at: string;
 }
 
-export interface ShagunRecord {
+export interface UtsavShagun {
   id: string;
   event_id: string;
   direction: 'given' | 'received';
@@ -203,7 +203,7 @@ export interface ShagunRecord {
   created_at: string;
 }
 
-export interface NevataFamilyLedger {
+export interface UtsavFamilyLedger {
   id: string;
   family_name: string;
   event_id: string | null;
@@ -215,12 +215,12 @@ export interface NevataFamilyLedger {
 }
 
 // Keep the old name for backward compatibility if needed, but alias it
-export type NevataLedgerEntry = NevataFamilyLedger;
+export type UtsavLedgerEntry = UtsavFamilyLedger;
 
 /** 
- * Nevata 2.0 (Event Operating System) High-Fidelity Models 
+ * Utsav Hub 2.0 (Event Operating System) High-Fidelity Models 
  */
-export interface NevataInventoryItem {
+export interface UtsavInventoryItem {
   id: string;
   event_id: string;
   item_name: string;
@@ -243,7 +243,7 @@ export interface NevataInventoryItem {
   created_at: string;
 }
 
-export interface NevataVendor {
+export interface UtsavVendor {
   id: string;
   name: string;
   service_type: 'Catering' | 'Decor' | 'DJ' | 'Transport' | string;
@@ -257,7 +257,7 @@ export interface NevataVendor {
   notes: string | null;
 }
 
-export interface NevataActivityLog {
+export interface UtsavActivityLog {
   id: string;
   event_id: string;
   type: 'ITEM' | 'PAYMENT' | 'TASK' | 'ALERT' | 'GUEST' | 'LEDGER';
@@ -269,7 +269,7 @@ export interface NevataActivityLog {
   metadata?: string | null; // JSON string
 }
 
-export interface NevataGuest {
+export interface UtsavGuest {
   id: string;
   event_id: string;
   guest_name: string;
@@ -294,9 +294,9 @@ export interface FamilyMember {
 }
 
 /**
- * Staff & Payroll Models
+ * Sewak Hub (Staff Management) Models
  */
-export interface StaffMember {
+export interface SewakMember {
   id: string;
   name: string;
   role: string;
@@ -312,7 +312,7 @@ export interface StaffMember {
   gov_id_number: string | null;
 }
 
-export interface SalaryPayment {
+export interface SewakPayment {
   id: string;
   staff_id: string;
   month: string;
@@ -324,9 +324,9 @@ export interface SalaryPayment {
 }
 
 /** Sovereign alias — VetanPayment (Vetan = Salary in Hindi) */
-export type VetanPayment = SalaryPayment;
+export type VetanPayment = SewakPayment;
 
-export interface AttendanceRecord {
+export interface SewakAttendance {
   id: string;
   staff_id: string;
   date: string;
@@ -435,9 +435,9 @@ export interface VidyaSession {
 }
 
 /**
- * Suvidha (Utility & Daily Tally) Module Models
+ * Suvidha Hub (Utility & Daily Tally) Module Models
  */
-export interface UtilityVendor {
+export interface SuvidhaVendor {
   id: string;
   name: string;
   type: 'milk' | 'water' | 'paper' | 'internet' | 'trash' | 'helper' | string;
@@ -448,7 +448,7 @@ export interface UtilityVendor {
   created_at?: string;
 }
 
-export interface UtilityLog {
+export interface SuvidhaLog {
   id: string;
   vendor_id: string;
   date: string;                // YYYY-MM-DD
@@ -458,7 +458,7 @@ export interface UtilityLog {
   created_at?: string;
 }
 
-export interface UtilityPayment {
+export interface SuvidhaPayment {
   id: string;
   vendor_id: string;
   amount: number;

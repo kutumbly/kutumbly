@@ -22,7 +22,7 @@ import { useSanskriti } from '@/modules/sanskriti';
 import { useSaman } from '@/modules/saman';
 import { useInvest } from '@/modules/invest';
 import { useVidya } from '@/modules/vidya';
-import { useCash } from '@/modules/money';
+import { useCash } from '@/modules/cash';
 import { useDiary } from '@/modules/diary';
 import { useHealth } from '@/modules/health';
 import { useSuvidha } from '@/modules/suvidha';
@@ -57,7 +57,7 @@ export default function HomeModule() {
       tasksPending = resT[0]?.values[0][0] as number; 
     } catch {}
     try { 
-      const resE = db.exec("SELECT COUNT(*) FROM nevata_events WHERE event_date >= date('now')");
+      const resE = db.exec("SELECT COUNT(*) FROM utsav_events WHERE event_date >= date('now')");
       eventsUpcoming = resE[0]?.values[0][0] as number; 
     } catch {}
   }

@@ -25,18 +25,18 @@ import { ShoppingCart, Package, ListChecks, ArrowRight, MoreVertical, Plus, Chec
 import { motion, AnimatePresence } from 'framer-motion';
 import RupeesDisplay from '../ui/RupeesDisplay';
 import { useTranslation, Language } from '@/lib/i18n';
-import { GroceryItem } from '@/types/db';
+import { SamanItem } from '@/types/db';
 
-type GroceryView = 'overview' | 'category-items' | 'item-detail';
+type SamanView = 'overview' | 'category-items' | 'item-detail';
 
 export default function SamanModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang as Language);
   const { items, addItem, checkItem, deleteItem, clearChecked, applyBaseline, editItem } = useSaman();
 
-  const [view, setView] = useState<GroceryView>('overview');
+  const [view, setView] = useState<SamanView>('overview');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [activeItem, setActiveItem] = useState<GroceryItem | null>(null);
+  const [activeItem, setActiveItem] = useState<SamanItem | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   

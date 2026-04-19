@@ -53,3 +53,10 @@ scratch/
 !app/**/*.html
 !components/**/*.html
 !public/**/*.html
+
+# Local Database Files
+*.sqlite
+*.sqlite-journal
+*.db
+*.db-*
+*.kutumb

@@ -25,7 +25,7 @@ import {
   ExternalLink, RefreshCcw, Send, MessageCircle, 
   ScanLine, X, QrCode
 } from 'lucide-react';
-import { useScanner, useNevataEngine } from '@/modules/utsav';
+import { useScanner, useUtsavEngine } from '@/modules/utsav';
 import { useFamily } from '@/modules/family';
 import { useAppStore } from '@/lib/store';
 import { requestAccessToken } from '@/lib/gdrive';
@@ -34,11 +34,11 @@ import {
   fetchUniversalResponses 
 } from '@/lib/googleBridge';
 import { broadcastMission } from '@/lib/whatsapp';
-import { NevataEvent, NevataInventoryItem } from '@/types/db';
+import { UtsavEvent, UtsavInventoryItem } from '@/types/db';
 import LogisticsPulse from '../../ui/LogisticsPulse';
 
 interface InventoryManagerProps {
-  event: NevataEvent;
+  event: UtsavEvent;
 }
 
 const CAT_COLORS: Record<string, string> = {
@@ -51,7 +51,7 @@ const CAT_COLORS: Record<string, string> = {
 export default function InventoryManager({ event }: InventoryManagerProps) {
   const { 
     inventory, addInventoryItem, updateInventoryStatus, findInventoryItem 
-  } = useNevataEngine(event.id);
+  } = useUtsavEngine(event.id);
   const { familyMembers: family } = useFamily();
 
   const { videoRef, isScanning, startScanner, stopScanner, scanFrame } = useScanner();
@@ -60,7 +60,7 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
   const [filter, setFilter] = useState<'ALL' | 'ORDERED' | 'DISPATCHED' | 'RECEIVED' | 'RETURNED'>('ALL');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<NevataInventoryItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<UtsavInventoryItem | null>(null);
   const [isBridging, setIsBridging] = useState(false);
   const { gdriveToken } = useAppStore();
 
@@ -110,7 +110,7 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
     }
   }, [showScanner, startScanner, stopScanner, scanFrame, findInventoryItem]);
 
-  const filtered = inventory.filter((i: NevataInventoryItem) => {
+  const filtered = inventory.filter((i: UtsavInventoryItem) => {
     const sMatch = searchTerm === '' || i.item_name.toLowerCase().includes(searchTerm.toLowerCase());
     const fMatch = filter === 'ALL' || i.status === filter;
     return sMatch && fMatch;
@@ -155,7 +155,7 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
       return;
     }
 
-    const itemsToBridge = inventory.filter((i: NevataInventoryItem) => i.status === 'ORDERED');
+    const itemsToBridge = inventory.filter((i: UtsavInventoryItem) => i.status === 'ORDERED');
     if (itemsToBridge.length === 0) return;
 
     setIsBridging(true);
@@ -164,7 +164,7 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
       const payload = {
         title: `NVT Mission: ${event.title}`,
         description: `Coordination Link for ${event.title}. Mission ID: ${event.id.slice(0, 8)}`,
-        fields: itemsToBridge.flatMap((i: NevataInventoryItem) => [
+        fields: itemsToBridge.flatMap((i: UtsavInventoryItem) => [
           {
             title: `Actual Qty for ${i.item_name} (${i.quantity_expected} ${i.unit} EXP)`,
             description: `Task ID: ${i.id}`,
@@ -305,7 +305,7 @@ export default function InventoryManager({ event }: InventoryManagerProps) {
       {/* 2. Inventory Grid - Lifecycle Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
          <AnimatePresence mode="popLayout">
-            {filtered.map((item: NevataInventoryItem, idx: number) => (
+            {filtered.map((item: UtsavInventoryItem, idx: number) => (
                <motion.div 
                   layout
                   key={item.id}

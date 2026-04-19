@@ -17,8 +17,8 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { useNevataEngine } from '@/modules/utsav';
-import { NevataEvent, NevataGuest } from '@/types/db';
+import { useUtsavEngine } from '@/modules/utsav';
+import { UtsavEvent, UtsavGuest } from '@/types/db';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, UserPlus, Search, Phone, 
@@ -28,11 +28,11 @@ import {
 import { broadcastMission } from '@/lib/whatsapp';
 
 interface GuestManagerProps {
-  event: NevataEvent;
+  event: UtsavEvent;
 }
 
 export default function GuestManager({ event }: GuestManagerProps) {
-  const { guests, addGuest, updateGuestRSVP } = useNevataEngine(event.id);
+  const { guests, addGuest, updateGuestRSVP } = useUtsavEngine(event.id);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'pending' | 'confirmed' | 'declined'>('all');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -43,7 +43,7 @@ export default function GuestManager({ event }: GuestManagerProps) {
     family_tag: '',
     guest_count: 1,
     phone: '',
-    rsvp_status: 'pending' as NevataGuest['rsvp_status']
+    rsvp_status: 'pending' as UtsavGuest['rsvp_status']
   });
 
   const stats = useMemo(() => {
@@ -69,7 +69,7 @@ export default function GuestManager({ event }: GuestManagerProps) {
     setShowAddModal(false);
   };
 
-  const handleBroadcastInvite = (guest: NevataGuest) => {
+  const handleBroadcastInvite = (guest: UtsavGuest) => {
     broadcastMission({
       name: guest.guest_name,
       phone: guest.phone || '',

@@ -31,24 +31,53 @@ CREATE TABLE IF NOT EXISTS tasks (
   priority TEXT, status TEXT DEFAULT 'pending', category TEXT DEFAULT 'Home',
   assigned_to TEXT, due_date TEXT, created_at TEXT, completed_at TEXT
 );
-CREATE TABLE IF NOT EXISTS transactions (
+
+-- CASH HUB (VITT)
+CREATE TABLE IF NOT EXISTS cash_transactions (
   id TEXT PRIMARY KEY, date TEXT, amount REAL,
   type TEXT, category TEXT, description TEXT,
   member_id TEXT, created_at TEXT
 );
-CREATE TABLE IF NOT EXISTS budgets (
+CREATE TABLE IF NOT EXISTS cash_budgets (
   id TEXT PRIMARY KEY, category TEXT, monthly_limit REAL, month TEXT
 );
-CREATE TABLE IF NOT EXISTS health_readings (
-  id TEXT PRIMARY KEY, member_id TEXT, date TEXT,
-  bp_systolic INTEGER, bp_diastolic INTEGER,
-  blood_sugar REAL, pulse INTEGER, weight REAL, notes TEXT, created_at TEXT
+CREATE TABLE IF NOT EXISTS cash_investments (
+  id TEXT PRIMARY KEY, 
+  member_id TEXT,
+  goal_id TEXT,
+  name TEXT, type TEXT,
+  principal REAL, current_value REAL, units REAL,
+  monthly_sip REAL, start_date TEXT, maturity_date TEXT, notes TEXT
 );
-CREATE TABLE IF NOT EXISTS medications (
-  id TEXT PRIMARY KEY, member_id TEXT, name TEXT,
-  dosage TEXT, frequency TEXT, start_date TEXT, end_date TEXT
+CREATE TABLE IF NOT EXISTS cash_investment_txs (
+  id TEXT PRIMARY KEY, investment_id TEXT NOT NULL,
+  type TEXT, amount REAL, date TEXT, notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (investment_id) REFERENCES cash_investments(id)
 );
-CREATE TABLE IF NOT EXISTS staff_members (
+CREATE TABLE IF NOT EXISTS cash_wealth_goals (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  target_amount REAL NOT NULL,
+  member_id TEXT,
+  deadline TEXT,
+  category TEXT,
+  is_completed INTEGER DEFAULT 0,
+  created_at TEXT
+);
+
+-- SAMAN HUB (HOUSEHOLD SUPPLY)
+CREATE TABLE IF NOT EXISTS saman_lists (
+  id TEXT PRIMARY KEY, name TEXT, created_at TEXT, status TEXT DEFAULT 'active'
+);
+CREATE TABLE IF NOT EXISTS saman_items (
+  id TEXT PRIMARY KEY, list_id TEXT, name TEXT,
+  quantity TEXT, unit TEXT, estimated_price REAL, checked INTEGER DEFAULT 0, category TEXT,
+  current_stock REAL DEFAULT 0, threshold REAL DEFAULT 1, expiry_date TEXT, last_purchased_date TEXT
+);
+
+-- SEWAK HUB (KUTUMB SEWAK)
+CREATE TABLE IF NOT EXISTS sewak_members (
   id TEXT PRIMARY KEY, name TEXT, role TEXT,
   monthly_salary REAL, join_date TEXT, phone TEXT,
   advance_balance REAL DEFAULT 0,
@@ -56,123 +85,89 @@ CREATE TABLE IF NOT EXISTS staff_members (
   kyc_status TEXT DEFAULT 'PENDING',
   gov_id_number TEXT
 );
-CREATE TABLE IF NOT EXISTS attendance (
-  id TEXT PRIMARY KEY, staff_id TEXT, date TEXT, status TEXT, notes TEXT
+CREATE TABLE IF NOT EXISTS sewak_attendance (
+  id TEXT PRIMARY KEY, sewak_id TEXT, date TEXT, status TEXT, notes TEXT
 );
-CREATE TABLE IF NOT EXISTS salary_payments (
-  id TEXT PRIMARY KEY, staff_id TEXT, month TEXT,
+CREATE TABLE IF NOT EXISTS sewak_payments (
+  id TEXT PRIMARY KEY, sewak_id TEXT, month TEXT,
   gross REAL, deductions REAL, net REAL, paid_on TEXT, advance REAL DEFAULT 0
 );
-CREATE TABLE IF NOT EXISTS investments (
-  id TEXT PRIMARY KEY, 
-  member_id TEXT,                       -- Link to family_member
-  goal_id TEXT,                         -- ID of invest_goals if linked
-  name TEXT, type TEXT,
-  principal REAL, current_value REAL, units REAL,
-  monthly_sip REAL, start_date TEXT, maturity_date TEXT, notes TEXT
-);
-CREATE TABLE IF NOT EXISTS investment_transactions (
-  id TEXT PRIMARY KEY, investment_id TEXT NOT NULL,
-  type TEXT, amount REAL, date TEXT, notes TEXT,
-  created_at TEXT,
-  FOREIGN KEY (investment_id) REFERENCES investments(id)
-);
 
-CREATE TABLE IF NOT EXISTS invest_goals (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  target_amount REAL NOT NULL,
-  member_id TEXT,                       -- Goal for whom?
-  deadline TEXT,
-  category TEXT,                        -- 'Retirement' | 'Education' | 'Marriage' | 'Home' | 'Vehicle'
-  is_completed INTEGER DEFAULT 0,
-  created_at TEXT
-);
-
-CREATE TABLE IF NOT EXISTS grocery_lists (
-  id TEXT PRIMARY KEY, name TEXT, created_at TEXT, status TEXT DEFAULT 'active'
-);
-CREATE TABLE IF NOT EXISTS grocery_items (
-  id TEXT PRIMARY KEY, list_id TEXT, name TEXT,
-  quantity TEXT, unit TEXT, estimated_price REAL, checked INTEGER DEFAULT 0, category TEXT,
-  current_stock REAL DEFAULT 0, threshold REAL DEFAULT 1, expiry_date TEXT, last_purchased_date TEXT
-);
-
-CREATE TABLE IF NOT EXISTS events (
+-- UTSAV HUB (SOCIAL & EVENTS)
+-- UTSAV HUB (INTERNAL EVENTS)
+CREATE TABLE IF NOT EXISTS utsav_internal_events (
   id TEXT PRIMARY KEY, title TEXT, date TEXT,
   type TEXT, description TEXT, budget REAL,
   gift_idea TEXT, recurring INTEGER DEFAULT 0
 );
-
--- NEVATA MODULE TABLES
-CREATE TABLE IF NOT EXISTS nevata_events (
+-- UTSAV HUB (SOCIAL EVENTS)
+CREATE TABLE IF NOT EXISTS utsav_events (
   id TEXT PRIMARY KEY,
   title TEXT NOT NULL,
-  event_type TEXT NOT NULL,       -- 'shaadi' | 'janmdin' | 'tilak' | 'mundan' | 'janeu' | 'sagai' | 'pooja' | 'other'
-  direction TEXT NOT NULL,        -- 'bheja' (we invited) | 'aaya' (we received invite)
+  event_type TEXT NOT NULL,
+  direction TEXT NOT NULL,
   family_name TEXT NOT NULL,
   event_date TEXT NOT NULL,
   location TEXT,
-  our_count INTEGER DEFAULT 1,    -- how many from our side going
-  status TEXT DEFAULT 'upcoming', -- 'upcoming' | 'attended' | 'skipped'
+  our_count INTEGER DEFAULT 1,
+  status TEXT DEFAULT 'upcoming',
   notes TEXT,
   created_at TEXT
 );
-CREATE TABLE IF NOT EXISTS nevata_shagun (
+CREATE TABLE IF NOT EXISTS utsav_shagun (
   id TEXT PRIMARY KEY,
   event_id TEXT NOT NULL,
-  direction TEXT NOT NULL,        -- 'diya' (we gave) | 'mila' (we received)
+  direction TEXT NOT NULL,
   amount REAL DEFAULT 0,
   gift_desc TEXT,
-  given_by TEXT,                  -- family member name
+  given_by TEXT,
   received_from TEXT,
   is_confirmed INTEGER DEFAULT 0,
   created_at TEXT,
-  FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+  FOREIGN KEY (event_id) REFERENCES utsav_events(id)
 );
-CREATE TABLE IF NOT EXISTS nevata_guest_list (
+CREATE TABLE IF NOT EXISTS utsav_guests (
   id TEXT PRIMARY KEY,
-  event_id TEXT NOT NULL,         -- only for direction='bheja' events
+  event_id TEXT NOT NULL,
   guest_name TEXT NOT NULL,
-  family_tag TEXT,                -- 'ladki waale' | 'ladke waale' | 'dost' | 'relative'
+  family_tag TEXT,
   guest_count INTEGER DEFAULT 1,
-  rsvp_status TEXT DEFAULT 'pending', -- 'aa_rahe' | 'nahi_aayenge' | 'pending'
+  rsvp_status TEXT DEFAULT 'pending',
   phone TEXT,
-  FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+  FOREIGN KEY (event_id) REFERENCES utsav_events(id)
 );
-CREATE TABLE IF NOT EXISTS nevata_gift_registry (
+CREATE TABLE IF NOT EXISTS utsav_gift_registry (
   id TEXT PRIMARY KEY,
   event_id TEXT NOT NULL,
   item_name TEXT NOT NULL,
   description TEXT,
   estimated_price REAL,
-  status TEXT DEFAULT 'baaki',    -- 'liya' | 'baaki' | 'suggest'
+  status TEXT DEFAULT 'baaki',
   source_url TEXT,
-  FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+  FOREIGN KEY (event_id) REFERENCES utsav_events(id)
 );
-CREATE TABLE IF NOT EXISTS nevata_family_ledger (
+CREATE TABLE IF NOT EXISTS utsav_ledger (
   id TEXT PRIMARY KEY,
   family_name TEXT NOT NULL,
   event_id TEXT,
   diya REAL DEFAULT 0,
   mila REAL DEFAULT 0,
-  net REAL DEFAULT 0,             -- mila - diya (positive = they owe us)
+  net REAL DEFAULT 0,
   notes TEXT,
   updated_at TEXT
 );
-
-CREATE TABLE IF NOT EXISTS nevata_inventory (
+CREATE TABLE IF NOT EXISTS utsav_inventory (
   id TEXT PRIMARY KEY,
   event_id TEXT NOT NULL,
   item_name TEXT NOT NULL,
-  category TEXT NOT NULL,       -- 'Catering' | 'Decor' | 'Logistics' | 'Gift'
+  category TEXT NOT NULL,
   quantity_expected REAL DEFAULT 0,
   quantity_received REAL DEFAULT 0,
   quantity_used REAL DEFAULT 0,
-  unit TEXT DEFAULT 'pcs',      -- 'kg' | 'pcs' | 'sets'
-  status TEXT DEFAULT 'ORDERED', -- 'ORDERED' | 'DISPATCHED' | 'RECEIVED' | 'IN_USE' | 'RETURNED' | 'LOST'
+  unit TEXT DEFAULT 'pcs',
+  status TEXT DEFAULT 'ORDERED',
   vendor_id TEXT,
-  assigned_to_id TEXT,          -- linked to family_members.id or name
+  assigned_to_id TEXT,
   backup_person_id TEXT,
   delivery_date_expected TEXT,
   delivery_date_actual TEXT,
@@ -182,13 +177,12 @@ CREATE TABLE IF NOT EXISTS nevata_inventory (
   cost_actual REAL DEFAULT 0,
   notes TEXT,
   created_at TEXT,
-  FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+  FOREIGN KEY (event_id) REFERENCES utsav_events(id)
 );
-
-CREATE TABLE IF NOT EXISTS nevata_vendors (
+CREATE TABLE IF NOT EXISTS utsav_vendors (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
-  service_type TEXT,            -- 'Catering' | 'Decor' | 'DJ' | 'Transport'
+  service_type TEXT,
   contact TEXT,
   rating REAL DEFAULT 5,
   reliability_score REAL DEFAULT 100,
@@ -198,22 +192,20 @@ CREATE TABLE IF NOT EXISTS nevata_vendors (
   last_used_event TEXT,
   notes TEXT
 );
-
-CREATE TABLE IF NOT EXISTS nevata_activity_log (
+CREATE TABLE IF NOT EXISTS utsav_activity_log (
   id TEXT PRIMARY KEY,
   event_id TEXT NOT NULL,
-  type TEXT NOT NULL,           -- 'ITEM' | 'PAYMENT' | 'TASK' | 'ALERT'
-  action TEXT NOT NULL,         -- 'CREATED' | 'UPDATED' | 'RECEIVED' | 'PAID' | 'ASSIGNED'
-  item_id TEXT,                 -- optional link to inventory
-  vendor_id TEXT,               -- optional link to vendor
-  user_id TEXT,                 -- family member who did it
+  type TEXT NOT NULL,
+  action TEXT NOT NULL,
+  item_id TEXT,
+  vendor_id TEXT,
+  user_id TEXT,
   timestamp TEXT NOT NULL,
-  metadata TEXT,                -- JSON string for extra info
-  FOREIGN KEY (event_id) REFERENCES nevata_events(id)
+  metadata TEXT,
+  FOREIGN KEY (event_id) REFERENCES utsav_events(id)
 );
 
--- VIDYA MODULE TABLES
--- Learner profile
+-- VIDYA HUB (LEARNING & SKILLS)
 CREATE TABLE IF NOT EXISTS vidya_learners (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
@@ -227,8 +219,6 @@ CREATE TABLE IF NOT EXISTS vidya_learners (
   is_active INTEGER DEFAULT 1,
   created_at TEXT
 );
-
--- Subject per learner
 CREATE TABLE IF NOT EXISTS vidya_subjects (
   id TEXT PRIMARY KEY,
   learner_id TEXT NOT NULL,
@@ -240,8 +230,6 @@ CREATE TABLE IF NOT EXISTS vidya_subjects (
   created_at TEXT,
   FOREIGN KEY (learner_id) REFERENCES vidya_learners(id)
 );
-
--- Study resource
 CREATE TABLE IF NOT EXISTS vidya_resources (
   id TEXT PRIMARY KEY,
   subject_id TEXT NOT NULL,
@@ -261,8 +249,6 @@ CREATE TABLE IF NOT EXISTS vidya_resources (
   created_at TEXT,
   FOREIGN KEY (subject_id) REFERENCES vidya_subjects(id)
 );
-
--- Study session log
 CREATE TABLE IF NOT EXISTS vidya_sessions (
   id TEXT PRIMARY KEY,
   learner_id TEXT NOT NULL,
@@ -276,7 +262,17 @@ CREATE TABLE IF NOT EXISTS vidya_sessions (
   FOREIGN KEY (learner_id) REFERENCES vidya_learners(id)
 );
 
-CREATE TABLE IF NOT EXISTS medical_profiles (
+-- HEALTH HUB (WELLNESS)
+CREATE TABLE IF NOT EXISTS health_readings (
+  id TEXT PRIMARY KEY, member_id TEXT, date TEXT,
+  bp_systolic INTEGER, bp_diastolic INTEGER,
+  blood_sugar REAL, pulse INTEGER, weight REAL, notes TEXT, created_at TEXT
+);
+CREATE TABLE IF NOT EXISTS health_medications (
+  id TEXT PRIMARY KEY, member_id TEXT, name TEXT,
+  dosage TEXT, frequency TEXT, start_date TEXT, end_date TEXT
+);
+CREATE TABLE IF NOT EXISTS health_profiles (
   id TEXT PRIMARY KEY,
   member_id TEXT NOT NULL,
   blood_group TEXT,
@@ -288,8 +284,7 @@ CREATE TABLE IF NOT EXISTS medical_profiles (
   updated_at TEXT,
   FOREIGN KEY (member_id) REFERENCES family_members(id)
 );
-
-CREATE TABLE IF NOT EXISTS vaccinations (
+CREATE TABLE IF NOT EXISTS health_vaccinations (
   id TEXT PRIMARY KEY,
   member_id TEXT NOT NULL,
   name TEXT NOT NULL,
@@ -300,43 +295,6 @@ CREATE TABLE IF NOT EXISTS vaccinations (
   created_at TEXT,
   FOREIGN KEY (member_id) REFERENCES family_members(id)
 );
-
--- SUVIDHA HUB (UTILITY & DAILY TALLY) TABLES
-CREATE TABLE IF NOT EXISTS utility_vendors (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  type TEXT NOT NULL,           -- 'milk' | 'water' | 'paper' | 'internet' | 'trash' | 'helper'
-  rate_per_unit REAL DEFAULT 0, -- price for 1L milk or monthly fixed salary
-  billing_cycle_day INTEGER DEFAULT 1,
-  member_id TEXT,               -- family member who handles this
-  is_active INTEGER DEFAULT 1,
-  created_at TEXT,
-  FOREIGN KEY (member_id) REFERENCES family_members(id)
-);
-
-CREATE TABLE IF NOT EXISTS utility_logs (
-  id TEXT PRIMARY KEY,
-  vendor_id TEXT NOT NULL,
-  date TEXT NOT NULL,           -- YYYY-MM-DD
-  quantity REAL DEFAULT 1,      -- 2L milk, 1 paper, or attendance (1/0)
-  quality INTEGER DEFAULT 5,    -- 1-10 rating
-  notes TEXT,
-  created_at TEXT,
-  FOREIGN KEY (vendor_id) REFERENCES utility_vendors(id)
-);
-
-CREATE TABLE IF NOT EXISTS utility_payments (
-  id TEXT PRIMARY KEY,
-  vendor_id TEXT NOT NULL,
-  amount REAL NOT NULL,
-  date TEXT NOT NULL,           -- Payment date
-  period_month TEXT NOT NULL,    -- '01' to '12'
-  period_year TEXT NOT NULL,     -- '2024'
-  notes TEXT,
-  created_at TEXT,
-  FOREIGN KEY (vendor_id) REFERENCES utility_vendors(id)
-);
-
 CREATE TABLE IF NOT EXISTS health_advanced_profiles (
   member_id TEXT PRIMARY KEY,
   prakriti TEXT,
@@ -348,8 +306,7 @@ CREATE TABLE IF NOT EXISTS health_advanced_profiles (
   updated_at TEXT,
   FOREIGN KEY (member_id) REFERENCES family_members(id)
 );
-
-CREATE TABLE IF NOT EXISTS medical_prescriptions (
+CREATE TABLE IF NOT EXISTS health_prescriptions (
   id TEXT PRIMARY KEY,
   member_id TEXT NOT NULL,
   doctor_name TEXT,
@@ -368,7 +325,41 @@ CREATE TABLE IF NOT EXISTS medical_prescriptions (
   FOREIGN KEY (member_id) REFERENCES family_members(id)
 );
 
--- SANSKRITI HUB (TRADITION & HERITAGE) TABLES
+-- SUVIDHA HUB (UTILITY & DAILY TALLY)
+CREATE TABLE IF NOT EXISTS suvidha_vendors (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  rate_per_unit REAL DEFAULT 0,
+  billing_cycle_day INTEGER DEFAULT 1,
+  member_id TEXT,
+  is_active INTEGER DEFAULT 1,
+  created_at TEXT,
+  FOREIGN KEY (member_id) REFERENCES family_members(id)
+);
+CREATE TABLE IF NOT EXISTS suvidha_logs (
+  id TEXT PRIMARY KEY,
+  vendor_id TEXT NOT NULL,
+  date TEXT NOT NULL,
+  quantity REAL DEFAULT 1,
+  quality INTEGER DEFAULT 5,
+  notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (vendor_id) REFERENCES suvidha_vendors(id)
+);
+CREATE TABLE IF NOT EXISTS suvidha_payments (
+  id TEXT PRIMARY KEY,
+  vendor_id TEXT NOT NULL,
+  amount REAL NOT NULL,
+  date TEXT NOT NULL,
+  period_month TEXT NOT NULL,
+  period_year TEXT NOT NULL,
+  notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (vendor_id) REFERENCES suvidha_vendors(id)
+);
+
+-- SANSKRITI HUB (TRADITION & HERITAGE)
 CREATE TABLE IF NOT EXISTS sanskriti_dharma_profile (
   id TEXT PRIMARY KEY,
   gotra TEXT,
@@ -378,11 +369,10 @@ CREATE TABLE IF NOT EXISTS sanskriti_dharma_profile (
   kulguru TEXT,
   shaakha TEXT,
   veda TEXT,
-  upadevyas TEXT, -- JSON string array
+  upadevyas TEXT,
   is_locked INTEGER DEFAULT 0,
   updated_at TEXT
 );
-
 CREATE TABLE IF NOT EXISTS sanskriti_village_roots (
   id TEXT PRIMARY KEY,
   village_name TEXT NOT NULL,
@@ -394,16 +384,16 @@ CREATE TABLE IF NOT EXISTS sanskriti_village_roots (
   notes TEXT,
   updated_at TEXT
 );
-
 CREATE TABLE IF NOT EXISTS sanskriti_ritual_logs (
   id TEXT PRIMARY KEY,
   date TEXT NOT NULL,
-  type TEXT NOT NULL, -- 'DAILY' | 'SPECIAL' | 'TITHI' | 'SANKALPA'
+  type TEXT NOT NULL,
   name TEXT NOT NULL,
-  performer_id TEXT, -- Link to family_members.id
+  performer_id TEXT,
   sankalpa_text TEXT,
   notes TEXT,
   created_at TEXT,
   FOREIGN KEY (performer_id) REFERENCES family_members(id)
 );
+`;
 `;

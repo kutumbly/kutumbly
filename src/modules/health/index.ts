@@ -15,7 +15,7 @@ import { useMemo, useCallback, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { saveVault } from '@/lib/vault';
 import { healthRepo } from './health.repo';
-import { HealthReading, Medication, MedicalProfile } from '@/types/db';
+import { HealthReading, Medication, HealthProfile } from '@/types/db';
 
 /**
  * HEALTH HUB (Family Wellness & SOS)
@@ -45,7 +45,7 @@ export function useHealth() {
     commit();
   }, [db, commit]);
 
-  const updateMedicalProfile = useCallback((p: any) => {
+  const updateHealthProfile = useCallback((p: any) => {
     healthRepo.updateSOSProfile(db, p);
     commit();
   }, [db, commit]);
@@ -55,11 +55,11 @@ export function useHealth() {
     medications,
     vaccinations: [] as any[], // Placeholder for now
     prescriptions: [] as any[],
-    medicalProfiles: [] as any[],
+    healthProfiles: [] as any[],
     advancedProfiles: [] as any[],
     addReading,
     editReading,
-    updateMedicalProfile,
+    updateHealthProfile,
     deleteReading: (id: any) => { db?.run("DELETE FROM health_readings WHERE id = ?", [id]); commit(); },
     addMedication: (m: any) => { /* implementation */ commit(); },
     stopMedication: (id: any) => { /* implementation */ commit(); },

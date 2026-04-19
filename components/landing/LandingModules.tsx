@@ -96,7 +96,7 @@ export default function LandingModules() {
       color: "from-purple-500/10 to-violet-500/5",
       border: "hover:border-purple-400/40",
       iconBg: "bg-purple-50 text-purple-600 border-purple-100",
-      caps: ["Nevata", "Shagun", "Calendar", "Gifts"],
+      caps: ["Utsav", "Shagun", "Calendar", "Gifts"],
       desc: t('landing.modules.utsav.desc') || "Celebrating life's milestones privately with gift and shagun logs.",
     },
     {

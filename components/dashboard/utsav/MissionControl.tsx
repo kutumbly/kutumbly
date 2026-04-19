@@ -28,16 +28,16 @@ import {
   Clock,
   ArrowRight
 } from 'lucide-react';
-import { useNevataEngine } from '@/modules/utsav';
-import { NevataEvent } from '@/types/db';
+import { useUtsavEngine } from '@/modules/utsav';
+import { UtsavEvent } from '@/types/db';
 
 interface MissionControlProps {
-  event: NevataEvent;
+  event: UtsavEvent;
   onNavigate: (view: 'inventory' | 'guests' | 'shagun') => void;
 }
 
 export default function MissionControl({ event, onNavigate }: MissionControlProps) {
-  const { inventory, activityLogs, budgetStats } = useNevataEngine(event.id);
+  const { inventory, activityLogs, budgetStats } = useUtsavEngine(event.id);
 
   const stats = {
     inventoryReceived: inventory.filter(i => i.status === 'RECEIVED' || i.status === 'IN_USE').length,

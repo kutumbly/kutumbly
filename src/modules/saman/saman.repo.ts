@@ -11,7 +11,7 @@
 
 import { Database } from 'sql.js';
 import { runQuery } from '@/lib/db';
-import { GroceryItem } from '@/types/db';
+import { SamanItem } from '@/types/db';
 
 /**
  * SAMAN HUB REPOSITORY
@@ -19,11 +19,11 @@ import { GroceryItem } from '@/types/db';
  */
 
 export const samanRepo = {
-  getItems: (db: Database | null): GroceryItem[] => {
+  getItems: (db: Database | null): SamanItem[] => {
     if (!db) return [];
-    return runQuery<GroceryItem>(
+    return runQuery<SamanItem>(
       db,
-      "SELECT * FROM grocery_items ORDER BY (current_stock <= threshold) DESC, checked ASC, category ASC, name ASC"
+      "SELECT * FROM saman_items ORDER BY (current_stock <= threshold) DESC, checked ASC, category ASC, name ASC"
     );
   },
 
@@ -32,17 +32,17 @@ export const samanRepo = {
     
     // Ensure we have a list
     let listId: string;
-    const existingList = db.exec("SELECT id FROM grocery_lists LIMIT 1");
+    const existingList = db.exec("SELECT id FROM saman_lists LIMIT 1");
     if (existingList[0]?.values?.[0]?.[0]) {
       listId = existingList[0].values[0][0] as string;
     } else {
       listId = crypto.randomUUID();
-      db.run("INSERT INTO grocery_lists (id, name, created_at, status) VALUES (?, ?, ?, ?)", [listId, "Main List", new Date().toISOString(), "active"]);
+      db.run("INSERT INTO saman_lists (id, name, created_at, status) VALUES (?, ?, ?, ?)", [listId, "Main List", new Date().toISOString(), "active"]);
     }
 
     const id = crypto.randomUUID();
     db.run(
-      `INSERT INTO grocery_items 
+      `INSERT INTO saman_items 
         (id, list_id, name, quantity, unit, estimated_price, checked, category, current_stock, threshold, expiry_date, last_purchased_date) 
        VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?)`,
       [
@@ -62,7 +62,7 @@ export const samanRepo = {
     return id;
   },
 
-  updateItem: (db: Database | null, id: string, updates: Partial<GroceryItem>) => {
+  updateItem: (db: Database | null, id: string, updates: Partial<SamanItem>) => {
     if (!db) return;
     const setChunks: string[] = [];
     const values: any[] = [];
@@ -76,26 +76,26 @@ export const samanRepo = {
     
     if (setChunks.length === 0) return;
     values.push(id);
-    const query = `UPDATE grocery_items SET ${setChunks.join(', ')} WHERE id = ?`;
+    const query = `UPDATE saman_items SET ${setChunks.join(', ')} WHERE id = ?`;
     db.run(query, values);
   },
 
   checkItem: (db: Database | null, id: string, checked: number) => {
     if (!db) return;
     if (checked === 1) {
-      db.run("UPDATE grocery_items SET checked = ?, last_purchased_date = ? WHERE id = ?", [checked, new Date().toISOString(), id]);
+      db.run("UPDATE saman_items SET checked = ?, last_purchased_date = ? WHERE id = ?", [checked, new Date().toISOString(), id]);
     } else {
-      db.run("UPDATE grocery_items SET checked = ? WHERE id = ?", [checked, id]);
+      db.run("UPDATE saman_items SET checked = ? WHERE id = ?", [checked, id]);
     }
   },
 
   deleteItem: (db: Database | null, id: string) => {
     if (!db) return;
-    db.run("DELETE FROM grocery_items WHERE id = ?", [id]);
+    db.run("DELETE FROM saman_items WHERE id = ?", [id]);
   },
 
   clearAllChecked: (db: Database | null) => {
     if (!db) return;
-    db.run("DELETE FROM grocery_items WHERE checked = 1");
+    db.run("DELETE FROM saman_items WHERE checked = 1");
   }
 };

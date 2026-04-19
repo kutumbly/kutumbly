@@ -37,15 +37,15 @@ export default function ProductPage() {
   const PRODUCT_MODULES = [
     {
       category: t('product.category.financial'),
-      title: t('nav.money'),
-      desc: t('product.module.money.desc'),
+      title: t('nav.cash'),
+      desc: t('product.module.cash.desc'),
       specs: [t('product.spec.tally'), t('product.spec.air_gapped'), t('product.spec.ledger')],
       icon: <Wallet className="text-gold" size={24} />
     },
     {
       category: t('product.category.intelligence'),
-      title: t('nav.nevata'),
-      desc: t('product.module.nevata.desc'),
+      title: t('nav.utsav'),
+      desc: t('product.module.utsav.desc'),
       specs: [t('product.spec.ledger'), t('product.spec.qr_scanner'), t('product.spec.guest_insight')],
       icon: <Calendar className="text-gold" size={24} />
     },

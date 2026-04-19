@@ -32,7 +32,7 @@ import MissionControl from './utsav/MissionControl';
 import InventoryManager from './utsav/InventoryManager';
 import MissionLedger from './utsav/MissionLedger';
 import GuestManager from './utsav/GuestManager';
-import { NevataEvent, ShagunRecord, NevataLedgerEntry, NevataGuest } from '@/types/db';
+import { UtsavEvent, UtsavShagun, UtsavLedgerEntry, UtsavGuest } from '@/types/db';
 
 const EVENT_TYPE_EMOJI: Record<string, string> = {
   shaadi: '💍', sagai: '💒', tilak: '🪔', janmdin: '🎂',
@@ -61,8 +61,8 @@ export default function UtsavModule() {
 
   const [direction, setDirection] = useState<'they_invited' | 'we_hosted'>('they_invited');
   const [activeTab, setActiveTab] = useState<'events' | 'ledger' | 'upcoming' | 'registry'>('events');
-  const [selectedEvent, setSelectedEvent] = useState<NevataEvent | null>(null);
-  const [nevataMode, setNevataMode] = useState<'list' | 'control' | 'inventory' | 'ledger' | 'guests'>('list');
+  const [selectedEvent, setSelectedEvent] = useState<UtsavEvent | null>(null);
+  const [utsavMode, setUtsavMode] = useState<'list' | 'control' | 'inventory' | 'ledger' | 'guests'>('list');
   const [showAddForm, setShowAddForm] = useState(false);
 
   // Form State
@@ -127,7 +127,7 @@ export default function UtsavModule() {
             transition={{ delay: i * 0.05 }}
             onClick={() => {
               setSelectedEvent(e);
-              setNevataMode('control');
+              setUtsavMode('control');
             }}
             className="card-lift bg-bg-primary border border-border-light p-6 rounded-[2.5rem] flex flex-col md:flex-row gap-6 justify-between group hover:border-gold/30 hover:shadow-2xl transition-all cursor-pointer relative overflow-hidden"
           >
@@ -143,7 +143,7 @@ export default function UtsavModule() {
                     {e.title}
                   </h4>
                   <span className={`text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest ${dir.color} border border-border-light/10 shadow-sm`}>
-                    {t(e.direction === 'we_hosted' ? 'NEVATA_WE_HOSTED' : 'NEVATA_THEY_HOSTED')}
+                    {t(e.direction === 'we_hosted' ? 'UTSAV_WE_HOSTED' : 'UTSAV_THEY_HOSTED')}
                   </span>
                 </div>
                 <p className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.15em] opacity-80 mb-4">
@@ -203,7 +203,7 @@ export default function UtsavModule() {
 
   const renderLedger = () => (
     <div className="card divide-y divide-border-light/30">
-      {familyLedger.length > 0 ? familyLedger.map((l: NevataLedgerEntry, i: number) => (
+      {familyLedger.length > 0 ? familyLedger.map((l: UtsavLedgerEntry, i: number) => (
         <div key={i} className="p-5 flex justify-between items-center group hover:bg-bg-secondary transition-colors">
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-bg-tertiary border border-border-light flex items-center justify-center font-black text-sm text-text-secondary">
@@ -247,7 +247,7 @@ export default function UtsavModule() {
 
   const renderUpcoming = () => (
     <div className="grid gap-4">
-      {upcoming.length > 0 ? upcoming.map((e: NevataEvent, i: number) => {
+      {upcoming.length > 0 ? upcoming.map((e: UtsavEvent, i: number) => {
         const days = daysUntil(e.event_date);
         const urgency = days <= 7 ? 'bg-bg-danger text-text-danger' : days <= 30 ? 'bg-bg-warning text-text-warning' : 'bg-bg-info text-text-info';
         const suggested = 501;
@@ -264,7 +264,7 @@ export default function UtsavModule() {
                 </p>
                 <div className="flex items-center gap-2 mt-1.5">
                   <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${urgency}`}>
-                    {days === 0 ? t('TODAY') : days < 0 ? t('NEVATA_PASSED') : `${days} ${t('DAYS_LEFT')}`}
+                    {days === 0 ? t('TODAY') : days < 0 ? t('UTSAV_PASSED') : `${days} ${t('DAYS_LEFT')}`}
                   </span>
                   <span className="text-[10px] font-bold text-gold">
                     {t('SUGGESTED')}: <RupeesDisplay amount={501} />
@@ -293,16 +293,16 @@ export default function UtsavModule() {
   );
 
   const TABS = [
-    { id: 'events',   label: t('NEVATA_TAB_EVENTS') },
-    { id: 'ledger',   label: t('NEVATA_TAB_LEDGER') },
-    { id: 'upcoming', label: t('NEVATA_TAB_UPCOMING') },
-    { id: 'registry', label: t('NEVATA_TAB_REGISTRY') },
+    { id: 'events',   label: t('UTSAV_TAB_EVENTS') },
+    { id: 'ledger',   label: t('UTSAV_TAB_LEDGER') },
+    { id: 'upcoming', label: t('UTSAV_TAB_UPCOMING') },
+    { id: 'registry', label: t('UTSAV_TAB_REGISTRY') },
   ] as const;
 
   return (
     <ModuleShell
       title={t('NEVATA')}
-      subtitle={selectedEvent ? selectedEvent.title : t('NEVATA_SUBTITLE')}
+      subtitle={selectedEvent ? selectedEvent.title : t('UTSAV_SUBTITLE')}
       onAdd={nevataMode === 'list' && !showAddForm ? () => setShowAddForm(true) : undefined}
       addLabel={t('NEW_EVENT')}
       onBack={showAddForm ? () => setShowAddForm(false) : undefined}
@@ -311,33 +311,33 @@ export default function UtsavModule() {
         {selectedEvent && (
           <div className="flex items-center justify-between mb-4">
             <button 
-              onClick={() => { setSelectedEvent(null); setNevataMode('list'); }}
+              onClick={() => { setSelectedEvent(null); setUtsavMode('list'); }}
               className="flex items-center gap-2 text-[10px] font-black text-text-tertiary uppercase tracking-widest hover:text-gold transition-all"
             >
               <ArrowLeft size={14} /> {t('BACK_TO_LIST') || 'Back to List'}
             </button>
             <div className="flex items-center gap-1 p-1 bg-bg-secondary rounded-xl border border-border-light">
                <button 
-                  onClick={() => setNevataMode('control')}
-                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${nevataMode === 'control' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
+                  onClick={() => setUtsavMode('control')}
+                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${utsavMode === 'control' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
                >
                   Control
                </button>
                <button 
-                  onClick={() => setNevataMode('inventory')}
-                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${nevataMode === 'inventory' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
+                  onClick={() => setUtsavMode('inventory')}
+                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${utsavMode === 'inventory' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
                >
                   Saamaan
                </button>
                <button 
-                  onClick={() => setNevataMode('ledger')}
-                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${nevataMode === 'ledger' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
+                  onClick={() => setUtsavMode('ledger')}
+                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${utsavMode === 'ledger' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
                >
                   Lekha-Jokha
                </button>
                <button 
-                  onClick={() => setNevataMode('guests')}
-                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${nevataMode === 'guests' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
+                  onClick={() => setUtsavMode('guests')}
+                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${utsavMode === 'guests' ? 'bg-bg-primary text-gold shadow-sm' : 'text-text-tertiary'}`}
                >
                   Atithi
                </button>
@@ -495,11 +495,11 @@ export default function UtsavModule() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -10 }}
         >
-          {nevataMode === 'control' ? (
-            <MissionControl event={selectedEvent} onNavigate={(v) => setNevataMode(v === 'inventory' ? 'inventory' : 'control' as any)} />
-          ) : nevataMode === 'inventory' ? (
+          {utsavMode === 'control' ? (
+            <MissionControl event={selectedEvent} onNavigate={(v) => setUtsavMode(v === 'inventory' ? 'inventory' : 'control' as any)} />
+          ) : utsavMode === 'inventory' ? (
             <InventoryManager event={selectedEvent} />
-          ) : nevataMode === 'ledger' ? (
+          ) : utsavMode === 'ledger' ? (
             <MissionLedger event={selectedEvent} />
           ) : (
             <GuestManager event={selectedEvent} />

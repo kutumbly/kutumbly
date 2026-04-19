@@ -15,7 +15,7 @@ import { useMemo, useCallback, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { saveVault } from '@/lib/vault';
 import { utsavRepo } from './utsav.repo';
-import { NevataEvent, ShagunRecord } from '@/types/db';
+import { UtsavEvent, UtsavShagun } from '@/types/db';
 import { useNevataEngine } from './engine';
 import { useScanner } from './scanner';
 
@@ -41,12 +41,12 @@ export function useUtsav() {
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
-  const addEvent = useCallback((event: Omit<NevataEvent, 'id' | 'created_at' | 'status'>) => {
+  const addEvent = useCallback((event: Omit<UtsavEvent, 'id' | 'created_at' | 'status'>) => {
     if (!db) return;
     const id = crypto.randomUUID();
     const created_at = new Date().toISOString();
     
-    const newEvent: NevataEvent = {
+    const newEvent: UtsavEvent = {
         ...event,
         id,
         status: 'pending',
@@ -57,12 +57,12 @@ export function useUtsav() {
     commit();
   }, [db, commit]);
 
-  const addShagun = useCallback((shagun: Omit<ShagunRecord, 'id' | 'created_at' | 'is_confirmed'>) => {
+  const addShagun = useCallback((shagun: Omit<UtsavShagun, 'id' | 'created_at' | 'is_confirmed'>) => {
     if (!db) return;
     const id = crypto.randomUUID();
     const created_at = new Date().toISOString();
     
-    const newShagun: ShagunRecord = {
+    const newShagun: UtsavShagun = {
         ...shagun,
         id,
         is_confirmed: true,

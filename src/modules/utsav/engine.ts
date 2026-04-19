@@ -21,11 +21,11 @@ import { saveVault } from '@/lib/vault';
 import { runQuery } from '@/lib/db';
 import { useCallback, useState, useMemo } from 'react';
 import { 
-  NevataInventoryItem, 
-  NevataVendor, 
-  NevataActivityLog,
-  NevataFamilyLedger,
-  NevataGuest
+  UtsavInventoryItem, 
+  UtsavVendor, 
+  UtsavActivityLog,
+  UtsavFamilyLedger,
+  UtsavGuest
 } from '@/types/db';
 
 export function useNevataEngine(eventId?: string) {
@@ -33,45 +33,45 @@ export function useNevataEngine(eventId?: string) {
   const [tick, setTick] = useState(0);
 
   // 1. Data Fetchers
-  const inventory = useMemo<NevataInventoryItem[]>(() => {
+  const inventory = useMemo<UtsavInventoryItem[]>(() => {
     if (!db || !eventId) return [];
-    return runQuery<NevataInventoryItem>(db, 
+    return runQuery<UtsavInventoryItem>(db, 
       "SELECT * FROM nevata_inventory WHERE event_id = ? ORDER BY created_at DESC", 
       [eventId]
     );
   }, [db, eventId, tick]);
 
-  const vendors = useMemo<NevataVendor[]>(() => {
+  const vendors = useMemo<UtsavVendor[]>(() => {
     if (!db) return [];
-    return runQuery<NevataVendor>(db, "SELECT * FROM nevata_vendors ORDER BY name ASC");
+    return runQuery<UtsavVendor>(db, "SELECT * FROM nevata_vendors ORDER BY name ASC");
   }, [db, tick]);
 
-  const activityLogs = useMemo<NevataActivityLog[]>(() => {
+  const activityLogs = useMemo<UtsavActivityLog[]>(() => {
     if (!db || !eventId) return [];
-    return runQuery<NevataActivityLog>(db, 
+    return runQuery<UtsavActivityLog>(db, 
       "SELECT * FROM nevata_activity_log WHERE event_id = ? ORDER BY timestamp DESC LIMIT 50", 
       [eventId]
     );
   }, [db, eventId, tick]);
 
-  const missionLedger = useMemo<NevataFamilyLedger[]>(() => {
+  const missionLedger = useMemo<UtsavFamilyLedger[]>(() => {
     if (!db || !eventId) return [];
-    return runQuery<NevataFamilyLedger>(db, 
+    return runQuery<UtsavFamilyLedger>(db, 
       "SELECT * FROM nevata_family_ledger WHERE event_id = ? OR event_id IS NULL ORDER BY updated_at DESC", 
       [eventId]
     );
   }, [db, eventId, tick]);
 
-  const guests = useMemo<NevataGuest[]>(() => {
+  const guests = useMemo<UtsavGuest[]>(() => {
     if (!db || !eventId) return [];
-    return runQuery<NevataGuest>(db, 
+    return runQuery<UtsavGuest>(db, 
       "SELECT * FROM nevata_guest_list WHERE event_id = ? ORDER BY guest_name ASC", 
       [eventId]
     );
   }, [db, eventId, tick]);
 
   // 2. Log Activity Helper (Private-style)
-  const logActivity = useCallback((log: Omit<NevataActivityLog, 'id' | 'timestamp'>) => {
+  const logActivity = useCallback((log: Omit<UtsavActivityLog, 'id' | 'timestamp'>) => {
     if (!db) return;
     const id = crypto.randomUUID();
     const timestamp = new Date().toISOString();
@@ -84,7 +84,7 @@ export function useNevataEngine(eventId?: string) {
   }, [db]);
 
   // 3. Inventory Lifecycle Actions
-  const addInventoryItem = useCallback((item: Omit<NevataInventoryItem, 'id' | 'created_at' | 'status' | 'event_id'>) => {
+  const addInventoryItem = useCallback((item: Omit<UtsavInventoryItem, 'id' | 'created_at' | 'status' | 'event_id'>) => {
     if (!db || !eventId) return;
     const id = crypto.randomUUID();
     const created_at = new Date().toISOString();
@@ -116,7 +116,7 @@ export function useNevataEngine(eventId?: string) {
     setTick(t => t + 1);
   }, [db, eventId, fileHandle, currentPin, logActivity]);
 
-  const updateInventoryStatus = useCallback((id: string, newStatus: NevataInventoryItem['status'], metadata?: any) => {
+  const updateInventoryStatus = useCallback((id: string, newStatus: UtsavInventoryItem['status'], metadata?: any) => {
     if (!db || !eventId) return;
     
     db.run("UPDATE nevata_inventory SET status = ? WHERE id = ?", [newStatus, id]);
@@ -139,7 +139,7 @@ export function useNevataEngine(eventId?: string) {
 
     // Reliability Check: If actual date is greater than expected, it's late.
     // We'll perform this before the update to compare.
-    const items = runQuery<NevataInventoryItem>(db, "SELECT * FROM nevata_inventory WHERE id = ?", [id]);
+    const items = runQuery<UtsavInventoryItem>(db, "SELECT * FROM nevata_inventory WHERE id = ?", [id]);
     const item = items[0];
     
     const actualDate = new Date();
@@ -180,7 +180,7 @@ export function useNevataEngine(eventId?: string) {
   }, [inventory]);
 
   // 5. Vendor Actions
-  const addVendor = useCallback((vendor: Omit<NevataVendor, 'id' | 'reliability_score' | 'rating' | 'advance_paid' | 'total_amount' | 'payment_status'>) => {
+  const addVendor = useCallback((vendor: Omit<UtsavVendor, 'id' | 'reliability_score' | 'rating' | 'advance_paid' | 'total_amount' | 'payment_status'>) => {
     if (!db) return;
     const id = crypto.randomUUID();
     db.run(
@@ -195,7 +195,7 @@ export function useNevataEngine(eventId?: string) {
   const addLedgerEntry = useCallback((entry: { family_name: string; amount: number; direction: 'diya' | 'mila'; notes?: string }) => {
     if (!db || !eventId) return;
 
-    const families = runQuery<NevataFamilyLedger>(db, "SELECT * FROM nevata_family_ledger WHERE family_name = ?", [entry.family_name]);
+    const families = runQuery<UtsavFamilyLedger>(db, "SELECT * FROM nevata_family_ledger WHERE family_name = ?", [entry.family_name]);
     const timestamp = new Date().toISOString();
 
     if (families.length > 0) {
@@ -232,14 +232,14 @@ export function useNevataEngine(eventId?: string) {
 
   const suggestParampara = useCallback((familyName: string) => {
     if (!db) return 0;
-    const families = runQuery<NevataFamilyLedger>(db, "SELECT * FROM nevata_family_ledger WHERE family_name = ?", [familyName]);
+    const families = runQuery<UtsavFamilyLedger>(db, "SELECT * FROM nevata_family_ledger WHERE family_name = ?", [familyName]);
     if (families.length === 0) return 0;
     // Simple intelligence: suggest their last Mila + 1
     return (families[0].mila || 0) > 0 ? families[0].mila + 1 : 0;
   }, [db]);
 
   // 7. Guest / Atithi Actions
-  const addGuest = useCallback((payload: Omit<NevataGuest, 'id' | 'event_id'>) => {
+  const addGuest = useCallback((payload: Omit<UtsavGuest, 'id' | 'event_id'>) => {
     if (!db || !eventId) return;
     const id = crypto.randomUUID();
 
@@ -260,7 +260,7 @@ export function useNevataEngine(eventId?: string) {
     setTick(t => t + 1);
   }, [db, eventId, fileHandle, currentPin, logActivity]);
 
-  const updateGuestRSVP = useCallback((id: string, status: NevataGuest['rsvp_status']) => {
+  const updateGuestRSVP = useCallback((id: string, status: UtsavGuest['rsvp_status']) => {
     if (!db || !eventId) return;
 
     db.run("UPDATE nevata_guest_list SET rsvp_status = ? WHERE id = ?", [status, id]);

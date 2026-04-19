@@ -15,7 +15,7 @@ import { useMemo, useCallback, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { saveVault } from '@/lib/vault';
 import { samanRepo } from './saman.repo';
-import { GroceryItem } from '@/types/db';
+import { SamanItem } from '@/types/db';
 
 export const KUTUMBLY_BASELINE = [
   { name: 'Atta (Chakki Fresh)', category: 'Essentials', threshold: 5, unit: 'kg' },
@@ -64,7 +64,7 @@ export function useSaman() {
     commit();
   }, [db, commit]);
 
-  const editItem = useCallback((id: string, updates: Partial<GroceryItem>) => {
+  const editItem = useCallback((id: string, updates: Partial<SamanItem>) => {
     samanRepo.updateItem(db, id, updates);
     commit();
   }, [db, commit]);

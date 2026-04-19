@@ -17,8 +17,8 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { useNevataEngine } from '@/modules/utsav';
-import { NevataEvent, NevataFamilyLedger } from '@/types/db';
+import { useUtsavEngine } from '@/modules/utsav';
+import { UtsavEvent, UtsavLedgerEntry } from '@/types/db';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, Plus, Minus, History, 
@@ -27,11 +27,11 @@ import {
 import RupeesDisplay from '../../ui/RupeesDisplay';
 
 interface MissionLedgerProps {
-  event: NevataEvent;
+  event: UtsavEvent;
 }
 
 export default function MissionLedger({ event }: MissionLedgerProps) {
-  const { missionLedger, addLedgerEntry, suggestParampara } = useNevataEngine(event.id);
+  const { missionLedger, addLedgerEntry, suggestParampara } = useUtsavEngine(event.id);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   

@@ -39,7 +39,7 @@ import {
   History
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UtilityVendor } from '@/types/db';
+import { SuvidhaVendor, SuvidhaLog, SuvidhaPayment } from '@/types/db';
 
 type SuvidhaView = 'dashboard' | 'vendors' | 'ledger';
 
