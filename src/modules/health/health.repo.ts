@@ -32,19 +32,39 @@ export const healthRepo = {
     return runQuery<Medication>(db, "SELECT * FROM health_medications ORDER BY start_date DESC");
   },
 
-  createReading: (db: Database | null, r: any) => {
+  getVaccinations: (db: Database | null): Vaccination[] => {
+    if (!db) return [];
+    return runQuery<Vaccination>(db, "SELECT * FROM health_vaccinations ORDER BY date DESC");
+  },
+
+  getPrescriptions: (db: Database | null): HealthPrescription[] => {
+    if (!db) return [];
+    return runQuery<HealthPrescription>(db, "SELECT * FROM health_prescriptions ORDER BY start_date DESC");
+  },
+
+  getHealthProfiles: (db: Database | null): HealthProfile[] => {
+    if (!db) return [];
+    return runQuery<HealthProfile>(db, "SELECT * FROM health_profiles");
+  },
+
+  getAdvancedProfiles: (db: Database | null): HealthAdvancedProfile[] => {
+    if (!db) return [];
+    return runQuery<HealthAdvancedProfile>(db, "SELECT * FROM health_advanced_profiles");
+  },
+
+  createReading: (db: Database | null, r: Partial<HealthReading>) => {
     if (!db) return;
     const id = crypto.randomUUID();
     const activeDate = r.date || new Date().toISOString().split('T')[0];
     const created_at = new Date().toISOString();
     db.run(
       "INSERT INTO health_readings (id, member_id, date, bp_systolic, bp_diastolic, blood_sugar, pulse, weight, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [id, r.member_id, activeDate, r.bp_sys, r.bp_dia, r.sugar, r.pulse, r.weight, r.notes, created_at]
+      [id, r.member_id, activeDate, r.bp_systolic, r.bp_diastolic, r.blood_sugar, r.pulse, r.weight, r.notes, created_at]
     );
     return id;
   },
 
-  updateReading: (db: Database | null, id: string, r: any) => {
+  updateReading: (db: Database | null, id: string, r: Partial<HealthReading>) => {
     if (!db) return;
     const now = new Date().toISOString();
     db.run(
@@ -53,12 +73,12 @@ export const healthRepo = {
         pulse = ?, weight = ?, notes = ?, date = ?, 
         created_at = ? 
       WHERE id = ?`,
-      [r.bp_sys, r.bp_dia, r.sugar, r.pulse, r.weight, r.notes, r.date, now, id]
+      [r.bp_systolic, r.bp_diastolic, r.blood_sugar, r.pulse, r.weight, r.notes, r.date, now, id]
     );
   },
 
-  updateSOSProfile: (db: Database | null, p: any) => {
-    if (!db) return;
+  updateSOSProfile: (db: Database | null, p: Partial<HealthProfile>) => {
+    if (!db || !p.member_id) return;
     const updated_at = new Date().toISOString();
     const existing = runQuery<HealthProfile>(db, "SELECT * FROM health_profiles WHERE member_id = ?", [p.member_id]);
     
@@ -69,7 +89,7 @@ export const healthRepo = {
           primary_doctor = ?, emergency_contact = ?, insurance_details = ?, 
           updated_at = ? 
         WHERE member_id = ?`,
-        [p.bloodGroup, p.allergies, p.chronic, p.doctor, p.emergencyContact, p.insurance, updated_at, p.member_id]
+        [p.blood_group, p.allergies, p.chronic_conditions, p.primary_doctor, p.emergency_contact, p.insurance_details, updated_at, p.member_id]
       );
     } else {
       const id = crypto.randomUUID();
@@ -78,7 +98,7 @@ export const healthRepo = {
           id, member_id, blood_group, allergies, chronic_conditions, 
           primary_doctor, emergency_contact, insurance_details, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id, p.member_id, p.bloodGroup, p.allergies, p.chronic, p.doctor, p.emergencyContact, p.insurance, updated_at]
+        [id, p.member_id, p.blood_group, p.allergies, p.chronic_conditions, p.primary_doctor, p.emergency_contact, p.insurance_details, updated_at]
       );
     }
   }

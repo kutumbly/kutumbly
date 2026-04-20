@@ -27,6 +27,10 @@ export function useHealth() {
 
   const readings = useMemo(() => healthRepo.getReadings(db), [db, tick]);
   const medications = useMemo(() => healthRepo.getMedications(db), [db, tick]);
+  const vaccinations = useMemo(() => healthRepo.getVaccinations(db), [db, tick]);
+  const prescriptions = useMemo(() => healthRepo.getPrescriptions(db), [db, tick]);
+  const healthProfiles = useMemo(() => healthRepo.getHealthProfiles(db), [db, tick]);
+  const advancedProfiles = useMemo(() => healthRepo.getAdvancedProfiles(db), [db, tick]);
 
   const commit = useCallback(() => {
     if (db && fileHandle && currentPin) {
@@ -35,17 +39,17 @@ export function useHealth() {
     setTick(t => t + 1);
   }, [db, currentPin, fileHandle]);
 
-  const addReading = useCallback((r: any) => {
-    const id = healthRepo.createReading(db, r);
+  const addReading = useCallback((r: Partial<HealthReading>) => {
+    healthRepo.createReading(db, r);
     commit();
   }, [db, commit]);
 
-  const editReading = useCallback((id: string, r: any) => {
+  const editReading = useCallback((id: string, r: Partial<HealthReading>) => {
     healthRepo.updateReading(db, id, r);
     commit();
   }, [db, commit]);
 
-  const updateHealthProfile = useCallback((p: any) => {
+  const updateHealthProfile = useCallback((p: Partial<HealthProfile>) => {
     healthRepo.updateSOSProfile(db, p);
     commit();
   }, [db, commit]);
@@ -53,22 +57,22 @@ export function useHealth() {
   return {
     readings,
     medications,
-    vaccinations: [] as Vaccination[], 
-    prescriptions: [] as HealthPrescription[],
-    healthProfiles: [] as HealthProfile[],
-    advancedProfiles: [] as HealthAdvancedProfile[],
+    vaccinations, 
+    prescriptions,
+    healthProfiles,
+    advancedProfiles,
     addReading,
     editReading,
     updateHealthProfile,
-    deleteReading: (id: any) => { db?.run("DELETE FROM health_readings WHERE id = ?", [id]); commit(); },
-    addMedication: (m: any) => { /* implementation */ commit(); },
-    stopMedication: (id: any) => { /* implementation */ commit(); },
-    deleteMedication: (id: any) => { /* implementation */ commit(); },
-    addVaccination: (v: any) => { /* implementation */ commit(); },
-    deleteVaccination: (id: any) => { /* implementation */ commit(); },
-    addPrescription: (p: any) => { /* implementation */ commit(); },
-    stopPrescription: (id: any) => { /* implementation */ commit(); },
-    deletePrescription: (id: any) => { /* implementation */ commit(); },
-    updateAdvancedProfile: (ap: any) => { /* implementation */ commit(); }
+    deleteReading: (id: string) => { db?.run("DELETE FROM health_readings WHERE id = ?", [id]); commit(); },
+    addMedication: (m: Partial<Medication>) => { /* implementation */ commit(); },
+    stopMedication: (id: string) => { /* implementation */ commit(); },
+    deleteMedication: (id: string) => { /* implementation */ commit(); },
+    addVaccination: (v: Partial<Vaccination>) => { /* implementation */ commit(); },
+    deleteVaccination: (id: string) => { /* implementation */ commit(); },
+    addPrescription: (p: Partial<HealthPrescription>) => { /* implementation */ commit(); },
+    stopPrescription: (id: string) => { /* implementation */ commit(); },
+    deletePrescription: (id: string) => { /* implementation */ commit(); },
+    updateAdvancedProfile: (ap: Partial<HealthAdvancedProfile>) => { /* implementation */ commit(); }
   };
 }
