@@ -20,7 +20,7 @@
 
 ## 🛡️ Core Pillars: Sovereign & Secure
 
-- **Zero Cloud**: No servers, no tracking. Your data is stored in a single, encrypted **.kutumb** file (SQL-WASM / SQLite) locally on your device.
+- **Zero Cloud**: No servers, no tracking. Your data is stored in a single, encrypted **.kutumb** file via **SQL.js (SQLite WASM)** locally on your device.
 - **Local First**: Lightning-fast performance with zero latency. Works perfectly offline, forever.
 - **Encrypted**: Military-grade **AES-256-GCM** encryption for every byte of data. Your Master PIN is the only key.
 - **Privacy Hardened**: Immersive PWA experience with biometric unlocking (Windows Hello / FaceID / Fingerprint) and hardware haptics.

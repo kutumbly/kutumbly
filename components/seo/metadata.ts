@@ -73,6 +73,16 @@ export const metadata: Metadata = {
     languages: {
       "en-IN": `${SITE_URL}/en`,
       "hi-IN": `${SITE_URL}/hi`,
+      "mr-IN": `${SITE_URL}/mr`,
+      "gu-IN": `${SITE_URL}/gu`,
+      "pa-IN": `${SITE_URL}/pa`,
+      "ta-IN": `${SITE_URL}/ta`,
+      "bho-IN": `${SITE_URL}/bho`,
+      "kn-IN": `${SITE_URL}/kn`,
+      "te-IN": `${SITE_URL}/te`,
+      "ne-IN": `${SITE_URL}/ne`,
+      "bn-IN": `${SITE_URL}/bn`,
+      "mni-IN": `${SITE_URL}/mni`,
     },
   },
 

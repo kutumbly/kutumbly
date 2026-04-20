@@ -125,10 +125,15 @@ export const useAppStore = create<AppStore>((set, get) => ({
           if (s.hiddenModules) set({ hiddenModules: s.hiddenModules });
           if (s.lastSyncDate) set({ lastSyncDate: s.lastSyncDate });
           if (s.pendingSync) set({ pendingSync: s.pendingSync });
+          if (s.lang) set({ lang: s.lang });
         } catch (e) {
           console.error("Failed to parse settings", e);
         }
       }
+
+      // Individual lang fallback if settings missing
+      const savedLang = localStorage.getItem('kutumbly_lang') as any;
+      if (savedLang) set({ lang: savedLang });
     } catch {}
   },
 
@@ -210,7 +215,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
 
-  setLang: (l) => set({ lang: l }),
+  setLang: (l) => {
+    localStorage.setItem('kutumbly_lang', l);
+    set({ lang: l });
+    get().saveSettings();
+  },
 
   setGDriveToken: (t) => set({ gdriveToken: t }),
 
@@ -250,6 +259,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     localStorage.setItem('kutumbly_settings', JSON.stringify({
       hiddenModules: get().hiddenModules,
       theme: get().theme,
+      lang: get().lang,
       lastSyncDate: get().lastSyncDate,
       pendingSync: get().pendingSync,
     }));
