@@ -18,6 +18,9 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Inter_Tight, Noto_Sans_Devanagari, Noto_Sans_Bengali, Noto_Sans_Gujarati, Noto_Sans_Gurmukhi, Noto_Sans_Tamil, Noto_Sans_Kannada, Noto_Sans_Telugu } from "next/font/google";
 import "./globals.css";
 import LanguageContextWrapper from "@/components/ui/LanguageContextWrapper";
+import SchemaOrg from "@/components/seo/SchemaOrg";
+
+export { metadata, viewport } from "@/components/seo/metadata";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -73,70 +76,6 @@ const notoTelugu = Noto_Sans_Telugu({
   variable: '--font-noto-telugu' 
 });
 
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FAF9F6" },
-    { media: "(prefers-color-scheme: dark)",  color: "#111827" },
-  ],
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",      // enables safe-area-inset on notched devices
-  userScalable: true,        // WCAG 1.4.4: users must be able to zoom
-};
-
-export const metadata: Metadata = {
-  metadataBase: new URL('https://kutumbly.com'),
-  title: {
-    default: "Kutumbly — The Sovereign Family Operating System",
-    template: "%s | Kutumbly Sovereign OS"
-  },
-  description: "Secure, local-first Sovereign OS for the modern Indian family. Zero cloud, absolute privacy, and total data ownership through AES-256 encrypted vaults.",
-  keywords: ["Sovereign OS", "Family OS", "Local-first", "Privacy", "Encrypted Vaults", "Indian Family Tech", "Data Sovereignty", "Zero Cloud"],
-  authors: [{ name: "Jawahar R. M.", url: "https://kutumbly.com" }],
-  creator: "AITDL Network — Sovereign Division",
-  openGraph: {
-    type: "website",
-    locale: "en_IN",
-    url: "https://kutumbly.com",
-    title: "Kutumbly — The Sovereign Family Operating System",
-    description: "Your life, locked in your control. The world's first local-first, zero-cloud OS for families.",
-    siteName: "Kutumbly Sovereign OS",
-    images: [{
-      url: "/og-image.png",
-      width: 1200,
-      height: 630,
-      alt: "Kutumbly Sovereign OS - Memory, Not Code."
-    }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Kutumbly — The Sovereign Family Operating System",
-    description: "Zero Cloud. Local First. Encrypted. Offline Forever.",
-    images: ["/og-image.png"],
-    creator: "@kutumbly",
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "Kutumbly",
-  },
-  icons: {
-    icon: "/favicon.svg",
-    apple: "/favicon.svg",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -159,6 +98,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="antialiased">
+        <SchemaOrg />
         <LanguageContextWrapper>
           {children}
         </LanguageContextWrapper>
