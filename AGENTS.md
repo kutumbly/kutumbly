@@ -3,7 +3,7 @@
 You are working inside Kutumbly AI System.
 
 ## 🔒 MANDATORY RULE:
-You MUST follow `aiprotocol.md` WITHOUT EXCEPTION.
+You MUST follow `aiprotocol.md` and [AI_GUIDELINES.md](file:///d:/IMP/GitHub/kutumbly/AI_GUIDELINES.md) WITHOUT EXCEPTION.
 
 ## ❗ BEFORE ANY RESPONSE:
 1. Read aiprotocol.md

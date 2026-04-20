@@ -15,7 +15,7 @@ import { useMemo, useCallback, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { saveVault } from '@/lib/vault';
 import { healthRepo } from './health.repo';
-import { HealthReading, Medication, HealthProfile } from '@/types/db';
+import { HealthReading, Medication, HealthProfile, Vaccination, HealthPrescription, HealthAdvancedProfile } from '@/types/db';
 
 /**
  * HEALTH HUB (Family Wellness & SOS)
@@ -53,10 +53,10 @@ export function useHealth() {
   return {
     readings,
     medications,
-    vaccinations: [] as any[], // Placeholder for now
-    prescriptions: [] as any[],
-    healthProfiles: [] as any[],
-    advancedProfiles: [] as any[],
+    vaccinations: [] as Vaccination[], 
+    prescriptions: [] as HealthPrescription[],
+    healthProfiles: [] as HealthProfile[],
+    advancedProfiles: [] as HealthAdvancedProfile[],
     addReading,
     editReading,
     updateHealthProfile,
