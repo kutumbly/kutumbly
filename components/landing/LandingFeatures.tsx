@@ -41,10 +41,10 @@ export default function LandingFeatures() {
     {
       id: "02",
       icon: <CloudOff size={30} />,
-      title: t('landing.features.card_airgap.title'),
-      desc: t('landing.features.card_airgap.desc'),
+      title: t('landing.features.card_airgapped.title'),
+      desc: t('landing.features.card_airgapped.desc'),
       stat: "0 Servers",
-      statLabel: t('landing.features.card_airgap.stat'),
+      statLabel: t('landing.features.card_airgapped.stat'),
     },
     {
       id: "03",
