@@ -200,7 +200,7 @@ export default function SetupModule() {
               >
                 <option value="en">English (India)</option>
                 <option value="hi">हिन्दी (Hindi)</option>
-                <option value="mr">मরাठी (Marathi)</option>
+                <option value="mr">????? (Marathi)</option>
                 <option value="gu">ગુજરાતી (Gujarati)</option>
                 <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
                 <option value="ta">தமிழ் (Tamil)</option>
@@ -460,3 +460,4 @@ export default function SetupModule() {
     </ModuleShell>
   );
 }
+
