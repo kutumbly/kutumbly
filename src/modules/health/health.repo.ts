@@ -59,21 +59,16 @@ export const healthRepo = {
     const created_at = new Date().toISOString();
     db.run(
       "INSERT INTO health_readings (id, member_id, date, bp_systolic, bp_diastolic, blood_sugar, pulse, weight, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [id, r.member_id, activeDate, r.bp_systolic, r.bp_diastolic, r.blood_sugar, r.pulse, r.weight, r.notes, created_at]
+      [id, r.member_id ?? null, activeDate, r.bp_systolic ?? null, r.bp_diastolic ?? null, r.blood_sugar ?? null, r.pulse ?? null, r.weight ?? null, r.notes ?? null, created_at]
     );
     return id;
   },
 
   updateReading: (db: Database | null, id: string, r: Partial<HealthReading>) => {
     if (!db) return;
-    const now = new Date().toISOString();
     db.run(
-      `UPDATE health_readings SET 
-        bp_systolic = ?, bp_diastolic = ?, blood_sugar = ?, 
-        pulse = ?, weight = ?, notes = ?, date = ?, 
-        created_at = ? 
-      WHERE id = ?`,
-      [r.bp_systolic, r.bp_diastolic, r.blood_sugar, r.pulse, r.weight, r.notes, r.date, now, id]
+      "UPDATE health_readings SET member_id = COALESCE(?, member_id), date = COALESCE(?, date), bp_systolic = COALESCE(?, bp_systolic), bp_diastolic = COALESCE(?, bp_diastolic), blood_sugar = COALESCE(?, blood_sugar), pulse = COALESCE(?, pulse), weight = COALESCE(?, weight), notes = COALESCE(?, notes) WHERE id = ?",
+      [r.member_id ?? null, r.date ?? null, r.bp_systolic ?? null, r.bp_diastolic ?? null, r.blood_sugar ?? null, r.pulse ?? null, r.weight ?? null, r.notes ?? null, id]
     );
   },
 
@@ -89,7 +84,7 @@ export const healthRepo = {
           primary_doctor = ?, emergency_contact = ?, insurance_details = ?, 
           updated_at = ? 
         WHERE member_id = ?`,
-        [p.blood_group, p.allergies, p.chronic_conditions, p.primary_doctor, p.emergency_contact, p.insurance_details, updated_at, p.member_id]
+        [p.blood_group ?? null, p.allergies ?? null, p.chronic_conditions ?? null, p.primary_doctor ?? null, p.emergency_contact ?? null, p.insurance_details ?? null, updated_at, p.member_id]
       );
     } else {
       const id = crypto.randomUUID();
@@ -98,7 +93,7 @@ export const healthRepo = {
           id, member_id, blood_group, allergies, chronic_conditions, 
           primary_doctor, emergency_contact, insurance_details, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id, p.member_id, p.blood_group, p.allergies, p.chronic_conditions, p.primary_doctor, p.emergency_contact, p.insurance_details, updated_at]
+        [id, p.member_id, p.blood_group ?? null, p.allergies ?? null, p.chronic_conditions ?? null, p.primary_doctor ?? null, p.emergency_contact ?? null, p.insurance_details ?? null, updated_at]
       );
     }
   }

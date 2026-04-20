@@ -9,14 +9,14 @@
  * "Memory, Not Code."
  * ============================================================ */
 
-import { GroceryItem } from '../db';
+import { SamanItem } from '../db';
 
 /**
  * SAMAN HUB CONTRACT
  * Defines the public API for the Household Supply Chain (Grocery) module.
  */
 export interface SamanContract {
-  items: GroceryItem[];
+  items: SamanItem[];
   addItem: (
     name: string,
     category: string,
@@ -26,7 +26,7 @@ export interface SamanContract {
     current_stock: number,
     threshold: number
   ) => void;
-  editItem: (id: string, updates: Partial<GroceryItem>) => void;
+  editItem: (id: string, updates: Partial<SamanItem>) => void;
   deleteItem: (id: string) => void;
   checkItem: (id: string, checked: boolean) => void;
   clearChecked: () => void;

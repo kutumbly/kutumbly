@@ -199,6 +199,7 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
   "landing.features.card_aes.title": { en: "AES-256-GCM Encryption", hi: "AES-256-GCM एन्क्रिप्शन", bho: "पक्का सुरक्षा" },
   "landing.features.card_aes.desc": {
     en: "Military grade AES-256-GCM hardware-level encryption before writing to local disk.",
+    hi: "लोकल डिस्क पर लिखने से पहले मिलिट्री ग्रेड AES-256-GCM हार्डवेयर-लेवल एन्क्रिप्शन।",
   },
   "landing.features.card_airgapped.desc": {
     en: "Designed to operate entirely offline. No cloud sync, no data leaks, no backdoors.",
