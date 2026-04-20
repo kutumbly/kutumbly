@@ -492,7 +492,7 @@ export default function HealthModule() {
                  
                  <h2 className="text-2xl font-black text-text-primary tracking-tight">{activeMember.name}</h2>
                  
-                 {medicalProfiles.find(p => p.member_id === activeMember.id)?.blood_group ? (
+                 {healthProfiles.find(p => p.member_id === activeMember.id)?.blood_group ? (
                     <div className="mt-4 flex items-center gap-2 bg-red-500/10 text-red-600 px-5 py-2 rounded-2xl border border-red-500/20">
                        <HeartPulse size={16} className="animate-pulse" />
                        <span className="text-xs font-black uppercase tracking-widest">{healthProfiles.find(p => p.member_id === activeMember.id)?.blood_group}</span>
@@ -549,11 +549,11 @@ export default function HealthModule() {
                        <div className="grid grid-cols-2 gap-4 text-sm mt-2">
                           <div>
                             <p className="text-[9px] text-text-tertiary uppercase tracking-widest font-black">Allergies</p>
-                            <p className="font-bold text-text-primary">{medicalProfiles.find(p => p.member_id === activeMember.id)?.allergies || 'No known allergies'}</p>
+                            <p className="font-bold text-text-primary">{healthProfiles.find(p => p.member_id === activeMember.id)?.allergies || 'No known allergies'}</p>
                           </div>
                           <div>
                             <p className="text-[9px] text-text-tertiary uppercase tracking-widest font-black">Chronic</p>
-                            <p className="font-bold text-text-primary truncate">{medicalProfiles.find(p => p.member_id === activeMember.id)?.chronic_conditions || 'None'}</p>
+                            <p className="font-bold text-text-primary truncate">{healthProfiles.find(p => p.member_id === activeMember.id)?.chronic_conditions || 'None'}</p>
                           </div>
                           <div>
                             <p className="text-[9px] text-text-tertiary uppercase tracking-widest font-black">Surgeries</p>
@@ -561,7 +561,7 @@ export default function HealthModule() {
                           </div>
                           <div>
                             <p className="text-[9px] text-text-tertiary uppercase tracking-widest font-black">Emergency Contact</p>
-                            <p className="font-bold text-text-primary">{medicalProfiles.find(p => p.member_id === activeMember.id)?.emergency_contact || 'None set'}</p>
+                            <p className="font-bold text-text-primary">{healthProfiles.find(p => p.member_id === activeMember.id)?.emergency_contact || 'None set'}</p>
                           </div>
                        </div>
                     </div>
@@ -887,7 +887,7 @@ export default function HealthModule() {
                         current_treatment: advTreatment
                       };
 
-                      updateMedicalProfile(profilePayload);
+                      updateHealthProfile(profilePayload);
                       updateAdvancedProfile(advancedPayload);
                       setView('member-report');
                     }}

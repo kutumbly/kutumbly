@@ -27,23 +27,23 @@ export default function LandingPrivacy() {
   const t = useTranslation(lang);
 
   const PRIVACY_SPECS = [
-    { label: t('landing.privacy.spec.algo') || "Encryption Algorithm", value: "AES-256-GCM" },
-    { label: t('landing.privacy.spec.net') || "Network Dependency", value: "Zero (Air-Gapped)" },
-    { label: t('landing.privacy.spec.storage') || "Storage Format", value: ".kutumb Vault (SQLite)" },
-    { label: t('landing.privacy.spec.auth') || "Authentication", value: "PIN + Biometric" },
-    { label: t('landing.privacy.spec.residency') || "Data Residency", value: "Device Only" },
-    { label: t('landing.privacy.spec.sync') || "Cloud Sync", value: "Never" },
-    { label: t('landing.privacy.spec.telemetry') || "Analytics / Telemetry", value: "None" },
-    { label: t('landing.privacy.spec.access') || "Third-Party Access", value: "Impossible" },
+    { label: t('landing.privacy.spec.algo'), value: "AES-256-GCM" },
+    { label: t('landing.privacy.spec.net'), value: "Zero (Air-Gapped)" },
+    { label: t('landing.privacy.spec.storage'), value: ".kutumb Vault (SQLite)" },
+    { label: t('landing.privacy.spec.auth'), value: "PIN + Biometric" },
+    { label: t('landing.privacy.spec.residency'), value: "Device Only" },
+    { label: t('landing.privacy.spec.sync'), value: "Never" },
+    { label: t('landing.privacy.spec.telemetry'), value: "None" },
+    { label: t('landing.privacy.spec.access'), value: "Impossible" },
   ];
 
   const GUARANTEES = [
-    t('landing.privacy.guarantee.0') || "No user data ever leaves your device",
-    t('landing.privacy.guarantee.1') || "No backend servers or APIs involved",
-    t('landing.privacy.guarantee.2') || "No subscription or account required",
-    t('landing.privacy.guarantee.3') || "No analytics, tracking, or fingerprinting",
-    t('landing.privacy.guarantee.4') || "Full offline functionality, always",
-    t('landing.privacy.guarantee.5') || "Your PIN is the only encryption key",
+    t('landing.privacy.guarantee.0'),
+    t('landing.privacy.guarantee.1'),
+    t('landing.privacy.guarantee.2'),
+    t('landing.privacy.guarantee.3'),
+    t('landing.privacy.guarantee.4'),
+    t('landing.privacy.guarantee.5'),
   ];
 
   return (

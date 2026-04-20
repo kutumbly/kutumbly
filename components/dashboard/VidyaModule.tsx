@@ -811,6 +811,8 @@ export default function VidyaModule() {
 /* ─── Micro-components ──────────────────────────────────────── */
 
 function LearningFlame({ streak }: { streak: number }) {
+  const { lang } = useAppStore();
+  const t = useTranslation(lang);
   if (streak === 0) return null;
   return (
     <div className="flex flex-col items-center gap-1 group">
@@ -837,6 +839,8 @@ function LearningFlame({ streak }: { streak: number }) {
 }
 
 function StudyRhythm({ data }: { data: { label: string; mins: number }[] }) {
+  const { lang } = useAppStore();
+  const t = useTranslation(lang);
   const max = Math.max(...data.map(d => d.mins), 60);
   return (
     <div className="bg-bg-secondary/50 border border-border-light rounded-[2rem] p-8 shadow-inner relative overflow-hidden">

@@ -27,18 +27,18 @@ export default function LandingFooter() {
   const t = useTranslation(lang);
 
   const HUB_LINKS = [
-    { name: t('landing.modules.cash.title') || "Cash Hub", href: "/os" },
-    { name: t('landing.modules.vidya.title') || "Vidya Hub", href: "/os" },
-    { name: t('landing.modules.sehat.title') || "Health Hub", href: "/os" },
-    { name: t('landing.modules.sanskriti.title') || "Sanskriti Hub", href: "/os" },
-    { name: t('landing.modules.saman.title') || "Saman Hub", href: "/os" },
-    { name: t('landing.modules.family.title') || "Family Hub", href: "/os" },
+    { name: t('landing.modules.cash.title'), href: "/os" },
+    { name: t('landing.modules.vidya.title'), href: "/os" },
+    { name: t('landing.modules.sehat.title'), href: "/os" },
+    { name: t('landing.modules.sanskriti.title'), href: "/os" },
+    { name: t('landing.modules.saman.title'), href: "/os" },
+    { name: t('landing.modules.family.title'), href: "/os" },
   ];
 
   const COMPANY_LINKS = [
-    { name: t('landing.hero.init_btn').replace('Launch ', '') || "Product", href: "/product" },
-    { name: t('landing.footer.privacy_policy') || "Privacy Policy", href: "/privacy" },
-    { name: t('landing.footer.terms') || "Terms of Use", href: "/terms" },
+    { name: t('landing.header.nav.product'), href: "/product" },
+    { name: t('landing.footer.privacy_policy'), href: "/privacy" },
+    { name: t('landing.footer.terms'), href: "/terms" },
   ];
 
   return (
@@ -58,8 +58,8 @@ export default function LandingFooter() {
                   Kutumbly
                 </span>
               </div>
-              <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.25em] opacity-70">
-                {t('landing.footer.mission') || "India's Family Sovereign OS"}
+            <p className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.25em] opacity-70">
+                {t('landing.footer.mission')}
               </p>
             </div>
 

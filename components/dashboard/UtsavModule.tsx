@@ -116,7 +116,7 @@ export default function UtsavModule() {
 
   const renderEvents = () => (
     <div className="grid gap-4">
-      {filteredEvents.length > 0 ? filteredEvents.map((e: NevataEvent, i: number) => {
+      {filteredEvents.length > 0 ? filteredEvents.map((e: UtsavEvent, i: number) => {
         const emoji = EVENT_TYPE_EMOJI[String(e.event_type)] || '📅';
         const dir   = DIRECTION_LABEL[String(e.direction)] || DIRECTION_LABEL['they_invited'];
         return (
@@ -303,7 +303,7 @@ export default function UtsavModule() {
     <ModuleShell
       title={t('NEVATA')}
       subtitle={selectedEvent ? selectedEvent.title : t('UTSAV_SUBTITLE')}
-      onAdd={nevataMode === 'list' && !showAddForm ? () => setShowAddForm(true) : undefined}
+      onAdd={utsavMode === 'list' && !showAddForm ? () => setShowAddForm(true) : undefined}
       addLabel={t('NEW_EVENT')}
       onBack={showAddForm ? () => setShowAddForm(false) : undefined}
     >
