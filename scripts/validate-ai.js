@@ -1,22 +1,344 @@
-// Company: Prathamone
+/* ============================================================
+ * कुटुंबली — KUTUMBLY SOVEREIGN OS
+ * Zero Cloud · Local First · Encrypted · Offline Forever
+ * ============================================================
+ * System Architect   :  Jawahar R. M.
+ * Organisation:  AITDL Network — Sovereign Division
+ * Project     :  Kutumbly — India's Family OS
+ * Contact     :  kutumbly@outlook.com
+ * Web         :  kutumbly.com | aitdl.com | aitdl.in
+ *
+ * © 2026 Kutumbly.com — All Rights Reserved
+ * Unauthorized use or distribution is prohibited.
+ *
+ * "Memory, Not Code."
+ * ============================================================ */
 
-const fs = require("fs");
+/**
+ * validate-ai.js
+ *
+ * Kutumbly AI Output Validator — Sovereignty Quality Gate
+ *
+ * Usage:
+ *   node scripts/validate-ai.js <path-to-ai-output.md>
+ *   node scripts/validate-ai.js <path-to-ai-output.md> --strict
+ *   node scripts/validate-ai.js <path-to-code-file.ts> --code
+ *
+ * Exit codes:
+ *   0 = PASS  — output meets Kutumbly Sovereign Standard
+ *   1 = FAIL  — one or more violations found
+ */
 
-function validate(content) {
-  const required = ["Understanding", "Plan", "Code", "Test Cases"];
+const fs = require('fs');
+const path = require('path');
 
-  for (let key of required) {
-    if (!content.includes(key)) {
-      console.error(`❌ Missing: ${key}`);
-      process.exit(1);
+// ─────────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────────
+
+const REQUIRED_SECTIONS = [
+    { heading: /^#{1,3}\s*(1\.\s*)?understanding/i, label: 'Understanding' },
+    { heading: /^#{1,3}\s*(2\.\s*)?plan/i, label: 'Plan' },
+    { heading: /^#{1,3}\s*(3\.\s*)?code/i, label: 'Code' },
+    { heading: /^#{1,3}\s*(4\.\s*)?test\s*cases?/i, label: 'Test Cases' },
+    { heading: /^#{1,3}\s*(5\.\s*)?notes/i, label: 'Notes' },
+];
+
+const BANNED_DEPENDENCIES = [
+    'firebase',
+    'firestore',
+    '@supabase/supabase-js',
+    'supabase',
+    'prisma',
+    '@prisma/client',
+    'mongoose',
+    'mongodb',
+];
+
+const BANNED_STORAGE_APIS = [
+    'localStorage',
+    'sessionStorage',
+    'indexedDB',
+];
+
+const REQUIRED_FILE_SIGNATURE_FRAGMENTS = [
+    'KUTUMBLY SOVEREIGN OS',
+    'Jawahar R. M.',
+    'Memory, Not Code.',
+];
+
+const GOLDEN_RULE_PATTERN = /saveVault\s*\(/;
+const MUTATION_PATTERNS = [
+    /db\.run\s*\(\s*["'`]?\s*(INSERT|UPDATE|DELETE)/i,
+    /\.exec\s*\(\s*["'`]?\s*(INSERT|UPDATE|DELETE)/i,
+];
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+
+const RESET = '\x1b[0m';
+const RED = '\x1b[31m';
+const GREEN = '\x1b[32m';
+const YELLOW = '\x1b[33m';
+const CYAN = '\x1b[36m';
+const BOLD = '\x1b[1m';
+
+function pass(msg) { console.log(`  ${GREEN}✅ PASS${RESET}  ${msg}`); }
+function fail(msg) { console.log(`  ${RED}❌ FAIL${RESET}  ${msg}`); }
+function warn(msg) { console.log(`  ${YELLOW}⚠️  WARN${RESET}  ${msg}`); }
+function info(msg) { console.log(`  ${CYAN}ℹ️  INFO${RESET}  ${msg}`); }
+function rule(msg) { console.log(`\n${BOLD}${CYAN}── ${msg} ${RESET}`); }
+
+// ─────────────────────────────────────────────
+// VALIDATORS
+// ─────────────────────────────────────────────
+
+/**
+ * V1 — Structural Completeness
+ * Checks all 5 mandatory sections are present in a Markdown AI output.
+ */
+function validateStructure(content) {
+    rule('V1: Structural Completeness');
+    let passed = true;
+    const lines = content.split('\n');
+
+    for (const section of REQUIRED_SECTIONS) {
+        const found = lines.some(line => section.heading.test(line.trim()));
+        if (found) {
+            pass(`Section found: "${section.label}"`);
+        } else {
+            fail(`Missing required section: "${section.label}"`);
+            passed = false;
+        }
     }
-  }
-
-  console.log("✅ AI Output Valid");
+    return passed;
 }
 
-const file = process.argv[2];
+/**
+ * V2 — Sovereignty Compliance (banned deps)
+ * Checks no banned cloud/external dependencies are referenced.
+ */
+function validateSovereignty(content) {
+    rule('V2: Sovereignty Compliance');
+    let passed = true;
 
-const content = fs.readFileSync(file, "utf-8");
+    for (const dep of BANNED_DEPENDENCIES) {
+        // Match import/require/package references
+        // Tighter pattern to match actual imports/requires, avoiding config self-matches
+        const pattern = new RegExp(
+            `(import\\s+.*from\\s+['"\\\`]${dep.replace('/', '\\/')}|require\\s*\\(\\s*['"\\\`]${dep.replace('/', '\\/')})`,
+            'i'
+        );
+        if (pattern.test(content)) {
+            fail(`Banned dependency detected: "${dep}"`);
+            passed = false;
+        }
+    }
 
-validate(content);
+    if (passed) pass('No banned cloud dependencies found');
+    return passed;
+}
+
+/**
+ * V3 — Storage API Compliance
+ * Ensures no browser persistence APIs are used for data storage.
+ */
+function validateStorageAPIs(content) {
+    rule('V3: Storage API Compliance');
+    let passed = true;
+
+    for (const api of BANNED_STORAGE_APIS) {
+        const pattern = new RegExp(`\\b${api}(\\.|\\s*=|\\[|\\()`, 'i');
+        if (pattern.test(content)) {
+            fail(`Banned storage API used: "${api}" — use .kutumb / saveVault instead`);
+            passed = false;
+        }
+    }
+
+    if (passed) pass('No banned storage APIs found');
+    return passed;
+}
+
+/**
+ * V4 — Golden Rule: saveVault after every mutation
+ * For every INSERT/UPDATE/DELETE found, checks that saveVault appears nearby.
+ */
+function validateGoldenRule(content) {
+    rule('V4: Golden Rule (saveVault after every mutation)');
+
+    const lines = content.split('\n');
+    let violations = 0;
+    let mutationsFound = 0;
+
+    lines.forEach((line, idx) => {
+        const isMutation = MUTATION_PATTERNS.some(p => p.test(line));
+        if (!isMutation) return;
+
+        mutationsFound++;
+        // Check within the next 10 lines for saveVault
+        const window = lines.slice(idx, idx + 10).join('\n');
+        if (!GOLDEN_RULE_PATTERN.test(window)) {
+            fail(
+                `Mutation on line ${idx + 1} not followed by saveVault: "${line.trim().slice(0, 60)}..."`
+            );
+            violations++;
+        }
+    });
+
+    if (mutationsFound === 0) {
+        info('No DB mutations detected — Golden Rule check skipped');
+        return true;
+    }
+
+    if (violations === 0) {
+        pass(`All ${mutationsFound} mutation(s) correctly followed by saveVault`);
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * V5 — File Signature
+ * Verifies the mandatory Kutumbly sovereign header is present.
+ */
+function validateFileSignature(content) {
+    rule('V5: Kutumbly File Signature');
+    let passed = true;
+
+    for (const fragment of REQUIRED_FILE_SIGNATURE_FRAGMENTS) {
+        if (!content.includes(fragment)) {
+            fail(`Missing signature fragment: "${fragment}"`);
+            passed = false;
+        }
+    }
+
+    if (passed) pass('Kutumbly sovereign file signature present');
+    return passed;
+}
+
+/**
+ * V6 — Terminology Compliance
+ * Checks that SQLite data files are referred to as .kutumb, not .sqlite/.db.
+ */
+function validateTerminology(content) {
+    rule('V6: Terminology Compliance');
+    let passed = true;
+
+    const sqliteRaw = /\b(database\.sqlite|data\.db|app\.db|storage\.sqlite)\b/i;
+    if (sqliteRaw.test(content)) {
+        fail('Raw SQLite filename detected — use ".kutumb" for user-facing file references');
+        passed = false;
+    }
+
+    // Check no competitor comparisons
+    const competitors = ['TallyPrime', 'Tally Prime', 'Notion', 'Obsidian'];
+    for (const comp of competitors) {
+        // Match whole words but ignore single-quoted config definitions
+        const pattern = new RegExp(`\\b${comp}\\b(?!['"\`])`, 'i');
+        if (pattern.test(content)) {
+            warn(`Competitor reference detected: "${comp}" — remove per branding protocol`);
+            // Warning only, not a hard failure
+        }
+    }
+
+    if (passed) pass('Terminology compliant — .kutumb naming convention respected');
+    return passed;
+}
+
+/**
+ * V7 — Section Body Completeness (Strict Mode)
+ * Checks that sections are not empty or trivially short.
+ */
+function validateSectionBodies(content) {
+    rule('V7: Section Body Completeness (Strict Mode)');
+    let passed = true;
+
+    const sectionPatterns = REQUIRED_SECTIONS.map(s => s.heading);
+    const lines = content.split('\n');
+
+    for (let i = 0; i < sectionPatterns.length; i++) {
+        const startIdx = lines.findIndex(l => sectionPatterns[i].test(l.trim()));
+        if (startIdx === -1) continue;
+
+        const endIdx = lines.findIndex(
+            (l, idx) => idx > startIdx && /^#{1,3}\s/.test(l.trim())
+        );
+        const body = lines
+            .slice(startIdx + 1, endIdx === -1 ? undefined : endIdx)
+            .join('\n')
+            .trim();
+
+        if (body.length < 30) {
+            fail(`Section "${REQUIRED_SECTIONS[i].label}" body is too short (${body.length} chars) — must contain meaningful content`);
+            passed = false;
+        } else {
+            pass(`Section "${REQUIRED_SECTIONS[i].label}" has substantive content (${body.length} chars)`);
+        }
+    }
+
+    return passed;
+}
+
+// ─────────────────────────────────────────────
+// MAIN
+// ─────────────────────────────────────────────
+
+function main() {
+    const args = process.argv.slice(2);
+    const strict = args.includes('--strict');
+    const codeOnly = args.includes('--code');
+    const filePath = args.find(a => !a.startsWith('--'));
+
+    console.log(`\n${BOLD}╔══════════════════════════════════════════════╗${RESET}`);
+    console.log(`${BOLD}║   Kutumbly AI Sovereignty Validator v1.0.0   ║${RESET}`);
+    console.log(`${BOLD}╚══════════════════════════════════════════════╝${RESET}`);
+
+    if (!filePath) {
+        console.error(`\n${RED}ERROR: No file path provided.${RESET}`);
+        console.error('Usage: node scripts/validate-ai.js <file> [--strict] [--code]');
+        process.exit(1);
+    }
+
+    const absPath = path.resolve(filePath);
+    if (!fs.existsSync(absPath)) {
+        console.error(`\n${RED}ERROR: File not found: ${absPath}${RESET}`);
+        process.exit(1);
+    }
+
+    const content = fs.readFileSync(absPath, 'utf8');
+    console.log(`\n${CYAN}📄 Validating:${RESET} ${absPath}`);
+    console.log(`${CYAN}📐 Mode:${RESET}       ${codeOnly ? 'Code File' : 'AI Markdown Output'}${strict ? ' + Strict' : ''}\n`);
+
+    const results = [];
+
+    if (!codeOnly) {
+        results.push(validateStructure(content));
+        if (strict) results.push(validateSectionBodies(content));
+    }
+
+    results.push(validateSovereignty(content));
+    results.push(validateStorageAPIs(content));
+    results.push(validateGoldenRule(content));
+    results.push(validateFileSignature(content));
+    results.push(validateTerminology(content));
+
+    const totalChecks = results.length;
+    const passed = results.filter(Boolean).length;
+    const failed = totalChecks - passed;
+
+    console.log(`\n${BOLD}══════════════════════════════════════════════${RESET}`);
+
+    if (failed === 0) {
+        console.log(`${GREEN}${BOLD}✅ ACCEPTED — All ${totalChecks} checks passed.${RESET}`);
+        console.log(`${GREEN}   This output meets the Kutumbly Sovereign Standard.${RESET}`);
+        process.exit(0);
+    } else {
+        console.log(`${RED}${BOLD}❌ REJECTED — ${failed}/${totalChecks} checks failed.${RESET}`);
+        console.log(`${RED}   Regenerate the AI response before proceeding.${RESET}`);
+        process.exit(1);
+    }
+}
+
+main();
