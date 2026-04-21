@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -23,6 +23,8 @@ import { useFamily } from '@/modules/family';
 import ModuleShell from './ModuleShell';
 import { useTranslation } from '@/lib/i18n';
 import MetricCard from '../ui/MetricCard';
+import GlassCard from '../ui/GlassCard';
+import EmptyState from '../ui/EmptyState';
 import DonutChart from '../ui/DonutChart';
 import { ShoppingCart, Home, Briefcase, Coffee, MoreHorizontal, ArrowDownLeft, ArrowUpRight, IndianRupee, Users, Book, ArrowLeft, Trash2, Shield, CalendarDays, Receipt } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -54,8 +56,9 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default function CashModule() {
-  const { lang } = useAppStore();
+  const { lang, mode } = useAppStore();
   const t = useTranslation(lang);
+  const isAdvanced = mode === 'advanced';
   const { txns, budgets, summary, addTransaction, deleteTransaction, setCategoryBudget, editTransaction } = useCash();
   const { familyMembers: members } = useFamily();
 
@@ -144,6 +147,7 @@ export default function CashModule() {
 
   return (
     <ModuleShell 
+      variant="glass"
       title={
         view === 'overview' ? t('CASH_HUB') :
         view === 'category-ledger' ? `${t('CASH_HUB')} - ${t('CASH_CAT_' + activeCategory?.toUpperCase()) || activeCategory}` :
@@ -229,14 +233,12 @@ export default function CashModule() {
            className="space-y-8 md:space-y-12"
         >
         
-        {/* Top Stats Dashboard */}
-        {/* ── Top Dashboard Section ────────────────────────────────── */}
-         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-           {/* Left: 2x2 Primary Metrics */}
-           <div className="grid grid-cols-2 gap-4">
-             <MetricCard label={t('CASH_BALANCE')} value={summary.balance} isCurrency status="default" trend={[15000, 20000, 18000, 25000, summary.balance]} />
-             <MetricCard label={t('CASH_INCOME')} value={summary.income} isCurrency status="success" />
-             <MetricCard label={t('CASH_EXPENSE')} value={summary.expense} isCurrency status="danger" trend={[5000, 12000, 8000, 15000, summary.expense]} />
+         {/* Top Stats Dashboard — always shown */}
+         <div className="grid grid-cols-2 gap-4">
+           <MetricCard label={t('CASH_BALANCE')} value={summary.balance} isCurrency status="default" trend={isAdvanced ? [15000, 20000, 18000, 25000, summary.balance] : undefined} />
+           <MetricCard label={t('CASH_INCOME')} value={summary.income} isCurrency status="success" />
+           <MetricCard label={t('CASH_EXPENSE')} value={summary.expense} isCurrency status="danger" />
+           {isAdvanced && (
              <div className="bg-bg-primary rounded-[1.8rem] border border-border-light p-5 flex flex-col justify-between shadow-xl shadow-black/[0.02]">
                <div className="flex justify-between items-center mb-3">
                  <span className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] leading-tight">{t('CASH_SAVINGS_RATE')}</span>
@@ -250,89 +252,66 @@ export default function CashModule() {
                  />
                </div>
              </div>
-           </div>
-           
-           {/* Right: Spending Profile (Donut Chart) */}
-           <div className="bg-bg-primary rounded-[2.5rem] p-7 flex flex-col items-center justify-center border border-border-light shadow-xl shadow-black/[0.02]">
-              <div className="text-[10px] font-black uppercase tracking-[0.3em] mb-7 text-text-tertiary">{t('EXPENSE_PROFILE')}</div>
-              <DonutChart data={donutData.length > 0 ? donutData : [{ label: 'Empty', value: 1, color: 'var(--bg-tertiary)' }]} size={160} thickness={18} />
-              <div className="mt-7 flex flex-wrap justify-center gap-3">
+           )}
+         </div>
+
+         {/* Donut Chart + Budget — Advanced only */}
+         {isAdvanced && (
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+             <div className="bg-bg-primary rounded-[2.5rem] p-7 flex flex-col items-center justify-center border border-border-light shadow-xl shadow-black/[0.02]">
+               <div className="text-[10px] font-black uppercase tracking-[0.3em] mb-7 text-text-tertiary">{t('EXPENSE_PROFILE')}</div>
+               <DonutChart data={donutData.length > 0 ? donutData : [{ label: 'Empty', value: 1, color: 'var(--bg-tertiary)' }]} size={160} thickness={18} />
+               <div className="mt-7 flex flex-wrap justify-center gap-3">
                  {donutData.slice(0, 3).map((d, i) => (
-                    <div key={i} className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-bg-tertiary border border-border-light">
-                       <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.color }}></div>
-                       <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{d.label}</span>
-                    </div>
+                   <div key={i} className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-bg-tertiary border border-border-light">
+                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.color }}></div>
+                     <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{d.label}</span>
+                   </div>
                  ))}
-              </div>
-           </div>
-         </div>
-
-         {/* ── Middle Dashboard Section: Budgets & Actions ─────────── */}
-         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-           {/* Budget Tracking */}
-           <section className="lg:col-span-2 space-y-6">
-             <div className="flex items-center justify-between px-2">
-               <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">{t('CASH_BUDGET_STATUS')}</div>
-               <button 
-                 onClick={() => {
-                   const cat = window.prompt(t('CASH_PROMPT_CAT'));
-                   if (!cat) return;
-                   const amt = window.prompt(t('CASH_PROMPT_AMT'));
-                   if (!amt) return;
-                   setCategoryBudget(cat, Number(amt));
-                 }}
-                 className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline"
-               >
-                 {t('CASH_DEFINE_BUDGET')}
-               </button>
-             </div>
-             
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {budgets.length > 0 ? budgets.map((b) => {
-                  const spent = txns.filter(t => t.category === b.category && t.type === 'expense').reduce((s, curr) => s + curr.amount, 0);
-                  const perc = Math.min(100, (spent / b.monthly_limit) * 100);
-                  return (
-                    <div key={b.id} className="bg-bg-primary border border-border-light p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                       <div className="flex justify-between items-center mb-3">
-                         <span className="text-[10px] font-black text-text-primary uppercase tracking-wider">{b.category}</span>
-                         <span className="text-[9px] font-bold text-text-tertiary tabular-nums">₹{spent} / ₹{b.monthly_limit}</span>
-                       </div>
-                       <div className="w-full bg-bg-tertiary h-1.5 rounded-full overflow-hidden">
-                         <div className={`h-full transition-all duration-500 rounded-full ${perc > 90 ? 'bg-red-500' : perc > 70 ? 'bg-orange-400' : 'bg-gold'}`} style={{ width: `${perc}%` }} />
-                       </div>
-                    </div>
-                  );
-                }) : (
-                  <div className="col-span-full py-12 text-center bg-bg-primary border border-border-light border-dashed rounded-[2rem] opacity-40">
-                     <p className="text-[10px] font-black uppercase tracking-widest">{t('HEALTH_NO_DATA').replace('Health', 'Budget').replace('स्वास्थ्य', 'बजट')}</p>
-                  </div>
-                )}
-             </div>
-           </section>
-
-           {/* Quick Actions Sidebar */}
-           <div className="space-y-4">
-             <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] px-2">{t('CASH_TREASURY')}</div>
-             
-             <button
-               onClick={() => setShowAddForm(true)}
-               className="w-full p-5 bg-gold-text text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:opacity-95 transition-all shadow-xl shadow-gold/10"
-             >
-               <IndianRupee size={18} /> {t('CASH_INCOME')}
-             </button>
-
-             <div className="bg-bg-primary border border-border-light rounded-[2rem] p-6 space-y-4 shadow-xl shadow-black/[0.01]">
-               <div className="flex items-center justify-between">
-                 <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('CASH_EFFICIENCY')}</span>
-                 <span className="text-[10px] font-black text-text-tertiary">{t('CASH_EFFICIENCY_HIGH')}</span>
                </div>
-               <div className="w-full bg-bg-tertiary h-1 rounded-full overflow-hidden">
-                 <div className="w-3/4 h-full bg-gold" />
+             </div>
+
+             <div className="space-y-4">
+               <div className="flex items-center justify-between px-2">
+                 <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">{t('CASH_BUDGET_STATUS')}</div>
+                 <button 
+                   onClick={() => {
+                     const cat = window.prompt(t('CASH_PROMPT_CAT'));
+                     if (!cat) return;
+                     const amt = window.prompt(t('CASH_PROMPT_AMT'));
+                     if (!amt) return;
+                     setCategoryBudget(cat, Number(amt));
+                   }}
+                   className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline"
+                 >
+                   {t('CASH_DEFINE_BUDGET')}
+                 </button>
                </div>
-               <p className="text-[10px] font-medium text-text-secondary leading-relaxed opacity-80 italic">"{t('CASH_LIQUIDITY_MSG')}"</p>
+               <div className="grid grid-cols-1 gap-3">
+                 {budgets.length > 0 ? budgets.map((b) => {
+                   const spent = txns.filter(t => t.category === b.category && t.type === 'expense').reduce((s, curr) => s + curr.amount, 0);
+                   const perc = Math.min(100, (spent / b.monthly_limit) * 100);
+                   return (
+                     <GlassCard key={b.id} className="p-5">
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="text-[10px] font-black text-text-primary uppercase tracking-wider">{b.category}</span>
+                          <span className="text-[9px] font-bold text-text-tertiary tabular-nums">₹{spent} / ₹{b.monthly_limit}</span>
+                        </div>
+                        <div className="w-full bg-bg-tertiary h-1.5 rounded-full overflow-hidden">
+                          <div className={`h-full transition-all duration-500 rounded-full ${perc > 90 ? 'bg-red-500' : perc > 70 ? 'bg-orange-400' : 'bg-gold'}`} style={{ width: `${perc}%` }} />
+                        </div>
+                      </GlassCard>
+                   );
+                 }) : (
+                   <EmptyState 
+                     icon={Shield} 
+                     title={t('HEALTH_NO_DATA').replace('Health', 'Budget').replace('स्वास्थ्य', 'बजट')} 
+                   />
+                 )}
+               </div>
              </div>
            </div>
-         </div>
+         )}
 
          
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -389,13 +368,13 @@ export default function CashModule() {
                     const Icon = CATEGORY_ICONS[String(t.category)] || MoreHorizontal;
                     const isIncome = t.type === 'income';
                     return (
-                      <motion.div 
+                      <GlassCard 
                         onClick={() => { setActiveVoucher(t); setActiveCategory(t.category); setView('voucher-view'); }}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.05 }}
                         key={String(t.id)} 
-                        className="bg-bg-primary border border-border-light rounded-[2rem] p-5 flex items-center gap-5 group hover:border-gold/30 hover:shadow-xl shadow-black/[0.02] cursor-pointer transition-all"
+                        className="p-5 flex items-center gap-5 cursor-pointer"
                       >
                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-transform group-hover:scale-105 ${isIncome ? 'bg-success/5 border-success/20 text-success' : 'bg-red-500/5 border-red-500/20 text-red-500'}`}>
                            {isIncome ? <ArrowUpRight className="w-7 h-7" /> : <ArrowDownLeft className="w-7 h-7" />}
@@ -431,19 +410,17 @@ export default function CashModule() {
                                    {new Date(String(t.date)).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-US', { day: 'numeric', month: 'short' })}
                                 </span>
                               </div>
-                           </div>
-                        </div>
-                      </motion.div>
+                            </div>
+                         </div>
+                      </GlassCard>
                     );
                   })}
                 </div>
               ) : (
-                <div className="bg-bg-primary border border-border-light border-dashed rounded-[3rem] py-24 flex flex-col items-center justify-center opacity-40">
-                   <div className="w-20 h-20 bg-bg-tertiary rounded-full flex items-center justify-center mb-6">
-                      <IndianRupee size={32} className="text-text-tertiary" strokeWidth={1} />
-                   </div>
-                   <p className="font-black uppercase tracking-[0.4em] text-[10px]">{t('LEDGER_EMPTY')}</p>
-                </div>
+                <EmptyState 
+                  icon={IndianRupee} 
+                  title={t('LEDGER_EMPTY')} 
+                />
               )}
            </div>
         </div>

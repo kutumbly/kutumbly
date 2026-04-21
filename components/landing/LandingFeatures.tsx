@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -140,7 +140,7 @@ export default function LandingFeatures() {
               {t('landing.hero.manifesto') || `"You own your data. No cloud, no server, no compromise."`}
             </blockquote>
             <div className="mt-8 text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
-              — {t('landing.footer.founder') || "System Architect: Jawahar R. M."}
+              — {t('landing.footer.founder') || "System Architect: Jawahar R. Mallah"}
             </div>
           </div>
         </motion.div>
