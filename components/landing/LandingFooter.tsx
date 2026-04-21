@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -121,11 +121,14 @@ export default function LandingFooter() {
               ))}
             </div>
 
-            <div className="mt-8 p-5 bg-clinical border border-border-light rounded-2xl">
-              <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-2">{t('common.built_by') || "Built By"}</div>
-              <div className="text-sm font-black text-text-primary font-inter-tight">Jawahar R. M.</div>
-              <div className="text-[9px] font-black text-text-tertiary uppercase tracking-widest opacity-70 mt-1">
-                AITDL Network · Sovereign Division
+            <div className="mt-8 p-4 bg-clinical border border-border-light rounded-xl">
+              <div className="text-[8px] font-black text-text-tertiary uppercase tracking-widest mb-1.5 opacity-60">
+                {t('common.built_by')}
+              </div>
+              <div className="text-[11px] font-bold text-text-secondary leading-tight">
+                <span className="text-text-primary font-black">Jawahar R. Mallah</span>
+                <span className="mx-2 opacity-30">·</span>
+                <span className="uppercase tracking-tighter opacity-60 text-[9px]">AITDL Sovereign Division</span>
               </div>
             </div>
           </div>

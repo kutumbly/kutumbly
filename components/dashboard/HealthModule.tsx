@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -23,6 +23,8 @@ import { useFamily } from '@/modules/family';
 import ModuleShell from './ModuleShell';
 import { useTranslation } from '@/lib/i18n';
 import MetricCard from '../ui/MetricCard';
+import GlassCard from '../ui/GlassCard';
+import EmptyState from '../ui/EmptyState';
 import { 
   Activity, Pill, Clock, ArrowRight, ShieldCheck, HeartPulse, 
   LineChart, PillIcon, Syringe, AlertCircle, Phone, Info, 
@@ -205,6 +207,7 @@ export default function HealthModule() {
 
   return (
     <ModuleShell 
+      variant="glass"
       title={
         view === 'overview' ? t('HEALTH') :
         view === 'sos-edit' ? t('HEALTH_SOS_PROFILE') :
@@ -344,13 +347,12 @@ export default function HealthModule() {
                const profile = healthProfiles.find(p => p.member_id === m.id);
                
                return (
-                <motion.div 
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
+                <GlassCard 
                   onClick={() => { setActiveMember(m); setView('member-report'); }}
                   key={m.id}
-                  className="card-lift bg-bg-primary border border-border-light p-6 rounded-[2.5rem] group cursor-pointer hover:border-gold/30 hover:shadow-2xl shadow-black/[0.02] transition-all relative overflow-hidden"
+                  hover
+                  glow="gold"
+                  className="group relative overflow-hidden"
                 >
                    {profile?.blood_group && (
                      <div className="absolute top-0 right-0 p-4">
@@ -389,7 +391,7 @@ export default function HealthModule() {
                         <Sparkline data={mr.map(r => Number(r.bp_systolic || 0)).filter(v => v > 0)} />
                       </div>
                    </div>
-                </motion.div>
+                </GlassCard>
                );
              })}
           </div>
@@ -405,12 +407,11 @@ export default function HealthModule() {
           
           <div className="space-y-4">
              {prescriptions.filter((m) => !m.end_date).length > 0 ? prescriptions.filter((m) => !m.end_date).map((rx, i) => (
-                <motion.div 
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
+                <GlassCard 
                   key={rx.id} 
-                  className="bg-bg-primary border border-border-light p-6 rounded-[2rem] flex items-center justify-between group hover:border-gold/30 hover:shadow-xl shadow-black/[0.02] transition-all"
+                  hover
+                  glow="gold"
+                  className="flex items-center justify-between"
                 >
                   <div className="flex gap-5 items-center">
                      <div className="w-14 h-14 rounded-2xl bg-gold/5 text-gold-text flex items-center justify-center border border-gold/10 group-hover:bg-gold-text group-hover:text-white transition-all shadow-sm">
@@ -434,14 +435,12 @@ export default function HealthModule() {
                   <div className="text-right flex flex-col items-end gap-2">
                      <button onClick={() => stopPrescription(rx.id)} className="text-[9px] text-danger font-black uppercase bg-danger/5 px-4 py-2 rounded-xl border border-danger/10 hover:bg-danger hover:text-white transition-all">{t('HEALTH_STOP_RX')}</button>
                   </div>
-                </motion.div>
+                </GlassCard>
              )) : (
-                <div className="bg-bg-primary border border-border-light border-dashed rounded-[3rem] py-24 flex flex-col items-center justify-center opacity-40">
-                   <div className="w-20 h-20 bg-bg-tertiary rounded-full flex items-center justify-center mb-6">
-                      <Pill size={32} className="text-text-tertiary" strokeWidth={1} />
-                   </div>
-                   <p className="text-[10px] font-black uppercase tracking-[0.4em]">{t('HEALTH_NO_RX')}</p>
-                </div>
+                <EmptyState 
+                  icon={Pill} 
+                  title={t('HEALTH_NO_RX')} 
+                />
              )}
            </div>
           </section>

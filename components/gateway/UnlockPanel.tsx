@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -169,7 +169,7 @@ export default function UnlockPanel({ onSuccess }: UnlockPanelProps) {
               initial={false}
               animate={{
                 scale: currentPin.length > i ? [1, 1.2, 1] : 1,
-                backgroundColor: currentPin.length > i ? "var(--gold)" : "transparent",
+                backgroundColor: currentPin.length > i ? "var(--gold)" : "rgba(0,0,0,0)",
                 boxShadow: currentPin.length > i ? "0 0 15px rgba(201,151,28,0.4)" : "none",
               }}
               className={`w-4 h-4 rounded-sm border-2 rotate-45 transition-all duration-300 ${

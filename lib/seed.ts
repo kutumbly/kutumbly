@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -17,7 +17,7 @@
 export function seedDatabase(db: any) {
   // 1. Family members
   db.run(`INSERT OR IGNORE INTO family_members VALUES
-    ('jm','Jawahar R. M.','System Architect','1981-03-15','JM'),
+    ('jm','Jawahar R. Mallah','System Architect','1981-03-15','JM'),
     ('sm','Sunita Mallah','Co-Founder','1984-07-22','SM'),
     ('pj','Priya Mallah','Beti','2012-05-12','PJ')`);
 
@@ -106,4 +106,14 @@ export function seedDatabase(db: any) {
 
   db.run(`INSERT OR IGNORE INTO sanskriti_village_roots (id, village_name, district, state) VALUES
     ('vr1','Mallah Pur','Varanasi','Uttar Pradesh')`);
+
+  // 12. Vahan Hub (Fleet Management)
+  db.run(`INSERT OR IGNORE INTO vahan_vehicles (id, name, vehicle_number, owner_id, vehicle_type, fuel_type, puc_expiry, insurance_expiry) VALUES
+    ('vv1','Tata Safari','MH 12 AB 1234','jm','Car','Diesel','2026-05-15','2026-08-20'),
+    ('vv2','Activa 6G','MH 12 CD 5678','sm','Scooter','Petrol','2026-04-30','2026-12-10')`);
+
+  db.run(`INSERT OR IGNORE INTO vahan_logs (id, vehicle_id, log_type, date, amount, odometer, notes) VALUES
+    ('vl1','vv1','Fuel','2026-04-10',4500,12450,'Full tank — Shell'),
+    ('vl2','vv1','Service','2026-03-15',12000,11800,'6-month checkup'),
+    ('vl3','vv2','Fuel','2026-04-12',650,4200,'Regular refill')`);
 }
