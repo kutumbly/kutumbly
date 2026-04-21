@@ -1395,6 +1395,22 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
   "common.nominal": { en: "NOMINAL", hi: "सामान्य", bho: "ठीक बा" },
   "common.high": { en: "HIGH", hi: "उच्च", bho: "ढेर बा" },
   "common.risk": { en: "RISK", hi: "खतरा", bho: "जोखिम" },
+
+  // --- Legal & Privacy (Phase 2) ---
+  "legal.privacy.sec1_title": { en: "1. Zero Data Collection", hi: "1. शून्य डेटा संग्रह", bho: "1. जीरो डेटा कलेक्शन" },
+  "legal.privacy.sec1_txt": { en: "We do not see, touch, or store your data. There are no tracking pixels, analytics, or hidden logs. What happens in Kutumbly stays on your hardware.", hi: "हम आपके डेटा को देखते, छूते या स्टोर नहीं करते हैं। कोई ट्रैकिंग, एनालिटिक्स या छिपे हुए लॉग नहीं हैं।" },
+  "legal.privacy.sec2_title": { en: "2. Local-First Architecture", hi: "2. लोकल-फर्स्ट आर्किटेक्चर", bho: "2. लोकल-फर्स्ट तकनीक" },
+  "legal.privacy.sec2_txt": { en: "All computations occur in your browser's RAM and your device's persistent storage. No runtime data leaves your local context.", hi: "सभी गणना आपके ब्राउज़र और डिवाइस मेमोरी में होती है। कोई भी डेटा आपके स्थानीय संदर्भ से बाहर नहीं जाता है।" },
+  "legal.privacy.sec3_title": { en: "3. Encryption at Rest", hi: "3. एन्क्रिप्शन एट रेस्ट", bho: "3. डेटा सुरक्षा" },
+  "legal.privacy.sec3_txt": { en: "Your .kutumb database is encrypted using AES-256 with a salt derived from your unique PIN. Even developers cannot recover your data without your PIN.", hi: "आपकी .kutumb डेटाबेस फ़ाइल आपके पिन के साथ AES-256 एन्क्रिप्शन से सुरक्षित है।" },
+  "legal.privacy.sec4_title": { en: "4. No Account Required", hi: "4. किसी अकाउंट की आवश्यकता नहीं", bho: "4. कवनो अकाउंट ना" },
+  "legal.privacy.sec4_txt": { en: "We do not ask for your email, phone number, or identity. You are an anonymous sovereign user of your own system.", hi: "हम आपका ईमेल या फोन नंबर नहीं मांगते हैं। आप अपने ही सिस्टम के एक गुमनाम संप्रभु उपयोगकर्ता हैं।" },
+  "legal.privacy.sec5_title": { en: "5. P2P Beam Sync", hi: "5. P2P बीम सिंक", bho: "5. P2P सिंक" },
+  "legal.privacy.sec5_txt": { en: "Syncing between family members happens via direct peer-to-peer connections (WebRTC) and Bluetooth. No intermediate servers are used for storage.", hi: "पारिवारिक सदस्यों के बीच सिंक सीधे पीयर-टू-पीयर कनेक्शन के माध्यम से होता है। कोई सर्वर उपयोग नहीं होता।" },
+  "legal.privacy.sec6_title": { en: "6. Sovereignty Forever", hi: "6. स्थायी संप्रभुता", bho: "6. हमेशा खातिर आजादी" },
+  "legal.privacy.sec6_txt": { en: "Even if Kutumbly.com goes offline, you can run the OS from a local backup. You are never dependent on us.", hi: "यदि Kutumbly.com ऑफलाइन भी हो जाता है, तो भी आप इसे लोकल बैकअप से चला सकते हैं।" },
+  "legal.privacy.founder_note_title": { en: "A Message from our System Architect", hi: "हमारे सिस्टम आर्किटेक्ट का संदेश", bho: "सिस्टम आर्किटेक्ट के संदेस" },
+  "legal.privacy.founder_note_txt": { en: "I built Kutumbly to protect my own family's memories. I want you to have that same peace of mind. Your data is your property.", hi: "मैंने अपने परिवार की यादों को सुरक्षित रखने के लिए इसे बनाया है। मैं चाहता हूँ कि आप भी वही शांति महसूस करें। आपका डेटा आपकी संपत्ति है।" },
 };
 
 /**

@@ -40,11 +40,36 @@ export default function LanguageSelector() {
   const { lang, setLang } = useAppStore();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [coords, setCoords] = useState({ top: 0, right: 0 });
+
+  // Update position when opening
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      const isMobile = window.innerWidth < 640;
+      
+      if (isMobile) {
+        // On mobile, position above the button if it's near the bottom, 
+        // but typically selectors are in headers, so we set it below.
+        setCoords({
+          top: rect.bottom + 8,
+          right: window.innerWidth - rect.right
+        });
+      } else {
+        setCoords({
+          top: rect.bottom + 8,
+          right: window.innerWidth - rect.right
+        });
+      }
+    }
+  }, [isOpen]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) && 
+          triggerRef.current && !triggerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -60,8 +85,9 @@ export default function LanguageSelector() {
   const currentLang = LANGUAGE_MAP[lang] || LANGUAGE_MAP.en;
 
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
+    <div className="relative inline-block text-left">
       <button
+        ref={triggerRef}
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-light bg-bg-secondary/50 backdrop-blur-md hover:bg-bg-secondary transition-all active:scale-95 group"
         aria-label="Select Language"
@@ -74,7 +100,19 @@ export default function LanguageSelector() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 bottom-full mb-2 sm:bottom-auto sm:top-full sm:mt-2 w-56 max-h-[70vh] overflow-y-auto rounded-2xl border border-border-light bg-bg-secondary/95 backdrop-blur-xl shadow-2xl p-2 z-[9999] animate-in fade-in zoom-in-95 duration-200 scrollbar-hide">
+        <div 
+          ref={dropdownRef}
+          className="rounded-2xl border border-border-light bg-bg-secondary/95 backdrop-blur-xl shadow-2xl p-2 animate-in fade-in zoom-in-95 duration-200"
+          style={{
+            position: 'fixed',
+            top: `${coords.top}px`,
+            right: `${coords.right}px`,
+            width: '14rem', // w-56
+            maxHeight: '70vh',
+            overflowY: 'auto',
+            zIndex: 9999,
+          }}
+        >
           <div className="grid grid-cols-1 gap-1">
             {(Object.keys(LANGUAGE_MAP) as Language[]).map((l) => (
               <button
@@ -86,7 +124,7 @@ export default function LanguageSelector() {
                     : 'hover:bg-bg-primary text-text-secondary hover:text-text-primary'
                 }`}
               >
-                <div className="flex flex-col items-start">
+                <div className="flex flex-col items-start text-left">
                   <span className="text-sm font-semibold leading-tight">{LANGUAGE_MAP[l].native}</span>
                   <span className="text-[10px] opacity-60 uppercase tracking-widest">{LANGUAGE_MAP[l].name}</span>
                 </div>

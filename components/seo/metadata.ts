@@ -48,7 +48,8 @@ export const metadata: Metadata = {
   description:
     "Kutumbly is India's first offline-first, encrypted Family Operating System. " +
     "Apni family ka data — finances, health, diary — 100% apne device par, " +
-    "kisi server par nahi. Zero Cloud. Total Privacy.",
+    "kisi server par nahi. Zero Cloud. Total Privacy. " +
+    "Protect your parivar's legacy on your own terms.",
 
   // ── Keywords ───────────────────────────────────────────────
   keywords: [
@@ -65,6 +66,10 @@ export const metadata: Metadata = {
     "parivar data suraksha",
     "AITDL Network",
     "Sovereign OS",
+    "bin internet ke family app",
+    "purely offline family ledger",
+    "safe family memories India",
+    "Indian household OS"
   ],
 
   // ── Canonical & Alternate ──────────────────────────────────
