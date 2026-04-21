@@ -23,6 +23,8 @@ import { useFamily } from '@/modules/family';
 import ModuleShell from './ModuleShell';
 import { useTranslation } from '@/lib/i18n';
 import MetricCard from '../ui/MetricCard';
+import GlassCard from '../ui/GlassCard';
+import EmptyState from '../ui/EmptyState';
 import DonutChart from '../ui/DonutChart';
 import { ShoppingCart, Home, Briefcase, Coffee, MoreHorizontal, ArrowDownLeft, ArrowUpRight, IndianRupee, Users, Book, ArrowLeft, Trash2, Shield, CalendarDays, Receipt } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -145,6 +147,7 @@ export default function CashModule() {
 
   return (
     <ModuleShell 
+      variant="glass"
       title={
         view === 'overview' ? t('CASH_HUB') :
         view === 'category-ledger' ? `${t('CASH_HUB')} - ${t('CASH_CAT_' + activeCategory?.toUpperCase()) || activeCategory}` :
@@ -289,20 +292,21 @@ export default function CashModule() {
                    const spent = txns.filter(t => t.category === b.category && t.type === 'expense').reduce((s, curr) => s + curr.amount, 0);
                    const perc = Math.min(100, (spent / b.monthly_limit) * 100);
                    return (
-                     <div key={b.id} className="bg-bg-primary border border-border-light p-5 rounded-2xl shadow-sm">
-                       <div className="flex justify-between items-center mb-3">
-                         <span className="text-[10px] font-black text-text-primary uppercase tracking-wider">{b.category}</span>
-                         <span className="text-[9px] font-bold text-text-tertiary tabular-nums">₹{spent} / ₹{b.monthly_limit}</span>
-                       </div>
-                       <div className="w-full bg-bg-tertiary h-1.5 rounded-full overflow-hidden">
-                         <div className={`h-full transition-all duration-500 rounded-full ${perc > 90 ? 'bg-red-500' : perc > 70 ? 'bg-orange-400' : 'bg-gold'}`} style={{ width: `${perc}%` }} />
-                       </div>
-                     </div>
+                     <GlassCard key={b.id} className="p-5">
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="text-[10px] font-black text-text-primary uppercase tracking-wider">{b.category}</span>
+                          <span className="text-[9px] font-bold text-text-tertiary tabular-nums">₹{spent} / ₹{b.monthly_limit}</span>
+                        </div>
+                        <div className="w-full bg-bg-tertiary h-1.5 rounded-full overflow-hidden">
+                          <div className={`h-full transition-all duration-500 rounded-full ${perc > 90 ? 'bg-red-500' : perc > 70 ? 'bg-orange-400' : 'bg-gold'}`} style={{ width: `${perc}%` }} />
+                        </div>
+                      </GlassCard>
                    );
                  }) : (
-                   <div className="py-10 text-center bg-bg-primary border border-border-light border-dashed rounded-[2rem] opacity-40">
-                     <p className="text-[10px] font-black uppercase tracking-widest">{t('HEALTH_NO_DATA').replace('Health', 'Budget').replace('स्वास्थ्य', 'बजट')}</p>
-                   </div>
+                   <EmptyState 
+                     icon={Shield} 
+                     title={t('HEALTH_NO_DATA').replace('Health', 'Budget').replace('स्वास्थ्य', 'बजट')} 
+                   />
                  )}
                </div>
              </div>
@@ -364,13 +368,13 @@ export default function CashModule() {
                     const Icon = CATEGORY_ICONS[String(t.category)] || MoreHorizontal;
                     const isIncome = t.type === 'income';
                     return (
-                      <motion.div 
+                      <GlassCard 
                         onClick={() => { setActiveVoucher(t); setActiveCategory(t.category); setView('voucher-view'); }}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.05 }}
                         key={String(t.id)} 
-                        className="bg-bg-primary border border-border-light rounded-[2rem] p-5 flex items-center gap-5 group hover:border-gold/30 hover:shadow-xl shadow-black/[0.02] cursor-pointer transition-all"
+                        className="p-5 flex items-center gap-5 cursor-pointer"
                       >
                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-transform group-hover:scale-105 ${isIncome ? 'bg-success/5 border-success/20 text-success' : 'bg-red-500/5 border-red-500/20 text-red-500'}`}>
                            {isIncome ? <ArrowUpRight className="w-7 h-7" /> : <ArrowDownLeft className="w-7 h-7" />}
@@ -406,19 +410,17 @@ export default function CashModule() {
                                    {new Date(String(t.date)).toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-US', { day: 'numeric', month: 'short' })}
                                 </span>
                               </div>
-                           </div>
-                        </div>
-                      </motion.div>
+                            </div>
+                         </div>
+                      </GlassCard>
                     );
                   })}
                 </div>
               ) : (
-                <div className="bg-bg-primary border border-border-light border-dashed rounded-[3rem] py-24 flex flex-col items-center justify-center opacity-40">
-                   <div className="w-20 h-20 bg-bg-tertiary rounded-full flex items-center justify-center mb-6">
-                      <IndianRupee size={32} className="text-text-tertiary" strokeWidth={1} />
-                   </div>
-                   <p className="font-black uppercase tracking-[0.4em] text-[10px]">{t('LEDGER_EMPTY')}</p>
-                </div>
+                <EmptyState 
+                  icon={IndianRupee} 
+                  title={t('LEDGER_EMPTY')} 
+                />
               )}
            </div>
         </div>

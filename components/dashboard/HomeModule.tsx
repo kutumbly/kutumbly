@@ -31,6 +31,8 @@ import { motion } from 'framer-motion';
 import { hasBiometricRegistered } from '@/lib/biometric';
 import { useTranslation, Language } from '@/lib/i18n';
 import MetricCard from '../ui/MetricCard';
+import GlassCard from '../ui/GlassCard';
+import EmptyState from '../ui/EmptyState';
 
 type MetricStatus = "success" | "default" | "warning" | "danger" | "info";
 
@@ -119,19 +121,19 @@ export default function HomeModule() {
       {/* ── Sovereign Shield Hub ────────────────────────────── */}
       <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
          {[
-           { icon: Shield, label: t('OS_SECURITY'), value: t('OS_LOCKDOWN') },
-           { icon: Fingerprint, label: t('BIOMETRIC'), value: bioActive ? t('HARDWARE_ACTIVE') : t('PIN_REQUIRED') },
-           { icon: HardDrive, label: t('SYNC_GRID'), value: t('LOCAL_DISCOVERY') }
+           { icon: Shield, label: t('OS_SECURITY'), value: t('OS_LOCKDOWN'), glow: 'gold' as const },
+           { icon: Fingerprint, label: t('BIOMETRIC'), value: bioActive ? t('HARDWARE_ACTIVE') : t('PIN_REQUIRED'), glow: 'green' as const },
+           { icon: HardDrive, label: t('SYNC_GRID'), value: t('LOCAL_DISCOVERY'), glow: 'blue' as const }
          ].map((sh, idx) => (
-           <div key={idx} className="card-glow bg-bg-primary border border-border-light rounded-2xl p-4 flex items-center gap-3 tap-highlight">
-              <div className="w-10 h-10 rounded-xl bg-gold-light flex items-center justify-center text-gold-text border border-border-light flex-shrink-0 group-hover:scale-110 transition-transform duration-200">
+           <GlassCard key={idx} glow={sh.glow} className="p-4 flex items-center gap-3 tap-highlight cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-gold-light flex items-center justify-center text-gold-text border border-border-light flex-shrink-0 group-hover:scale-110 transition-transform duration-200 shadow-sm">
                  <sh.icon size={19} />
               </div>
               <div className="flex-1 min-w-0">
                  <div className="text-[8px] font-black uppercase tracking-[0.28em] text-text-tertiary mb-0.5 truncate">{sh.label}</div>
                  <div className="text-[10px] font-black text-text-primary uppercase tracking-wide truncate">{sh.value}</div>
               </div>
-           </div>
+           </GlassCard>
          ))}
       </motion.div>
 
@@ -156,10 +158,9 @@ export default function HomeModule() {
           
           <div className="space-y-4">
             {entries.length > 0 ? entries.slice(0, 4).map((a, i) => (
-              <motion.div 
+              <GlassCard 
                 key={i} 
-                whileHover={{ x: 4 }}
-                className="card-glow bg-bg-primary border border-border-light p-5 rounded-[2rem] flex gap-5 items-start group"
+                className="p-5 flex gap-5 items-start"
               >
                 <div className="w-12 h-12 rounded-2xl bg-bg-tertiary flex items-center justify-center flex-shrink-0 border border-border-light group-hover:border-gold/30 group-hover:bg-bg-primary transition-all shadow-sm">
                   <Clock className="w-5 h-5 text-text-tertiary" />
@@ -169,7 +170,7 @@ export default function HomeModule() {
                       {parseRichContent(String(a.content))}
                    </div>
                    <div className="flex items-center gap-3 mt-3">
-                     <span className="text-[8px] font-black text-gold-text uppercase tracking-[0.2em] bg-gold/5 px-3 py-1 rounded-full border border-gold/10">
+                     <span className="text-[8px] font-black text-gold-text uppercase tracking-[0.2em] bg-gold-light px-3 py-1 rounded-full border border-gold/20 shadow-sm">
                        {t('DIARY')}
                      </span>
                      <span className="text-[9px] text-text-tertiary font-black uppercase tracking-[0.2em] opacity-60">
@@ -177,13 +178,13 @@ export default function HomeModule() {
                      </span>
                    </div>
                 </div>
-              </motion.div>
+              </GlassCard>
             )) : (
-               <div className="bg-bg-primary border border-border-light border-dashed rounded-[3rem] py-20 flex flex-col items-center justify-center opacity-30">
-                  <Shield className="w-14 h-14 mb-6 text-text-tertiary" strokeWidth={1} />
-                  <p className="text-[10px] font-black uppercase tracking-[0.4em]">{t('NO_ACTIVITY')}</p>
-                  <p className="text-[8px] font-bold uppercase tracking-widest mt-1">{t('ACTIVITY_EMPTY_SUB')}</p>
-               </div>
+              <EmptyState 
+                icon={Activity} 
+                title={t('NO_ACTIVITY')} 
+                description={t('ACTIVITY_EMPTY_SUB')} 
+              />
             )}
           </div>
         </motion.section>

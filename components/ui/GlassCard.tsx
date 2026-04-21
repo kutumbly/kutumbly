@@ -17,12 +17,11 @@
 "use client";
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 
-interface GlassCardProps {
-  children: React.ReactNode;
+export interface GlassCardProps extends HTMLMotionProps<"div"> {
+  children?: React.ReactNode;
   className?: string;
-  onClick?: () => void;
   hover?: boolean;
   glow?: 'gold' | 'red' | 'green' | 'blue' | 'none';
   padding?: 'sm' | 'md' | 'lg' | 'xl' | 'none';
@@ -51,6 +50,7 @@ export default function GlassCard({
   hover = false,
   glow = 'none',
   padding = 'md',
+  ...rest
 }: GlassCardProps) {
   const base = [
     'bg-bg-primary border border-border-light rounded-[2rem]',
@@ -66,17 +66,14 @@ export default function GlassCard({
     className,
   ].filter(Boolean).join(' ');
 
-  if (onClick || hover) {
-    return (
-      <motion.div
-        onClick={onClick}
-        whileTap={{ scale: 0.99 }}
-        className={base}
-      >
-        {children}
-      </motion.div>
-    );
-  }
-
-  return <div className={base}>{children}</div>;
+  return (
+    <motion.div
+      onClick={onClick}
+      whileTap={(onClick || hover) ? { scale: 0.99 } : undefined}
+      className={base}
+      {...rest}
+    >
+      {children}
+    </motion.div>
+  );
 }
