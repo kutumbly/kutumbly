@@ -23,12 +23,19 @@ import LandingHeader from '@/components/landing/LandingHeader';
 import LandingFooter from '@/components/landing/LandingFooter';
 import { useAppStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
+import SchemaOrg from '@/components/seo/SchemaOrg';
 
 export default function PrivacyPolicy() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
   return (
     <>
+      <SchemaOrg 
+        breadcrumbs={[
+          { name: "Home", item: "/" },
+          { name: "Privacy Policy", item: "/privacy" }
+        ]} 
+      />
       <LandingHeader />
       <div className="min-h-screen bg-bg-primary text-text-primary pt-24">
         <div className="max-w-3xl mx-auto px-6 py-20 pb-32">

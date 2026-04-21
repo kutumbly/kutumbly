@@ -60,7 +60,7 @@ const softwareApplicationSchema = {
     "Home staff attendance and salary ledger",
     "Bilingual — English and Hindi (Devanagari)",
   ],
-  inLanguage: ["en-IN", "hi-IN"],
+  inLanguage: ["en-IN", "hi-IN", "mr-IN", "gu-IN", "pa-IN", "ta-IN", "bho-IN", "kn-IN", "te-IN", "ne-IN", "bn-IN", "mni-IN"],
   screenshot: `${SITE_URL}/branding/screenshot-dashboard.png`,
   author: {
     "@type": "Organization",
@@ -96,7 +96,7 @@ const organizationSchema = {
   },
   founder: {
     "@type": "Person",
-    name: "Jawahar R. Mallahllah",
+    name: "Jawahar R. Mallah",
     jobTitle: "System Architect & Founder",
     url: "https://aitdl.in",
   },
@@ -198,7 +198,7 @@ const websiteSchema = {
   "@type": "WebSite",
   name: "Kutumbly",
   url: SITE_URL,
-  inLanguage: ["en-IN", "hi-IN"],
+  inLanguage: ["en-IN", "hi-IN", "mr-IN", "gu-IN", "pa-IN", "ta-IN", "bho-IN", "kn-IN", "te-IN", "ne-IN", "bn-IN", "mni-IN"],
   potentialAction: {
     "@type": "SearchAction",
     target: {
@@ -212,13 +212,29 @@ const websiteSchema = {
 // ─────────────────────────────────────────────────────────────
 // COMPONENT
 // ─────────────────────────────────────────────────────────────
-export default function SchemaOrg() {
+export default function SchemaOrg({ breadcrumbs = [] }: { 
+  breadcrumbs?: { name: string; item: string }[] 
+}) {
   const schemas = [
     softwareApplicationSchema,
     organizationSchema,
     faqSchema,
     websiteSchema,
   ];
+
+  // Add BreadcrumbList if provided
+  if (breadcrumbs.length > 0) {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: breadcrumbs.map((crumb, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: crumb.name,
+        item: `${SITE_URL}${crumb.item}`,
+      })),
+    } as any);
+  }
 
   return (
     <>
