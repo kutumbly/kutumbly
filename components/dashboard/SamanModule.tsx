@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -30,8 +30,9 @@ import { SamanItem } from '@/types/db';
 type SamanView = 'overview' | 'category-items' | 'item-detail';
 
 export default function SamanModule() {
-  const { lang } = useAppStore();
+  const { lang, mode } = useAppStore();
   const t = useTranslation(lang as Language);
+  const isAdvanced = mode === 'advanced';
   const { items, addItem, checkItem, deleteItem, clearChecked, applyBaseline, editItem } = useSaman();
 
   const [view, setView] = useState<SamanView>('overview');
@@ -194,12 +195,15 @@ export default function SamanModule() {
           )}
         </AnimatePresence>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-           <MetricCard label={t('ITEMS_TO_BUY')} value={pendingCount} status="warning" />
-           <MetricCard label={t('ESTIMATED_TOTAL')} value={totalEstimated} isCurrency status="default" />
-           <MetricCard label={t('STORE_CATEGORIES')} value={categories.length} status="info" />
-           <MetricCard label={t('PANTRY_STATUS')} value={pendingCount > 0 ? t('PANTRY_STOCKING') : t('PANTRY_FULL')} status={pendingCount > 0 ? 'warning' : 'success'} />
-        </div>
+        {/* Metrics — Advanced only */}
+        {isAdvanced && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <MetricCard label={t('ITEMS_TO_BUY')} value={pendingCount} status="warning" />
+            <MetricCard label={t('ESTIMATED_TOTAL')} value={totalEstimated} isCurrency status="default" />
+            <MetricCard label={t('STORE_CATEGORIES')} value={categories.length} status="info" />
+            <MetricCard label={t('PANTRY_STATUS')} value={pendingCount > 0 ? t('PANTRY_STOCKING') : t('PANTRY_FULL')} status={pendingCount > 0 ? 'warning' : 'success'} />
+          </div>
+        )}
 
         {/* Categories Grid (Premium Card Layout) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -242,27 +246,29 @@ export default function SamanModule() {
            )}
         </div>
 
-        {/* Quick Baseline Action */}
-        <motion.div 
-           onClick={handleApplyBaseline}
-           whileHover={{ y: -4 }}
-           className="bg-gold/5 border border-gold/20 rounded-[2.5rem] p-8 flex items-center justify-between group hover:bg-gold/10 transition-all cursor-pointer"
-        >
-           <div className="flex items-center gap-6">
+        {/* Baseline Automation — Advanced only */}
+        {isAdvanced && (
+          <motion.div 
+            onClick={handleApplyBaseline}
+            whileHover={{ y: -4 }}
+            className="bg-gold/5 border border-gold/20 rounded-[2.5rem] p-8 flex items-center justify-between group hover:bg-gold/10 transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-6">
               <div className="w-16 h-16 rounded-2xl bg-gold-text text-white flex items-center justify-center shadow-lg">
-                 <Package size={32} />
+                <Package size={32} />
               </div>
               <div>
-                 <h4 className="text-lg font-black text-text-primary tracking-tight">
-                   {t('SAMAN_RASOI_TAIYARI')}
-                 </h4>
-                 <p className="text-[11px] text-text-tertiary font-black uppercase tracking-[0.2em] mt-1 opacity-80">
-                   {t('SAMAN_INDIAN_ESSENTIALS')}
-                 </p>
+                <h4 className="text-lg font-black text-text-primary tracking-tight">
+                  {t('SAMAN_RASOI_TAIYARI')}
+                </h4>
+                <p className="text-[11px] text-text-tertiary font-black uppercase tracking-[0.2em] mt-1 opacity-80">
+                  {t('SAMAN_INDIAN_ESSENTIALS')}
+                </p>
               </div>
-           </div>
-           <ChevronRight className="text-gold-text group-hover:translate-x-1 transition-all" />
-        </motion.div>
+            </div>
+            <ChevronRight className="text-gold-text group-hover:translate-x-1 transition-all" />
+          </motion.div>
+        )}
 
         </motion.div>
         )}

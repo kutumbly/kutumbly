@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  *
@@ -27,6 +27,12 @@ export const suvidhaRepo = {
   getLogs: (db: Database | null): SuvidhaLog[] => {
     if (!db) return [];
     return runQuery<SuvidhaLog>(db, "SELECT * FROM suvidha_logs ORDER BY date DESC");
+  },
+
+  getLogByVendorDate: (db: Database | null, vendorId: string, date: string): SuvidhaLog | null => {
+    if (!db) return null;
+    const rows = runQuery<SuvidhaLog>(db, "SELECT * FROM suvidha_logs WHERE vendor_id = ? AND date = ? LIMIT 1", [vendorId, date]);
+    return rows[0] ?? null;
   },
 
   getPayments: (db: Database | null): SuvidhaPayment[] => {

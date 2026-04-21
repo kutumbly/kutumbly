@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -310,6 +310,8 @@ export interface SewakMember {
   paid_leaves_quota: number;
   kyc_status: string;
   gov_id_number: string | null;
+  emergency_contact?: string | null;
+  shift_timing?: string | null;
 }
 
 export interface SewakPayment {
@@ -332,6 +334,33 @@ export interface SewakAttendance {
   date: string;
   status: 'present' | 'absent' | 'leave' | 'absent_unpaid' | 'leave_paid' | 'half_day';
   notes: string;
+}
+
+export interface SewakAdvance {
+  id: string;
+  sewak_id: string;
+  amount: number;
+  date: string;
+  reason: string;
+  status: 'ACTIVE' | 'RECOVERED';
+}
+
+export interface SewakWelfare {
+  id: string;
+  sewak_id: string;
+  welfare_type: 'FESTIVAL_BONUS' | 'SCHOOL_FEES' | 'MEDICAL' | 'OTHER';
+  amount: number;
+  event_date: string;
+  notes: string;
+}
+
+export interface SewakDocument {
+  id: string;
+  sewak_id: string;
+  doc_type: 'POLICE_VERIFICATION' | 'AADHAAR' | 'AGENCY_CONTRACT' | 'OTHER';
+  vault_ref: string | null;
+  expiry_date: string | null;
+  verification_status: 'PENDING' | 'VERIFIED' | 'EXPIRED' | 'REJECTED';
 }
 
 /**
@@ -467,4 +496,33 @@ export interface SuvidhaPayment {
   period_year: string;         // '2024'
   notes: string | null;
   created_at?: string;
+}
+
+/**
+ * Vahan Hub (Vehicle & Fleet) Module Models
+ */
+export interface VahanVehicle {
+  id: string;
+  name: string;
+  vehicle_number: string | null;
+  owner_id: string | null;
+  vehicle_type: 'Car' | 'Bike' | 'Scooter' | 'Cycle' | 'Other' | string;
+  fuel_type: 'Petrol' | 'Diesel' | 'CNG' | 'Electric' | 'Hybrid' | string | null;
+  insurance_expiry: string | null;
+  puc_expiry: string | null;
+  fitness_expiry: string | null;
+  insurance_policy_no: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface VahanLog {
+  id: string;
+  vehicle_id: string;
+  log_type: 'Service' | 'Fuel' | 'Fine' | 'Toll' | 'Expense' | string;
+  date: string;
+  amount: number;
+  odometer: number | null;
+  notes: string | null;
+  created_at: string;
 }
