@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -28,6 +28,7 @@ interface EmptyStateProps {
   action?: string;
   onAction?: () => void;
   compact?: boolean;
+  className?: string;
 }
 
 export default function EmptyState({
@@ -38,13 +39,14 @@ export default function EmptyState({
   action,
   onAction,
   compact = false,
+  className = '',
 }: EmptyStateProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`flex flex-col items-center justify-center text-center ${compact ? 'py-12 gap-4' : 'py-24 gap-6'}`}
+      className={`flex flex-col items-center justify-center text-center ${compact ? 'py-12 gap-4' : 'py-24 gap-6'} ${className}`}
     >
       {/* Icon or Emoji */}
       <div className={`${compact ? 'w-16 h-16' : 'w-24 h-24'} bg-bg-tertiary rounded-[2rem] border border-border-light/60 flex items-center justify-center opacity-40`}>

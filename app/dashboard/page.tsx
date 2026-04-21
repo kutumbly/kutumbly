@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -21,13 +21,11 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useEffect } from "react";
 import {
-  Home, Book, CheckSquare, IndianRupee,
-  Settings, Shield, Heart,
-  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap, Cloud, Milk, Flame, LogOut, Tag
+  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap, Cloud, Milk, Flame, LogOut, Tag, Car, Home, Book, CheckSquare, IndianRupee, Heart, Settings, Shield
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation, Language } from "@/lib/i18n";
-import HomeModule from "@/components/dashboard/HomeModule";
+import AanganModule from "@/components/dashboard/AanganModule";
 import DiaryModule from "@/components/dashboard/DiaryModule";
 import TasksModule from "@/components/dashboard/TasksModule";
 import CashModule from "@/components/dashboard/CashModule";
@@ -45,6 +43,7 @@ import SanskritiModule from "@/components/dashboard/SanskritiModule";
 import BottomNav from "@/components/dashboard/BottomNav";
 import ModuleShell from "@/components/dashboard/ModuleShell";
 import LabelsModule from "@/components/dashboard/LabelsModule";
+import VahanModule from "@/components/dashboard/VahanModule";
 
 const ALL_TABS = [
   { id: "home",      icon: Home },
@@ -59,6 +58,7 @@ const ALL_TABS = [
   { id: "sewak",     icon: Briefcase },
   { id: "vidya",     icon: GraduationCap },
   { id: "sanskriti", icon: Flame },
+  { id: "vahan",     icon: Car },
   { id: "sync",      icon: Cloud },
   { id: "network",   icon: Network },
   { id: "labels",    icon: Tag },
@@ -102,7 +102,7 @@ export default function DashboardPage() {
 
   const renderModule = () => {
     switch (activeModule) {
-      case "home":       return <HomeModule />;
+      case "home":       return <AanganModule />;
       case "diary":      return <DiaryModule />;
       case "tasks":      return <TasksModule />;
       case "cash":       return <CashModule />;
@@ -113,6 +113,7 @@ export default function DashboardPage() {
       case "sewak":      return <SewakModule />;
       case "vidya":      return <VidyaModule />;
       case "suvidha":    return <SuvidhaModule />;
+      case "vahan":      return <VahanModule />;
       case "sanskriti":  return <SanskritiModule />;
       case "sync":       return <CloudSyncriptModule />;
       case "network":    return <NetworkModule />;

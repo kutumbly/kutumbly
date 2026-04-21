@@ -1,8 +1,8 @@
-﻿/* ============================================================
+/* ============================================================
  * \u0915\u0941\u091f\u0941\u0902\u092c\u0932\u0940 \u2014 KUTUMBLY SOVEREIGN OS
  * Zero Cloud \u00b7 Local First \u00b7 Encrypted \u00b7 Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network \u2014 Sovereign Division
  * Project     :  Kutumbly \u2014 India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -33,18 +33,59 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
 
   "NAV_UTSAV": { en: "Utsav", hi: "उत्सव", mr: "उत्सव", gu: "ઉત્સવ", pa: "ਉਤਸਵ", ta: "உத்சவ்", bho: "उत्सव", kn: "ಉತ್ಸವ", te: "ఉత్సవ్", ne: "उत्सव", bn: "উৎসব", mni: "উতসব" },
 
-  "NAV_SUVIDHA": { en: "Suvidha", hi: "सुविधा", mr: "सुविधा", gu: "સુવિધા", pa: "ਸੁਵਿਧਾ", ta: "சுவிதா", bho: "सुविधा", kn: "ಸುವಿಧಾ", te: "సువిధ", ne: "सुविधा", bn: "সুবিধা", mni: "সুবিধা" },
+  "NAV_SUVIDHA": { en: "Suvidha", hi: "सुविधा", mr: "सुविधा", gu: "સુવિધા", pa: "ਸੁਵਿਧਾ", ta: "சுவிதா", bho: "सुविधा", kn: "ಸುವಿಧಾ", te: "సువిధ", ne: "सुविधा", bn: "सुविधा", mni: "সুবিধা" },
+  "NAV_VAHAN": { en: "Vahan Hub", hi: "वाहन हब", bho: "गाड़ी-घोड़ा", mr: "वाहन हब", gu: "વાહન હબ" },
+  "AAJ_KA_DIN": { en: "Today's Day", hi: "आज का दिन", bho: "आज के दिन", mr: "आजचा दिवस", gu: "આજ નો દિવસ" },
+  "PANCHANGA": { en: "Panchanga", hi: "पंचांग", bho: "पतरा", mr: "पंचांग", gu: "પંચાંગ" },
+  "TITHI": { en: "Tithi", hi: "तिथि", bho: "तिथी", mr: "तिथी", gu: "તિથિ" },
+  "RAHU_KAAL": { en: "Rahu Kaal", hi: "राहू काल", bho: "राहू काल", mr: "राहू काळ", gu: "રાહુ કાળ" },
+  "vahan.puc_due": { en: "PUC Expired", hi: "PUC समाप्त", bho: "PUC खतम", mr: "PUC संपले" },
+  "vahan.insurance_due": { en: "Insurance Due", hi: "बीमा देय", bho: "बीमा के पैसा", mr: "विमा देय" },
+  "vahan.total_vehicles": { en: "Vehicles", hi: "वाहन", bho: "गाड़ी", mr: "वाहने" },
+  "aangan.budget_stable": { en: "Budget Stable", hi: "बजट स्थिर", bho: "बजट ठीक बा", mr: "बजेट स्थिर" },
+  "aangan.refill_needed": { en: "Refill Needed", hi: "रिफिल आवश्यक", bho: "सामान चाही", mr: "रिफिल आवश्यक" },
+  "aangan.update_needed": { en: "Update Needed", hi: "अपडेट करें", bho: "नया जानकारी", mr: "अपडेट आवश्यक" },
+  
+  // Sewak Module Phase 4 Hardening
+  "sewak.khata_ledger": { en: "Khata Ledger", hi: "खाता लेजर", mr: "खाते लेजर", bho: "खाता लेजर" },
+  "sewak.welfare_records": { en: "Welfare Records", hi: "कल्याण रिकॉर्ड", mr: "कल्याण रेकॉर्ड", bho: "मदद रिकॉर्ड" },
+  "sewak.khata_balance": { en: "Khata Balance", hi: "खाता शेष", mr: "खाते शिल्लक", bho: "खाता में बा" },
+  "sewak.issue_advance": { en: "Issue Advance", hi: "किस्त जारी करें", mr: "आगाऊ द्या", bho: "किस्त दीं" },
+  "sewak.share_receipt": { en: "Share Receipt", hi: "रसीद शेयर करें", mr: "पावती शेअर करा", bho: "लिखनी शेयर करीं" },
+  "sewak.vault_status": { en: "Vault Status", hi: "वॉल्ट स्टेटस", mr: "व्हॉल्ट स्थिती", bho: "सुरक्षा स्थिति" },
+  "sewak.month_of": { en: "Month of", hi: "का महीना", mr: "चा महिना", bho: "के महीना" },
+  "sewak.total_advance": { en: "Total Advance Out", hi: "कुल पेशगी बकाया", mr: "एकूण आगाऊ", bho: "कुल कर्ज" },
+  "sewak.since": { en: "Since", hi: "से", mr: "पासून", bho: "जब से बा" },
+  "sewak.status_present": { en: "Present", hi: "उपस्थित", mr: "हजर", bho: "आईल बा" },
+  "sewak.status_absent": { en: "Absent", hi: "अनुपस्थित", mr: "गैरहजर", bho: "ना आईल" },
+  "sewak.status_unmarked": { en: "Unmarked", hi: "अनमार्क", mr: "नोंद नाही", bho: "हाजिरी बाकी" },
+  "sewak.kyc_pending": { en: "KYC Pending", hi: "KYC पेंडिंग", mr: "KYC प्रलंबित", bho: "कागज बाकी" },
+  "sewak.kyc_verified": { en: "Verified", hi: "सत्यापित", mr: "सत्यापित", bho: "कागज पक्का" },
+  "sewak.mark_upasthit": { en: "Mark Present", hi: "हाजिरी लगायें", mr: "उपस्थिती नोंदवा", bho: "हाजिरी करीं" },
+  "sewak.mark_anupasthit": { en: "Mark Absent", hi: "अनुपस्थित करें", mr: "गैरहजेरी नोंदवा", bho: "गैरहाजिरी करीं" },
+  "sewak.former_staff": { en: "Former Staff", hi: "पूर्व कर्मचारी", mr: "माजी कर्मचारी", bho: "पुरान स्टाफ" },
+  "sewak.members_unit": { en: "Members", hi: "सदस्य", mr: "सदस्य", gu: "સભ્યો", pa: "ਮੈਂਬਰ", ta: "உறுப்பினர்கள்", bho: "लोग", kn: "ಸದಸ್ಯರು", te: "సభ్యులు", ne: "सदस्यहरू", bn: "সদস্য", mni: "মেম্বরশিং" },
+  "sewak.payout": { en: "Payout", hi: "वेतन", mr: "वेतन", gu: "ચુકવણી", pa: "ਤਨਖાਹ", ta: "ஊதியம்", bho: "हिساب", kn: "ಪಾವತಿ", te: "చెల్లింపు", ne: "भुक्तानी", bn: "পেমেন্ট", mni: "পেমেন্ত" },
+  "sewak.status": { en: "Status", hi: "स्थिति", mr: "स्थिती", gu: "સ્થિતિ", pa: "ਸਥਿਤੀ", ta: "நிலை", bho: "हाल", kn: "ಸ್ಥಿತಿ", te: "స్థితి", ne: "स्थिति", bn: "স্থিতি", mni: "চৎনবা" },
+  "sewak.issue": { en: "Issue", hi: "जारी करें", mr: "द्या", gu: "આપો", pa: "જਾਰੀ ਕਰੋ", ta: "வழங்கு", bho: "दीं", kn: "ನೀಡಿ", te: "జారీ", ne: "जारी गर्नुहोस्", bn: "ইস্যু", mni: "পীবীব্বা" },
+  "sewak.vault": { en: "Vault", hi: "वॉल्ट", mr: "व्हॉल्ट", gu: "વોલ્ટ", pa: "ਵਾਲਟ", ta: "வால்ட்", bho: "पक्का", kn: "ವಾಲ್ಟ್", te: "వాల్ట్", ne: "भल्ट", bn: "ভল্ট", mni: "ভোল্ট" },
+  "sewak.process_vetan_btn": { en: "Process Vetan", hi: "वेतन प्रोसेस", mr: "वेतन प्रक्रिया", gu: "વેતન પ્રક્રિયા", pa: "ਵੇਤਨ ਪ੍ਰਕಿರ્યા", ta: "ஊதியம் செயலாக்கம்", bho: "हिساب पक्का", kn: "ವೇತನ ಪ್ರಕ್ರಿಯೆ", te: "వేతన ప్రక్రియ", ne: "तलब प्रक्रिया", bn: "বেতন প্রসেস", mni: "পেমেন্ত তৌবা" },
+  "sewak.issue_welfare_btn": { en: "Issue Welfare", hi: "कल्याण लाभ", mr: "कल्याण लाभ", gu: "કલ્યાણ લાભ", pa: "ਭਲਾਈ ਲਾਭ", ta: "நலத்திட்டம்", bho: "मदद दीं", kn: "ಕಲ್ಯಾಣ ಲಾಭ", te: "సంక్షేమ ప్రయోజనం", ne: "कल्याणकारी लाभ", bn: "কল্যাণ সুবিধা", mni: "কান্নবা পীবীব্বা" },
+  "sewak.empty_staff": { en: "No karmcharis members enrolled", hi: "कोई कर्मचारी नामांकित नहीं हैं", mr: "कोणतेही कर्मचारी नोंदणीकृत नाहीत", bho: "कोई स्टाफ ना बा" },
+  "sewak.empty_payments": { en: "No payment logs", hi: "कोई भुगतान लॉग नहीं", mr: "कोणतेही पेमेंट लॉग नाहीत", bho: "पैसा के कोई खबर ना बा" },
+  "sewak.empty_attendance": { en: "No attendance logged", hi: "कोई उपस्थिति दर्ज नहीं", mr: "कोणतीही उपस्थिती नोंदवली नाही", bho: "हाजिरी खाली बा" },
+  "sewak.empty_khata": { en: "Khata is clean", hi: "खाता साफ है", mr: "खाते स्वच्छ आहे", bho: "खाता साफ बा" },
+  "sewak.empty_welfare": { en: "No welfare records", hi: "कोई कल्याण रिकॉर्ड नहीं", mr: "कोणतेही कल्याण रेकॉर्ड नाहीत", bho: "मदद के खबर ना बा" },
 
-  // Navigation
+  "MODE_BASIC": { en: "Basic", hi: "बेसिक", mr: "मुलभूत", gu: "મૂળભૂત", pa: "ਬੇਸਿਕ", ta: "அடிப்படை", bho: "साधारण", kn: "ಮೂಲಭೂತ", te: "సాధారణ", ne: "आधारभूत", bn: "বেসিক", mni: "বেসিক" },
+  "MODE_ADVANCED": { en: "Advanced", hi: "एडवांस", mr: "प्रगत", gu: "અદ્યતન", pa: "ਐਡਵਾਂਸ", ta: "மேம்பட்ட", bho: "खास", kn: "ಸುಧಾರಿತ", te: "అధునాతన", ne: "उन्नत", bn: "অ্যাডভান্স", mni: "অদভান্স" },
+  "RITUAL": { en: "Daily Ritual", hi: "दैनिक अनुष्ठान", mr: "विधी", gu: "વિધિ", pa: "ਰਸਮ", ta: "சடங்கு", bho: "रोज के पूजा-पाठ", kn: "ಆಚರಣೆ", te: "ఆచారం", ne: "अनुष्ठान", bn: "অনুষ্ঠান", mni: "লাইনিং" },
+
   "nav.technical_manifesto": {
-    en: "Technical Manifesto", hi: "\u0924\u0915\u0928\u0940\u0915\u0940 \u0918\u094b\u0937\u0923\u093e\u092a\u0924\u094d\u0930", mr: "\u0924\u093e\u0902\u0924\u094d\u0930\u093f\u0915 \u091c\u093e\u0939\u0940\u0930\u0928\u093e\u092e\u093e", gu: "\u0aa4\u0a95\u0aa8\u0ac0\u0a95\u0ac0 \u0a9c\u0abe\u0ab9\u0ac7\u0ab0\u0aa8\u0abe\u0aae\u0ac1\u0a82",
-    pa: "\u0a24\u0a15\u0a28\u0a40\u0a15\u0a40 \u0a2e\u0a48\u0a28\u0a40\u0a2b\u0a48\u0a38\u0a1f\u0acb", ta: "\u0ba4\u0bca\u0bb4\u0bbf\u0bb2\u0bcd\u0ba8\u0bc1\u0b9f\u0bcd\u0baa \u0bae\u0bc7\u0ba9\u0bbf\u0baa\u0bc6\u0bb8\u0bcd\u0b9f\u0bcb", bho: "\u0924\u0915\u0928\u0940\u0915\u0940 \u0918\u094b\u0937\u0923\u093e\u092a\u0924\u094d\u0930", kn: "\u0ca4\u0cbe\u0c82\u0ca4\u0ccd\u0cb0\u0cbf\u0c95 \u0caa\u0ccd\u0cb0\u0ca3\u0cbe\u0cb3\u0cbf\u0c95\u0cc6",
-    te: "\u0c38\u0c3e\u0c02\u0c15\u0c47\u0c24\u0c3f\u0c15 \u0c2e\u0c47\u0c28\u0c3f\u0c2b\u0c46\u0c38\u0c4d\u0c1f\u0c4b", ne: "\u092a\u094d\u0930\u093e\u0935\u093f\u0927\u093f\u0915 \u0918\u094b\u0937\u0923\u093e\u092a\u0924\u094d\u0930", bn: "\u09aa\u09cd\u09b0\u09af\u09c1\u0995\u09cd\u09a4\u09bf\u0997\u09a4 \u0987\u09b6\u09a4\u09c7\u09b9\u09be\u09b0", mni: "\u09a4\u09c7\u0995\u09a8\u09bf\u0995\u09c7\u09b2 \u09ae\u09c7\u09a8\u09bf\u09ab\u09c7\u09b8\u09cd\u09a4\u09cb"
+    en: "Technical Manifesto", hi: "तकनीकी घोषणापत्र", mr: "तांत्रिक जाहीरनामा", gu: "તકનીકી જાહેરનામું", pa: "ਤਕਨੀਕੀ ਮੈਨੀਫੈਸਟੋ", ta: "தொழில்நுட்ப மேனிபெஸ்டோ", bho: "तकनीकी घोषणापत्र", kn: "ತಾಂತ್ರಿಕ ಪ್ರಣಾಳಿಕೆ", te: "సాంకేతిక మేనిఫెస్టో", ne: "प्राविधिक घोषणापत्र", bn: "প্রযুক্তিগত ইশতেহার", mni: "তেকনিকেল মেনীফেস্তো"
   },
   "nav.mission_arch": {
-    en: "Mission & Architecture", hi: "\u092e\u093f\u0936\u0928 \u0914\u0930 \u0935\u093e\u0938\u094d\u0924\u0941\u0915\u0932\u093e", mr: "\u092e\u093f\u0936\u0928 \u0906\u0923\u093f \u0935\u093e\u0938\u094d\u0924\u0941\u0936\u093e\u0938\u094d\u0924\u094d\u0930", gu: "\u0aae\u0abf\u0ab6\u0aa8 \u0a85\u0aa8\u0ac7 \u0a86\u0ab0\u0acd\u0a95\u0abf\u0a9f\u0ac7\u0a95\u0acd\u0a9a\u0ab0",
-    pa: "\u0a2e\u0a3f\u0a38\u0a3c\u0a28 \u0a05\u0a24\u0a47 \u0a06\u0a30\u0a15\u0a40\u0a1f\u0a48\u0a15\u0a1a\u0cb0\u0ccd", ta: "\u0baa\u0ba3\u0bbf \u0bae\u0bb1\u0bcd\u0bb1\u0bc1\u0bae\u0bcd \u0b95\u0b9f\u0bcd\u0b9f\u0bbf\u0b9f\u0b95\u0bcd\u0b95\u0bb2\u0bc8", bho: "\u092e\u093f\u0936\u0928 \u0906\u0909\u0930 \u0935\u093e\u0938\u094d\u0924\u0941\u0915\u0932\u093e", kn: "\u0cae\u0cbf\u0cb7\u0ca8\u0ccd \u0cae\u0ca4\u0ccd\u0ca4\u0cc1 \u0c86\u0cb0\u0ccd\u0c95\u0cbf\u0c9f\u0cc6\u0c95\u0ccd\u0c9a\u0cb0\u0ccd",
-    te: "\u0c2e\u0c3f\u0c37\u0c28\u0c4d \u0c2e\u0c30\u0c3f\u0c2f\u0c41 \u0c06\u0c30\u0c4d\u0c95\u0cbf\u0c1f\u0c46\u0c15\u0c4d\u0c1a\u0c30\u0c4d", ne: "\u092e\u093f\u0938\u0928 \u0930 \u0935\u093e\u0938\u094d\u0924\u0941\u0915\u0932\u093e", bn: "\u09ae\u09bf\u09b6\u09a8 \u098f\u09ac\u0982 \u09b8\u09cd\u09a5\u09be\u09aa\u09a4\u09cd\u09af", mni: "\u09ae\u09bf\u09b8\u09a8 \u0985\u09ae\u09b8\u09c1\u0982 \u0986\u09b0\u09cd\u0995\u09bf\u09a4\u09c7\u0995\u099a\u09b0"
+    en: "Mission & Architecture", hi: "मिशन और वास्तुकला", mr: "मिशन आणि वास्तुशास्त्र", gu: "મિશન અને આર્કિટેક્ચર", pa: "ਮਿਸ਼ਨ ਅਤੇ ਆਰਕੀਟੈਕਚਰ", ta: "பணி மற்றும் கட்டிடக்கலை", bho: "मिशन और वास्तुकला", kn: "ಮಿಷನ್ ಮತ್ತು ಆರ್ಕಿಟೆಕ್ಚರ್", te: "మిషన్ మరియు ఆర్కిటెక్చర్", ne: "मिसन र वास्तुकला", bn: "মিশন এবং স্থাপত্য", mni: "মিসন অমসুং আর্কিটেকচর"
   },
   "nav.open_app": {
     en: "Enter Sovereign Vault", hi: "\u0938\u0949\u0935\u0930\u0947\u0928 \u0935\u0949\u0932\u094d\u091f \u092e\u0947\u0902 \u092a\u094d\u0930\u0935\u0947\u0936 \u0915\u0930\u0947\u0902", mr: "\u0938\u0949\u0935\u0930\u0947\u0928 \u0935\u0949\u0932\u094d\u091f\u092e\u0927\u094d\u092f\u0947 \u092a\u094d\u0930\u0935\u0947\u0936 \u0915\u0930\u093e", gu: "\u0ab8\u0acb\u0ab5\u0ab0\u0abf\u0aa8 \u0935\u0ac9\u0ab2\u0acd\u0a9f\u0aae\u0abe\u0a82 \u0aaa\u0acd\u0ab0\u0ab5\u0ac7\u0ab6\u0acb",
@@ -211,7 +252,7 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
   "landing.privacy.guarantee.3": { en: "No telemetry or data tracking", hi: "कोई टेलीमेट्री या डेटा ट्रैकिंग नहीं", bho: "कवनो डेटा ट्रैकिंग नईखे" },
   "landing.privacy.guarantee.4": { en: "Sovereign .kutumb vault protocol", hi: "संप्रभु .kutumb वॉल्ट प्रोटोकॉल", bho: "संप्रभु .kutumb वॉल्ट नियम" },
   "landing.privacy.guarantee.5": { en: "Offline memory preservation", hi: "ऑफलाइन मेमोरी संरक्षण", bho: "ऑफलाइन जानकारी के सुरक्षा" },
-  "landing.footer.founder": { en: "System Architect: Jawahar R. M.", hi: "सिस्टम आर्किटेक्ट: जवाहर आर. एम.", bho: "सिस्टम इंजीनियर: जवाहर आर. एम." },
+  "landing.footer.founder": { en: "System Architect: Jawahar R. Mallah", hi: "सिस्टम आर्किटेक्ट: जवाहर आर. मल्लाह", bho: "सिस्टम इंजीनियर: जवाहर आर. मल्लाह" },
   "landing.footer.manifesto_header": { en: "The Sovereign Guarantee", hi: "संप्रभु गारंटी", bho: "संप्रभु गारंटी" },
   "landing.features.card_agentic.desc": {
     en: "Local agentic intelligence that helps you manage family data without cloud processing.",
@@ -585,7 +626,7 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
   "FAMILY_LEDGER": { en: "Family Ledger", hi: "पारिवारिक खाता", mr: "कौटुंबिक खाते", gu: "કૌટુંબિક ખાતાવહી", pa: "ਪਰਿਵਾਰਕ ਖਾਤਾ", ta: "குடும்ப பேரேடு", bho: "परिवार के हिसाब-किताब", kn: "ಕುಟುಂಬದ ಲೆಡ್ಜರ್", te: "కుటుంబ లెడ్జర్", ne: "पारिवारिक लेखा", bn: "ফ্যামিলি লেজার", mni: "ইমুংগী লেজর" },
   "FINALIZE_VAULT_BTN": { en: "Initialize My Vault", hi: "मेरा वॉल्ट प्रारंभ करें", mr: "माझे वॉल्ट सुरू करा", gu: "મારું વૉલ્ટ પ્રારંભ કરો", pa: "ਮੇਰਾ ਵਾਲਟ ਸ਼ੁਰੂ ਕਰੋ", ta: "எனது பெட்டகத்தைத் தொடங்கவும்", bho: "हमार तिजोरी शुरू करीं", kn: "ನನ್ನ ವಾಲ್ಟ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ", te: "నా వాల్ట్‌ని ప్రారంభించండి", ne: "मेरो भल्ट सुरु गर्नुहोस्", bn: "আমার ভল্ট শুরু করুন", mni: "ঐগী ভোল্ত হৌদোকউ" },
   "FIRE_TARGET": { en: "Fire Target", hi: "फायर टारगेट", mr: "फायर टार्गेट", gu: "ફાયર ટાર્ગેટ", pa: "ਫਾਇਰ ਟਾਰਗੇਟ", ta: "இலக்கு", bho: "लक्ष्य", kn: "ಫೈರ್ ಗುರಿ", te: "ఫైర్ టార్గెట్", ne: "फायर लक्ष्य", bn: "ফায়ার টার্গেট", mni: "ফায়র তার্গেত" },
-  "FOUNDER_JAWAHAR": { en: "Jawahar R. M.", hi: "जवाहर आर. एम.", mr: "जवाहर आर. एम.", gu: "જવાહર આર. એમ.", pa: "ਜਵਾਹਰ ਆਰ. ਐਮ.", ta: "ஜவஹர் ஆர். எம்.", bho: "जवाहर आर. एम.", kn: "ಜವಾಹರ್ ಆರ್. ಎಂ.", te: "జవహర్ ఆర్. ఎమ్.", ne: "जवाहर आर. एम.", bn: "জওহর আর. এম.", mni: "জৱাহর আর. এম." },
+  "FOUNDER_JAWAHAR": { en: "Jawahar R. Mallah", hi: "????? ??. ??????", mr: "????? ??. ??????", gu: "????? ??. ??????", pa: "????? ??. ??????", ta: "????? ???. ?????", bho: "????? ??. ??????", kn: "?????? ???. ?????", te: "????? ???. ?????", ne: "????? ??. ??????", bn: "???? ??. ?????????", mni: "????? ??. ??????" },
   "FOUNDER_PUSHPA": { en: "Pushpa D.", hi: "पुष्पा डी.", mr: "पुष्पा डी.", gu: "પુષ્પા ડી.", pa: "ਪੁਸ਼ਪਾ ਡੀ.", ta: "புஷ்பா டி.", bho: "पुष्पा डी.", kn: "ಪುಷ್ಪಾ ಡಿ.", te: "పుష్ప డి.", ne: "पुष्पा डी.", bn: "পুষ্পা ডি.", mni: "পুস্পতি দি." },
   "FOUNDER_TITLE": { en: "Project Creator", hi: "परियोजना निर्माता", mr: "प्रकल्प निर्माता", gu: "પ્રોજેક્ટ સર્જક", pa: "ਪ੍ਰੋਜੈਕਟ ਸਿਰਜਣਹਾਰ", ta: "திட்ட உருவாக்குபவர்", bho: "प्रोजेक्ट बनावे वाला", kn: "ಪ್ರಾಜೆಕ್ಟ್ ಕ್ರಿಯೇಟರ್", te: "ప్రాజెక్ట్ క్రియేటర్", ne: "परियोजना सिर्जनाकर्ता", bn: "প্রকল্প নির্মাতা", mni: "প্রোজেক্ত শেম্লিবশিং" },
   "FULL_SCHEDULE": { en: "Full Schedule", hi: "पूरा शेड्यूल", mr: "पूर्ण वेळापत्रक", gu: "સંપૂર્ણ સમયપત્રક", pa: "ਪੂਰਾ ਸਮਾਂ-ਸਾਰਣੀ", ta: "முழு அட்டவணை", bho: "पूरा टाइम टेबल", kn: "ಪೂರ್ಣ ವೇಳಾಪಟ್ಟಿ", te: "పూర్తి షెడ్యూల్", ne: "पूर्ण तालिका", bn: "সম্পূর্ণ শিডিউল", mni: "অকুপ্পা সেদ্যুল" },
@@ -1395,6 +1436,7 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
   "common.nominal": { en: "NOMINAL", hi: "सामान्य", bho: "ठीक बा" },
   "common.high": { en: "HIGH", hi: "उच्च", bho: "ढेर बा" },
   "common.risk": { en: "RISK", hi: "खतरा", bho: "जोखिम" },
+  "common.built_by": { en: "Architect", hi: "\u0906\u0930\u094d\u0915\u093f\u091f\u0947\u0915\u094d\u091f", bho: "\u092c\u0928\u093e\u0935\u0947 \u0935\u093e\u0932\u093e" },
 
   // --- Legal & Privacy (Phase 2) ---
   "legal.privacy.sec1_title": { en: "1. Zero Data Collection", hi: "1. शून्य डेटा संग्रह", bho: "1. जीरो डेटा कलेक्शन" },

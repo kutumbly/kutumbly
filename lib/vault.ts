@@ -2,7 +2,7 @@
  * कुटुंबली — KUTUMBLY SOVEREIGN OS
  * Zero Cloud · Local First · Encrypted · Offline Forever
  * ============================================================
- * System Architect   :  Jawahar R. M.
+ * System Architect   :  Jawahar R. Mallah
  * Organisation:  AITDL Network — Sovereign Division
  * Project     :  Kutumbly — India's Family OS
  * Contact     :  kutumbly@outlook.com
@@ -43,6 +43,7 @@ export async function createVault(name: string, pin: string, authorizedEmails: s
   // 1. Init sql.js with empty DB
   const SQL = await getEngine();
   const db = new SQL.Database();
+  db.run("PRAGMA foreign_keys = ON;");
   
   const vaultId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
   // 2. Run schema + stamp version so migration is never triggered on new vaults
@@ -144,6 +145,7 @@ export async function openVault(pin: string, handle?: FileSystemFileHandle) {
   const dbBytes = await decryptDB(fileBytes, pin); // throws 'WRONG_PIN' if bad auth
   const SQL = await getEngine();
   const db = new SQL.Database(dbBytes);
+  db.run("PRAGMA foreign_keys = ON;");
   
   return { db, handle: finalHandle };
 }
@@ -155,6 +157,7 @@ export async function openVaultFromBytes(bytes: Uint8Array, pin: string) {
   const dbBytes = await decryptDB(bytes, pin);
   const SQL = await getEngine();
   const db = new SQL.Database(dbBytes);
+  db.run("PRAGMA foreign_keys = ON;");
   return db;
 }
 
@@ -236,10 +239,13 @@ export async function getDevVault(): Promise<Database> {
   const saved = loadDevState();
   
   if (saved) {
-    return new SQL.Database(saved);
+    const db = new SQL.Database(saved);
+    db.run("PRAGMA foreign_keys = ON;");
+    return db;
   }
   
   const db = new SQL.Database();
+  db.run("PRAGMA foreign_keys = ON;");
   db.run(SCHEMA_SQL);
   db.run(`PRAGMA user_version = ${CURRENT_SCHEMA_VERSION}`);
   db.run(`INSERT INTO settings (key, value) VALUES ('vault_name', 'Dev Vault')`);
