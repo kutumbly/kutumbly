@@ -28,6 +28,9 @@ const nextConfig = {
   output: 'export',           // static export for portability
   images: { unoptimized: true },
   allowedDevOrigins: ['localhost', '127.0.0.1'],
+  env: {
+    NEXT_PUBLIC_SITE_URL: "https://kutumbly.com",
+  },
   turbopack: {},
   webpack: (config) => {
     config.resolve.fallback = { fs: false, path: false, crypto: false };

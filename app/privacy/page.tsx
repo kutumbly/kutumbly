@@ -42,34 +42,53 @@ export default function PrivacyPolicy() {
           </p>
 
           <div className="prose prose-invert prose-p:text-text-secondary prose-p:font-medium prose-p:leading-[1.8] prose-headings:font-black prose-headings:text-text-primary max-w-none">
-            <h2>{t('legal.privacy.intro.title')}</h2>
-            <p>
-              {t('legal.privacy.intro.content')}
-            </p>
+            <h2 className="text-3xl mb-8">{t('legal.privacy.mission_statement')}</h2>
+            
+            <div className="space-y-12 mt-12">
+              <section>
+                <h3 className="text-xl text-gold mb-4">{t('legal.privacy.sec1_title')}</h3>
+                <p>{t('legal.privacy.sec1_txt')}</p>
+              </section>
 
-            <h2>{t('legal.privacy.owner.title')}</h2>
-            <p>
-              {t('legal.privacy.owner.content')}
-            </p>
+              <section>
+                <h3 className="text-xl text-gold mb-4">{t('legal.privacy.sec2_title')}</h3>
+                <p>{t('legal.privacy.sec2_txt')}</p>
+              </section>
 
-            <h2>{t('legal.privacy.encryption.title')}</h2>
-            <p>
-              {t('legal.privacy.encryption.content')}
-            </p>
+              <section>
+                <h3 className="text-xl text-gold mb-4">{t('legal.privacy.sec3_title')}</h3>
+                <p>{t('legal.privacy.sec3_txt')}</p>
+              </section>
 
-            <h2>{t('legal.privacy.telemetry.title')}</h2>
-            <p>
-              {t('legal.privacy.telemetry.content')}
-            </p>
+              <section>
+                <h3 className="text-xl text-gold mb-4">{t('legal.privacy.sec4_title')}</h3>
+                <p>{t('legal.privacy.sec4_txt')}</p>
+              </section>
 
-            <h2>{t('legal.privacy.portability.title')}</h2>
-            <p>
-              {t('legal.privacy.portability.content')}
-            </p>
+              <section>
+                <h3 className="text-xl text-gold mb-4">{t('legal.privacy.sec5_title')}</h3>
+                <p>{t('legal.privacy.sec5_txt')}</p>
+              </section>
 
-            <div className="mt-16 p-8 bg-clinical border border-gold/20 rounded-[2rem] text-center">
-              <h3 className="text-sm font-black text-gold uppercase tracking-widest mb-2 mt-0">{t('legal.privacy.guarantee.title')}</h3>
-              <p className="text-xs mb-0">{t('legal.privacy.guarantee.subtitle')}</p>
+              <section>
+                <h3 className="text-xl text-gold mb-4">{t('legal.privacy.sec6_title')}</h3>
+                <p>{t('legal.privacy.sec6_txt')}</p>
+              </section>
+            </div>
+
+            <div className="mt-20 p-12 bg-clinical border border-border-light rounded-[3rem] relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                 <div className="w-24 h-24 border-2 border-gold rounded-full" />
+              </div>
+              <h3 className="text-2xl font-black text-text-primary mb-6">
+                {t('legal.privacy.founder_note_title')}
+              </h3>
+              <p className="italic text-lg text-text-secondary leading-relaxed opacity-90">
+                "{t('legal.privacy.founder_note_txt')}"
+              </p>
+              <div className="mt-8 text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
+                — {t('landing.footer.founder')}
+              </div>
             </div>
           </div>
         </div>

@@ -125,9 +125,8 @@ function validateSovereignty(content) {
 
     for (const dep of BANNED_DEPENDENCIES) {
         // Match import/require/package references
-        // Tighter pattern to match actual imports/requires, avoiding config self-matches
         const pattern = new RegExp(
-            `(import\\s+.*from\\s+['"\\\`]${dep.replace('/', '\\/')}|require\\s*\\(\\s*['"\\\`]${dep.replace('/', '\\/')})`,
+            `(import|require|from|"dependencies"|install).*['"\`]?${dep.replace('/', '\\/')}['"\`]?`,
             'i'
         );
         if (pattern.test(content)) {
@@ -149,8 +148,7 @@ function validateStorageAPIs(content) {
     let passed = true;
 
     for (const api of BANNED_STORAGE_APIS) {
-        const pattern = new RegExp(`\\b${api}(\\.|\\s*=|\\[|\\()`, 'i');
-        if (pattern.test(content)) {
+        if (content.includes(api)) {
             fail(`Banned storage API used: "${api}" — use .kutumb / saveVault instead`);
             passed = false;
         }
@@ -235,9 +233,7 @@ function validateTerminology(content) {
     // Check no competitor comparisons
     const competitors = ['TallyPrime', 'Tally Prime', 'Notion', 'Obsidian'];
     for (const comp of competitors) {
-        // Match whole words but ignore single-quoted config definitions
-        const pattern = new RegExp(`\\b${comp}\\b(?!['"\`])`, 'i');
-        if (pattern.test(content)) {
+        if (content.includes(comp)) {
             warn(`Competitor reference detected: "${comp}" — remove per branding protocol`);
             // Warning only, not a hard failure
         }
