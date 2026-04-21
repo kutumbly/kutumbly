@@ -200,7 +200,7 @@ export default function SetupModule() {
               >
                 <option value="en">English (India)</option>
                 <option value="hi">हिन्दी (Hindi)</option>
-                <option value="mr">मরাठी (Marathi)</option>
+                <option value="mr">????? (Marathi)</option>
                 <option value="gu">ગુજરાતી (Gujarati)</option>
                 <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
                 <option value="ta">தமிழ் (Tamil)</option>
@@ -355,7 +355,7 @@ export default function SetupModule() {
           </div>
         </section>
 
-        {/* ── TallyPrime Gateway ────────────────────────────────────── */}
+        {/* ── ERP Gateway ────────────────────────────────────── */}
         {/* ... (Tally UI remains unchanged) ... */}
         <section>
           <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4 px-1">
@@ -364,7 +364,7 @@ export default function SetupModule() {
           <div className="space-y-3">
             <div className="card p-4 flex flex-col gap-4">
                <div>
-                  <div className="text-sm font-black text-text-primary">TallyPrime Protocol</div>
+                  <div className="text-sm font-black text-text-primary">ERP Protocol</div>
                   <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-widest mt-1">
                     Export Kutumbly Ledgers to Standard XML Vouchers
                   </div>
@@ -460,3 +460,4 @@ export default function SetupModule() {
     </ModuleShell>
   );
 }
+

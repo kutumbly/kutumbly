@@ -16,7 +16,14 @@
     "lint": "eslint",
     "sovereign:alpha": "node scripts/sovereign.js alpha",
     "sovereign:beta": "node scripts/sovereign.js beta",
-    "sovereign:prod": "node scripts/sovereign.js prod"
+    "sovereign:prod": "node scripts/sovereign.js prod",
+    "validate:ai": "node scripts/validate-ai.js",
+    "validate:ai:strict": "node scripts/validate-ai.js --strict",
+    "validate:ai:code": "node scripts/validate-ai.js --code",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.md": "node scripts/validate-ai.js --strict"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
@@ -38,6 +45,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.3",
     "eslint-plugin-boundaries": "^6.0.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
