@@ -41,6 +41,7 @@ interface AppStore extends VaultStore {
   sidebarCollapsed: boolean;
   lang: 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho' | 'kn' | 'te' | 'ne' | 'bn' | 'mni';
   mode: 'basic' | 'advanced';
+  customLabels: Record<string, string>; // key: "<lang>:<DICT_KEY>" → override value
   
   // Cloud-Syncript state
   lastSyncDate: string | null;
@@ -71,6 +72,9 @@ interface AppStore extends VaultStore {
   setSyncStatus: (s: { lastSync?: string, isSyncing?: boolean, pendingSync?: boolean }) => void;
   unlinkCloud: () => void;
   factoryReset: () => Promise<void>;
+  setCustomLabel: (lang: string, key: string, value: string) => void;
+  resetCustomLabel: (lang: string, key: string) => void;
+  resetAllLabels: () => void;
   saveSettings: () => void;
 
   // Dev only
@@ -93,6 +97,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   sidebarCollapsed: false,
   lang: 'en',
   mode: 'basic',
+  customLabels: {},
   lastSyncDate: null,
   isSyncing: false,
   gdriveToken: null,
@@ -130,6 +135,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
           if (s.pendingSync) set({ pendingSync: s.pendingSync });
           if (s.lang) set({ lang: s.lang });
           if (s.mode) set({ mode: s.mode });
+          if (s.customLabels) set({ customLabels: s.customLabels });
         } catch (e) {
           console.error("Failed to parse settings", e);
         }
@@ -264,6 +270,27 @@ export const useAppStore = create<AppStore>((set, get) => ({
     get().saveSettings();
   },
 
+  setCustomLabel: (lang, key, value) => {
+    const storeKey = `${lang}:${key}`;
+    set((s) => ({ customLabels: { ...s.customLabels, [storeKey]: value } }));
+    get().saveSettings();
+  },
+
+  resetCustomLabel: (lang, key) => {
+    const storeKey = `${lang}:${key}`;
+    set((s) => {
+      const next = { ...s.customLabels };
+      delete next[storeKey];
+      return { customLabels: next };
+    });
+    get().saveSettings();
+  },
+
+  resetAllLabels: () => {
+    set({ customLabels: {} });
+    get().saveSettings();
+  },
+
   saveSettings: () => {
     localStorage.setItem('kutumbly_settings', JSON.stringify({
       hiddenModules: get().hiddenModules,
@@ -272,6 +299,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
       mode: get().mode,
       lastSyncDate: get().lastSyncDate,
       pendingSync: get().pendingSync,
+      customLabels: get().customLabels,
     }));
   },
 

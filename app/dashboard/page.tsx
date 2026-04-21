@@ -23,7 +23,7 @@ import { useEffect } from "react";
 import {
   Home, Book, CheckSquare, IndianRupee,
   Settings, Shield, Heart,
-  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap, Cloud, Milk, Flame, LogOut
+  Utensils, TrendingUp, Calendar, Briefcase, Network, GraduationCap, Cloud, Milk, Flame, LogOut, Tag
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation, Language } from "@/lib/i18n";
@@ -44,6 +44,7 @@ import SuvidhaModule from "@/components/dashboard/SuvidhaModule";
 import SanskritiModule from "@/components/dashboard/SanskritiModule";
 import BottomNav from "@/components/dashboard/BottomNav";
 import ModuleShell from "@/components/dashboard/ModuleShell";
+import LabelsModule from "@/components/dashboard/LabelsModule";
 
 const ALL_TABS = [
   { id: "home",      icon: Home },
@@ -60,6 +61,7 @@ const ALL_TABS = [
   { id: "sanskriti", icon: Flame },
   { id: "sync",      icon: Cloud },
   { id: "network",   icon: Network },
+  { id: "labels",    icon: Tag },
   { id: "setup",     icon: Settings },
 ];
 
@@ -114,6 +116,7 @@ export default function DashboardPage() {
       case "sanskriti":  return <SanskritiModule />;
       case "sync":       return <CloudSyncriptModule />;
       case "network":    return <NetworkModule />;
+      case "labels":     return <LabelsModule />;
       case "setup":      return <SetupModule />;
       default:
         return (

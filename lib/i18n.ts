@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
  * \u0915\u0941\u091f\u0941\u0902\u092c\u0932\u0940 \u2014 KUTUMBLY SOVEREIGN OS
  * Zero Cloud \u00b7 Local First \u00b7 Encrypted \u00b7 Offline Forever
  * ============================================================
@@ -1411,6 +1411,7 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
   "legal.privacy.sec6_txt": { en: "Even if Kutumbly.com goes offline, you can run the OS from a local backup. You are never dependent on us.", hi: "यदि Kutumbly.com ऑफलाइन भी हो जाता है, तो भी आप इसे लोकल बैकअप से चला सकते हैं।" },
   "legal.privacy.founder_note_title": { en: "A Message from our System Architect", hi: "हमारे सिस्टम आर्किटेक्ट का संदेश", bho: "सिस्टम आर्किटेक्ट के संदेस" },
   "legal.privacy.founder_note_txt": { en: "I built Kutumbly to protect my own family's memories. I want you to have that same peace of mind. Your data is your property.", hi: "मैंने अपने परिवार की यादों को सुरक्षित रखने के लिए इसे बनाया है। मैं चाहता हूँ कि आप भी वही शांति महसूस करें। आपका डेटा आपकी संपत्ति है।" },
+  "NAV_LABELS": { en: "Labels", hi: "लेबल", mr: "लेबल", gu: "લેબલ", pa: "ਲੇਬਲ", ta: "லேபிள்", bho: "लेबल", kn: "ಲೇಬಲ್", te: "లేబిల్", ne: "लेबल", bn: "লেবেল", mni: "লেবেল" },
 };
 
 /**
@@ -1429,8 +1430,25 @@ export const t = (key: string, lang: Language): string => {
 };
 
 /**
- * Hook for components
+ * Hook for components — checks user custom label overrides first.
+ * Labels keyed as "<lang>:<DICT_KEY>" allow per-language overrides.
  */
 export const useTranslation = (lang: Language) => {
-  return (key: string) => t(key, lang);
+  const getCustom = (key: string): string | undefined => {
+    if (typeof window === 'undefined') return undefined;
+    try {
+      const raw = localStorage.getItem('kutumbly_settings');
+      if (!raw) return undefined;
+      const settings = JSON.parse(raw);
+      return settings?.customLabels?.[`${lang}:${key}`];
+    } catch {
+      return undefined;
+    }
+  };
+
+  return (key: string): string => {
+    const custom = getCustom(key);
+    if (custom !== undefined && custom.trim() !== '') return custom;
+    return t(key, lang);
+  };
 };
