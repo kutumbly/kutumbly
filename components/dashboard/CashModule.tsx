@@ -54,8 +54,9 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export default function CashModule() {
-  const { lang } = useAppStore();
+  const { lang, mode } = useAppStore();
   const t = useTranslation(lang);
+  const isAdvanced = mode === 'advanced';
   const { txns, budgets, summary, addTransaction, deleteTransaction, setCategoryBudget, editTransaction } = useCash();
   const { familyMembers: members } = useFamily();
 
@@ -229,14 +230,12 @@ export default function CashModule() {
            className="space-y-8 md:space-y-12"
         >
         
-        {/* Top Stats Dashboard */}
-        {/* ── Top Dashboard Section ────────────────────────────────── */}
-         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-           {/* Left: 2x2 Primary Metrics */}
-           <div className="grid grid-cols-2 gap-4">
-             <MetricCard label={t('CASH_BALANCE')} value={summary.balance} isCurrency status="default" trend={[15000, 20000, 18000, 25000, summary.balance]} />
-             <MetricCard label={t('CASH_INCOME')} value={summary.income} isCurrency status="success" />
-             <MetricCard label={t('CASH_EXPENSE')} value={summary.expense} isCurrency status="danger" trend={[5000, 12000, 8000, 15000, summary.expense]} />
+         {/* Top Stats Dashboard — always shown */}
+         <div className="grid grid-cols-2 gap-4">
+           <MetricCard label={t('CASH_BALANCE')} value={summary.balance} isCurrency status="default" trend={isAdvanced ? [15000, 20000, 18000, 25000, summary.balance] : undefined} />
+           <MetricCard label={t('CASH_INCOME')} value={summary.income} isCurrency status="success" />
+           <MetricCard label={t('CASH_EXPENSE')} value={summary.expense} isCurrency status="danger" />
+           {isAdvanced && (
              <div className="bg-bg-primary rounded-[1.8rem] border border-border-light p-5 flex flex-col justify-between shadow-xl shadow-black/[0.02]">
                <div className="flex justify-between items-center mb-3">
                  <span className="text-[9px] font-black text-text-tertiary uppercase tracking-[0.2em] leading-tight">{t('CASH_SAVINGS_RATE')}</span>
@@ -250,49 +249,47 @@ export default function CashModule() {
                  />
                </div>
              </div>
-           </div>
-           
-           {/* Right: Spending Profile (Donut Chart) */}
-           <div className="bg-bg-primary rounded-[2.5rem] p-7 flex flex-col items-center justify-center border border-border-light shadow-xl shadow-black/[0.02]">
-              <div className="text-[10px] font-black uppercase tracking-[0.3em] mb-7 text-text-tertiary">{t('EXPENSE_PROFILE')}</div>
-              <DonutChart data={donutData.length > 0 ? donutData : [{ label: 'Empty', value: 1, color: 'var(--bg-tertiary)' }]} size={160} thickness={18} />
-              <div className="mt-7 flex flex-wrap justify-center gap-3">
-                 {donutData.slice(0, 3).map((d, i) => (
-                    <div key={i} className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-bg-tertiary border border-border-light">
-                       <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.color }}></div>
-                       <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{d.label}</span>
-                    </div>
-                 ))}
-              </div>
-           </div>
+           )}
          </div>
 
-         {/* ── Middle Dashboard Section: Budgets & Actions ─────────── */}
-         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-           {/* Budget Tracking */}
-           <section className="lg:col-span-2 space-y-6">
-             <div className="flex items-center justify-between px-2">
-               <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">{t('CASH_BUDGET_STATUS')}</div>
-               <button 
-                 onClick={() => {
-                   const cat = window.prompt(t('CASH_PROMPT_CAT'));
-                   if (!cat) return;
-                   const amt = window.prompt(t('CASH_PROMPT_AMT'));
-                   if (!amt) return;
-                   setCategoryBudget(cat, Number(amt));
-                 }}
-                 className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline"
-               >
-                 {t('CASH_DEFINE_BUDGET')}
-               </button>
+         {/* Donut Chart + Budget — Advanced only */}
+         {isAdvanced && (
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+             <div className="bg-bg-primary rounded-[2.5rem] p-7 flex flex-col items-center justify-center border border-border-light shadow-xl shadow-black/[0.02]">
+               <div className="text-[10px] font-black uppercase tracking-[0.3em] mb-7 text-text-tertiary">{t('EXPENSE_PROFILE')}</div>
+               <DonutChart data={donutData.length > 0 ? donutData : [{ label: 'Empty', value: 1, color: 'var(--bg-tertiary)' }]} size={160} thickness={18} />
+               <div className="mt-7 flex flex-wrap justify-center gap-3">
+                 {donutData.slice(0, 3).map((d, i) => (
+                   <div key={i} className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-bg-tertiary border border-border-light">
+                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.color }}></div>
+                     <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{d.label}</span>
+                   </div>
+                 ))}
+               </div>
              </div>
-             
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {budgets.length > 0 ? budgets.map((b) => {
-                  const spent = txns.filter(t => t.category === b.category && t.type === 'expense').reduce((s, curr) => s + curr.amount, 0);
-                  const perc = Math.min(100, (spent / b.monthly_limit) * 100);
-                  return (
-                    <div key={b.id} className="bg-bg-primary border border-border-light p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+
+             <div className="space-y-4">
+               <div className="flex items-center justify-between px-2">
+                 <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">{t('CASH_BUDGET_STATUS')}</div>
+                 <button 
+                   onClick={() => {
+                     const cat = window.prompt(t('CASH_PROMPT_CAT'));
+                     if (!cat) return;
+                     const amt = window.prompt(t('CASH_PROMPT_AMT'));
+                     if (!amt) return;
+                     setCategoryBudget(cat, Number(amt));
+                   }}
+                   className="text-[9px] font-black text-gold-text uppercase tracking-widest hover:underline"
+                 >
+                   {t('CASH_DEFINE_BUDGET')}
+                 </button>
+               </div>
+               <div className="grid grid-cols-1 gap-3">
+                 {budgets.length > 0 ? budgets.map((b) => {
+                   const spent = txns.filter(t => t.category === b.category && t.type === 'expense').reduce((s, curr) => s + curr.amount, 0);
+                   const perc = Math.min(100, (spent / b.monthly_limit) * 100);
+                   return (
+                     <div key={b.id} className="bg-bg-primary border border-border-light p-5 rounded-2xl shadow-sm">
                        <div className="flex justify-between items-center mb-3">
                          <span className="text-[10px] font-black text-text-primary uppercase tracking-wider">{b.category}</span>
                          <span className="text-[9px] font-bold text-text-tertiary tabular-nums">₹{spent} / ₹{b.monthly_limit}</span>
@@ -300,39 +297,17 @@ export default function CashModule() {
                        <div className="w-full bg-bg-tertiary h-1.5 rounded-full overflow-hidden">
                          <div className={`h-full transition-all duration-500 rounded-full ${perc > 90 ? 'bg-red-500' : perc > 70 ? 'bg-orange-400' : 'bg-gold'}`} style={{ width: `${perc}%` }} />
                        </div>
-                    </div>
-                  );
-                }) : (
-                  <div className="col-span-full py-12 text-center bg-bg-primary border border-border-light border-dashed rounded-[2rem] opacity-40">
+                     </div>
+                   );
+                 }) : (
+                   <div className="py-10 text-center bg-bg-primary border border-border-light border-dashed rounded-[2rem] opacity-40">
                      <p className="text-[10px] font-black uppercase tracking-widest">{t('HEALTH_NO_DATA').replace('Health', 'Budget').replace('स्वास्थ्य', 'बजट')}</p>
-                  </div>
-                )}
-             </div>
-           </section>
-
-           {/* Quick Actions Sidebar */}
-           <div className="space-y-4">
-             <div className="text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em] px-2">{t('CASH_TREASURY')}</div>
-             
-             <button
-               onClick={() => setShowAddForm(true)}
-               className="w-full p-5 bg-gold-text text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:opacity-95 transition-all shadow-xl shadow-gold/10"
-             >
-               <IndianRupee size={18} /> {t('CASH_INCOME')}
-             </button>
-
-             <div className="bg-bg-primary border border-border-light rounded-[2rem] p-6 space-y-4 shadow-xl shadow-black/[0.01]">
-               <div className="flex items-center justify-between">
-                 <span className="text-[9px] font-black text-text-tertiary uppercase tracking-widest">{t('CASH_EFFICIENCY')}</span>
-                 <span className="text-[10px] font-black text-text-tertiary">{t('CASH_EFFICIENCY_HIGH')}</span>
+                   </div>
+                 )}
                </div>
-               <div className="w-full bg-bg-tertiary h-1 rounded-full overflow-hidden">
-                 <div className="w-3/4 h-full bg-gold" />
-               </div>
-               <p className="text-[10px] font-medium text-text-secondary leading-relaxed opacity-80 italic">"{t('CASH_LIQUIDITY_MSG')}"</p>
              </div>
            </div>
-         </div>
+         )}
 
          
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

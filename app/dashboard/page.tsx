@@ -67,7 +67,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const {
     isUnlocked, activeVault, lockVault,
-    lang,
+    lang, mode, setMode,
     hiddenModules, activeModule, setActiveModule,
   } = useAppStore();
   const t = useTranslation(lang as Language);
@@ -170,6 +170,25 @@ export default function DashboardPage() {
             </div>
 
             <span className="w-px h-4 bg-border-light hidden sm:block" />
+
+            {/* Mode Toggle */}
+            <div className="hidden sm:flex items-center bg-bg-secondary border border-border-light rounded-full p-0.5 gap-0.5">
+              {(['basic', 'advanced'] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setMode(m)}
+                  className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] transition-all ${
+                    mode === m
+                      ? m === 'advanced'
+                        ? 'bg-gold-text text-white shadow-sm'
+                        : 'bg-text-primary text-bg-primary shadow-sm'
+                      : 'text-text-tertiary hover:text-text-primary'
+                  }`}
+                >
+                  {m === 'basic' ? t('MODE_BASIC') || 'Basic' : t('MODE_ADVANCED') || 'Advanced'}
+                </button>
+              ))}
+            </div>
 
             {/* Language chip */}
             <div className="text-[9px] uppercase font-black tracking-[0.2em] text-text-tertiary bg-bg-secondary border border-border-light px-2 py-1 rounded-lg">

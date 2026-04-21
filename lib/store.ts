@@ -40,6 +40,7 @@ interface AppStore extends VaultStore {
   theme: 'dark' | 'light';
   sidebarCollapsed: boolean;
   lang: 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho' | 'kn' | 'te' | 'ne' | 'bn' | 'mni';
+  mode: 'basic' | 'advanced';
   
   // Cloud-Syncript state
   lastSyncDate: string | null;
@@ -65,6 +66,7 @@ interface AppStore extends VaultStore {
   setTheme: (t: 'dark' | 'light') => void;
   setSidebarCollapsed: (v: boolean) => void;
   setLang: (l: 'en' | 'hi' | 'mr' | 'gu' | 'pa' | 'ta' | 'bho' | 'kn' | 'te' | 'ne' | 'bn' | 'mni') => void;
+  setMode: (m: 'basic' | 'advanced') => void;
   setGDriveToken: (t: string | null) => void;
   setSyncStatus: (s: { lastSync?: string, isSyncing?: boolean, pendingSync?: boolean }) => void;
   unlinkCloud: () => void;
@@ -90,6 +92,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   theme: 'light',
   sidebarCollapsed: false,
   lang: 'en',
+  mode: 'basic',
   lastSyncDate: null,
   isSyncing: false,
   gdriveToken: null,
@@ -126,6 +129,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
           if (s.lastSyncDate) set({ lastSyncDate: s.lastSyncDate });
           if (s.pendingSync) set({ pendingSync: s.pendingSync });
           if (s.lang) set({ lang: s.lang });
+          if (s.mode) set({ mode: s.mode });
         } catch (e) {
           console.error("Failed to parse settings", e);
         }
@@ -255,11 +259,17 @@ export const useAppStore = create<AppStore>((set, get) => ({
     }
   },
 
+  setMode: (m) => {
+    set({ mode: m });
+    get().saveSettings();
+  },
+
   saveSettings: () => {
     localStorage.setItem('kutumbly_settings', JSON.stringify({
       hiddenModules: get().hiddenModules,
       theme: get().theme,
       lang: get().lang,
+      mode: get().mode,
       lastSyncDate: get().lastSyncDate,
       pendingSync: get().pendingSync,
     }));

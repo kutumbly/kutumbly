@@ -36,7 +36,8 @@ import {
   ArrowLeft,
   Settings2,
   Table,
-  History
+  History,
+  Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SuvidhaVendor, SuvidhaLog, SuvidhaPayment } from '@/types/db';
@@ -52,8 +53,9 @@ const VENDOR_TYPES = [
 ];
 
 export default function SuvidhaModule() {
-  const { lang } = useAppStore();
+  const { lang, mode } = useAppStore();
   const t = useTranslation(lang);
+  const isAdvanced = mode === 'advanced';
   const { 
     vendors, 
     logs, 
@@ -118,11 +120,11 @@ export default function SuvidhaModule() {
     >
       <div className="flex flex-col gap-8">
         
-        {/* Navigation Tabs (Pill Style) */}
+        {/* Navigation Tabs — Ledger hidden in Basic mode */}
         <div className="flex bg-bg-secondary p-1.5 rounded-2xl border border-border-light self-start relative">
           {[
             { id: 'dashboard', label: t('SUVIDHA_DASHBOARD'), icon: Calendar },
-            { id: 'ledger', label: t('SUVIDHA_LEDGER'), icon: Table },
+            ...(isAdvanced ? [{ id: 'ledger', label: t('SUVIDHA_LEDGER'), icon: Table }] : []),
             { id: 'vendors', label: t('SUVIDHA_VENDORS'), icon: Settings2 },
           ].map(tab => (
             <button
@@ -143,6 +145,16 @@ export default function SuvidhaModule() {
           ))}
         </div>
 
+        {/* Advanced mode upsell — only shown in basic */}
+        {!isAdvanced && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-bg-secondary rounded-xl border border-border-light self-start">
+            <Zap size={12} className="text-gold" />
+            <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">
+              Switch to Advanced for monthly bills & ledger
+            </span>
+          </div>
+        )}
+
         <AnimatePresence mode="wait">
           {view === 'dashboard' && (
             <motion.div 
@@ -153,12 +165,14 @@ export default function SuvidhaModule() {
               className="space-y-10"
             >
               
-              {/* Summary Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <MetricCard label={t('SUVIDHA_CURRENT_MILK')} value={currentMonthMilk} status="default" unit={t('SUVIDHA_LITERS')} />
-                <MetricCard label={t('SUVIDHA_PAYABLE')} value={summary.totalDue} isCurrency status="warning" />
-                <MetricCard label={t('SUVIDHA_ACTIVE_SERVICES')} value={vendors.length} status="success" unit={t('SUVIDHA_VENDORS')} />
-              </div>
+              {/* Summary Stats — Advanced only */}
+              {isAdvanced && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  <MetricCard label={t('SUVIDHA_CURRENT_MILK')} value={currentMonthMilk} status="default" unit={t('SUVIDHA_LITERS')} />
+                  <MetricCard label={t('SUVIDHA_PAYABLE')} value={summary.totalDue} isCurrency status="warning" />
+                  <MetricCard label={t('SUVIDHA_ACTIVE_SERVICES')} value={vendors.length} status="success" unit={t('SUVIDHA_VENDORS')} />
+                </div>
+              )}
 
 
               {/* Today's Tally */}

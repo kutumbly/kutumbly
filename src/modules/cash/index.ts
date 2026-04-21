@@ -13,7 +13,6 @@
 
 import { useMemo, useCallback, useState } from 'react';
 import { useAppStore } from '@/lib/store';
-import { saveVault } from '@/lib/vault';
 import { cashRepo } from './cash.repo';
 import { CashTransaction } from '@/types/db';
 
@@ -22,7 +21,7 @@ import { CashTransaction } from '@/types/db';
  * Sealed module for household financial tracking and budgeting.
  */
 export function useCash(month?: string) {
-  const { db, currentPin, fileHandle } = useAppStore();
+  const { db } = useAppStore();
   const [tick, setTick] = useState(0);
   const currentMonth = month || new Date().toISOString().slice(0, 7);
 
@@ -39,32 +38,25 @@ export function useCash(month?: string) {
     };
   }, [txns]);
 
-  const commit = useCallback(() => {
-    if (db && fileHandle && currentPin) {
-      saveVault(db, currentPin, fileHandle).catch(console.error);
-    }
+  const addTransaction = useCallback(async (tx: Omit<CashTransaction, 'id' | 'created_at'>) => {
+    await cashRepo.createTransaction(db, tx);
     setTick(t => t + 1);
-  }, [db, currentPin, fileHandle]);
+  }, [db]);
 
-  const addTransaction = useCallback((tx: Omit<CashTransaction, 'id' | 'created_at'>) => {
-    const id = cashRepo.createTransaction(db, tx);
-    commit();
-  }, [db, commit]);
+  const editTransaction = useCallback(async (id: string, updates: Partial<CashTransaction>) => {
+    await cashRepo.updateTransaction(db, id, updates);
+    setTick(t => t + 1);
+  }, [db]);
 
-  const editTransaction = useCallback((id: string, updates: Partial<CashTransaction>) => {
-    cashRepo.updateTransaction(db, id, updates);
-    commit();
-  }, [db, commit]);
+  const deleteTransaction = useCallback(async (id: string) => {
+    await cashRepo.deleteTransaction(db, id);
+    setTick(t => t + 1);
+  }, [db]);
 
-  const deleteTransaction = useCallback((id: string) => {
-    cashRepo.deleteTransaction(db, id);
-    commit();
-  }, [db, commit]);
-
-  const setCategoryBudget = useCallback((category: string, limit: number) => {
-    cashRepo.upsertBudget(db, category, limit, currentMonth);
-    commit();
-  }, [db, currentMonth, commit]);
+  const setCategoryBudget = useCallback(async (category: string, limit: number) => {
+    await cashRepo.upsertBudget(db, category, limit, currentMonth);
+    setTick(t => t + 1);
+  }, [db, currentMonth]);
 
   return {
     txns,

@@ -199,6 +199,36 @@ export async function saveVault(db: Database, pin: string, handle: FileSystemFil
 }
 
 /**
+ * MUTATE: Wrapper for all DB mutations that automatically triggers saveVault
+ * Structural guarantee for V4 compliance.
+ */
+export async function mutateVault(
+  db: Database,
+  sql: string,
+  params: (string | number | Uint8Array | null)[] = []
+): Promise<ReturnType<Database["exec"]>> {
+  if (!db) throw new Error("Database not initialized");
+  
+  // 1. Execute mutation
+  const result = db.exec(sql, params);
+
+  // 2. Resolve session state
+  const store = useAppStore.getState();
+  const { currentPin, fileHandle } = store;
+
+  if (currentPin && fileHandle) {
+    await saveVault(db, currentPin, fileHandle);
+  } else {
+    console.warn(
+      "[mutateVault] saveVault skipped — session state missing (PIN/Handle). " +
+      "Operations are in-memory only."
+    );
+  }
+
+  return result;
+}
+
+/**
  * DEV ONLY: Instant in-memory DB or loaded from dev state
  */
 export async function getDevVault(): Promise<Database> {

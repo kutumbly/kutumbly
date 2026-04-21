@@ -29,6 +29,12 @@ export const suvidhaRepo = {
     return runQuery<SuvidhaLog>(db, "SELECT * FROM suvidha_logs ORDER BY date DESC");
   },
 
+  getLogByVendorDate: (db: Database | null, vendorId: string, date: string): SuvidhaLog | null => {
+    if (!db) return null;
+    const rows = runQuery<SuvidhaLog>(db, "SELECT * FROM suvidha_logs WHERE vendor_id = ? AND date = ? LIMIT 1", [vendorId, date]);
+    return rows[0] ?? null;
+  },
+
   getPayments: (db: Database | null): SuvidhaPayment[] => {
     if (!db) return [];
     return runQuery<SuvidhaPayment>(db, "SELECT * FROM suvidha_payments ORDER BY date DESC");

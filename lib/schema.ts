@@ -66,6 +66,43 @@ CREATE TABLE IF NOT EXISTS cash_wealth_goals (
   created_at TEXT
 );
 
+-- INVEST HUB (WEALTH & PORTFOLIO)
+CREATE TABLE IF NOT EXISTS investments (
+  id TEXT PRIMARY KEY,
+  member_id TEXT,
+  goal_id TEXT,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  principal REAL DEFAULT 0,
+  current_value REAL DEFAULT 0,
+  units REAL DEFAULT 0,
+  monthly_sip REAL DEFAULT 0,
+  start_date TEXT,
+  maturity_date TEXT,
+  notes TEXT,
+  created_at TEXT
+);
+CREATE TABLE IF NOT EXISTS investment_transactions (
+  id TEXT PRIMARY KEY,
+  investment_id TEXT NOT NULL,
+  type TEXT NOT NULL,
+  amount REAL NOT NULL,
+  date TEXT NOT NULL,
+  notes TEXT,
+  created_at TEXT,
+  FOREIGN KEY (investment_id) REFERENCES investments(id)
+);
+CREATE TABLE IF NOT EXISTS invest_goals (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  target_amount REAL NOT NULL,
+  member_id TEXT,
+  deadline TEXT,
+  category TEXT,
+  is_completed INTEGER DEFAULT 0,
+  created_at TEXT
+);
+
 -- SAMAN HUB (HOUSEHOLD SUPPLY)
 CREATE TABLE IF NOT EXISTS saman_lists (
   id TEXT PRIMARY KEY, name TEXT, created_at TEXT, status TEXT DEFAULT 'active'
@@ -156,6 +193,84 @@ CREATE TABLE IF NOT EXISTS utsav_ledger (
   notes TEXT,
   updated_at TEXT
 );
+-- utsav_family_ledger: used by utsav.repo.ts getFamilyLedger / updateFamilyLedger
+CREATE TABLE IF NOT EXISTS utsav_family_ledger (
+  id TEXT PRIMARY KEY,
+  family_name TEXT NOT NULL,
+  event_id TEXT,
+  diya REAL DEFAULT 0,
+  mila REAL DEFAULT 0,
+  net REAL DEFAULT 0,
+  notes TEXT,
+  updated_at TEXT
+);
+-- Nevata Engine Tables (used by engine.ts for advanced event ops)
+CREATE TABLE IF NOT EXISTS nevata_inventory (
+  id TEXT PRIMARY KEY,
+  event_id TEXT NOT NULL,
+  item_name TEXT NOT NULL,
+  category TEXT NOT NULL,
+  quantity_expected REAL DEFAULT 0,
+  quantity_received REAL DEFAULT 0,
+  quantity_used REAL DEFAULT 0,
+  unit TEXT DEFAULT 'pcs',
+  status TEXT DEFAULT 'ORDERED',
+  vendor_id TEXT,
+  assigned_to_id TEXT,
+  backup_person_id TEXT,
+  delivery_date_expected TEXT,
+  delivery_date_actual TEXT,
+  is_returnable INTEGER DEFAULT 0,
+  return_deadline TEXT,
+  cost_estimated REAL DEFAULT 0,
+  cost_actual REAL DEFAULT 0,
+  notes TEXT,
+  created_at TEXT
+);
+CREATE TABLE IF NOT EXISTS nevata_vendors (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  service_type TEXT,
+  contact TEXT,
+  rating REAL DEFAULT 5,
+  reliability_score REAL DEFAULT 100,
+  advance_paid REAL DEFAULT 0,
+  total_amount REAL DEFAULT 0,
+  payment_status TEXT DEFAULT 'PENDING',
+  last_used_event TEXT,
+  notes TEXT
+);
+CREATE TABLE IF NOT EXISTS nevata_activity_log (
+  id TEXT PRIMARY KEY,
+  event_id TEXT NOT NULL,
+  type TEXT NOT NULL,
+  action TEXT NOT NULL,
+  item_id TEXT,
+  vendor_id TEXT,
+  user_id TEXT,
+  timestamp TEXT NOT NULL,
+  metadata TEXT
+);
+CREATE TABLE IF NOT EXISTS nevata_family_ledger (
+  id TEXT PRIMARY KEY,
+  family_name TEXT NOT NULL,
+  event_id TEXT,
+  diya REAL DEFAULT 0,
+  mila REAL DEFAULT 0,
+  net REAL DEFAULT 0,
+  notes TEXT,
+  updated_at TEXT
+);
+CREATE TABLE IF NOT EXISTS nevata_guest_list (
+  id TEXT PRIMARY KEY,
+  event_id TEXT NOT NULL,
+  guest_name TEXT NOT NULL,
+  family_tag TEXT,
+  guest_count INTEGER DEFAULT 1,
+  rsvp_status TEXT DEFAULT 'pending',
+  phone TEXT
+);
+
 CREATE TABLE IF NOT EXISTS utsav_inventory (
   id TEXT PRIMARY KEY,
   event_id TEXT NOT NULL,
