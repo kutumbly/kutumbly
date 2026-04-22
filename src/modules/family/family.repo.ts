@@ -12,6 +12,7 @@
 import { Database } from 'sql.js';
 import { FamilyMember } from '@/types/db';
 import { runQuery } from '@/lib/db';
+import { mutateVault } from '@/lib/vault';
 
 /**
  * Family/Identity logic repository using @/core/db
@@ -23,22 +24,34 @@ export const familyRepo = {
 
   getSettings: (db: Database | null): Record<string, string> => {
     if (!db) return {};
-    try {
-      const res = db.exec("SELECT * FROM settings");
-      const settings: Record<string, string> = {};
-      res[0]?.values.forEach((v: any[]) => {
-        settings[v[0] as string] = v[1] as string;
-      });
-      return settings;
-    } catch {
-      return {};
-    }
+    const res = runQuery<{key: string; value: string}>(db, "SELECT * FROM settings");
+    const settings: Record<string, string> = {};
+    res.forEach(item => {
+      settings[item.key] = item.value;
+    });
+    return settings;
   },
 
-  updateMember: (db: Database | null, id: string, data: Partial<FamilyMember>) => {
+  createMember: async (db: Database | null, member: Omit<FamilyMember, 'id' | 'is_active'>) => {
+    if (!db) return;
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+    await mutateVault(
+      db,
+      "INSERT INTO family_members (id, name, role, dob, avatar_initials, is_active) VALUES (?, ?, ?, ?, ?, 1)",
+      [id, member.name, member.role || null, member.dob || null, member.avatar_initials || member.name[0].toUpperCase()]
+    );
+    return id;
+  },
+
+  updateMember: async (db: Database | null, id: string, data: Partial<FamilyMember>) => {
     if (!db) return;
     const sets = Object.keys(data).map(k => `${k} = ?`).join(', ');
     const vals = [...Object.values(data), id];
-    db.run(`UPDATE family_members SET ${sets} WHERE id = ?`, vals);
+    await mutateVault(db, `UPDATE family_members SET ${sets} WHERE id = ?`, vals);
+  },
+
+  deleteMember: async (db: Database | null, id: string) => {
+    if (!db) return;
+    await mutateVault(db, "DELETE FROM family_members WHERE id = ?", [id]);
   }
 };

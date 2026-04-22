@@ -32,7 +32,6 @@ import CashModule from "@/components/dashboard/CashModule";
 import UtsavModule from "@/components/dashboard/UtsavModule";
 import SewakModule from "@/components/dashboard/SewakModule";
 import HealthModule from "@/components/dashboard/HealthModule";
-import InvestModule from "@/components/dashboard/InvestModule";
 import SamanModule from "@/components/dashboard/SamanModule";
 import SetupModule from "@/components/dashboard/SetupModule";
 import NetworkModule from "@/components/dashboard/NetworkModule";
@@ -53,7 +52,6 @@ const ALL_TABS = [
   { id: "suvidha",   icon: Milk },
   { id: "utsav",     icon: Calendar },
   { id: "health",    icon: Heart },
-  { id: "invest",    icon: TrendingUp },
   { id: "saman",     icon: Utensils },
   { id: "sewak",     icon: Briefcase },
   { id: "vidya",     icon: GraduationCap },
@@ -108,7 +106,6 @@ export default function DashboardPage() {
       case "cash":       return <CashModule />;
       case "utsav":      return <UtsavModule />;
       case "health":     return <HealthModule />;
-      case "invest":     return <InvestModule />;
       case "saman":      return <SamanModule />;
       case "sewak":      return <SewakModule />;
       case "vidya":      return <VidyaModule />;

@@ -20,28 +20,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Globe, Check } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { Language } from '@/lib/i18n';
-
-interface LanguageLink {
-  code: Language;
-  label: string;
-  native: string;
-}
-
-const LANGUAGES: LanguageLink[] = [
-  { code: 'en', label: 'English (India)', native: 'English' },
-  { code: 'hi', label: 'Hindi', native: 'हिन्दी' },
-  { code: 'mr', label: 'Marathi', native: 'मराठी' },
-  { code: 'gu', label: 'Gujarati', native: 'ગુજરાતી' },
-  { code: 'bho', label: 'Bhojpuri', native: 'भोजपुरी' },
-  { code: 'pa', label: 'Punjabi', native: 'ਪੰਜਾਬੀ' },
-  { code: 'bn', label: 'Bangla', native: 'বাংলা' },
-  { code: 'mni', label: 'Manipuri', native: 'মৈতেইলোন' },
-  { code: 'ne', label: 'Nepali', native: 'नेपाली' },
-  { code: 'ta', label: 'Tamil', native: 'தமிழ்' },
-  { code: 'kn', label: 'Kannada', native: 'ಕನ್ನಡ' },
-  { code: 'te', label: 'Telugu', native: 'తెలుగు' },
-];
+import { Language, SUPPORTED_LANGUAGES } from '@/lib/i18n';
 
 export default function LanguagePicker({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const { lang, setLang } = useAppStore();
@@ -85,7 +64,7 @@ export default function LanguagePicker({ isOpen, onClose }: { isOpen: boolean, o
             </div>
 
             <div className="p-4 grid grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto scroller-hide">
-               {LANGUAGES.map((l) => {
+               {SUPPORTED_LANGUAGES.map((l) => {
                  const isActive = lang === l.code;
                  return (
                    <button

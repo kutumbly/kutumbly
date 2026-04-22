@@ -56,9 +56,9 @@ function getJD(date: Date) {
   const month = date.getUTCMonth() + 1;
   const day = date.getUTCDate() + (date.getUTCHours() + date.getUTCMinutes() / 60) / 24;
   
-  let a = Math.floor((14 - month) / 12);
-  let y = year + 4800 - a;
-  let m = month + 12 * a - 3;
+  const a = Math.floor((14 - month) / 12);
+  const y = year + 4800 - a;
+  const m = month + 12 * a - 3;
   
   return day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
 }

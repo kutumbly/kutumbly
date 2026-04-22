@@ -147,7 +147,7 @@ export default function LandingFooter() {
             </span>
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-gold" />
-              <span className="text-[9px] font-black text-gold-text uppercase tracking-widest">"Memory, Not Code."</span>
+              <span className="text-[9px] font-black text-gold-text uppercase tracking-widest">&ldquo;Memory, Not Code.&rdquo;</span>
             </div>
           </div>
         </div>

@@ -66,8 +66,7 @@ export function useScanner() {
     }
 
     if (!detectorRef.current) {
-      // @ts-ignore
-      detectorRef.current = new window.BarcodeDetector({
+      detectorRef.current = new (window as any).BarcodeDetector({
         formats: ['qr_code', 'code_128', 'ean_13', 'ean_8']
       });
     }

@@ -16,6 +16,28 @@
 
 export type Language = "en" | "hi" | "mr" | "gu" | "pa" | "ta" | "bho" | "kn" | "te" | "ne" | "bn" | "mni";
 
+export interface LanguageInfo {
+  code: Language;
+  label: string;
+  native: string;
+  short: string;
+}
+
+export const SUPPORTED_LANGUAGES: LanguageInfo[] = [
+  { code: 'en', label: 'English (India)', native: 'English', short: 'EN' },
+  { code: 'hi', label: 'Hindi', native: 'हिन्दी', short: 'हि' },
+  { code: 'mr', label: 'Marathi', native: 'मराठी', short: 'मर' },
+  { code: 'gu', label: 'Gujarati', native: 'ગુજરાતી', short: 'ગુ' },
+  { code: 'pa', label: 'Punjabi', native: 'ਪੰਜਾਬੀ', short: 'ਪੰ' },
+  { code: 'ta', label: 'Tamil', native: 'தமிழ்', short: 'த' },
+  { code: 'bho', label: 'Bhojpuri', native: 'भोजपुरी', short: 'भो' },
+  { code: 'kn', label: 'Kannada', native: 'ಕನ್ನಡ', short: 'ಕ' },
+  { code: 'te', label: 'Telugu', native: 'తెలుగు', short: 'తె' },
+  { code: 'ne', label: 'Nepali', native: 'नेपाली', short: 'ने' },
+  { code: 'bn', label: 'Bangla', native: 'বাংলা', short: 'বা' },
+  { code: 'mni', label: 'Manipuri', native: 'মৈতেইলোন', short: 'মৈ' },
+];
+
 export type DictionaryEntry = Partial<Record<Language, string>> & {
   en: string;
   hi: string;
@@ -23,18 +45,18 @@ export type DictionaryEntry = Partial<Record<Language, string>> & {
 
 // Unified Namespaced Dictionary - Production Grade
 export const DICTIONARY: Record<string, DictionaryEntry> = {
-  "NAV_CASH": { en: "Cash", hi: "कैश", mr: "कॅश", gu: "કેશ", pa: "ਕੈਸ਼", ta: "பணம்", bho: "पइसा", kn: "ಕ್ಯಾಶ್", te: "నగదు", ne: "क्यास", bn: "ক্যাশ", mni: "ক্যাশ" },
+  "NAV_CASH": { en: "Account Book", hi: "कैश", mr: "कॅश", gu: "કેશ", pa: "ਕੈਸ਼", ta: "பணம்", bho: "पइसा", kn: "ಕ್ಯಾಶ್", te: "నగదు", ne: "क्यास", bn: "ক্যাশ", mni: "ক্যাশ" },
 
-  "NAV_SANSKRITI": { en: "Sanskriti", hi: "संस्कृति", mr: "संस्कृती", gu: "સંસ્કૃતિ", pa: "ਸੰਸਕ੍ਰਿਤੀ", ta: "சம்ஸ்க்ருதி", bho: "संस्कृति", kn: "ಸಂಸ್ಕೃತಿ", te: "సంస్కృతి", ne: "संस्कृति", bn: "সংস্কৃতি", mni: "সংস্ক্রিতি" },
+  "NAV_SANSKRITI": { en: "Family Roots", hi: "संस्कृति", mr: "संस्कृती", gu: "સંસ્કૃતિ", pa: "ਸੰਸਕ੍ਰਿਤੀ", ta: "சம்ஸ்க்ருதி", bho: "संस्कृति", kn: "ಸಂಸ್ಕೃತಿ", te: "సంస్కృతి", ne: "संस्कृति", bn: "সংস্কৃতি", mni: "সংস্ক্রিতি" },
 
-  "NAV_SEWAK": { en: "Sewak", hi: "सेवक", mr: "सेवक", gu: "સેવક", pa: "ਸੇਵਕ", ta: "சேவக்", bho: "सेवक", kn: "ಸೇವಕ", te: "సేవక్", ne: "सेवक", bn: "সেবক", mni: "সেবক" },
+  "NAV_SEWAK": { en: "Staff & Service", hi: "सेवक", mr: "सेवक", gu: "સેવક", pa: "ਸੇਵਕ", ta: "சேவக்", bho: "सेवक", kn: "ಸೇವಕ", te: "సేవక్", ne: "सेवक", bn: "সেবক", mni: "সেবক" },
 
-  "NAV_SAMAN": { en: "Saman", hi: "सामान", mr: "सामान", gu: "સામાન", pa: "ਸਾਮਾਨ", ta: "சாமான்", bho: "सामान", kn: "ಸಾಮಾನ್", te: "సామాన్", ne: "सामान", bn: "সামান", mni: "শামন" },
+  "NAV_SAMAN": { en: "Household Stock", hi: "सामान", mr: "सामान", gu: "સામાન", pa: "ਸਾਮਾਨ", ta: "சாமான்", bho: "सामान", kn: "ಸಾಮಾನ್", te: "సామాన్", ne: "सामान", bn: "সামান", mni: "শামন" },
 
-  "NAV_UTSAV": { en: "Utsav", hi: "उत्सव", mr: "उत्सव", gu: "ઉત્સવ", pa: "ਉਤਸਵ", ta: "உத்சவ்", bho: "उत्सव", kn: "ಉತ್ಸವ", te: "ఉత్సవ్", ne: "उत्सव", bn: "উৎসব", mni: "উতসব" },
+  "NAV_UTSAV": { en: "Festivals & Events", hi: "उत्सव", mr: "उत्सव", gu: "ઉત્સવ", pa: "ਉਤਸਵ", ta: "உத்சவ்", bho: "उत्सव", kn: "ಉತ್ಸವ", te: "ఉత్సవ్", ne: "उत्सव", bn: "উৎসব", mni: "উতসব" },
 
-  "NAV_SUVIDHA": { en: "Suvidha", hi: "सुविधा", mr: "सुविधा", gu: "સુવિધા", pa: "ਸੁਵਿਧਾ", ta: "சுவிதா", bho: "सुविधा", kn: "ಸುವಿಧಾ", te: "సువిధ", ne: "सुविधा", bn: "सुविधा", mni: "সুবিধা" },
-  "NAV_VAHAN": { en: "Vahan Hub", hi: "वाहन हब", bho: "गाड़ी-घोड़ा", mr: "वाहन हब", gu: "વાહન હબ" },
+  "NAV_SUVIDHA": { en: "Daily Register", hi: "सुविधा", mr: "सुविधा", gu: "સુવિધા", pa: "ਸੁਵਿਧਾ", ta: "சுவிதா", bho: "सुविधा", kn: "ಸುವಿಧಾ", te: "సువిధ", ne: "सुविधा", bn: "सुविधा", mni: "সুবিধা" },
+  "NAV_VAHAN": { en: "Transportation Hub", hi: "वाहन हब", bho: "गाड़ी-घोड़ा", mr: "वाहन हब", gu: "વાહન હબ" },
   "AAJ_KA_DIN": { en: "Today's Day", hi: "आज का दिन", bho: "आज के दिन", mr: "आजचा दिवस", gu: "આજ નો દિવસ" },
   "PANCHANGA": { en: "Panchanga", hi: "पंचांग", bho: "पतरा", mr: "पंचांग", gu: "પંચાંગ" },
   "TITHI": { en: "Tithi", hi: "तिथि", bho: "तिथी", mr: "तिथी", gu: "તિથિ" },
@@ -135,32 +157,32 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
   "landing.modules.family.sub": { en: "Identity", hi: "पहचान", bho: "पहचान" },
   "landing.modules.family.desc": { en: "Manage family profiles, biometrics, and root security.", hi: "पारिवारिक प्रोफ़ाइल और सुरक्षा का प्रबंधन करें।", bho: "परिवार के लोगन के नाम अउर सुरक्षा के जानकारी।" },
   
-  "landing.modules.cash.title": { en: "Cash Hub", hi: "कैश हब", bho: "पइसा-कौड़ी" },
-  "landing.modules.cash.sub": { en: "Finance", hi: "वित्त", bho: "हिसाब-किताब" },
+  "landing.modules.cash.title": { en: "Account Book", hi: "कैश हब", bho: "पइसा-कौड़ी" },
+  "landing.modules.cash.sub": { en: "Income, expenses & savings", hi: "वित्त", bho: "हिसाब-किताब" },
   "landing.modules.cash.desc": { en: "Complete cashflow management without cloud tracking.", hi: "बिना क्लाउड ट्रैकिंग के कैशफ्लो प्रबंधन।", bho: "बिना केहू के देखले अपना पइसा के हिसाब राखीं।" },
   
-  "landing.modules.suvidha.title": { en: "Suvidha Hub", hi: "सुविधा हब", bho: "सुविधा हब" },
-  "landing.modules.suvidha.sub": { en: "Logistics", hi: "लॉजिस्टिक्स", bho: "सुविधा-साधन" },
+  "landing.modules.suvidha.title": { en: "Daily Register", hi: "सुविधा हब", bho: "सुविधा हब" },
+  "landing.modules.suvidha.sub": { en: "Milk, newspaper & deliveries", hi: "लॉजिस्टिक्स", bho: "सुविधा-साधन" },
   "landing.modules.suvidha.desc": { en: "Manage daily vendors and utility logs simplified.", hi: "दैनिक विक्रेताओं और उपयोगिता लॉग का प्रबंधन करें।", bho: "रोज के दूध-सब्जी अउर बिल के हिसाब-किताब।" },
   
-  "landing.modules.saman.title": { en: "Saman Hub", hi: "सामान हब", bho: "सामान हब" },
-  "landing.modules.saman.sub": { en: "Pantry", hi: "पेंट्री", bho: "किचन" },
+  "landing.modules.saman.title": { en: "Household Stock", hi: "सामान हब", bho: "सामान हब" },
+  "landing.modules.saman.sub": { en: "Groceries, supplies & expiry", hi: "पेंट्री", bho: "किचन" },
   "landing.modules.saman.desc": { en: "Intelligent grocery and household inventory management.", hi: "किराना और घरेलू सूची प्रबंधन।", bho: "घर के राशन अउर सामान के जानकारी।" },
   
-  "landing.modules.vidya.title": { en: "Vidya Hub", hi: "विद्या हब", bho: "पढ़ाई-लिखाई" },
-  "landing.modules.vidya.sub": { en: "Education", hi: "शिक्षा", bho: "शिक्षा" },
+  "landing.modules.vidya.title": { en: "Study Room", hi: "विद्या हब", bho: "पढ़ाई-लिखाई" },
+  "landing.modules.vidya.sub": { en: "Progress, goals & notes", hi: "शिक्षा", bho: "शिक्षा" },
   "landing.modules.vidya.desc": { en: "Digital homeschooling and knowledge persistence.", hi: "डिजिटल होमस्कूलिंग और ज्ञान प्रबंधन।", bho: "लरिकन के पढ़ाई अउर जानकारी के पक्का जगह।" },
   
-  "landing.modules.utsav.title": { en: "Utsav Hub", hi: "उत्सव हब", bho: "उत्सव हब" },
-  "landing.modules.utsav.sub": { en: "Events", hi: "कार्यक्रम", bho: "नेवता-पइसा" },
+  "landing.modules.utsav.title": { en: "Family Functions", hi: "उत्सव हब", bho: "उत्सव हब" },
+  "landing.modules.utsav.sub": { en: "Events, gifts & guest lists", hi: "कार्यक्रम", bho: "नेवता-पइसा" },
   "landing.modules.utsav.desc": { en: "Shagun, gifts, and private event logs.", hi: "शगुन, उपहार और निजी उत्सव लॉग।", bho: "शादी-ब्याह के नेवता अउर उपहार के हिसाब।" },
 
-  "landing.modules.sanskriti.title": { en: "Sanskriti Hub", hi: "संस्कृति हब", bho: "धर्म-करम" },
-  "landing.modules.sanskriti.sub": { en: "Heritage", hi: "विरासत", bho: "पुरखा लोग" },
+  "landing.modules.sanskriti.title": { en: "Family Roots", hi: "संस्कृति हब", bho: "धर्म-करम" },
+  "landing.modules.sanskriti.sub": { en: "Ancestors, rituals & lineage", hi: "विरासत", bho: "पुरखा लोग" },
   "landing.modules.sanskriti.desc": { en: "Preserve Dharma heritage and ancestral roots.", hi: "धर्म विरासत और पैतृक जड़ों को संरक्षित करें।", bho: "अपना धर्म अउर पुरखा लोगन के जानकारी सम्हालीं।" },
 
-  "landing.modules.sehat.title": { en: "Sehat Hub", hi: "सेहत हब", bho: "दवाई-बिरो" },
-  "landing.modules.sehat.sub": { en: "Health", hi: "स्वास्थ्य", bho: "स्वास्थ्य" },
+  "landing.modules.sehat.title": { en: "Health Record", hi: "सेहत हब", bho: "दवाई-बिरो" },
+  "landing.modules.sehat.sub": { en: "Vitals, medicines & checkups", hi: "स्वास्थ्य", bho: "स्वास्थ्य" },
   "landing.modules.sehat.desc": { en: "Medical history and family health logs owned by you.", hi: "मेडिकल हिस्ट्री और पारिवारिक स्वास्थ्य लॉग।", bho: "परिवार के सेहत अउर दवाई के सब जानकारी।" },
 
   "landing.modules.cta.title": { en: "Ready to take control?", hi: "क्या आप नियंत्रण लेने के लिए तैयार हैं?", bho: "का रउआ तैयार बानी?" },
@@ -491,14 +513,14 @@ export const DICTIONARY: Record<string, DictionaryEntry> = {
   "product.cta.title": { en: "The Last OS You'll Ever Need", hi: "\u0905\u0902\u0924\u093f\u092e \u0913\u090f\u0938 \u091c\u093f\u0938\u0915\u0940 \u0906\u092a\u0915\u094b \u0906\u0935\u0936\u094d\u092f\u0915\u0924\u093e \u0939\u094b\u0917\u0940", mr: "\u0924\u0941\u092e\u094d\u0939\u093e\u0932\u093e \u0917\u0930\u091c \u0905\u0938\u0932\u0947\u0932\u093e \u0936\u0947\u0935\u091f\u091a\u093e \u0913\u090f\u0938", gu: "\u0aa4\u0aae\u0abe\u0ab0\u0ac0 \u0a9b\u0ac7\u0ab2\u0acd\u0ab2\u0ac0 \u0a9c\u0ab0\u0ac2\u0ab0\u0abf\u0aaf\u0abe\u0aa4\u0aa8\u0ac1\u0a82 \u0a93\u0a8f\u0ab8", pa: "\u0a09\u0a39 \u0a06\u0a16\u0a3c\u0a30\u0a40 \u0a13\u0a10\u0a38 \u0a1c\u0a3f\u0a38\u0a26\u0a40 \u0a24\u0a41\u0a39\u0a3e\u0a28\u0a42\u0a70 \u0a32\u0a4b\u0a5c \u0a39\u0a4b\u0a35\u0a47\u0a17\u0a40", ta: "\u0b89\u0b99\u0bcd\u0b95\u0bb3\u0bc1\u0b95\u0bcd\u0b95\u0bc1\u0ba4\u0bcd \u0ba4\u0bc7\u0bb5\u0bc8\u0baf\u0bbe\u0ba9 \u0b87\u0bb1\u0bc1\u0ba4\u0bbf \u0b93\u0b8e\u0bb8\u0bcd", bho: "\u09b0\u09be\u0989\u0930 \u0906\u0916\u093f\u0930\u0940 \u0993\u098f\u09b8 \u099c\u09ad\u09a8\u09be \u0995\u09c7 \u099c\u09b0\u09c1\u09b0\u09a4 \u09b9\u09cb\u0987", kn: "\u0ca8\u0cbf\u0cae\u0c97\u0cc6 \u0cac\u0cc7\u0c95\u0cbe\u0ca6 \u0c95\u0cca\u0ca8\u0cc6\u0caf \u0c93\u0c8e\u0cb8\u0ccd", te: "\u0c2e\u0c40\u0c15\u0c41 \u0c05\u0c35\u0c38\u0c30\u0c2e\u0c2f\u0c4d\u0c2f\u0c47 \u0c1a\u0c3f\u0c35\u0c30\u0c3f OS", ne: "\u099a\u09be\u09b9\u09bf\u09a8\u09c7 \u0985\u09a8\u09cd\u09a4\u09bf\u09ae \u0993\u098f\u09b8", bn: "\u0986\u09aa\u09a8\u09be\u09b0 \u09aa\u09cd\u09b0\u09af\u09bc\u09cb\u099c\u09a8\u09c7\u09b0 \u09b6\u09c7\u09b7 \u0993\u098f\u09b8", mni: "\u0985\u09b0\u09cb\u0987\u09ac\u09be \u0993\u098f\u09b8 \u0985\u09ae\u09be" },
   "product.cta.quote": { en: "Privacy is not negotiable.", hi: "\u0917\u094b\u092a\u0928\u0940\u092f\u0924\u093e \u092a\u0930 \u0938\u092e\u091d\u094c\u0924\u093e \u0928\u0939\u0940\u0902 \u0915\u093f\u092f\u093e \u091c\u093e \u0938\u0915\u0924\u093e\u0964", mr: "\u0917\u094b\u092a\u0928\u0940\u092f\u0924\u0947\u0936\u0940 \u0924\u0921\u091c\u094b\u0921 \u0915\u0947\u0932\u0940 \u091c\u093e\u090a \u0936\u0915\u0924 \u0928\u093e\u0939\u0940.", gu: "\u0a97\u0acb\u0aaa\u0aa8\u0ac0\u0aaf\u0aa4\u0abe \u0a85\u0a9f\u0abe\u0aaa\u0a9f\u0ac0 \u0aa8\u0aa5\u0ac0.", pa: "\u0a2a\u0a30\u0a26\u0a47\u0a26\u0a3e\u0a30\u0a40 \u0a28\u0a3e\u0a32 \u0a15\u0a4b\u0a08 \u0a38\u0a2e\u0a1d\u0a4c\u0a24\u0a3e \u0a28\u0a39\u0a40\u0a02\u0964", ta: "\u0ba4\u0ba9\u0bbf\u0baf\u0bc1\u0bb0\u0bbf\u0bae\u0bc8\u0baf\u0bbf\u0bb2\u0bcd \u0b9a\u0bae\u0bb0\u0b9a\u0bae\u0bcd \u0b95\u0bbf\u0b9f\u0bc8\u0baf\u0bbe\u0ba4\u0bc1.", bho: "\u09aa\u09cd\u09b0\u09be\u0987\u09ad\u09c7\u09b8\u09bf \u09b8\u09c7 \u0995\u09c7\u09d7\u09a8\u09cb \u09b8\u09ae\u099d\u09cc\u09a4\u09be \u09a8\u09be\u0964", kn: "\u0c97\u0ccc\u0caa\u0ccd\u0caf\u0ca4\u0cc6\u0caf\u0cca\u0c82\u0ca6\u0cbf\u0c97\u0cc6 \u0caf\u0cbe\u0cb5\u0cc1\u0ca6\u0cc7 \u0cb0\u0cbe\u0c9c\u0cbf \u0c87\u0cb2\u0ccd\u0cb2.", te: "\u0c17\u0c4b\u0c2a\u0c4d\u0c2f\u0c24\u0c2a\u0c48 \u0c30\u0c3e\u0c1c\u0c40 \u0c32\u0c47\u0c26\u0c41.", ne: "\u0917\u094b\u092a\u0928\u0940\u092f\u0924\u093e \u0938\u092e\u091d\u094c\u0924\u093e\u092f\u094b\u0917\u094d\u092f \u091b\u0948\u0928\u0964", bn: "\u0997\u09cb\u09aa\u09a8\u09c0\u09af\u09bc\u09a4\u09be \u09a8\u09bf\u09af\u09bc\u09c7 \u0995\u09cb\u09a8\u09cb \u0986\u09aa\u09cb\u09b8 \u0995\u09b0\u09be \u09af\u09be\u09af\u09bc \u09a8\u09be\u0964", mni: "\u09aa\u09cd\u09b0\u09be\u0987\u09ad\u09c7\u09b8\u09bf \u0985\u09ae\u09be \u09b2\u09c8\u0997\u09a6\u09ac\u09a8\u09bf\u0964" },
   "product.cta.btn": { en: "Initialize My Vault", hi: "\u092e\u0947\u0930\u093e \u0935\u0949\u0932\u094d\u091f \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902", mr: "\u092e\u093e\u091d\u0947 \u0935\u0949\u0932\u094d\u091f \u0938\u0941\u0930\u0942 \u0915\u0930\u093e", gu: "\u0aae\u0abe\u0ab0\u0ac1\u0a82 \u0ab5\u0ac9\u0ab2\u0acd\u0a9f \u0ab6\u0ab0\u0ac2 \u0a95\u0ab0\u0acb", pa: "\u0a2e\u0a47\u0a30\u0a3e \u0a35\u0a3e\u0a32\u0a1f \u0a38\u0a3c\u0a41\u0a30\u0a42 \u0a15\u0a30\u0a4b", ta: "\u0b8e\u0ba9\u0ba4\u0bc1 \u0bb5\u0bbe\u0bb2\u0bcd\u0b9f\u0bcd\u0b9f\u0bc8\u0ba4\u0bcd \u0ba4\u0bca\u0b9f\u0b99\u0bcd\u0b95\u0bc1\u0b99\u0bcd\u0b95\u0bb3\u0bcd", bho: "\u0aa4\u0abf\u0a9c\u0acb\u0ab0\u0ac0 \u0ab6\u0ab0\u0ac2 \u0a95\u0ab0\u0ac0\u0c02", kn: "\u0ca8\u0ca8\u0ccd\u0ca8 \u0cb5\u0cbe\u0cb2\u0ccd\u0c9f\u0ccd \u0caa\u0ccd\u0cb0\u0cbe\u0cb0\u0c82\u0cad\u0cbf\u0cb8\u0cbf", te: "\u0c28\u0c3e \u0c35\u0c3e\u0c32\u0c4d\u0c1f\u0c4d\u200c\u0c28\u0c41 \u0c2a\u0c4d\u0c30\u0c3e\u0c30\u0c02\u0c2d\u0c3f\u0c02\u0c1a\u0c02\u0c21\u0c3f", ne: "\u09ae\u09c7\u09b0\u09cb \u09ad\u09b2\u09cd\u099f \u09b6\u09c1\u09b0\u09c1 \u0995\u09b0\u09c1\u09a8", bn: "\u0986\u09ae\u09be\u09b0 \u09ad\u09b2\u09cd\u099f \u09b6\u09c1\u09b0\u09c1 \u0995\u09b0\u09c1\u09a8", mni: "\u09ad\u09cb\u09b2\u09cd\u099f \u09b9\u09cc\u09b9\u09a8\u09ac\u09c0\u09af\u09bc\u09c1" },
-  "NAV_HOME": { en: "Home", hi: "होम", mr: "होम", gu: "હોમ", pa: "ਹੋਮ", ta: "முகப்பு", bho: "घर", kn: "ಹೋಮ್", te: "హోమ్", ne: "गृह", bn: "হোম", mni: "হোম" },
+  "NAV_HOME": { en: "Home Overview", hi: "होम", mr: "होम", gu: "હોમ", pa: "ਹੋਮ", ta: "முகப்பு", bho: "घर", kn: "ಹೋಮ್", te: "హోమ్", ne: "गृह", bn: "হোম", mni: "হোম" },
   "NAV_DIARY": { en: "Diary", hi: "डायरी", mr: "डायरी", gu: "ડાયરી", pa: "ਡਾਇਰੀ", ta: "டைரி", bho: "डायरी", kn: "ಡೈರಿ", te: "డైరీ", ne: "डायरी", bn: "ডায়েরি", mni: "দাইরি" },
   "NAV_TASKS": { en: "Tasks", hi: "कार्य", mr: "कामे", gu: "કાર્યો", pa: "ਕੰਮ", ta: "பணிகள்", bho: "काम", kn: "ಕಾರ್ಯಗಳು", te: "పనులు", ne: "कार्यहरू", bn: "কাজ", mni: "থবক্সিং" },
   "NAV_MONEY": { en: "Cash Hub", hi: "कैश हब", mr: "कॅश हब", gu: "કેશ હબ", pa: "ਕੈਸ਼ ਹੱਬ", ta: "பண மையம்", bho: "रोपिया हब", kn: "ಕ್ಯಾಶ್ ಹಬ್", te: "నగదు హబ్", ne: "क्यास हब", bn: "ক্যাশ হাব", mni: "ক্যাশ হব" },
-  "NAV_HEALTH": { en: "Health", hi: "स्वास्थ्य", mr: "आरोग्य", gu: "સ્વાસ્થ્ય", pa: "ਸਿਹਤ", ta: "ஆரோக்கியம்", bho: "सेहत", kn: "ಆರೋಗ್ಯ", te: "ఆరోగ్యం", ne: "स्वास्थ्य", bn: "স্বাস্থ্য", mni: "হকচাং" },
+  "NAV_HEALTH": { en: "Health Record", hi: "स्वास्थ्य", mr: "आरोग्य", gu: "સ્વાસ્થ્ય", pa: "ਸਿਹਤ", ta: "ஆரோக்கியம்", bho: "सेहत", kn: "ಆರೋಗ್ಯ", te: "ఆరోగ్యం", ne: "स्वास्थ्य", bn: "স্বাস্থ্য", mni: "হকচাং" },
   "NAV_INVEST": { en: "Invest", hi: "निवेश", mr: "गुंतवणूक", gu: "રોકાण", pa: "ਨਿਵੇਸ਼", ta: "முதலீடு", bho: "निवेश", kn: "ಹೂಡಿಕೆ", te: "పెట్టుబడి", ne: "लगानी", bn: "বিনিয়োগ", mni: "ইনভেস্তমেন্ত" },
   "NAV_GROCERY": { en: "Saaman Hub", hi: "सामान हब", mr: "सामान हब", gu: "સામાન હબ", pa: "ਸਾਮਾਨ ਹੱਬ", ta: "சாமான் மையம்", bho: "सामान", kn: "ಸಾಮನ್ ಹಬ್", te: "సామాన్ హబ్", ne: "सामान हब", bn: "সামান হাব", mni: "শামন হব" },
-  "NAV_VIDYA": { en: "Vidya", hi: "विद्या", mr: "विद्या", gu: "વિદ્યા", pa: "ਵਿਦਿਆ", ta: "வித்யா", bho: "विद्या", kn: "ವಿದ್ಯಾ", te: "విద్య", ne: "विद्या", bn: "বিদ্যা", mni: "বিদ্যা" },
+  "NAV_VIDYA": { en: "Study Room", hi: "विद्या", mr: "विद्या", gu: "વિદ્યા", pa: "ਵਿਦਿਆ", ta: "வித்யா", bho: "विद्या", kn: "ವಿದ್ಯಾ", te: "విద్య", ne: "विद्या", bn: "বিদ্যা", mni: "বিদ্যা" },
   "NAV_SYNC": { en: "Sync", hi: "सिंक", mr: "सिंक", gu: "સિંક", pa: "ਸਿੰਕ", ta: "சிங்க்", bho: "सिंक", kn: "ಸಿಂಕ್", te: "సింక్", ne: "सिंक", bn: "সিঙ্ক", mni: "সিঙ্ক" },
   "NAV_NETWORK": { en: "Network", hi: "नेटवर्क", mr: "नेटवर्क", gu: "નેટવર્ક", pa: "ਨੈੱਟਵਰਕ", ta: "நெட்வொர்க்", bho: "नेटवर्क", kn: "ನೆಟ್‌ವರ್ಕ್", te: "నెట్‌వర్క్", ne: "नेटवर्क", bn: "নেটওয়ার্ক", mni: "নেতৱরক" },
   "NAV_SETUP": { en: "Setup", hi: "सेटअप", mr: "सेटअप", gu: "સેટઅપ", pa: "ਸੈੱਟਅੱਪ", ta: "அமைவு", bho: "सेटअप", kn: "ಸೆಟಪ್", te: "సెటప్", ne: "सेटअप", bn: "সেটআপ", mni: "সেতঅপ" },

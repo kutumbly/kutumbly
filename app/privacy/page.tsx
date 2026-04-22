@@ -91,7 +91,7 @@ export default function PrivacyPolicy() {
                 {t('legal.privacy.founder_note_title')}
               </h3>
               <p className="italic text-lg text-text-secondary leading-relaxed opacity-90">
-                "{t('legal.privacy.founder_note_txt')}"
+                &ldquo;{t('legal.privacy.founder_note_txt')}&rdquo;
               </p>
               <div className="mt-8 text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
                 — {t('landing.footer.founder')}

@@ -97,7 +97,6 @@ export interface Medication {
 }
 
 export interface HealthProfile {
-  id: string;
   member_id: string;
   blood_group: string | null;
   allergies: string | null;
@@ -105,11 +104,7 @@ export interface HealthProfile {
   primary_doctor: string | null;
   emergency_contact: string | null;
   insurance_details: string | null;
-  updated_at: string;
-}
-
-export interface HealthAdvancedProfile {
-  member_id: string;
+  // Advanced fields
   prakriti: string | null;
   agni: string | null;
   diet: string | null;

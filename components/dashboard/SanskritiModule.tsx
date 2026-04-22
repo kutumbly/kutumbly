@@ -23,7 +23,6 @@ import { useFamily } from '@/modules/family';
 import ModuleShell from './ModuleShell';
 import { useTranslation } from '@/lib/i18n';
 import { 
-  Activity, 
   MapPin, 
   History, 
   Flame, 
@@ -33,7 +32,6 @@ import {
   Trash2, 
   CheckCircle,
   Library,
-  BookOpen,
   Map,
   BookMarked,
   Wind
@@ -86,7 +84,7 @@ export default function SanskritiModule() {
 
   const [logData, setLogData] = useState({
     date: new Date().toISOString().split('T')[0],
-    type: 'DAILY' as any,
+    type: 'DAILY' as 'DAILY' | 'SPECIAL',
     name: '',
     performer_id: '',
     sankalpa_text: '',
@@ -306,7 +304,7 @@ export default function SanskritiModule() {
                 <div className="bg-[#4B0082]/10 border border-[#4B0082]/20 rounded-xl p-4 flex gap-4 items-center">
                   <Wind className="text-[#9370DB]" size={24} />
                   <p className="text-xs text-text-tertiary leading-relaxed italic">
-                    "Purkhauti represents the deep roots of our existence. Keeping these records ensures our descendants never lose their sovereign identity."
+                    &ldquo;Purkhauti represents the deep roots of our existence. Keeping these records ensures our descendants never lose their sovereign identity.&rdquo;
                   </p>
                 </div>
               </motion.div>
@@ -395,7 +393,7 @@ export default function SanskritiModule() {
                      <h4 className="text-sm font-black uppercase tracking-widest text-gold-text">Sovereign Sankalpa Generator</h4>
                    </div>
                    <p className="text-xs text-text-tertiary leading-relaxed mb-4">
-                      "Generate formal Vedic intentions for your ceremonies based on Tithi, Location, and Gotra."
+                      &ldquo;Generate formal Vedic intentions for your ceremonies based on Tithi, Location, and Gotra.&rdquo;
                    </p>
                    <button 
                      onClick={() => alert("Sankalpa Generation Logic: In the name of " + (profile?.gotra || 'Kutumb') + " Gotra, on this auspicious day, I perform this ritual...")}

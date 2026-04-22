@@ -11,6 +11,7 @@
 
 import { Database } from 'sql.js';
 import { runQuery } from '@/lib/db';
+import { mutateVault } from '@/lib/vault';
 import { SuvidhaVendor, SuvidhaLog, SuvidhaPayment } from '@/types/db';
 
 /**
@@ -40,42 +41,45 @@ export const suvidhaRepo = {
     return runQuery<SuvidhaPayment>(db, "SELECT * FROM suvidha_payments ORDER BY date DESC");
   },
 
-  createVendor: (db: Database | null, v: any) => {
+  createVendor: async (db: Database | null, v: any) => {
     if (!db) return;
-    const id = crypto.randomUUID();
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     const now = new Date().toISOString();
-    db.run(
+    await mutateVault(
+      db,
       "INSERT INTO suvidha_vendors (id, name, type, rate_per_unit, billing_cycle_day, member_id, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, 1, ?)",
       [id, v.name, v.type, v.rate_per_unit, v.billing_cycle_day, v.member_id, now]
     );
     return id;
   },
 
-  recordDailyLog: (db: Database | null, vId: string, date: string, quantity: number, notes?: string) => {
+  recordDailyLog: async (db: Database | null, vId: string, date: string, quantity: number, notes?: string) => {
     if (!db) return;
-    const id = crypto.randomUUID();
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     const now = new Date().toISOString();
-    db.run("DELETE FROM suvidha_logs WHERE vendor_id = ? AND date = ?", [vId, date]);
-    db.run(
+    await mutateVault(db, "DELETE FROM suvidha_logs WHERE vendor_id = ? AND date = ?", [vId, date]);
+    await mutateVault(
+      db,
       "INSERT INTO suvidha_logs (id, vendor_id, date, quantity, notes, created_at) VALUES (?, ?, ?, ?, ?, ?)",
       [id, vId, date, quantity, notes || null, now]
     );
     return id;
   },
 
-  recordPayment: (db: Database | null, p: any) => {
+  recordPayment: async (db: Database | null, p: any) => {
     if (!db) return;
-    const id = crypto.randomUUID();
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     const now = new Date().toISOString();
-    db.run(
+    await mutateVault(
+      db,
       "INSERT INTO suvidha_payments (id, vendor_id, amount, date, period_month, period_year, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
       [id, p.vendor_id, p.amount, p.date, p.period_month, p.period_year, p.notes || null, now]
     );
     return id;
   },
 
-  archiveVendor: (db: Database | null, id: string) => {
+  archiveVendor: async (db: Database | null, id: string) => {
     if (!db) return;
-    db.run("UPDATE suvidha_vendors SET is_active = 0 WHERE id = ?", [id]);
+    await mutateVault(db, "UPDATE suvidha_vendors SET is_active = 0 WHERE id = ?", [id]);
   }
 };

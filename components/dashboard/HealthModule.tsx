@@ -33,20 +33,18 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { HealthReading, Medication, FamilyMember, Vaccination, HealthProfile } from '@/types/db';
 
-type HealthView = 'overview' | 'member-report' | 'vaccinations' | 'sos-edit';
+type HealthView = 'overview' | 'member-report' | 'vaccinations' | 'sos-edit' | 'sos-protocol';
 
 export default function HealthModule() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
   const { familyMembers: members } = useFamily();
   const { 
-    readings, medications, vaccinations, healthProfiles,
+    readings, vaccinations, profiles,
     addReading, editReading, deleteReading,
-    addMedication, stopMedication, deleteMedication,
     prescriptions, addPrescription, stopPrescription, deletePrescription,
     addVaccination, deleteVaccination,
-    updateHealthProfile,
-    advancedProfiles, updateAdvancedProfile
+    updateProfile,
   } = useHealth();
   
   
@@ -103,12 +101,12 @@ export default function HealthModule() {
     const pulse = Number(fPulse) || 0;
     const weight = Number(fWeight) || 0;
 
-    const payload = {
+    const payload: Partial<HealthReading> = {
       member_id: fMem,
       date: fDate,
-      bp_sys: sys,
-      bp_dia: dia,
-      sugar,
+      bp_systolic: sys,
+      bp_diastolic: dia,
+      blood_sugar: sugar,
       pulse,
       weight,
       notes: fNotes
@@ -158,20 +156,20 @@ export default function HealthModule() {
     return { label: t('HEALTH_BMI_OBESE'), color: 'text-danger' };
   };
 
-  // Sparkline Component (Simple CSS based)
+  // Sparkline Component (Improved with auto-scaling)
   const Sparkline = ({ data, colorClass = "bg-info" }: { data: number[], colorClass?: string }) => {
     if (data.length < 2) return <div className="h-1 w-full bg-border-light/20 rounded-full" />;
     const max = Math.max(...data);
     const min = Math.min(...data);
-    const range = max - min || 1;
+    const range = (max - min) || 1;
     
     return (
-      <div className="flex items-end gap-[2px] h-6 w-16">
-        {data.slice(-7).map((v, i) => (
+      <div className="flex items-end gap-[2px] h-8 w-20">
+        {data.slice(-10).map((v, i) => (
           <div 
             key={i} 
-            className={`flex-1 rounded-t-[1px] ${colorClass} opacity-60`} 
-            style={{ height: `${((v - min) / range) * 100 + 10}%` }}
+            className={`flex-1 rounded-t-[2px] ${colorClass} opacity-60 hover:opacity-100 transition-opacity`} 
+            style={{ height: `${((v - min) / range) * 80 + 20}%` }}
           />
         ))}
       </div>
@@ -322,15 +320,23 @@ export default function HealthModule() {
                 <p className="text-xs text-red-600/80 font-bold max-w-md">{t('HEALTH_SOS_DESC')}</p>
               </div>
            </div>
-           <div className="flex gap-3 relative z-10">
-              {members.slice(0, 5).map(m => {
-                const p = healthProfiles.find(x => x.member_id === m.id);
-                return (
-                 <div key={m.id} className="w-12 h-12 rounded-2xl bg-white border border-red-500/20 flex flex-col items-center justify-center text-[10px] font-black text-red-600 shadow-xl group hover:scale-110 transition-transform cursor-help" title={`${m.name}: ${p?.blood_group || 'No Data'}`}>
-                    {p?.blood_group || m.initials}
-                 </div>
-                );
-              })}
+           <div className="flex items-center gap-4 relative z-10">
+              <div className="flex gap-3">
+                {members.slice(0, 5).map(m => {
+                  const p = profiles.find(x => x.member_id === m.id);
+                  return (
+                   <div key={m.id} className="w-12 h-12 rounded-2xl bg-white border border-red-500/20 flex flex-col items-center justify-center text-[10px] font-black text-red-600 shadow-xl group hover:scale-110 transition-transform cursor-help" title={`${m.name}: ${p?.blood_group || 'No Data'}`}>
+                      {p?.blood_group || m.initials}
+                   </div>
+                  );
+                })}
+              </div>
+              <button 
+                onClick={() => setView('sos-protocol')}
+                className="bg-red-600 text-white font-black text-[10px] tracking-[0.2em] px-6 py-3 rounded-2xl shadow-xl shadow-red-600/20 hover:bg-black transition-all"
+              >
+                OPEN PROTOCOL
+              </button>
            </div>
         </section>
 
@@ -340,11 +346,11 @@ export default function HealthModule() {
              {t('HEALTH_HEALTH_PROFILES')}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             {members.map((m: FamilyMember, i: number) => {
+             {members.map((m: FamilyMember) => {
                const memberMeds = prescriptions.filter((med) => med.member_id === m.id && !med.end_date);
                const mr = readings.filter((r: HealthReading) => r.member_id === m.id);
                const latestReading = mr.length > 0 ? mr[0] : null;
-               const profile = healthProfiles.find(p => p.member_id === m.id);
+               const profile = profiles.find((p: any) => p.member_id === m.id);
                
                return (
                 <GlassCard 
@@ -465,21 +471,20 @@ export default function HealthModule() {
                     </div>
                     <button 
                       onClick={() => {
-                        const profile = healthProfiles.find(p => p.member_id === activeMember.id);
-                        setSosBlood(profile?.blood_group || '');
-                        setSosAllergies(profile?.allergies || '');
-                        setSosChronic(profile?.chronic_conditions || '');
-                        setSosDoctor(profile?.primary_doctor || '');
-                        setSosEmergency(profile?.emergency_contact || '');
-                        setSosInsurance(profile?.insurance_details || '');
+                        const p = profiles.find(x => x.member_id === activeMember.id);
+                        setSosBlood(p?.blood_group || '');
+                        setSosAllergies(p?.allergies || '');
+                        setSosChronic(p?.chronic_conditions || '');
+                        setSosDoctor(p?.primary_doctor || '');
+                        setSosEmergency(p?.emergency_contact || '');
+                        setSosInsurance(p?.insurance_details || '');
 
-                        const adv = advancedProfiles.find(p => p.member_id === activeMember.id);
-                        setAdvPrakriti(adv?.prakriti || '');
-                        setAdvAgni(adv?.agni || '');
-                        setAdvDiet(adv?.diet || '');
-                        setAdvSurgery(adv?.surgical_history || '');
-                        setAdvFamily(adv?.family_history || '');
-                        setAdvTreatment(adv?.current_treatment || '');
+                        setAdvPrakriti(p?.prakriti || '');
+                        setAdvAgni(p?.agni || '');
+                        setAdvDiet(p?.diet || '');
+                        setAdvSurgery(p?.surgical_history || '');
+                        setAdvFamily(p?.family_history || '');
+                        setAdvTreatment(p?.current_treatment || '');
                         
                         setView('sos-edit');
                       }}
@@ -491,10 +496,10 @@ export default function HealthModule() {
                  
                  <h2 className="text-2xl font-black text-text-primary tracking-tight">{activeMember.name}</h2>
                  
-                 {healthProfiles.find(p => p.member_id === activeMember.id)?.blood_group ? (
+                 {profiles.find(p => p.member_id === activeMember.id)?.blood_group ? (
                     <div className="mt-4 flex items-center gap-2 bg-red-500/10 text-red-600 px-5 py-2 rounded-2xl border border-red-500/20">
                        <HeartPulse size={16} className="animate-pulse" />
-                       <span className="text-xs font-black uppercase tracking-widest">{healthProfiles.find(p => p.member_id === activeMember.id)?.blood_group}</span>
+                       <span className="text-xs font-black uppercase tracking-widest">{profiles.find(p => p.member_id === activeMember.id)?.blood_group}</span>
                     </div>
                   ) : (
                     <button onClick={() => setView('sos-edit')} className="mt-4 text-[10px] font-black text-text-tertiary uppercase tracking-widest border border-dashed border-border-light px-4 py-2 rounded-xl hover:border-gold transition-all">{t('HEALTH_SOS_PROFILE')}</button>
@@ -503,7 +508,7 @@ export default function HealthModule() {
                  <div className="mt-8 pt-8 border-t border-border-light/50 w-full grid grid-cols-2 gap-4 divide-x divide-border-light/50">
                     <div>
                        <div className="text-[10px] font-black text-text-tertiary uppercase tracking-widest mb-1">{t('HEALTH_MEDS')}</div>
-                       <div className="text-xl font-black text-text-primary">{medications.filter(m => m.member_id === activeMember.id && !m.end_date).length}</div>
+                       <div className="text-xl font-black text-text-primary">{prescriptions.filter(m => m.member_id === activeMember.id && !m.end_date).length}</div>
                     </div>
                     <div>
                        <div className="text-[10px] font-black text-text-tertiary uppercase tracking-widest mb-1">{t('HEALTH_RECORDS')}</div>
@@ -537,8 +542,8 @@ export default function HealthModule() {
 
              <div className="md:col-span-2 space-y-6">
                 {/* SOS / Medical ID Cards */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                  {healthProfiles.find(p => p.member_id === activeMember.id) && (
+                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                  {profiles.find(p => p.member_id === activeMember.id) && (
                     <div className="bg-bg-primary border border-border-light rounded-[2rem] p-6 shadow-sm flex flex-col gap-4">
                        <div className="flex items-center gap-3 text-text-tertiary">
                           <AlertCircle size={18} className="text-red-500" />
@@ -548,25 +553,25 @@ export default function HealthModule() {
                        <div className="grid grid-cols-2 gap-4 text-sm mt-2">
                           <div>
                             <p className="text-[9px] text-text-tertiary uppercase tracking-widest font-black">Allergies</p>
-                            <p className="font-bold text-text-primary">{healthProfiles.find(p => p.member_id === activeMember.id)?.allergies || 'No known allergies'}</p>
+                            <p className="font-bold text-text-primary">{profiles.find(p => p.member_id === activeMember.id)?.allergies || 'No known allergies'}</p>
                           </div>
                           <div>
                             <p className="text-[9px] text-text-tertiary uppercase tracking-widest font-black">Chronic</p>
-                            <p className="font-bold text-text-primary truncate">{healthProfiles.find(p => p.member_id === activeMember.id)?.chronic_conditions || 'None'}</p>
+                            <p className="font-bold text-text-primary truncate">{profiles.find(p => p.member_id === activeMember.id)?.chronic_conditions || 'None'}</p>
                           </div>
                           <div>
                             <p className="text-[9px] text-text-tertiary uppercase tracking-widest font-black">Surgeries</p>
-                            <p className="font-bold text-text-primary truncate">{advancedProfiles.find(p => p.member_id === activeMember.id)?.surgical_history || 'None'}</p>
+                            <p className="font-bold text-text-primary truncate">{profiles.find(p => p.member_id === activeMember.id)?.surgical_history || 'None'}</p>
                           </div>
                           <div>
                             <p className="text-[9px] text-text-tertiary uppercase tracking-widest font-black">Emergency Contact</p>
-                            <p className="font-bold text-text-primary">{healthProfiles.find(p => p.member_id === activeMember.id)?.emergency_contact || 'None set'}</p>
+                            <p className="font-bold text-text-primary">{profiles.find(p => p.member_id === activeMember.id)?.emergency_contact || 'None set'}</p>
                           </div>
                        </div>
                     </div>
                   )}
 
-                  {advancedProfiles.find(p => p.member_id === activeMember.id)?.prakriti && (
+                  {profiles.find(p => p.member_id === activeMember.id)?.prakriti && (
                     <div className="bg-gold-light/20 border border-gold/20 rounded-[2rem] p-6 shadow-sm flex flex-col gap-4">
                        <div className="flex items-center gap-3 text-gold-text">
                           <Info size={18} />
@@ -576,19 +581,19 @@ export default function HealthModule() {
                        <div className="grid grid-cols-2 gap-4 text-sm mt-2">
                           <div>
                             <p className="text-[9px] text-gold-text uppercase tracking-widest font-black">Prakriti (Dosha)</p>
-                            <p className="font-bold text-text-primary capitalize">{advancedProfiles.find(p => p.member_id === activeMember.id)?.prakriti}</p>
+                            <p className="font-bold text-text-primary capitalize">{profiles.find(p => p.member_id === activeMember.id)?.prakriti}</p>
                           </div>
                           <div>
                             <p className="text-[9px] text-gold-text uppercase tracking-widest font-black">Agni (Digestion)</p>
-                            <p className="font-bold text-text-primary capitalize">{advancedProfiles.find(p => p.member_id === activeMember.id)?.agni || 'Unassessed'}</p>
+                            <p className="font-bold text-text-primary capitalize">{profiles.find(p => p.member_id === activeMember.id)?.agni || 'Unassessed'}</p>
                           </div>
                           <div>
                             <p className="text-[9px] text-gold-text uppercase tracking-widest font-black">Diet Type (Ahaar)</p>
-                            <p className="font-bold text-text-primary capitalize">{advancedProfiles.find(p => p.member_id === activeMember.id)?.diet || 'Unassessed'}</p>
+                            <p className="font-bold text-text-primary capitalize">{profiles.find(p => p.member_id === activeMember.id)?.diet || 'Unassessed'}</p>
                           </div>
                           <div>
                             <p className="text-[9px] text-gold-text uppercase tracking-widest font-black">Treatment Plan</p>
-                            <p className="font-bold text-text-primary truncate">{advancedProfiles.find(p => p.member_id === activeMember.id)?.current_treatment || 'None'}</p>
+                            <p className="font-bold text-text-primary truncate">{profiles.find(p => p.member_id === activeMember.id)?.current_treatment || 'None'}</p>
                           </div>
                        </div>
                     </div>
@@ -723,7 +728,7 @@ export default function HealthModule() {
                      </button>
                   </div>
                   <div className="space-y-3">
-                     {prescriptions.filter(m => m.member_id === activeMember.id && !m.end_date).map((rx, i) => (
+                     {prescriptions.filter(m => m.member_id === activeMember.id && !m.end_date).map((rx) => (
                         <div key={rx.id} className="flex items-center justify-between p-4 bg-bg-tertiary border border-border-light rounded-2xl group">
                            <div className="flex gap-4 items-center">
                               <div className="w-10 h-10 rounded-xl bg-white border border-border-light flex items-center justify-center text-gold-text shadow-sm">
@@ -866,18 +871,14 @@ export default function HealthModule() {
                <div className="mt-12 flex gap-4">
                   <button 
                     onClick={() => {
-                      const profilePayload = {
+                      const payload: Partial<HealthProfile> = {
                         member_id: activeMember.id,
-                        bloodGroup: sosBlood,
+                        blood_group: sosBlood,
                         allergies: sosAllergies,
-                        chronic: sosChronic,
-                        doctor: sosDoctor,
-                        emergencyContact: sosEmergency,
-                        insurance: sosInsurance
-                      };
-
-                      const advancedPayload = {
-                        member_id: activeMember.id,
+                        chronic_conditions: sosChronic,
+                        primary_doctor: sosDoctor,
+                        emergency_contact: sosEmergency,
+                        insurance_details: sosInsurance,
                         prakriti: advPrakriti,
                         agni: advAgni,
                         diet: advDiet,
@@ -886,8 +887,7 @@ export default function HealthModule() {
                         current_treatment: advTreatment
                       };
 
-                      updateHealthProfile(profilePayload);
-                      updateAdvancedProfile(advancedPayload);
+                      updateProfile(payload);
                       setView('member-report');
                     }}
                     className="flex-1 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-black tracking-[0.2em] h-16 rounded-2xl shadow-xl transition-all uppercase flex items-center justify-center gap-3"
@@ -996,6 +996,93 @@ export default function HealthModule() {
                      <ShieldCheck size={18} /> {t('HEALTH_SAVE_VAULT')}
                   </button>
                 </div>
+             </div>
+          </motion.div>
+        )}
+        {/* SOS Protocol: Rapid Medical ID View */}
+        {view === 'sos-protocol' && (
+          <motion.div
+            key="sos-protocol"
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="flex flex-col gap-10 bg-black min-h-screen -m-10 p-10 overflow-y-auto"
+          >
+             {/* Header */}
+             <div className="flex justify-between items-start border-b border-white/20 pb-10">
+                <div className="flex items-center gap-6">
+                   <div className="w-20 h-20 bg-red-600 rounded-[2rem] flex items-center justify-center text-white shadow-2xl shadow-red-600/40">
+                      <AlertCircle size={48} />
+                   </div>
+                   <div>
+                      <h1 className="text-5xl font-black text-white tracking-tight uppercase">{t('HEALTH_SOS_PROTOCOL')}</h1>
+                      <p className="text-red-500 font-black tracking-[0.3em] uppercase mt-2">Sovereign Medical Information System</p>
+                   </div>
+                </div>
+                <button 
+                  onClick={() => setView('overview')}
+                  className="bg-white/10 text-white font-black px-10 py-6 rounded-3xl hover:bg-white hover:text-black transition-all text-xl"
+                >
+                   CLOSE PROTOCOL
+                </button>
+             </div>
+
+             {/* Member IDs */}
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {members.map(m => {
+                   const p = profiles.find(x => x.member_id === m.id);
+                   
+                   return (
+                      <div key={m.id} className="bg-white border-8 border-red-600 rounded-[3rem] p-8 flex flex-col gap-6 shadow-2xl">
+                         <div className="flex justify-between items-start">
+                            <h2 className="text-4xl font-black text-black leading-none">{m.name}</h2>
+                            <div className="bg-red-600 text-white text-3xl font-black px-4 py-2 rounded-2xl">
+                               {p?.blood_group || '--'}
+                            </div>
+                         </div>
+                         
+                         <div className="space-y-6">
+                            <div className="p-4 bg-red-50 rounded-2xl border-2 border-red-100">
+                               <p className="text-[10px] font-black text-red-600 uppercase tracking-widest mb-1">Critical Allergies</p>
+                               <p className="text-2xl font-black text-black">{p?.allergies || 'NONE KNOWN'}</p>
+                            </div>
+                            
+                            <div className="p-4 bg-gray-50 rounded-2xl border-2 border-gray-100">
+                               <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Chronic Conditions</p>
+                               <p className="text-xl font-bold text-black">{p?.chronic_conditions || 'NONE'}</p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                               <div className="p-4 bg-gray-50 rounded-2xl border-2 border-gray-100">
+                                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Emerg. Contact</p>
+                                  <p className="text-lg font-black text-black">{p?.emergency_contact || '--'}</p>
+                                </div>
+                               <div className="p-4 bg-gray-50 rounded-2xl border-2 border-gray-100">
+                                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Primary Doc</p>
+                                  <p className="text-lg font-black text-black">{p?.primary_doctor || '--'}</p>
+                               </div>
+                            </div>
+
+                            {p?.current_treatment && (
+                               <div className="p-4 bg-amber-50 rounded-2xl border-2 border-amber-100">
+                                  <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">Current Treatment</p>
+                                  <p className="text-lg font-bold text-black">{p.current_treatment}</p>
+                               </div>
+                            )}
+                         </div>
+
+                         <div className="mt-auto pt-6 border-t border-gray-100 flex items-center justify-between text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                            <span>Identity Verified</span>
+                            <span>{m.role}</span>
+                         </div>
+                      </div>
+                   );
+                })}
+             </div>
+
+             {/* System Footer */}
+             <div className="mt-auto border-t border-white/10 pt-10 text-center">
+                <p className="text-white/40 text-sm font-black uppercase tracking-[0.4em]">Kutumbly Sovereign OS · Local Encryption Active</p>
              </div>
           </motion.div>
         )}

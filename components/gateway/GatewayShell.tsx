@@ -16,11 +16,10 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Globe, Lock } from 'lucide-react';
 import Image from 'next/image';
-import { useAppStore } from '@/lib/store';
-import LanguagePicker from '@/components/ui/LanguagePicker';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 
 interface GatewayShellProps {
   children: React.ReactNode;
@@ -28,14 +27,6 @@ interface GatewayShellProps {
 }
 
 export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
-  const { lang } = useAppStore();
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
-
-  const LANG_LABELS: Record<string, string> = {
-    en: 'EN', hi: 'हि', mr: 'मर', gu: 'ગુ', pa: 'ਪੰ',
-    ta: 'த', bho: 'भो', kn: 'ಕ', te: 'తె', ne: 'ने', bn: 'বা', mni: 'মৈ'
-  };
-
   return (
     <div className="flex flex-col min-h-[100dvh] bg-bg-tertiary relative overflow-hidden pt-safe">
       
@@ -54,13 +45,7 @@ export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
           </div>
           
           <div className="flex items-center gap-6">
-            <button 
-              onClick={() => setIsPickerOpen(true)}
-              className="flex items-center gap-2 text-[10px] font-black tracking-[0.2em] uppercase text-text-tertiary hover:text-gold transition-colors"
-            >
-              <Globe size={13} className="opacity-60" />
-              {LANG_LABELS[lang] ?? lang.toUpperCase()}
-            </button>
+            <LanguageSwitcher variant="minimal" />
           </div>
         </div>
 
@@ -94,12 +79,6 @@ export default function GatewayShell({ children, sidebar }: GatewayShellProps) {
           </div>
         </div>
       </div>
-
-      <LanguagePicker
-        isOpen={isPickerOpen}
-        onClose={() => setIsPickerOpen(false)}
-      />
     </div>
   );
 }
-

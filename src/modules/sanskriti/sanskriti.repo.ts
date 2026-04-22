@@ -15,6 +15,7 @@
  * ============================================================ */
 
 import { runQuery } from "@/lib/db";
+import { mutateVault } from "@/lib/vault";
 import { DharmaProfile, VillageRoot, RitualLog } from "./types";
 
 export const SanskritiRepository = {
@@ -33,14 +34,15 @@ export const SanskritiRepository = {
     } as DharmaProfile;
   },
 
-  updateProfile(db: any, profile: Partial<DharmaProfile>): void {
+  async updateProfile(db: any, profile: Partial<DharmaProfile>) {
     if (!db) return;
     const existing = this.getProfile(db);
     const now = new Date().toISOString();
     
     if (!existing) {
-      const id = crypto.randomUUID();
-      db.run(
+      const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+      await mutateVault(
+        db,
         `INSERT INTO sanskriti_dharma_profile (
           id, gotra, pravar, kuldevta, kuldevi, kulguru, shaakha, veda, upadevyas, is_locked, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -72,7 +74,8 @@ export const SanskritiRepository = {
       params.push(now);
       params.push(existing.id);
 
-      db.run(
+      await mutateVault(
+        db,
         `UPDATE sanskriti_dharma_profile SET ${updates.join(', ')} WHERE id = ?`,
         params
       );
@@ -87,11 +90,12 @@ export const SanskritiRepository = {
     return runQuery(db, 'SELECT * FROM sanskriti_village_roots ORDER BY village_name ASC') as VillageRoot[];
   },
 
-  addVillageRoot(db: any, root: Omit<VillageRoot, 'id' | 'updated_at'>): void {
+  async addVillageRoot(db: any, root: Omit<VillageRoot, 'id' | 'updated_at'>) {
     if (!db) return;
-    const id = crypto.randomUUID();
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     const now = new Date().toISOString();
-    db.run(
+    await mutateVault(
+      db,
       `INSERT INTO sanskriti_village_roots (
         id, village_name, district, state, gramdevi_name, gramdevi_rituals, sthan_address, notes, updated_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -102,7 +106,7 @@ export const SanskritiRepository = {
     );
   },
 
-  updateVillageRoot(db: any, id: string, root: Partial<VillageRoot>): void {
+  async updateVillageRoot(db: any, id: string, root: Partial<VillageRoot>) {
     if (!db) return;
     const updates: string[] = [];
     const params: any[] = [];
@@ -118,12 +122,12 @@ export const SanskritiRepository = {
     params.push(now);
     params.push(id);
 
-    db.run(`UPDATE sanskriti_village_roots SET ${updates.join(', ')} WHERE id = ?`, params);
+    await mutateVault(db, `UPDATE sanskriti_village_roots SET ${updates.join(', ')} WHERE id = ?`, params);
   },
 
-  deleteVillageRoot(db: any, id: string): void {
+  async deleteVillageRoot(db: any, id: string) {
     if (!db) return;
-    db.run('DELETE FROM sanskriti_village_roots WHERE id = ?', [id]);
+    await mutateVault(db, 'DELETE FROM sanskriti_village_roots WHERE id = ?', [id]);
   },
 
   /**
@@ -134,11 +138,12 @@ export const SanskritiRepository = {
     return runQuery(db, 'SELECT * FROM sanskriti_ritual_logs ORDER BY date DESC, created_at DESC') as RitualLog[];
   },
 
-  addRitualLog(db: any, log: Omit<RitualLog, 'id' | 'created_at'>): void {
+  async addRitualLog(db: any, log: Omit<RitualLog, 'id' | 'created_at'>) {
     if (!db) return;
-    const id = crypto.randomUUID();
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     const now = new Date().toISOString();
-    db.run(
+    await mutateVault(
+      db,
       `INSERT INTO sanskriti_ritual_logs (
         id, date, type, name, performer_id, sankalpa_text, notes, created_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -148,8 +153,8 @@ export const SanskritiRepository = {
     );
   },
 
-  deleteRitualLog(db: any, id: string): void {
+  async deleteRitualLog(db: any, id: string) {
     if (!db) return;
-    db.run('DELETE FROM sanskriti_ritual_logs WHERE id = ?', [id]);
+    await mutateVault(db, 'DELETE FROM sanskriti_ritual_logs WHERE id = ?', [id]);
   }
 };

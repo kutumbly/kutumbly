@@ -19,10 +19,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  IndianRupee, TrendingUp, Heart, GraduationCap, Flame, ShoppingCart,
-  Calendar, Users, Milk, CheckSquare, BookOpen, Home, ArrowRight,
-  Stethoscope, BookMarked, Syringe, Activity, Receipt, PiggyBank,
-  Apple, Package, Star, Clock, Shield, Lock
+  IndianRupee, Heart, GraduationCap, Flame, ShoppingCart,
+  Calendar, Milk, Home, Shield, Lock
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { useAppStore } from '@/lib/store';

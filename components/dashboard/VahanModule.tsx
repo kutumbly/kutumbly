@@ -16,7 +16,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAppStore } from '@/lib/store';
 import { useVahan } from '@/modules/vahan';
 import ModuleShell from './ModuleShell';
@@ -89,11 +89,16 @@ export default function VahanModule() {
     setView('overview');
   };
 
+  const { today, thirtyDays } = useMemo(() => {
+    const now = new Date();
+    const t = now.toISOString().split('T')[0];
+    const d30 = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    return { today: t, thirtyDays: d30 };
+  }, []);
+
   const getStatusColor = (expiry: string | null | undefined) => {
     if (!expiry) return 'text-text-tertiary';
-    const today = new Date().toISOString().split('T')[0];
     if (expiry < today) return 'text-red-500';
-    const thirtyDays = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     if (expiry <= thirtyDays) return 'text-amber-500';
     return 'text-emerald-500';
   };
