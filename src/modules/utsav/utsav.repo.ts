@@ -67,13 +67,19 @@ export const utsavRepo = {
     );
   },
 
-  createShagun: async (db: Database | null, shagun: UtsavShagun) => {
+  createShagun: async (db: Database | null, shagun: UtsavShagun, familyName?: string) => {
     if (!db) return;
     await mutateVault(
       db,
       "INSERT INTO utsav_shagun (id, event_id, direction, amount, gift_desc, given_by, received_from, is_confirmed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [shagun.id, shagun.event_id, shagun.direction, shagun.amount, shagun.gift_desc || null, shagun.given_by || null, shagun.received_from || null, 1, shagun.created_at]
     );
+
+    // Auto-update Family Ledger if familyName is provided
+    if (familyName) {
+      const dir = shagun.direction === 'diya' ? 'given' : 'received';
+      await utsavRepo.updateFamilyLedger(db, familyName, shagun.amount, dir);
+    }
   },
 
   updateFamilyLedger: async (db: Database | null, familyName: string, amount: number, direction: 'given' | 'received') => {
@@ -93,6 +99,27 @@ export const utsavRepo = {
       await mutateVault(db, "INSERT INTO utsav_ledger (id, family_name, diya, mila, net, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
         [id, familyName, diya, mila, (mila - diya), updatedAt]);
     }
+  },
+
+  // --- INVENTORY & GIFTS ---
+  getInventory: (db: Database | null, eventId: string) => {
+    if (!db) return [];
+    return runQuery(db, "SELECT * FROM utsav_inventory WHERE event_id = ?", [eventId]);
+  },
+
+  updateInventoryItem: async (db: Database | null, item: any) => {
+    if (!db) return;
+    await mutateVault(db, `
+      UPDATE utsav_inventory SET 
+        quantity_received = ?, status = ?, cost_actual = ? 
+      WHERE id = ?`, 
+      [item.quantity_received, item.status, item.cost_actual, item.id]
+    );
+  },
+
+  getGiftRegistry: (db: Database | null, eventId: string) => {
+    if (!db) return [];
+    return runQuery(db, "SELECT * FROM utsav_gift_registry WHERE event_id = ?", [eventId]);
   },
 
   updateEventStatus: async (db: Database | null, id: string, status: string) => {

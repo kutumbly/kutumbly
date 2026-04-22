@@ -58,13 +58,62 @@ export function useCash(month?: string) {
     setTick(t => t + 1);
   }, [db, currentMonth]);
 
+  // ── Investments (Wealth Hub) ──
+  const investments = useMemo(() => cashRepo.getInvestments(db), [db, tick]);
+  
+  const getInvestmentTransactions = useCallback((investId: string) => {
+    return cashRepo.getInvestmentTransactions(db, investId);
+  }, [db, tick]);
+
+  const addInvestment = useCallback(async (inv: any) => {
+    await cashRepo.createInvestment(db, inv);
+    setTick(t => t + 1);
+  }, [db]);
+
+  const deleteInvestment = useCallback(async (id: string) => {
+    await cashRepo.deleteInvestment(db, id);
+    setTick(t => t + 1);
+  }, [db]);
+
+  const addInvestmentTransaction = useCallback(async (tx: any) => {
+    await cashRepo.createInvestmentTransaction(db, tx);
+    setTick(t => t + 1);
+  }, [db]);
+
+  // ── Goals (Target Hub) ──
+  const goals = useMemo(() => cashRepo.getGoals(db), [db, tick]);
+
+  const addGoal = useCallback(async (g: any) => {
+    await cashRepo.createGoal(db, g);
+    setTick(t => t + 1);
+  }, [db]);
+
+  const editGoal = useCallback(async (id: string, g: any) => {
+    await cashRepo.updateGoal(db, id, g);
+    setTick(t => t + 1);
+  }, [db]);
+
+  const deleteGoal = useCallback(async (id: string) => {
+    await cashRepo.deleteGoal(db, id);
+    setTick(t => t + 1);
+  }, [db]);
+
   return {
     txns,
     budgets,
     summary,
+    investments,
+    getInvestmentTransactions,
+    goals,
     addTransaction,
     editTransaction,
     deleteTransaction,
-    setCategoryBudget
+    setCategoryBudget,
+    addInvestment,
+    deleteInvestment,
+    addInvestmentTransaction,
+    addGoal,
+    editGoal,
+    deleteGoal
   };
 }

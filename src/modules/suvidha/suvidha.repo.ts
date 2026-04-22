@@ -53,15 +53,15 @@ export const suvidhaRepo = {
     return id;
   },
 
-  recordDailyLog: async (db: Database | null, vId: string, date: string, quantity: number, notes?: string) => {
+  recordDailyLog: async (db: Database | null, vId: string, date: string, quantity: number, unit?: string, notes?: string) => {
     if (!db) return;
     const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     const now = new Date().toISOString();
     await mutateVault(db, "DELETE FROM suvidha_logs WHERE vendor_id = ? AND date = ?", [vId, date]);
     await mutateVault(
       db,
-      "INSERT INTO suvidha_logs (id, vendor_id, date, quantity, notes, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-      [id, vId, date, quantity, notes || null, now]
+      "INSERT INTO suvidha_logs (id, vendor_id, date, quantity, unit, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [id, vId, date, quantity, unit || 'unit', notes || null, now]
     );
     return id;
   },
@@ -72,8 +72,8 @@ export const suvidhaRepo = {
     const now = new Date().toISOString();
     await mutateVault(
       db,
-      "INSERT INTO suvidha_payments (id, vendor_id, amount, date, period_month, period_year, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-      [id, p.vendor_id, p.amount, p.date, p.period_month, p.period_year, p.notes || null, now]
+      "INSERT INTO suvidha_payments (id, vendor_id, amount, date, period_month, period_year, payment_mode, member_id, paid_on, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [id, p.vendor_id, p.amount, p.date, p.period_month, p.period_year, p.payment_mode || 'CASH', p.member_id || null, p.paid_on || p.date, p.notes || null, now]
     );
     return id;
   },

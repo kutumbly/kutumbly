@@ -30,37 +30,25 @@ export function useSuvidha() {
 
   const addVendor = useCallback(async (v: any) => {
     if (!db) return;
-    const id = crypto.randomUUID();
-    await mutateVault(db, `INSERT INTO suvidha_vendors (id, name, type, rate_per_unit, billing_cycle_day, member_id) VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, v.name, v.type, v.rate_per_unit, v.billing_cycle_day, v.member_id ?? null]);
+    await suvidhaRepo.createVendor(db, v);
     setTick(t => t + 1);
   }, [db]);
 
-  const logDaily = useCallback(async (vId: string, date: string, quantity: number, notes?: string) => {
+  const logDaily = useCallback(async (vId: string, date: string, quantity: number, unit?: string, notes?: string) => {
     if (!db) return;
-    const existing = suvidhaRepo.getLogByVendorDate(db, vId, date);
-    if (existing) {
-      await mutateVault(db, `UPDATE suvidha_logs SET quantity = ?, notes = ? WHERE id = ?`,
-        [quantity, notes ?? null, existing.id]);
-    } else {
-      const id = crypto.randomUUID();
-      await mutateVault(db, `INSERT INTO suvidha_logs (id, vendor_id, date, quantity, notes) VALUES (?, ?, ?, ?, ?)`,
-        [id, vId, date, quantity, notes ?? null]);
-    }
+    await suvidhaRepo.recordDailyLog(db, vId, date, quantity, unit, notes);
     setTick(t => t + 1);
   }, [db]);
 
   const recordPayment = useCallback(async (p: any) => {
     if (!db) return;
-    const id = crypto.randomUUID();
-    await mutateVault(db, `INSERT INTO suvidha_payments (id, vendor_id, amount, period_month, period_year, paid_on) VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, p.vendor_id, p.amount, p.period_month, p.period_year, p.paid_on]);
+    await suvidhaRepo.recordPayment(db, p);
     setTick(t => t + 1);
   }, [db]);
 
   const archiveVendor = useCallback(async (id: string) => {
     if (!db) return;
-    await mutateVault(db, `UPDATE suvidha_vendors SET is_active = 0 WHERE id = ?`, [id]);
+    await suvidhaRepo.archiveVendor(db, id);
     setTick(t => t + 1);
   }, [db]);
 

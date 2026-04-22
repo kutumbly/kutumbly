@@ -13,7 +13,7 @@
 
 import { useMemo, useCallback, useState } from 'react';
 import { useAppStore } from '@/lib/store';
-import { saveVault } from '@/lib/vault';
+import { mutateVault } from '@/lib/vault';
 import { vidyaRepo } from './vidya.repo';
 import { VidyaLearner, VidyaSubject, VidyaResource, VidyaSession, VidyaResourceType } from '@/types/db';
 import { runQuery } from '@/core/db';
@@ -45,11 +45,8 @@ export function useVidya() {
   const learners = useMemo(() => vidyaRepo.getLearners(db), [db, tick]);
 
   const commit = useCallback(() => {
-    if (db && fileHandle && currentPin) {
-      saveVault(db, currentPin, fileHandle).catch(console.error);
-    }
     setTick(t => t + 1);
-  }, [db, currentPin, fileHandle]);
+  }, []);
 
   const addLearner = useCallback((l: Omit<VidyaLearner, 'id' | 'is_active' | 'created_at' | 'avatar_initials'>) => {
     const id = vidyaRepo.createLearner(db, l);
@@ -61,7 +58,8 @@ export function useVidya() {
   const addSubject = useCallback((learner_id: string, s: any) => {
     if (!db) return;
     const id = crypto.randomUUID();
-    db.run(
+    mutateVault(
+      db,
       `INSERT INTO vidya_subjects (id, learner_id, name, category, color, target_score, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [id, learner_id, s.name.trim(), s.category || 'General', s.color || '#c9971c', s.target_score || null, new Date().toISOString()]
     );
@@ -76,7 +74,8 @@ export function useVidya() {
     let thumbnail_url = null;
     if (r.resource_type === 'youtube' && r.url) thumbnail_url = getYouTubeThumbnail(r.url);
 
-    db.run(
+    mutateVault(
+      db,
       `INSERT INTO vidya_resources
         (id, subject_id, learner_id, title, resource_type, url, thumbnail_url, description, chapter, lesson, is_bookmarked, is_completed, difficulty, duration_mins, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, ?, ?)`,
@@ -134,7 +133,7 @@ export function useVidya() {
     logSession,
     getStats,
     getStreak,
-    deleteLearner: (id: any) => { db?.run("UPDATE vidya_learners SET is_active = 0 WHERE id = ?", [id]); commit(); },
+    deleteLearner: (id: any) => { mutateVault(db!, "UPDATE vidya_learners SET is_active = 0 WHERE id = ?", [id]); commit(); },
     toggleBookmark: (id: any, curr: any) => { vidyaRepo.updateResourceStatus(db, id, 'is_bookmarked', curr ? 0 : 1); commit(); },
     toggleComplete: (id: any, curr: any) => { vidyaRepo.updateResourceStatus(db, id, 'is_completed', curr ? 0 : 1); commit(); },
 
@@ -145,7 +144,8 @@ export function useVidya() {
     },
     editSubject: (id: string, updates: any) => {
       if (!db) return;
-      db.run(
+      mutateVault(
+        db,
         "UPDATE vidya_subjects SET name = ?, category = ?, color = ?, target_score = ? WHERE id = ?",
         [updates.name, updates.category, updates.color, updates.target_score, id]
       );
@@ -156,7 +156,8 @@ export function useVidya() {
       let thumbnail_url = undefined;
       if (r.resource_type === 'youtube' && r.url) thumbnail_url = getYouTubeThumbnail(r.url);
       
-      db.run(
+      mutateVault(
+        db,
         `UPDATE vidya_resources SET 
           title = ?, resource_type = ?, url = ?, thumbnail_url = COALESCE(?, thumbnail_url), 
           description = ?, chapter = ?, lesson = ?, difficulty = ?, duration_mins = ? 
@@ -166,11 +167,13 @@ export function useVidya() {
       commit();
     },
     deleteSubject: (id: string) => {
-      db?.run("DELETE FROM vidya_subjects WHERE id = ?", [id]);
+      if (!db) return;
+      mutateVault(db, "DELETE FROM vidya_subjects WHERE id = ?", [id]);
       commit();
     },
     deleteResource: (id: string) => {
-      db?.run("DELETE FROM vidya_resources WHERE id = ?", [id]);
+      if (!db) return;
+      mutateVault(db, "DELETE FROM vidya_resources WHERE id = ?", [id]);
       commit();
     },
     getAnalytics: (learner_id: string) => {

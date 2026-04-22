@@ -69,13 +69,8 @@ export function useUtsav() {
         created_at
     };
 
-    utsavRepo.createShagun(db, newShagun);
-    
-    // Auto-update family ledger
     const ev = events.find(e => e.id === shagun.event_id);
-    if (ev) {
-        utsavRepo.updateFamilyLedger(db, ev.family_name, shagun.amount, shagun.direction === 'given' ? 'given' : 'received');
-    }
+    utsavRepo.createShagun(db, newShagun, ev?.family_name);
 
     commit();
   }, [db, events, commit]);

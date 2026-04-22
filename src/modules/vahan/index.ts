@@ -43,7 +43,6 @@ export const useVahan = () => {
         created_at: new Date().toISOString(),
       };
       repo.saveVehicle(newVehicle);
-      if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle);
       reload();
     },
     [repo, db, fileHandle, currentPin, reload]
@@ -53,7 +52,6 @@ export const useVahan = () => {
     (vehicle: VahanVehicle) => {
       if (!repo || !db) return;
       repo.saveVehicle(vehicle);
-      if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle);
       reload();
     },
     [repo, db, fileHandle, currentPin, reload]
@@ -63,7 +61,6 @@ export const useVahan = () => {
     (id: string) => {
       if (!repo || !db) return;
       repo.deleteVehicle(id);
-      if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle);
       reload();
     },
     [repo, db, fileHandle, currentPin, reload]
@@ -78,7 +75,6 @@ export const useVahan = () => {
         created_at: new Date().toISOString(),
       };
       repo.saveLog(newLog);
-      if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle);
       reload();
     },
     [repo, db, fileHandle, currentPin, reload]
@@ -88,7 +84,6 @@ export const useVahan = () => {
     (id: string) => {
       if (!repo || !db) return;
       repo.deleteLog(id);
-      if (fileHandle && currentPin) saveVault(db, currentPin, fileHandle);
       reload();
     },
     [repo, db, fileHandle, currentPin, reload]

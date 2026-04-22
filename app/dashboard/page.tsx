@@ -43,12 +43,14 @@ import BottomNav from "@/components/dashboard/BottomNav";
 import ModuleShell from "@/components/dashboard/ModuleShell";
 import LabelsModule from "@/components/dashboard/LabelsModule";
 import VahanModule from "@/components/dashboard/VahanModule";
+import InvestModule from "@/components/dashboard/InvestModule";
 
 const ALL_TABS = [
   { id: "home",      icon: Home },
   { id: "diary",     icon: Book },
   { id: "tasks",     icon: CheckSquare },
   { id: "cash",      icon: IndianRupee },
+  { id: "invest",    icon: Briefcase },
   { id: "suvidha",   icon: Milk },
   { id: "utsav",     icon: Calendar },
   { id: "health",    icon: Heart },
@@ -104,6 +106,7 @@ export default function DashboardPage() {
       case "diary":      return <DiaryModule />;
       case "tasks":      return <TasksModule />;
       case "cash":       return <CashModule />;
+      case "invest":     return <InvestModule />;
       case "utsav":      return <UtsavModule />;
       case "health":     return <HealthModule />;
       case "saman":      return <SamanModule />;

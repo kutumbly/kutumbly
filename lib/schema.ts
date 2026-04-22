@@ -25,7 +25,10 @@ CREATE TABLE IF NOT EXISTS family_members (
 CREATE TABLE IF NOT EXISTS diary_entries (
   id TEXT PRIMARY KEY, date TEXT, content TEXT,
   mood INTEGER, mood_label TEXT,
-  title TEXT, subtitle TEXT, tags TEXT, weather TEXT, location TEXT, 
+  title TEXT, subtitle TEXT, tags TEXT, weather TEXT, location TEXT,
+  entry_type TEXT DEFAULT 'reflection', -- 'reflection' | 'activity' | 'milestone'
+  visibility TEXT DEFAULT 'normal',     -- 'normal' | 'vault'
+  metadata TEXT,                         -- JSON for extra data
   is_locked INTEGER DEFAULT 0,
   created_at TEXT
 );
@@ -70,6 +73,62 @@ CREATE TABLE IF NOT EXISTS utsav_ledger (
   net REAL DEFAULT 0,
   notes TEXT,
   updated_at TEXT,
+  FOREIGN KEY (event_id) REFERENCES utsav_events(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS utsav_guests (
+  id TEXT PRIMARY KEY,
+  event_id TEXT NOT NULL,
+  guest_name TEXT NOT NULL,
+  family_tag TEXT,
+  guest_count INTEGER DEFAULT 1,
+  rsvp_status TEXT DEFAULT 'pending',
+  phone TEXT,
+  FOREIGN KEY (event_id) REFERENCES utsav_events(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS utsav_inventory (
+  id TEXT PRIMARY KEY,
+  event_id TEXT NOT NULL,
+  item_name TEXT NOT NULL,
+  category TEXT,
+  quantity_expected REAL DEFAULT 1,
+  quantity_received REAL DEFAULT 0,
+  quantity_used REAL DEFAULT 0,
+  unit TEXT DEFAULT 'pcs',
+  status TEXT DEFAULT 'ORDERED',
+  vendor_id TEXT,
+  assigned_to_id TEXT,
+  backup_person_id TEXT,
+  delivery_date_expected TEXT,
+  delivery_date_actual TEXT,
+  is_returnable INTEGER DEFAULT 0,
+  return_deadline TEXT,
+  cost_estimated REAL DEFAULT 0,
+  cost_actual REAL DEFAULT 0,
+  created_at TEXT,
+  FOREIGN KEY (event_id) REFERENCES utsav_events(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS utsav_vendors (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  contact TEXT,
+  service_type TEXT,
+  rating REAL DEFAULT 0,
+  reliability_score INTEGER DEFAULT 100,
+  advance_paid REAL DEFAULT 0,
+  total_amount REAL DEFAULT 0,
+  payment_status TEXT DEFAULT 'PENDING',
+  created_at TEXT
+);
+CREATE TABLE IF NOT EXISTS utsav_activity_log (
+  id TEXT PRIMARY KEY,
+  event_id TEXT NOT NULL,
+  type TEXT NOT NULL,
+  action TEXT NOT NULL,
+  item_id TEXT,
+  vendor_id TEXT,
+  user_id TEXT,
+  timestamp TEXT,
+  metadata TEXT,
   FOREIGN KEY (event_id) REFERENCES utsav_events(id) ON DELETE CASCADE
 );
 
@@ -230,12 +289,13 @@ CREATE TABLE IF NOT EXISTS suvidha_vendors (
 );
 CREATE TABLE IF NOT EXISTS suvidha_logs (
   id TEXT PRIMARY KEY, vendor_id TEXT NOT NULL, date TEXT NOT NULL,
-  quantity REAL DEFAULT 1, quality INTEGER DEFAULT 5, notes TEXT, created_at TEXT,
+  quantity REAL DEFAULT 1, unit TEXT DEFAULT 'unit', quality INTEGER DEFAULT 5, notes TEXT, created_at TEXT,
   FOREIGN KEY (vendor_id) REFERENCES suvidha_vendors(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS suvidha_payments (
   id TEXT PRIMARY KEY, vendor_id TEXT NOT NULL, amount REAL NOT NULL,
   date TEXT NOT NULL, period_month TEXT NOT NULL, period_year TEXT NOT NULL,
+  payment_mode TEXT DEFAULT 'CASH', member_id TEXT, paid_on TEXT,
   notes TEXT, created_at TEXT,
   FOREIGN KEY (vendor_id) REFERENCES suvidha_vendors(id) ON DELETE CASCADE
 );

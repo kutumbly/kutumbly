@@ -354,8 +354,8 @@ export default function VidyaModule() {
           {/* Top Global Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
              <MetricCard label={t('VIDYA_ACTIVE_STUDENTS')} value={vidya.learners.length} status="default" />
-             <MetricCard label={t('VIDYA_TOTAL_RESOURCES')} value={vidya.learners.reduce((acc, l) => acc + (vidya.getStats(l.id).resourceCount), 0)} status="success" />
-             <MetricCard label={t('VIDYA_MINS_STUDIED')} value={vidya.learners.reduce((acc, l) => acc + (vidya.getStats(l.id).totalMins), 0)} unit="m" status="success" />
+             <MetricCard label={t('VIDYA_TOTAL_RESOURCES')} value={vidya.learners.reduce((acc: number, l: VidyaLearner) => acc + (vidya.getStats(l.id).resourceCount), 0)} status="success" />
+             <MetricCard label={t('VIDYA_MINS_STUDIED')} value={vidya.learners.reduce((acc: number, l: VidyaLearner) => acc + (vidya.getStats(l.id).totalMins), 0)} unit="m" status="success" />
              <MetricCard label={t('VIDYA_AVG_PROGRESS')} value="68%" status="warning" />
           </div>
 
@@ -373,7 +373,7 @@ export default function VidyaModule() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {vidya.learners.length > 0 ? vidya.learners.map((l, i) => {
+                {vidya.learners.length > 0 ? vidya.learners.map((l: VidyaLearner, i: number) => {
                   const stats = vidya.getStats(l.id);
                   return (
                    <motion.div 
@@ -479,7 +479,7 @@ export default function VidyaModule() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             {learnerSubjects.length > 0 ? learnerSubjects.map(s => {
+             {learnerSubjects.length > 0 ? learnerSubjects.map((s: VidyaSubject) => {
                const progress = vidya.getSubjectProgress(s.id);
                return (
                 <div key={s.id} className="group relative">
@@ -544,13 +544,13 @@ export default function VidyaModule() {
                     <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('VIDYA_SPECIFIC_VISHAY')}</label>
                     <select value={fSSub} onChange={e => setFSSub(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 font-bold text-text-primary outline-none focus:border-gold appearance-none cursor-pointer">
                       <option value="">{t('VIDYA_SWADHYAYA')}</option>
-                      {learnerSubjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                      {learnerSubjects.map((s: VidyaSubject) => <option key={s.id} value={s.id}>{s.name}</option>)}
                     </select>
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('VIDYA_MOOD')}</label>
                     <div className="grid grid-cols-4 gap-2">
-                       {MOODS.map(m => (
+                       {MOODS.map((m: any) => (
                          <button key={m.val} onClick={() => setFSMood(m.val as any)} className={`p-3 rounded-xl border flex flex-col items-center gap-1 transition-all ${fSMood === m.val ? 'bg-gold-text text-white border-gold-text shadow-md' : 'bg-bg-tertiary text-text-tertiary border-border-light hover:border-gold/30'}`}>
                             <span className="text-lg">{m.emoji}</span>
                             <span className="text-[7px] font-black uppercase">{t(m.label)}</span>
@@ -579,7 +579,7 @@ export default function VidyaModule() {
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black text-text-tertiary uppercase tracking-widest pl-2">{t('TASKS_CATEGORY')}</label>
                     <select value={fSubCat} onChange={e => setFSubCat(e.target.value)} className="w-full bg-bg-tertiary border border-border-light rounded-2xl p-4 font-bold outline-none focus:border-gold appearance-none cursor-pointer">
-                       {['Science', 'Mathematics', 'Economics', 'Coding', 'Language', 'Art', 'History', 'Other'].map(cat => (
+                       {['Science', 'Mathematics', 'Economics', 'Coding', 'Language', 'Art', 'History', 'Other'].map((cat: string) => (
                          <option key={cat} value={cat}>{cat}</option>
                        ))}
                     </select>
@@ -614,7 +614,7 @@ export default function VidyaModule() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             {subjectResources.length > 0 ? subjectResources.map(r => (
+             {subjectResources.length > 0 ? subjectResources.map((r: VidyaResource) => (
               <ResourceCard 
                 key={r.id} 
                 res={r} 

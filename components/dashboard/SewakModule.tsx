@@ -101,7 +101,7 @@ export default function SewakModule() {
   const [activeStaff, setActiveStaff] = React.useState<SewakMember | null>(null);
 
   const getBreadcrumbs = () => {
-    const b = [t('SUPPORT_STAFF')];
+    const b = [t('NAV_SEWAK')];
     if (view === 'staff-ledger') b.push(activeStaff?.name || '');
     return b;
   };
@@ -185,12 +185,12 @@ export default function SewakModule() {
     <ModuleShell 
       variant="glass"
       title={
-         view === 'overview' ? t('SUPPORT_STAFF') :
+         view === 'overview' ? t('NAV_SEWAK') :
          `${activeStaff?.name} Ledger`
       }
-      subtitle={view === 'overview' ? (lang === 'en' ? "Managing household Karmcharis and payroll" : "Ghar ke parivaar sam sahayakon ka hisab") : undefined}
+      subtitle={view === 'overview' ? t('SEWAK_SUBTITLE') : undefined}
       onAdd={showAddForm || view === 'staff-ledger' ? undefined : () => setShowAddForm(true)}
-      addLabel={view === 'overview' ? t('ONBOARD_STAFF') : undefined}
+      addLabel={view === 'overview' ? t('SEWAK_ADD_STAFF') : undefined}
       breadcrumbs={view !== 'overview' && !showAddForm ? getBreadcrumbs() : undefined}
       onBack={showAddForm ? () => setShowAddForm(false) : (view !== 'overview' ? handleBack : undefined)}
     >
@@ -201,18 +201,18 @@ export default function SewakModule() {
               <ArrowLeft className="w-5 h-5 text-text-tertiary" />
             </button>
             <h2 className="text-xl font-bold text-text-primary">
-              {t('ONBOARD_STAFF')}
+              {t('SEWAK_ADD_STAFF')}
             </h2>
           </div>
 
           <div className="card p-6 flex flex-col gap-5">
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{t('FULL_NAME')}</label>
+              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{t('SEWAK_STAFF_NAME')}</label>
               <input type="text" value={fName} onChange={e => setFName(e.target.value)} className="w-full bg-bg-secondary border border-border-light rounded-xl p-4 text-sm font-bold text-text-primary outline-none focus:border-gold" placeholder="e.g. Ramesh Kumar" />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{lang === 'hi' ? 'Kaam (Role)' : 'Role'}</label>
+              <label className="text-[10px] font-bold text-text-tertiary uppercase tracking-widest">{t('SEWAK_ROLE')}</label>
               <div className="flex flex-wrap gap-2">
                 {['Ghar Sahayak (Maid)', 'Rasoiya (Cook)', 'Driver', 'Mali (Gardener)', 'Nanny', 'Other'].map(r => (
                   <button key={r} onClick={() => setFRole(r)} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border ${fRole === r ? 'bg-gold/10 text-gold border-gold/30' : 'bg-bg-secondary text-text-tertiary border-border-light'}`}>{r}</button>
@@ -266,7 +266,7 @@ export default function SewakModule() {
         
         {/* Payroll & Attendance Dashboard */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-           <MetricCard label={t('SUPPORT_STAFF')} value={staff.length} unit={t('sewak.members_unit')} status="info" />
+           <MetricCard label={t('NAV_SEWAK')} value={staff.length} unit={t('sewak.members_unit')} status="info" />
            <MetricCard label={t('PRESENT')} value={`${presentToday}/${staff.length}`} status="success" />
            <MetricCard label={t('MONTHLY_PAYOUT')} value={totalMonthlyPayout} isCurrency status="default" />
            <MetricCard label={t('sewak.total_advance')} value={staff.reduce((acc, s) => acc + (s.advance_balance || 0), 0)} isCurrency status="warning" />
@@ -275,7 +275,7 @@ export default function SewakModule() {
         {/* Staff Roster */}
         <section>
           <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em] mb-4 px-1">
-             {t('STAFF_ROSTER')}
+             {t('SEWAK_ROSTER')}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {staff.length > 0 ? staff.map((s: SewakMember, i: number) => {
@@ -380,7 +380,7 @@ export default function SewakModule() {
         <section>
           <div className="flex items-center justify-between mb-4 px-1">
             <div className="text-[11px] font-black text-text-tertiary uppercase tracking-[0.2em]">
-               {t('PAYMENT_HISTORY')}
+               {t('SEWAK_PAYMENT_HISTORY')}
             </div>
             <button className="text-[10px] font-bold text-gold uppercase tracking-widest flex items-center gap-1 hover:underline">
                {t('VIEW_HISTORY')} <ArrowRight size={12} />

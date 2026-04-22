@@ -19,24 +19,20 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '@/lib/store';
-import { useTranslation } from '@/lib/i18n';
+import { useTranslation, Language } from '@/lib/i18n';
 import { getPanchang } from '@/lib/panchang';
 import { 
   Sun, 
   Moon, 
-  AlertCircle, 
   Calendar as CalcIcon, 
   ChevronRight,
-  Clock,
-  Car,
-  Heart
+  Heart,
+  Shield
 } from 'lucide-react';
-import { useVahan } from '@/modules/vahan';
 
 export default function AajKaDinStrip() {
-  const { lang } = useAppStore();
-  const t = useTranslation(lang);
-  const { alerts: vahanAlerts } = useVahan();
+  const { lang, setActiveModule } = useAppStore();
+  const t = useTranslation(lang as Language);
   
   const panchang = useMemo(() => getPanchang(), []);
   
@@ -47,7 +43,8 @@ export default function AajKaDinStrip() {
     year: 'numeric' 
   });
 
-  const criticalAlertsCount = (vahanAlerts?.filter(a => a.isCritical).length || 0);
+  const wisdomKey = `wisdom.${today.getDate() % 6}`;
+  const wisdom = t(wisdomKey);
 
   return (
     <div className="w-full bg-[#8B0000] text-white border-b border-gold/30 shadow-2xl relative overflow-hidden">
@@ -56,16 +53,16 @@ export default function AajKaDinStrip() {
         <Sun size={120} strokeWidth={1} />
       </div>
 
-      <div className="max-w-[1400px] mx-auto flex items-center h-14 px-4 gap-6">
+      <div className="max-w-[1400px] mx-auto flex items-center h-16 px-4 gap-6 relative z-10">
         
         {/* Date & Day Module */}
         <div className="flex items-center gap-3 border-r border-white/10 pr-6 shrink-0">
-          <div className="p-2 bg-white/10 rounded-lg">
+          <div className="p-2 bg-white/10 rounded-lg border border-white/10">
             <CalcIcon size={18} className="text-gold" />
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-tighter opacity-70 font-bold">
-              {panchang.dayName}
+            <span className="text-[9px] uppercase tracking-[0.2em] opacity-70 font-black text-gold">
+              {t(panchang.dayNameKey)}
             </span>
             <span className="text-sm font-black tracking-tight leading-none">
               {formattedDate}
@@ -80,43 +77,57 @@ export default function AajKaDinStrip() {
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
            >
+             {/* Muhurat Badge (Choghadiya) */}
+             {panchang.choghadiya && (
+               <div className="flex items-center gap-3 bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
+                 <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: panchang.choghadiya.color }} />
+                 <div className="flex flex-col">
+                   <span className="text-[8px] font-black uppercase tracking-widest opacity-50">{t('panchang.muhurat')}</span>
+                   <span className="text-[11px] font-bold" style={{ color: panchang.choghadiya.color }}>{t(panchang.choghadiya.labelKey)}</span>
+                 </div>
+               </div>
+             )}
+
              <div className="flex items-center gap-2">
                <Moon size={14} className="text-gold" />
-               <span className="text-[10px] uppercase tracking-widest opacity-60">{t('TITHI')}:</span>
-               <span className="text-xs font-bold text-gold">{panchang.tithi} ({panchang.paksha})</span>
+               <span className="text-[9px] uppercase tracking-widest opacity-50 font-black">{t('panchang.tithi')}:</span>
+               <span className="text-[11px] font-black text-gold">{t(panchang.tithiKey)}</span>
+               <span className="text-[9px] opacity-40 font-bold uppercase">({t(panchang.pakshaKey)})</span>
              </div>
 
              <div className="flex items-center gap-2">
                <Sun size={14} className="text-gold" />
-               <span className="text-[10px] uppercase tracking-widest opacity-60">{t('NAKSHATRA')}:</span>
-               <span className="text-xs font-bold">{panchang.nakshatra}</span>
+               <span className="text-[9px] uppercase tracking-widest opacity-50 font-black">{t('panchang.nakshatra')}:</span>
+               <span className="text-[11px] font-black">{t(panchang.nakshatraKey)}</span>
              </div>
 
-             <div className="flex items-center gap-2 text-[#FFA07A]">
-               <Clock size={14} />
-               <span className="text-[10px] uppercase tracking-widest opacity-60">{t('RAHU_KAAL')}:</span>
-               <span className="text-xs font-black">{panchang.rahuKaal.start} - {panchang.rahuKaal.end}</span>
+             {/* Dina Vishesh Wisdom */}
+             <div className="flex items-center gap-3 border-l border-white/10 pl-8">
+               <Heart size={14} className="text-gold fill-gold/20" />
+               <span className="text-[11px] italic font-medium opacity-80 tracking-tight">
+                 &quot;{wisdom}&quot;
+               </span>
              </div>
-
-             {/* Quick Alert Ticker */}
-             {criticalAlertsCount > 0 && (
-               <div className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full border border-gold/20 animate-pulse">
-                 <AlertCircle size={14} className="text-gold" />
-                 <span className="text-[10px] font-black uppercase tracking-widest text-gold italic">
-                   {criticalAlertsCount} {t('NAV_VAHAN')} Alerts
-                 </span>
-               </div>
-             )}
            </motion.div>
         </div>
 
-        {/* Action Button - To Level 2 (Rituals/Panchang) */}
-        <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-1.5 rounded-full transition-all group shrink-0">
-          <span className="text-[10px] font-black uppercase tracking-widest text-[#FFD700]">
-            {t('PANCHANGA')}
-          </span>
-          <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-        </button>
+        {/* Action Button - Rahu Kaal Alert */}
+        <div className="flex items-center gap-6 shrink-0">
+          <div className="flex flex-col items-end">
+            <span className="text-[8px] font-black uppercase tracking-widest text-gold/60">{t('panchang.rahu_kaal')}</span>
+            <span className="text-[11px] font-black text-[#FFA07A]">{panchang.rahuKaal.start} - {panchang.rahuKaal.end}</span>
+          </div>
+
+          <button 
+            onClick={() => setActiveModule('panchang')}
+            className="flex items-center gap-2 bg-gold text-black px-4 py-2 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-gold/20 group"
+          >
+            <span className="text-[10px] font-black uppercase tracking-widest">
+              {t('NAV_SANSKRITI')}
+            </span>
+            <ChevronRight size={14} strokeWidth={3} className="group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
 
       </div>
 
