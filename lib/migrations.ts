@@ -14,13 +14,15 @@
  * "Memory, Not Code."
  * ============================================================ */
 
+import { SCHEMA_SQL } from "./schema";
+
 /**
  * Kutumbly Vault Schema Migration Engine
  * ────────────────────────────────────────
  * Strategy: SQLite PRAGMA user_version (built-in integer, zero overhead)
  */
 
-export const CURRENT_SCHEMA_VERSION = 6;
+export const CURRENT_SCHEMA_VERSION = 9;
 
 /** What changed in each version — shown in the migration modal */
 export const MIGRATION_CHANGELOGS: Record<number, string[]> = {
@@ -45,6 +47,18 @@ export const MIGRATION_CHANGELOGS: Record<number, string[]> = {
     "Integrated Governance: Provisioned missing registries for Utsav gifts and Health prescriptions.",
     "Global Performance: Added vehicle-specific indexing for faster fleet log retrieval.",
   ],
+  7: [
+    "Self-Healing: Synchronized master schema to ensure all hub tables (Investments, Guests, Shagun) exist across all legacy vaults.",
+  ],
+  8: [
+    "Utility Tally Hardening: Added 'unit' support for Suvidha logs (Litres, Kg, Pieces).",
+    "Audit Ready: Integrated 'payment_mode' and 'member_id' tracking for utility payments.",
+    "System Consistency: Standardized payment registries across Suvidha and Sewak modules.",
+  ],
+  9: [
+    "Self-healing: Repaired legacy Investment registers missing audit columns.",
+    "Force synchronization of audit columns across all active modules."
+  ]
 };
 
 /** Read the user_version PRAGMA from a sql.js Database */
@@ -124,17 +138,17 @@ const MIGRATIONS: Record<number, (db: any) => void> = {
   4: (db) => {
     // 1. Backfill Invest Hub (Self-Healing)
     const investCreates = [
-      `CREATE TABLE IF NOT EXISTS investments (
+      `CREATE TABLE IF NOT EXISTS cash_investments (
           id TEXT PRIMARY KEY, member_id TEXT, goal_id TEXT, name TEXT NOT NULL, type TEXT NOT NULL,
           principal REAL DEFAULT 0, current_value REAL DEFAULT 0, units REAL DEFAULT 0,
           monthly_sip REAL DEFAULT 0, start_date TEXT, maturity_date TEXT, notes TEXT, created_at TEXT
       );`,
-      `CREATE TABLE IF NOT EXISTS investment_transactions (
+      `CREATE TABLE IF NOT EXISTS cash_investment_txs (
           id TEXT PRIMARY KEY, investment_id TEXT NOT NULL, type TEXT NOT NULL, amount REAL NOT NULL,
           date TEXT NOT NULL, notes TEXT, created_at TEXT,
-          FOREIGN KEY (investment_id) REFERENCES investments(id) ON DELETE CASCADE
+          FOREIGN KEY (investment_id) REFERENCES cash_investments(id) ON DELETE CASCADE
       );`,
-      `CREATE TABLE IF NOT EXISTS invest_goals (
+      `CREATE TABLE IF NOT EXISTS cash_wealth_goals (
           id TEXT PRIMARY KEY, name TEXT NOT NULL, target_amount REAL NOT NULL, member_id TEXT,
           deadline TEXT, category TEXT, is_completed INTEGER DEFAULT 0, created_at TEXT
       );`
@@ -228,6 +242,34 @@ const MIGRATIONS: Record<number, (db: any) => void> = {
       );`
     ];
     for (const stmt of expansionTables) { db.run(stmt); }
+  },
+  7: (db) => {
+    // Structural Integrity: Run current SCHEMA_SQL to ensure any missing tables exist.
+    db.run(SCHEMA_SQL);
+  },
+  9: (db) => {
+    // 1. Force Repair: Investment Hub (Ensures created_at exists for sorting)
+    const investAlters = [
+      "ALTER TABLE cash_investments ADD COLUMN created_at TEXT;",
+      "ALTER TABLE cash_wealth_goals ADD COLUMN created_at TEXT;"
+    ];
+    for (const stmt of investAlters) {
+      try { db.run(stmt); } catch (e) { /* ignore if already exists */ }
+    }
+
+    // 2. Force Repair: Suvidha Hub (Ensures audit consistency)
+    const suvidhaAlters = [
+      "ALTER TABLE suvidha_logs ADD COLUMN unit TEXT DEFAULT 'unit';",
+      "ALTER TABLE suvidha_payments ADD COLUMN payment_mode TEXT DEFAULT 'CASH';",
+      "ALTER TABLE suvidha_payments ADD COLUMN member_id TEXT;",
+      "ALTER TABLE suvidha_payments ADD COLUMN paid_on TEXT;"
+    ];
+    for (const stmt of suvidhaAlters) {
+      try { db.run(stmt); } catch (e) { /* ignore if already exists */ }
+    }
+
+    // 3. Final Synchronization
+    db.run(SCHEMA_SQL);
   },
 };
 

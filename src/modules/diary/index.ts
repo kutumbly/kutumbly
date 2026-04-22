@@ -18,35 +18,39 @@ import { diaryRepo } from './diary.repo';
 import { DiaryEntry } from '@/types/db';
 
 /**
- * DIARY HUB (Memory & Journal)
- * Sealed module for preserving family history and daily thoughts.
+ * SOVEREIGN JOURNAL (Reflections, Activities & Milestones)
+ * The digital chronicle of family life. Encrypted and Local-First.
  */
 export function useDiary() {
-  const { db, currentPin, fileHandle } = useAppStore();
+  const { db } = useAppStore();
   const [tick, setTick] = useState(0);
 
+  // Memoized query results
   const entries = useMemo(() => diaryRepo.getEntries(db), [db, tick]);
 
-  const commit = useCallback(() => {
-    if (db && fileHandle && currentPin) {
-      saveVault(db, currentPin, fileHandle).catch(console.error);
-    }
+  /**
+   * Add a new entry to the chronicle.
+   * Automatically triggers vault persistence.
+   */
+  const addEntry = useCallback(async (entry: Partial<DiaryEntry>) => {
+    if (!db) return;
+    await diaryRepo.createEntry(db, entry);
     setTick(t => t + 1);
-  }, [db, currentPin, fileHandle]);
+  }, [db]);
 
-  const addEntry = useCallback((entry: any) => {
-    const id = diaryRepo.createEntry(db, entry);
-    commit();
-  }, [db, commit]);
-
-  const deleteEntry = useCallback((id: string) => {
-    diaryRepo.deleteEntry(db, id);
-    commit();
-  }, [db, commit]);
+  /**
+   * Remove an entry.
+   */
+  const deleteEntry = useCallback(async (id: string) => {
+    if (!db) return;
+    await diaryRepo.deleteEntry(db, id);
+    setTick(t => t + 1);
+  }, [db]);
 
   return {
     entries,
     addEntry,
-    deleteEntry
+    deleteEntry,
+    refresh: () => setTick(t => t + 1)
   };
 }

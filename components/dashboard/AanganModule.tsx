@@ -25,6 +25,9 @@ import { useCash } from '@/modules/cash';
 import { useHealth } from '@/modules/health';
 import { useSuvidha } from '@/modules/suvidha';
 import { useVahan } from '@/modules/vahan';
+import { useSewak } from '@/modules/sewak';
+import { useUtsav } from '@/modules/utsav';
+import { useDiary } from '@/modules/diary';
 import { 
   Shield, 
   ChevronRight, 
@@ -36,7 +39,9 @@ import {
   Flame, 
   Car, 
   Users, 
-  Briefcase 
+  Briefcase,
+  Calendar,
+  BookOpen
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation, Language } from '@/lib/i18n';
@@ -57,21 +62,37 @@ export default function AanganModule() {
   const { learners } = useVidya();
   const { logs: ritualLogs } = useSanskriti();
   const { vehicles, criticalAlerts: vahanAlerts } = useVahan();
+  const { staff } = useSewak();
+  const { events } = useUtsav();
+  const { entries: journalEntries } = useDiary();
 
   // 0. Intelligence Calculations
   const wellness = React.useMemo(() => WellnessEngine.calculate(readings), [readings]);
   const wellnessTrend = React.useMemo(() => WellnessEngine.getTrend(readings), [readings]);
 
+  const { investments } = useCash();
+  const totalWealth = React.useMemo(() => investments.reduce((sum, inv) => sum + (inv.current_value || 0), 0), [investments]);
+  const totalReturns = React.useMemo(() => totalWealth - investments.reduce((sum, inv) => sum + (inv.principal || 0), 0), [totalWealth, investments]);
+
   // 1. Module Grid Definition (Level 1)
   const modules = [
     { 
-      id: 'money', 
+      id: 'cash', 
       label: t('NAV_CASH'), 
       icon: TrendingUp, 
       color: 'gold', 
       value: `₹${cashSummary.balance.toLocaleString('en-IN')}`, 
       sub: cashSummary.expense > 0 ? `${Math.round((cashSummary.expense / (cashSummary.income || 1)) * 100)}% Spent` : t('aangan.budget_stable'),
       trend: [100, 120, 110, 140, 130, 160] // Placeholder list for visual
+    },
+    { 
+      id: 'invest', 
+      label: t('NAV_INVEST'), 
+      icon: Briefcase, 
+      color: 'indigo', 
+      value: `₹${totalWealth.toLocaleString('en-IN')}`, 
+      sub: totalWealth > 0 ? (totalReturns >= 0 ? `+${((totalReturns / (totalWealth - totalReturns || 1)) * 100).toFixed(1)}% Gain` : `${((totalReturns / (totalWealth - totalReturns || 1)) * 100).toFixed(1)}% Loss`) : 'No Assets',
+      trend: [80, 85, 82, 90, 95, 100]
     },
     { 
       id: 'health', 
@@ -87,8 +108,8 @@ export default function AanganModule() {
       label: t('NAV_SEWAK'), 
       icon: Users, 
       color: 'blue', 
-      value: '4 Staff', 
-      sub: 'All Active' 
+      value: `${staff.length} Assistants`, 
+      sub: t('aangan.all_active') 
     },
     { 
       id: 'suvidha', 
@@ -96,7 +117,7 @@ export default function AanganModule() {
       icon: Zap, 
       color: 'amber', 
       value: `${suvidhaVendors.length} Utilities`, 
-      sub: 'Service OK' 
+      sub: t('aangan.service_ok') 
     },
     { 
       id: 'saman', 
@@ -112,15 +133,15 @@ export default function AanganModule() {
       icon: GraduationCap, 
       color: 'indigo', 
       value: `${learners.length} Learners`, 
-      sub: 'Focus High' 
+      sub: t('aangan.focus_high') 
     },
     { 
       id: 'utsav', 
       label: t('NAV_UTSAV'), 
-      icon: Briefcase, 
+      icon: Calendar, 
       color: 'rose', 
-      value: '2 Events', 
-      sub: 'Upcoming' 
+      value: `${events.length} Events`, 
+      sub: t('aangan.upcoming') 
     },
     { 
       id: 'vahan', 
@@ -128,7 +149,7 @@ export default function AanganModule() {
       icon: Car, 
       color: 'slate', 
       value: `${vehicles.length} Vehicles`, 
-      sub: vahanAlerts > 0 ? `${vahanAlerts} Critical` : 'Safe' 
+      sub: vahanAlerts > 0 ? `${vahanAlerts} Critical` : t('aangan.safe') 
     },
     { 
       id: 'sanskriti', 
@@ -136,7 +157,15 @@ export default function AanganModule() {
       icon: Flame, 
       color: 'orange', 
       value: `${ritualLogs.length} Rituals`, 
-      sub: 'Dharma Active' 
+      sub: t('aangan.dharma_active') 
+    },
+    { 
+      id: 'diary', 
+      label: t('NAV_DIARY'), 
+      icon: BookOpen, 
+      color: 'gold', 
+      value: `${journalEntries.length} ${t('sovereign_journal.reflection')}`, 
+      sub: t('aangan.memory_active') || 'Chronicling Life'
     },
   ];
 
@@ -200,13 +229,13 @@ export default function AanganModule() {
                       <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
                       {mod.sub}
                     </div>
-                    {(mod.id === 'money' || (mod.id === 'health' && mod.trend)) && (
+                    {(mod.id === 'cash' || (mod.id === 'health' && mod.trend)) && (
                       <div className="opacity-40">
                         <SparkLine 
-                          data={mod.id === 'money' ? [10, 15, 8, 12, 10, 20] : mod.trend as number[]} 
+                          data={mod.id === 'cash' ? [10, 15, 8, 12, 10, 20] : mod.trend as number[]} 
                           width={40} 
                           height={12} 
-                          color={mod.id === 'money' ? 'var(--gold)' : 'var(--rose)'} 
+                          color={mod.id === 'cash' ? 'var(--gold)' : 'var(--rose)'} 
                         />
                       </div>
                     )}
@@ -231,7 +260,7 @@ export default function AanganModule() {
                  </div>
               </div>
               <button 
-                onClick={() => setActiveModule('family')}
+                onClick={() => setActiveModule('setup')}
                 className="p-3 rounded-full bg-white/5 text-text-tertiary hover:bg-gold hover:text-black transition-all"
               >
                 <ChevronRight size={20} />

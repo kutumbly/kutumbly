@@ -67,39 +67,87 @@ function getJD(date: Date) {
  * Simplified Lunar Calculation
  * Returns Tithi (1-30) and Nakshatra (1-27)
  */
+const CHOGHADIYA_TYPES = {
+  SHUBH: { label: "Shubh", quality: "good", color: "#4ADE80" },
+  LABH: { label: "Labh", quality: "good", color: "#4ADE80" },
+  AMRIT: { label: "Amrit", quality: "good", color: "#4ADE80" },
+  CHAL: { label: "Chal", quality: "neutral", color: "#FACC15" },
+  ROG: { label: "Rog", quality: "bad", color: "#F87171" },
+  KAAL: { label: "Kaal", quality: "bad", color: "#F87171" },
+  UDVEG: { label: "Udveg", quality: "bad", color: "#F87171" },
+};
+
+const DAY_CHOGHADIYA_ORDER: (keyof typeof CHOGHADIYA_TYPES)[][] = [
+  ["UDVEG", "CHAL", "LABH", "AMRIT", "KAAL", "SHUBH", "ROG", "UDVEG"], // Sun
+  ["AMRIT", "KAAL", "SHUBH", "ROG", "UDVEG", "CHAL", "LABH", "AMRIT"], // Mon
+  ["ROG", "UDVEG", "CHAL", "LABH", "AMRIT", "KAAL", "SHUBH", "ROG"],    // Tue
+  ["CHAL", "LABH", "AMRIT", "KAAL", "SHUBH", "ROG", "UDVEG", "CHAL"],  // Wed
+  ["SHUBH", "ROG", "UDVEG", "CHAL", "LABH", "AMRIT", "KAAL", "SHUBH"], // Thu
+  ["CHAL", "LABH", "AMRIT", "KAAL", "SHUBH", "ROG", "UDVEG", "CHAL"],  // Fri
+  ["KAAL", "SHUBH", "ROG", "UDVEG", "CHAL", "LABH", "AMRIT", "KAAL"],  // Sat
+];
+
+/**
+ * Advanced Panchang Engine for Kutumbly
+ */
 export function getPanchang(date: Date = new Date()) {
   const jd = getJD(date);
   
-  // Reference: New Moon on Jan 6, 2000, 18:14 UTC (JD 2451550.26)
   const referenceJD = 2451550.26;
   const synodicMonth = 29.530588853;
   const siderealMonth = 27.321661;
   
   const daysSinceRef = jd - referenceJD;
-  
-  // Tithi Calculation (Phase of Moon)
   const lunarCycle = (daysSinceRef / synodicMonth) % 1;
   const tithiIndex = Math.floor(lunarCycle * 30);
   const pakshaIndex = tithiIndex < 15 ? 0 : 1;
-  const tithiLabel = TITHIS[tithiIndex];
+  const tithiKey = `tithi.${tithiIndex + 1}`;
+
   
-  // Nakshatra Calculation (Position of Moon)
-  // Approximate based on sidereal month
   const nakshatraCycle = (daysSinceRef / siderealMonth) % 1;
   const nakshatraIndex = Math.floor(nakshatraCycle * 27);
-  const nakshatraLabel = NAKSHATRAS[nakshatraIndex];
+  const nakshatraKey = `nakshatra.${nakshatraIndex + 1}`;
   
-  // Rahu Kaal
   const dayOfWeek = date.getDay();
   const rahuKaal = RAHU_KAAL_TABLE[dayOfWeek];
+
+  const DAY_KEYS = [
+    "day.sunday", "day.monday", "day.tuesday", "day.wednesday", 
+    "day.thursday", "day.friday", "day.saturday"
+  ];
+
+  // --- Advanced: Choghadiya Logic ---
+  // Approximate Sunrise (6:30 AM) and Sunset (6:30 PM) for general India locale
+  const sunrise = 6.5; 
+  const sunset = 18.5;
+  const dayDuration = sunset - sunrise;
+  const choghadiyaDuration = dayDuration / 8;
+
+  const currentHour = date.getHours() + date.getMinutes() / 60;
+  let activeChoghadiya = null;
+
+  if (currentHour >= sunrise && currentHour <= sunset) {
+    const index = Math.floor((currentHour - sunrise) / choghadiyaDuration);
+    const typeKey = DAY_CHOGHADIYA_ORDER[dayOfWeek][index];
+    const type = CHOGHADIYA_TYPES[typeKey];
+    activeChoghadiya = { 
+      ...type, 
+      labelKey: `choghadiya.${typeKey.toLowerCase()}` 
+    };
+  } else {
+    activeChoghadiya = { labelKey: "choghadiya.ratri", quality: "neutral", color: "#94A3B8" };
+  }
   
   return {
-    tithi: tithiLabel,
-    paksha: PAKSHA[pakshaIndex],
-    nakshatra: nakshatraLabel,
+    tithiKey,
+    pakshaKey: pakshaIndex === 0 ? "paksha.shukla" : "paksha.krishna",
+    nakshatraKey,
     rahuKaal,
+    choghadiya: activeChoghadiya,
     isPurnima: tithiIndex === 14,
     isAmavasya: tithiIndex === 29,
-    dayName: date.toLocaleDateString('en-IN', { weekday: 'long' })
+    dayNameKey: DAY_KEYS[dayOfWeek]
   };
 }
+
+

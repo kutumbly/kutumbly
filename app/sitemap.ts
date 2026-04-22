@@ -20,12 +20,30 @@ export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://kutumbly.com'
-  return [
-    { url: base,               lastModified: new Date(), changeFrequency: 'weekly',  priority: 1 },
-    { url: `${base}/product`,  lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${base}/founders`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${base}/contact`,  lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.5 },
-    { url: `${base}/privacy`,  lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
-    { url: `${base}/terms`,    lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
-  ]
+  const languages = ['en', 'hi', 'mr', 'gu', 'pa', 'ta', 'bho', 'kn', 'te', 'ne', 'bn', 'mni']
+  const routes = ['', '/product', '/founders', '/contact', '/privacy', '/terms']
+  
+  const entries: MetadataRoute.Sitemap = []
+
+  // Global routes
+  routes.forEach(route => {
+    entries.push({
+      url: `${base}${route}`,
+      lastModified: new Date(),
+      changeFrequency: route === '' ? 'weekly' : 'monthly',
+      priority: route === '' ? 1 : 0.5,
+    })
+  })
+
+  // Language specific landing pages
+  languages.forEach(lang => {
+    entries.push({
+      url: `${base}/${lang}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    })
+  })
+
+  return entries
 }

@@ -22,11 +22,13 @@ import { CashTransaction, CashBudget } from '@/types/db';
 export const cashRepo = {
   getTransactions: (db: Database | null, month: string): CashTransaction[] => {
     if (!db) return [];
+    const start = `${month}-01`;
+    const end = `${month}-31`; // SQL date comparison handles this safely
     return runQuery<CashTransaction>(db, `
       SELECT * FROM cash_transactions 
-      WHERE strftime('%Y-%m', date) = ? 
+      WHERE date >= ? AND date <= ?
       ORDER BY date DESC
-    `, [month]);
+    `, [start, end]);
   },
 
   getBudgets: (db: Database | null, month: string): CashBudget[] => {
@@ -71,5 +73,82 @@ export const cashRepo = {
       const id = crypto.randomUUID();
       await mutateVault(db, "INSERT INTO cash_budgets (id, category, monthly_limit, month) VALUES (?, ?, ?, ?)", [id, category, limit, month]);
     }
+  },
+
+  // ── INVESTMENTS ────────────────────────────────────────────────────────
+  getInvestments: (db: Database | null): any[] => {
+    if (!db) return [];
+    return runQuery(db, "SELECT * FROM cash_investments ORDER BY created_at DESC");
+  },
+
+  getInvestmentTransactions: (db: Database | null, investId: string): any[] => {
+    if (!db) return [];
+    return runQuery(db, "SELECT * FROM cash_investment_txs WHERE investment_id = ? ORDER BY date DESC", [investId]);
+  },
+
+  createInvestment: async (db: Database | null, inv: any) => {
+    if (!db) return;
+    const id = crypto.randomUUID();
+    await mutateVault(
+      db,
+      "INSERT INTO cash_investments (id, name, type, principal, current_value, start_date, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      [id, inv.name, inv.type, inv.principal, inv.current_value, inv.start_date, inv.notes, new Date().toISOString()]
+    );
+    return id;
+  },
+
+  deleteInvestment: async (db: Database | null, id: string) => {
+    if (!db) return;
+    await mutateVault(db, "DELETE FROM cash_investments WHERE id = ?", [id]);
+  },
+
+  createInvestmentTransaction: async (db: Database | null, tx: any) => {
+    if (!db) return;
+    const id = crypto.randomUUID();
+    await mutateVault(
+      db,
+      "INSERT INTO cash_investment_txs (id, investment_id, type, amount, date, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [id, tx.investment_id, tx.type, tx.amount, tx.date, tx.notes, new Date().toISOString()]
+    );
+
+    // Auto-update valuation if it's a valuation adjustment or lumpsum
+    if (tx.type === 'valuation') {
+      await mutateVault(db, "UPDATE cash_investments SET current_value = ? WHERE id = ?", [tx.amount, tx.investment_id]);
+    } else if (tx.type === 'lumpsum' || tx.type === 'sip') {
+      await mutateVault(db, "UPDATE cash_investments SET current_value = current_value + ?, principal = principal + ? WHERE id = ?", [tx.amount, tx.amount, tx.investment_id]);
+    } else if (tx.type === 'withdrawal') {
+       await mutateVault(db, "UPDATE cash_investments SET current_value = current_value - ? WHERE id = ?", [tx.amount, tx.investment_id]);
+    }
+  },
+
+  // ── WEALTH GOALS ───────────────────────────────────────────────────────
+  getGoals: (db: Database | null): any[] => {
+    if (!db) return [];
+    return runQuery(db, "SELECT * FROM cash_wealth_goals ORDER BY deadline ASC");
+  },
+
+  createGoal: async (db: Database | null, g: any) => {
+    if (!db) return;
+    const id = crypto.randomUUID();
+    await mutateVault(
+      db,
+      "INSERT INTO cash_wealth_goals (id, name, target_amount, member_id, deadline, category, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [id, g.name, g.target_amount, g.member_id || null, g.deadline, g.category, new Date().toISOString()]
+    );
+    return id;
+  },
+
+  updateGoal: async (db: Database | null, id: string, g: any) => {
+    if (!db) return;
+    await mutateVault(
+      db,
+      "UPDATE cash_wealth_goals SET name = ?, target_amount = ?, member_id = ?, deadline = ?, category = ?, is_completed = ? WHERE id = ?",
+      [g.name, g.target_amount, g.member_id || null, g.deadline, g.category, g.is_completed ? 1 : 0, id]
+    );
+  },
+
+  deleteGoal: async (db: Database | null, id: string) => {
+    if (!db) return;
+    await mutateVault(db, "DELETE FROM cash_wealth_goals WHERE id = ?", [id]);
   }
 };

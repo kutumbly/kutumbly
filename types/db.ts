@@ -65,6 +65,9 @@ export interface DiaryEntry {
   tags: string | null;
   weather: string | null;
   location: string | null;
+  entry_type: 'reflection' | 'activity' | 'milestone';
+  visibility: 'normal' | 'vault';
+  metadata: string | null; // JSON string
   is_locked: number;
   created_at?: string;
 }
@@ -189,7 +192,7 @@ export interface UtsavEvent {
 export interface UtsavShagun {
   id: string;
   event_id: string;
-  direction: 'given' | 'received';
+  direction: 'diya' | 'mila';
   amount: number;
   gift_desc: string;
   given_by: string;
@@ -369,10 +372,10 @@ export interface Investment {
   type: string;
   principal: number;
   current_value: number;
-  units: number | string | null;       // Grams for gold, units for MF
-  monthly_sip: number | null;
+  units?: number | null;       // Grams for gold, units for MF
+  monthly_sip?: number | null;
   start_date: string;
-  maturity_date: string | null;
+  maturity_date?: string | null;
   notes: string | null;
 }
 

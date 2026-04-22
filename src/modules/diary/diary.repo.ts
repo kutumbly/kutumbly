@@ -33,7 +33,7 @@ export const diaryRepo = {
 
     await mutateVault(
       db,
-      "INSERT INTO diary_entries (id, date, content, mood, mood_label, title, subtitle, tags, weather, location, is_locked, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO diary_entries (id, date, content, mood, mood_label, title, subtitle, tags, weather, location, entry_type, visibility, metadata, is_locked, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         id, 
         date, 
@@ -45,6 +45,9 @@ export const diaryRepo = {
         entry.tags || null, 
         entry.weather || null, 
         entry.location || null, 
+        entry.entry_type || 'reflection',
+        entry.visibility || 'normal',
+        entry.metadata || null,
         entry.is_locked ? 1 : 0, 
         created_at
       ]

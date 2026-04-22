@@ -29,14 +29,19 @@ import { downloadTallyXML, pushToTallyBridge } from '@/lib/tally';
 import { registerBiometric, hasBiometricRegistered } from '@/lib/biometric';
 
 const MODULE_LIST = [
-  { id: 'diary',   navKey: 'NAV_DIARY',     desc: 'Family journals & memories' },
-  { id: 'tasks',   navKey: 'NAV_TASKS',     desc: 'Household chores & to-dos' },
-  { id: 'money',   navKey: 'NAV_CASH',      desc: 'Income & expense ledger' },
-  { id: 'nevata',  navKey: 'NAV_UTSAV',     desc: 'Gifting & occasion log' },
-  { id: 'health',  navKey: 'NAV_HEALTH',    desc: 'Medical records & vitals' },
-  { id: 'grocery', navKey: 'NAV_SAMAN',     desc: 'Smart shopping list' },
-  { id: 'staff',   navKey: 'NAV_SEWAK',     desc: 'Domestic helper management' },
-  { id: 'network', navKey: 'NAV_NETWORK',   desc: 'P2P secure webRTC sync' },
+  { id: 'diary',     navKey: 'NAV_DIARY',     desc: 'Family journals & memories' },
+  { id: 'tasks',     navKey: 'NAV_TASKS',     desc: 'Household chores & to-dos' },
+  { id: 'cash',      navKey: 'NAV_CASH',      desc: 'Income & expense ledger' },
+  { id: 'invest',    navKey: 'NAV_INVEST',    desc: 'Wealth & Asset Portfolio' },
+  { id: 'utsav',     navKey: 'NAV_UTSAV',     desc: 'Gifting & occasion log' },
+  { id: 'health',    navKey: 'NAV_HEALTH',    desc: 'Medical records & vitals' },
+  { id: 'saman',     navKey: 'NAV_SAMAN',     desc: 'Smart shopping list' },
+  { id: 'sewak',     navKey: 'NAV_SEWAK',     desc: 'Domestic helper management' },
+  { id: 'vidya',     navKey: 'NAV_VIDYA',     desc: 'Knowledge & Learning Hub' },
+  { id: 'suvidha',   navKey: 'NAV_SUVIDHA',   desc: 'Daily Vendors & Utilities' },
+  { id: 'vahan',     navKey: 'NAV_VAHAN',     desc: 'Vehicle Maintenance & Docs' },
+  { id: 'sanskriti', navKey: 'NAV_SANSKRITI', desc: 'Dharma, Rituals & Lineage' },
+  { id: 'network',   navKey: 'NAV_NETWORK',   desc: 'P2P secure webRTC sync' },
 ];
 
 export default function SetupModule() {

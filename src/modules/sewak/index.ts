@@ -13,7 +13,6 @@
 
 import { useMemo, useCallback, useState } from 'react';
 import { useAppStore } from '@/lib/store';
-import { saveVault } from '@/lib/vault';
 import { sewakRepo } from './sewak.repo';
 import { SewakMember } from '@/types/db';
 
@@ -34,11 +33,8 @@ export function useSewak() {
   const documents = useMemo(() => sewakRepo.getDocuments(db), [db, tick]);
 
   const commit = useCallback(() => {
-    if (db && fileHandle && currentPin) {
-      saveVault(db, currentPin, fileHandle).catch(console.error);
-    }
     setTick(t => t + 1);
-  }, [db, currentPin, fileHandle]);
+  }, []);
 
   const addStaff = useCallback((name: string, role: string, monthly_salary: number, phone: string, emergency_contact?: string, shift_timing?: string) => {
     const id = sewakRepo.createMember(db, { name, role, monthly_salary, phone, emergency_contact, shift_timing });
