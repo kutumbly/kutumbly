@@ -23,12 +23,19 @@ import LandingHeader from '@/components/landing/LandingHeader';
 import LandingFooter from '@/components/landing/LandingFooter';
 import { useAppStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
+import SchemaOrg from '@/components/seo/SchemaOrg';
 
 export default function PrivacyPolicy() {
   const { lang } = useAppStore();
   const t = useTranslation(lang);
   return (
     <>
+      <SchemaOrg 
+        breadcrumbs={[
+          { name: "Home", item: "/" },
+          { name: "Privacy Policy", item: "/privacy" }
+        ]} 
+      />
       <LandingHeader />
       <div className="min-h-screen bg-bg-primary text-text-primary pt-24">
         <div className="max-w-3xl mx-auto px-6 py-20 pb-32">
@@ -84,7 +91,7 @@ export default function PrivacyPolicy() {
                 {t('legal.privacy.founder_note_title')}
               </h3>
               <p className="italic text-lg text-text-secondary leading-relaxed opacity-90">
-                "{t('legal.privacy.founder_note_txt')}"
+                &ldquo;{t('legal.privacy.founder_note_txt')}&rdquo;
               </p>
               <div className="mt-8 text-[10px] font-black text-text-tertiary uppercase tracking-[0.3em]">
                 — {t('landing.footer.founder')}

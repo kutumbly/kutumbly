@@ -12,6 +12,7 @@
 import { Database } from 'sql.js';
 import { FamilyTask } from '@/types/db';
 import { runQuery } from '@/lib/db';
+import { mutateVault } from '@/lib/vault';
 
 /**
  * Tasks logic repository using @/core/db
@@ -26,12 +27,13 @@ export const tasksRepo = {
     `);
   },
 
-  createTask: (db: Database | null, task: Omit<FamilyTask, 'id' | 'created_at' | 'status'>): string => {
+  createTask: async (db: Database | null, task: Omit<FamilyTask, 'id' | 'created_at' | 'status'>): Promise<string> => {
     if (!db) return '';
-    const id = crypto.randomUUID();
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     const created_at = new Date().toISOString();
     
-    db.run(
+    await mutateVault(
+      db,
       `INSERT INTO tasks (id, title, description, priority, status, category, assigned_to, due_date, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [id, task.title, task.description || null, task.priority, 'pending', task.category || 'Home', task.assigned_to, task.due_date || null, created_at]
@@ -39,17 +41,18 @@ export const tasksRepo = {
     return id;
   },
 
-  updateStatus: (db: Database | null, id: string, newStatus: string) => {
+  updateStatus: async (db: Database | null, id: string, newStatus: string) => {
     if (!db) return;
     const completedAt = newStatus === 'done' ? new Date().toISOString() : null;
-    db.run(
+    await mutateVault(
+      db,
       "UPDATE tasks SET status = ?, completed_at = ? WHERE id = ?",
       [newStatus, completedAt, id]
     );
   },
 
-  deleteTask: (db: Database | null, id: string) => {
+  deleteTask: async (db: Database | null, id: string) => {
     if (!db) return;
-    db.run("DELETE FROM tasks WHERE id = ?", [id]);
+    await mutateVault(db, "DELETE FROM tasks WHERE id = ?", [id]);
   }
 };

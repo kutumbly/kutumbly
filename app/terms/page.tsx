@@ -23,6 +23,7 @@ import LandingHeader from '@/components/landing/LandingHeader';
 import LandingFooter from '@/components/landing/LandingFooter';
 import { useAppStore } from '@/lib/store';
 import { useTranslation } from '@/lib/i18n';
+import SchemaOrg from '@/components/seo/SchemaOrg';
 
 export default function TermsOfService() {
   const { lang } = useAppStore();
@@ -30,6 +31,12 @@ export default function TermsOfService() {
 
   return (
     <>
+      <SchemaOrg 
+        breadcrumbs={[
+          { name: "Home", item: "/" },
+          { name: "Terms of Service", item: "/terms" }
+        ]} 
+      />
       <LandingHeader />
       <div className="min-h-screen bg-bg-primary text-text-primary pt-24">
         <div className="max-w-3xl mx-auto px-6 py-20 pb-32">

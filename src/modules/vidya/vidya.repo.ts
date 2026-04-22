@@ -11,6 +11,7 @@
 
 import { Database } from 'sql.js';
 import { runQuery } from '@/lib/db';
+import { mutateVault } from '@/lib/vault';
 import { VidyaLearner, VidyaSubject, VidyaResource, VidyaSession } from '@/types/db';
 
 /**
@@ -38,11 +39,12 @@ export const vidyaRepo = {
     );
   },
 
-  createLearner: (db: Database | null, l: any) => {
+  createLearner: async (db: Database | null, l: any) => {
     if (!db) return;
-    const id = crypto.randomUUID();
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     const initials = l.name.trim().split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase();
-    db.run(
+    await mutateVault(
+      db,
       `INSERT INTO vidya_learners (id, name, family_member_id, institution, standard, board, avatar_initials, goal, goal_deadline, is_active, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`,
       [id, l.name.trim(), l.family_member_id || null, l.institution || null, l.standard || null, l.board || null, initials, l.goal || null, l.goal_deadline || null, new Date().toISOString()]
@@ -50,11 +52,12 @@ export const vidyaRepo = {
     return id;
   },
 
-  recordSession: (db: Database | null, s: any) => {
+  recordSession: async (db: Database | null, s: any) => {
     if (!db) return;
-    const id = crypto.randomUUID();
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
     const date = new Date().toISOString().split('T')[0];
-    db.run(
+    await mutateVault(
+      db,
       `INSERT INTO vidya_sessions (id, learner_id, subject_id, date, duration_mins, notes, mood, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [id, s.learner_id, s.subject_id || null, date, s.duration_mins, s.notes || null, s.mood || 'neutral', new Date().toISOString()]
     );
@@ -70,14 +73,15 @@ export const vidyaRepo = {
     );
   },
 
-  updateResourceStatus: (db: Database | null, id: string, field: 'is_bookmarked' | 'is_completed', value: number) => {
+  updateResourceStatus: async (db: Database | null, id: string, field: 'is_bookmarked' | 'is_completed', value: number) => {
     if (!db) return;
-    db.run(`UPDATE vidya_resources SET ${field} = ? WHERE id = ?`, [value, id]);
+    await mutateVault(db, `UPDATE vidya_resources SET ${field} = ? WHERE id = ?`, [value, id]);
   },
 
-  updateLearner: (db: Database | null, id: string, updates: any) => {
+  updateLearner: async (db: Database | null, id: string, updates: any) => {
     if (!db) return;
-    db.run(
+    await mutateVault(
+      db,
       "UPDATE vidya_learners SET name = ?, institution = ?, standard = ?, board = ?, goal = ?, goal_deadline = ? WHERE id = ?",
       [updates.name, updates.institution, updates.standard, updates.board, updates.goal, updates.goal_deadline, id]
     );

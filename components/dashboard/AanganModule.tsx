@@ -20,7 +20,6 @@ import React from 'react';
 import { useAppStore } from '@/lib/store';
 import { useSanskriti } from '@/modules/sanskriti';
 import { useSaman } from '@/modules/saman';
-import { useInvest } from '@/modules/invest';
 import { useVidya } from '@/modules/vidya';
 import { useCash } from '@/modules/cash';
 import { useHealth } from '@/modules/health';
@@ -29,7 +28,6 @@ import { useVahan } from '@/modules/vahan';
 import { 
   Shield, 
   ChevronRight, 
-  Activity, 
   Heart, 
   Zap, 
   Package, 
@@ -42,6 +40,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation, Language } from '@/lib/i18n';
+import { WellnessEngine } from '@/lib/intelligence/health';
 import AajKaDinStrip from './AajKaDinStrip';
 import GlassCard from '../ui/GlassCard';
 import SparkLine from '../ui/SparkLine';
@@ -55,10 +54,13 @@ export default function AanganModule() {
   const { readings } = useHealth();
   const { vendors: suvidhaVendors } = useSuvidha();
   const { items: inventory } = useSaman();
-  const { summary: investSummary } = useInvest();
-  const { learners, getStats: getVidyaStats } = useVidya();
+  const { learners } = useVidya();
   const { logs: ritualLogs } = useSanskriti();
   const { vehicles, criticalAlerts: vahanAlerts } = useVahan();
+
+  // 0. Intelligence Calculations
+  const wellness = React.useMemo(() => WellnessEngine.calculate(readings), [readings]);
+  const wellnessTrend = React.useMemo(() => WellnessEngine.getTrend(readings), [readings]);
 
   // 1. Module Grid Definition (Level 1)
   const modules = [
@@ -73,11 +75,12 @@ export default function AanganModule() {
     },
     { 
       id: 'health', 
-      label: t('nav.health_up'), 
+      label: t('NAV_HEALTH'), 
       icon: Heart, 
-      color: 'red', 
-      value: readings[0] ? `${readings[0].bp_systolic}/${readings[0].bp_diastolic}` : t('aangan.update_needed'), 
-      sub: readings.length > 0 ? `${readings.length} Logged` : 'No Record'
+      color: wellness.status === 'ACTION_REQUIRED' ? 'red' : 'rose', 
+      value: wellness.status === 'ZERO_DATA' ? t('aangan.update_needed') : `${wellness.score}/100`, 
+      sub: wellness.label,
+      trend: wellnessTrend
     },
     { 
       id: 'sewak', 
@@ -105,7 +108,7 @@ export default function AanganModule() {
     },
     { 
       id: 'vidya', 
-      label: 'Vidya Hub', 
+      label: t('NAV_VIDYA'), 
       icon: GraduationCap, 
       color: 'indigo', 
       value: `${learners.length} Learners`, 
@@ -197,9 +200,14 @@ export default function AanganModule() {
                       <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
                       {mod.sub}
                     </div>
-                    {mod.id === 'money' && (
+                    {(mod.id === 'money' || (mod.id === 'health' && mod.trend)) && (
                       <div className="opacity-40">
-                        <SparkLine data={[10, 15, 8, 12, 10, 20]} width={40} height={12} color="var(--gold)" />
+                        <SparkLine 
+                          data={mod.id === 'money' ? [10, 15, 8, 12, 10, 20] : mod.trend as number[]} 
+                          width={40} 
+                          height={12} 
+                          color={mod.id === 'money' ? 'var(--gold)' : 'var(--rose)'} 
+                        />
                       </div>
                     )}
                   </div>

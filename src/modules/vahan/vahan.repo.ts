@@ -15,37 +15,20 @@
  * ============================================================ */
 
 import { Database } from "sql.js";
+import { runQuery } from "@/lib/db";
+import { mutateVault } from "@/lib/vault";
 import { VahanVehicle, VahanLog } from "@/types/db";
 
 export const vahanRepo = (db: Database) => {
   return {
     // Vehicles
     getVehicles: (): VahanVehicle[] => {
-      try {
-        const res = db.exec("SELECT * FROM vahan_vehicles ORDER BY created_at DESC");
-        if (res.length === 0) return [];
-        return res[0].values.map((row) => ({
-          id: row[0] as string,
-          name: row[1] as string,
-          vehicle_number: row[2] as string,
-          owner_id: row[3] as string,
-          vehicle_type: row[4] as string,
-          fuel_type: row[5] as string,
-          insurance_expiry: row[6] as string,
-          puc_expiry: row[7] as string,
-          fitness_expiry: row[8] as string,
-          insurance_policy_no: row[9] as string,
-          notes: row[10] as string,
-          created_at: row[11] as string,
-        }));
-      } catch (e) {
-        console.error("vahanRepo.getVehicles Error:", e);
-        return [];
-      }
+      return runQuery<VahanVehicle>(db, "SELECT * FROM vahan_vehicles ORDER BY created_at DESC");
     },
 
-    saveVehicle: (vehicle: VahanVehicle) => {
-      db.run(
+    saveVehicle: async (vehicle: VahanVehicle) => {
+      await mutateVault(
+        db,
         `INSERT OR REPLACE INTO vahan_vehicles 
         (id, name, vehicle_number, owner_id, vehicle_type, fuel_type, insurance_expiry, puc_expiry, fitness_expiry, insurance_policy_no, notes, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -66,40 +49,25 @@ export const vahanRepo = (db: Database) => {
       );
     },
 
-    deleteVehicle: (id: string) => {
-      db.run("DELETE FROM vahan_vehicles WHERE id = ?", [id]);
+    deleteVehicle: async (id: string) => {
+      await mutateVault(db, "DELETE FROM vahan_vehicles WHERE id = ?", [id]);
     },
 
     // Logs
     getLogs: (vehicleId?: string): VahanLog[] => {
-      try {
-        let sql = "SELECT * FROM vahan_logs";
-        const params: any[] = [];
-        if (vehicleId) {
-          sql += " WHERE vehicle_id = ?";
-          params.push(vehicleId);
-        }
-        sql += " ORDER BY date DESC, created_at DESC";
-        const res = db.exec(sql, params);
-        if (res.length === 0) return [];
-        return res[0].values.map((row) => ({
-          id: row[0] as string,
-          vehicle_id: row[1] as string,
-          log_type: row[2] as string,
-          date: row[3] as string,
-          amount: row[4] as number,
-          odometer: row[5] as number,
-          notes: row[6] as string,
-          created_at: row[7] as string,
-        }));
-      } catch (e) {
-        console.error("vahanRepo.getLogs Error:", e);
-        return [];
+      let sql = "SELECT * FROM vahan_logs";
+      const params: any[] = [];
+      if (vehicleId) {
+        sql += " WHERE vehicle_id = ?";
+        params.push(vehicleId);
       }
+      sql += " ORDER BY date DESC, created_at DESC";
+      return runQuery<VahanLog>(db, sql, params);
     },
 
-    saveLog: (log: VahanLog) => {
-      db.run(
+    saveLog: async (log: VahanLog) => {
+      await mutateVault(
+        db,
         `INSERT OR REPLACE INTO vahan_logs 
         (id, vehicle_id, log_type, date, amount, odometer, notes, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -116,8 +84,8 @@ export const vahanRepo = (db: Database) => {
       );
     },
 
-    deleteLog: (id: string) => {
-      db.run("DELETE FROM vahan_logs WHERE id = ?", [id]);
+    deleteLog: async (id: string) => {
+      await mutateVault(db, "DELETE FROM vahan_logs WHERE id = ?", [id]);
     },
     
     getAlerts: () => {
@@ -130,19 +98,14 @@ export const vahanRepo = (db: Database) => {
         SELECT id, name, 'insurance' as type, insurance_expiry as expiry FROM vahan_vehicles WHERE insurance_expiry <= ?
         ORDER BY expiry ASC
       `;
-      try {
-        const res = db.exec(sql, [thirtyDaysLater, thirtyDaysLater]);
-        if (res.length === 0) return [];
-        return res[0].values.map(row => ({
-          vehicleId: row[0] as string,
-          name: row[1] as string,
-          type: row[2] as string,
-          expiry: row[3] as string,
-          isCritical: (row[3] as string) <= today
-        }));
-      } catch {
-        return [];
-      }
+      const res = runQuery<{id: string; name: string; type: string; expiry: string}>(db, sql, [thirtyDaysLater, thirtyDaysLater]);
+      return res.map(row => ({
+        vehicleId: row.id,
+        name: row.name,
+        type: row.type,
+        expiry: row.expiry,
+        isCritical: row.expiry <= today
+      }));
     }
   };
 };

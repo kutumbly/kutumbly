@@ -11,6 +11,7 @@
 
 import { Database } from 'sql.js';
 import { runQuery } from '@/lib/db';
+import { mutateVault } from '@/lib/vault';
 import { SamanItem } from '@/types/db';
 
 /**
@@ -27,21 +28,22 @@ export const samanRepo = {
     );
   },
 
-  createItem: (db: Database | null, item: any) => {
+  createItem: async (db: Database | null, item: any) => {
     if (!db) return;
     
     // Ensure we have a list
     let listId: string;
-    const existingList = db.exec("SELECT id FROM saman_lists LIMIT 1");
-    if (existingList[0]?.values?.[0]?.[0]) {
-      listId = existingList[0].values[0][0] as string;
+    const existingList = runQuery<{id: string}>(db, "SELECT id FROM saman_lists LIMIT 1");
+    if (existingList[0]?.id) {
+      listId = existingList[0].id;
     } else {
-      listId = crypto.randomUUID();
-      db.run("INSERT INTO saman_lists (id, name, created_at, status) VALUES (?, ?, ?, ?)", [listId, "Main List", new Date().toISOString(), "active"]);
+      listId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+      await mutateVault(db, "INSERT INTO saman_lists (id, name, created_at, status) VALUES (?, ?, ?, ?)", [listId, "Main List", new Date().toISOString(), "active"]);
     }
 
-    const id = crypto.randomUUID();
-    db.run(
+    const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+    await mutateVault(
+      db,
       `INSERT INTO saman_items 
         (id, list_id, name, quantity, unit, estimated_price, checked, category, current_stock, threshold, expiry_date, last_purchased_date) 
        VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?)`,
@@ -62,7 +64,7 @@ export const samanRepo = {
     return id;
   },
 
-  updateItem: (db: Database | null, id: string, updates: Partial<SamanItem>) => {
+  updateItem: async (db: Database | null, id: string, updates: Partial<SamanItem>) => {
     if (!db) return;
     const setChunks: string[] = [];
     const values: any[] = [];
@@ -77,25 +79,25 @@ export const samanRepo = {
     if (setChunks.length === 0) return;
     values.push(id);
     const query = `UPDATE saman_items SET ${setChunks.join(', ')} WHERE id = ?`;
-    db.run(query, values);
+    await mutateVault(db, query, values);
   },
 
-  checkItem: (db: Database | null, id: string, checked: number) => {
+  checkItem: async (db: Database | null, id: string, checked: number) => {
     if (!db) return;
     if (checked === 1) {
-      db.run("UPDATE saman_items SET checked = ?, last_purchased_date = ? WHERE id = ?", [checked, new Date().toISOString(), id]);
+      await mutateVault(db, "UPDATE saman_items SET checked = ?, last_purchased_date = ? WHERE id = ?", [checked, new Date().toISOString(), id]);
     } else {
-      db.run("UPDATE saman_items SET checked = ? WHERE id = ?", [checked, id]);
+      await mutateVault(db, "UPDATE saman_items SET checked = ? WHERE id = ?", [checked, id]);
     }
   },
 
-  deleteItem: (db: Database | null, id: string) => {
+  deleteItem: async (db: Database | null, id: string) => {
     if (!db) return;
-    db.run("DELETE FROM saman_items WHERE id = ?", [id]);
+    await mutateVault(db, "DELETE FROM saman_items WHERE id = ?", [id]);
   },
 
-  clearAllChecked: (db: Database | null) => {
+  clearAllChecked: async (db: Database | null) => {
     if (!db) return;
-    db.run("DELETE FROM saman_items WHERE checked = 1");
+    await mutateVault(db, "DELETE FROM saman_items WHERE checked = 1");
   }
 };

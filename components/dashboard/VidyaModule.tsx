@@ -145,7 +145,7 @@ export default function VidyaModule() {
     if (!useAppStore.getState().db) return [];
     try {
       const res = useAppStore.getState().db.exec("SELECT id, name FROM family_members ORDER BY name ASC");
-      return res[0]?.values?.map((v: any[]) => ({ id: v[0] as string, name: v[1] as string })) || [];
+      return res[0]?.values?.map((v: (string | number)[]) => ({ id: v[0] as string, name: v[1] as string })) || [];
     } catch { return []; }
   }, [useAppStore.getState().db]);
 

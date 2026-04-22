@@ -23,21 +23,20 @@ import {
   Shield, Globe, Sun, Moon, Eye, EyeOff,
   Trash2, Download, Lock, HardDrive, FileTerminal, Network, Fingerprint
 } from 'lucide-react';
-import { useTranslation, Language } from '@/lib/i18n';
+import { useTranslation, Language, SUPPORTED_LANGUAGES } from '@/lib/i18n';
 import { triggerManualBackup } from '@/lib/vault';
 import { downloadTallyXML, pushToTallyBridge } from '@/lib/tally';
 import { registerBiometric, hasBiometricRegistered } from '@/lib/biometric';
 
 const MODULE_LIST = [
-  { id: 'diary',   label: 'Diary',     desc: 'Family journals & memories' },
-  { id: 'tasks',   label: 'Tasks',     desc: 'Household chores & to-dos' },
-  { id: 'money',   label: 'Money',     desc: 'Income & expense ledger' },
-  { id: 'nevata',  label: 'Nevata',    desc: 'Gifting & occasion log' },
-  { id: 'health',  label: 'Health',    desc: 'Medical records & vitals' },
-  { id: 'invest',  label: 'Invest',    desc: 'Investment & SIP tracker' },
-  { id: 'grocery', label: 'Grocery',   desc: 'Smart shopping list' },
-  { id: 'staff',   label: 'HomeStaff', desc: 'Domestic helper management' },
-  { id: 'network', label: 'Network',   desc: 'P2P secure webRTC sync' },
+  { id: 'diary',   navKey: 'NAV_DIARY',     desc: 'Family journals & memories' },
+  { id: 'tasks',   navKey: 'NAV_TASKS',     desc: 'Household chores & to-dos' },
+  { id: 'money',   navKey: 'NAV_CASH',      desc: 'Income & expense ledger' },
+  { id: 'nevata',  navKey: 'NAV_UTSAV',     desc: 'Gifting & occasion log' },
+  { id: 'health',  navKey: 'NAV_HEALTH',    desc: 'Medical records & vitals' },
+  { id: 'grocery', navKey: 'NAV_SAMAN',     desc: 'Smart shopping list' },
+  { id: 'staff',   navKey: 'NAV_SEWAK',     desc: 'Domestic helper management' },
+  { id: 'network', navKey: 'NAV_NETWORK',   desc: 'P2P secure webRTC sync' },
 ];
 
 export default function SetupModule() {
@@ -151,11 +150,11 @@ export default function SetupModule() {
                           : 'bg-bg-info border-text-info/20 text-text-info'
                       }`}
                     >
-                      {m.label.slice(0, 2).toUpperCase()}
+                      {t(m.navKey).slice(0, 2).toUpperCase()}
                     </div>
                     <div>
                       <div className={`text-sm font-bold transition-colors ${isHidden ? 'text-text-tertiary' : 'text-text-primary'}`}>
-                        {t(m.id.toUpperCase() === 'STAFF' ? 'HOME_STAFF' : m.id.toUpperCase())}
+                        {t(m.navKey)}
                       </div>
                       <div className="text-[10px] text-text-tertiary font-bold uppercase tracking-wider">
                         {m.desc}
@@ -198,18 +197,11 @@ export default function SetupModule() {
                 onChange={(e) => setLang(e.target.value as Language)}
                 className="bg-bg-secondary border border-border-medium rounded-lg text-[10px] font-bold uppercase px-3 py-2 text-text-primary focus:outline-none focus:border-gold"
               >
-                <option value="en">English (India)</option>
-                <option value="hi">हिन्दी (Hindi)</option>
-                <option value="mr">????? (Marathi)</option>
-                <option value="gu">ગુજરાતી (Gujarati)</option>
-                <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
-                <option value="ta">தமிழ் (Tamil)</option>
-                <option value="bho">भोजपुरी (Bhojpuri)</option>
-                <option value="kn">ಕನ್ನಡ (Kannada)</option>
-                <option value="te">తెలుగు (Telugu)</option>
-                <option value="ne">नेपाली (Nepali)</option>
-                <option value="bn">বাংলা (Bangla)</option>
-                <option value="mni">মৈতেইলোন (Manipuri)</option>
+                {SUPPORTED_LANGUAGES.map(l => (
+                  <option key={l.code} value={l.code}>
+                    {l.native} ({l.label})
+                  </option>
+                ))}
               </select>
             </div>
 

@@ -109,6 +109,7 @@ export const metadata: Metadata = {
       },
     ],
     locale: "en_IN",
+    alternateLocale: ["hi_IN", "mr_IN", "gu_IN", "pa_IN", "ta_IN", "bn_IN", "kn_IN", "te_IN"],
   },
 
   // ── Twitter / X Card ───────────────────────────────────────

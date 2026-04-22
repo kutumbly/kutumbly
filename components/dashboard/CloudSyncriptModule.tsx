@@ -38,7 +38,7 @@ export default function CloudSyncriptModule() {
   const t_hook = useTranslation(lang as Language);
 
   const [backups, setBackups] = useState<{ id: string; name: string; createdTime: string; size: number }[]>([]);
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState(() => typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [authStatus, setAuthStatus] = useState<'idle' | 'auth_checking' | 'authorized' | 'unauthorized' | 'error'>('idle');
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
@@ -50,7 +50,6 @@ export default function CloudSyncriptModule() {
   }, []);
 
   useEffect(() => {
-    setIsOnline(navigator.onLine);
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
     window.addEventListener('online', handleOnline);

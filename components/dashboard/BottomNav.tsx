@@ -34,8 +34,8 @@ interface BottomNavProps {
   lang: string;
 }
 
-// Robust label that never shows raw NAV_* strings
-function useTabLabel(t: (k: string) => string, id: string): string {
+// Plain utility — NOT a hook. Safe to call anywhere including .map() callbacks.
+function getTabLabel(t: (k: string) => string, id: string): string {
   const key = `NAV_${id.toUpperCase()}`;
   const translated = t(key);
   if (translated === key) return id.charAt(0).toUpperCase() + id.slice(1);
@@ -64,7 +64,7 @@ export default function BottomNav({ tabs, activeTab, onTabChange, lang }: Bottom
         {visibleTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
-          const label = useTabLabel(t, tab.id);
+          const label = getTabLabel(t, tab.id);
 
           return (
             <motion.button
